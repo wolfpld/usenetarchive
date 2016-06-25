@@ -7,15 +7,24 @@
     <Filter Include="common">
       <UniqueIdentifier>{d991e927-d255-4fae-8641-a731116a9b60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lz4">
+      <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\import-source-slrnpull.cpp">
       <Filter>import-source-slrnpull</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lz4\lz4.c">
+      <Filter>lz4</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lz4\lz4.h">
+      <Filter>lz4</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

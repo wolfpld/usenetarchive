@@ -19,10 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\import-source-slrnpull.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F4589BE3-DB05-4D70-9C97-EE1DD099D807}</ProjectGuid>
