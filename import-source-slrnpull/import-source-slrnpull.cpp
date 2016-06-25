@@ -140,6 +140,7 @@ public:
         {
             delete[] m_data;
             m_data = new char[size];
+            m_size = size;
         }
         return m_data;
     }
