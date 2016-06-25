@@ -16,6 +16,7 @@
 #endif
 
 #include "../contrib/lz4/lz4.h"
+#include "../contrib/lz4/lz4hc.h"
 #include "../common/RawImportMeta.hpp"
 
 static bool Exists( const std::string& path )
@@ -181,7 +182,7 @@ int main( int argc, char** argv )
 
         int maxSize = LZ4_compressBound( size );
         char* compressed = new char[maxSize];
-        int csize = LZ4_compress_default( buf, compressed, size, maxSize );
+        int csize = LZ4_compress_HC( buf, compressed, size, maxSize, 16 );
 
         fwrite( compressed, 1, csize, data );
 
