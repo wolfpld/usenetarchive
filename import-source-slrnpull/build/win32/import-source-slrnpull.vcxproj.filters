@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\contrib\lz4\lz4hc.c">
       <Filter>lz4</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\Filesystem.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -31,6 +34,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h">
       <Filter>lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\Filesystem.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
