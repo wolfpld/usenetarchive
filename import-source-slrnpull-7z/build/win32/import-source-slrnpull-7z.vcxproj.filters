@@ -10,6 +10,9 @@
     <Filter Include="lz4">
       <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lzma">
+      <UniqueIdentifier>{51bfbcc6-53b6-4807-8603-b707b3323eeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\import-source-slrnpull-7z.cpp">
@@ -21,6 +24,54 @@
     <ClCompile Include="..\..\..\contrib\lz4\lz4hc.c">
       <Filter>lz4</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zBuf.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zBuf2.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zCrc.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zCrcOpt.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zDec.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zFile.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zIn.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\7zStream.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\Bcj2.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\Bra.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\Bra86.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\CpuArch.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\Lzma2Dec.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\LzmaDec.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\Ppmd7.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\lzma\Ppmd7Dec.c">
+      <Filter>lzma</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -31,6 +82,42 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h">
       <Filter>lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\7z.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\7zBuf.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\7zCrc.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\7zFile.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\Bcj2.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\Bra.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\CpuArch.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\Lzma2Dec.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\LzmaDec.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\Ppmd.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\Ppmd7.h">
+      <Filter>lzma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\lzma\Types.h">
+      <Filter>lzma</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
