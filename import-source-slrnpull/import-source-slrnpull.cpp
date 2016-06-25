@@ -183,6 +183,9 @@ int main( int argc, char** argv )
 
     ExpandingBuffer eb1, eb2;
     char in[1024];
+    int fpos = strlen( argv[1] );
+    memcpy( in, argv[1], fpos );
+    in[fpos++] = '/';
     int idx = 0;
     for( const auto& f : list )
     {
@@ -195,7 +198,7 @@ int main( int argc, char** argv )
 
         if( f[0] == '.' ) continue;
 
-        sprintf( in, "%s/%s", argv[1], f.c_str() );
+        strcpy( in+fpos, f.c_str() );
         uint64_t size = GetFileSize( in );
         char* buf = eb1.Request( size );
         FILE* src = fopen( in, "rb" );
