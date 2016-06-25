@@ -129,6 +129,26 @@ static std::vector<std::string> ListDirectory( const std::string& path )
     return ret;
 }
 
+class ExpandingBuffer
+{
+public:
+    ~ExpandingBuffer() { delete[] m_data; }
+
+    char* Request( int size )
+    {
+        if( size > m_size )
+        {
+            delete[] m_data;
+            m_data = new char[size];
+        }
+        return m_data;
+    }
+
+private:
+    char* m_data = nullptr;
+    int m_size = 0;
+};
+
 int main( int argc, char** argv )
 {
     if( argc != 3 )
@@ -160,6 +180,7 @@ int main( int argc, char** argv )
 
     uint64_t offset = 0;
 
+    ExpandingBuffer eb1, eb2;
     char in[1024];
     int idx = 0;
     for( const auto& f : list )
@@ -175,22 +196,19 @@ int main( int argc, char** argv )
 
         sprintf( in, "%s/%s", argv[1], f.c_str() );
         uint64_t size = GetFileSize( in );
-        char* buf = new char[size];
+        char* buf = eb1.Request( size );
         FILE* src = fopen( in, "rb" );
         fread( buf, 1, size, src );
         fclose( src );
 
         int maxSize = LZ4_compressBound( size );
-        char* compressed = new char[maxSize];
+        char* compressed = eb2.Request( maxSize );
         int csize = LZ4_compress_HC( buf, compressed, size, maxSize, 16 );
 
         fwrite( compressed, 1, csize, data );
 
         RawImportMeta metaPacket = { offset, size, csize };
         fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
-
-        delete[] buf;
-        delete[] compressed;
     }
     printf( "%i files processed.\n", list.size() );
 
