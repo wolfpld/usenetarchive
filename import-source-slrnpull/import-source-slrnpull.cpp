@@ -15,6 +15,7 @@
 #  include <dirent.h>
 #endif
 
+#include "../contrib/lz4/lz4.h"
 #include "../common/RawImportMeta.hpp"
 
 static bool Exists( const std::string& path )
@@ -173,21 +174,22 @@ int main( int argc, char** argv )
 
         sprintf( in, "%s/%s", argv[1], f.c_str() );
         uint64_t size = GetFileSize( in );
+        char* buf = new char[size];
+        FILE* src = fopen( in, "rb" );
+        fread( buf, 1, size, src );
+        fclose( src );
 
-        RawImportMeta metaPacket = { offset, size };
+        int maxSize = LZ4_compressBound( size );
+        char* compressed = new char[maxSize];
+        int csize = LZ4_compress_default( buf, compressed, size, maxSize );
+
+        fwrite( compressed, 1, csize, data );
+
+        RawImportMeta metaPacket = { offset, size, csize };
         fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
 
-        FILE* src = fopen( in, "rb" );
-        enum { BufSize = 4*1024 };
-        char buf[BufSize];
-        while( size > 0 )
-        {
-            uint64_t toFill = std::min<uint64_t>( BufSize, size );
-            fread( buf, 1, toFill, src );
-            fwrite( buf, 1, toFill, data );
-            size -= toFill;
-        }
-        fclose( src );
+        delete[] buf;
+        delete[] compressed;
     }
     printf( "%i files processed.\n", list.size() );
 

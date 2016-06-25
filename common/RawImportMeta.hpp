@@ -6,7 +6,8 @@
 struct RawImportMeta
 {
     uint64_t offset;
-    uint64_t size;
+    uint32_t size;
+    uint32_t compressedSize;
 };
 
 #endif
