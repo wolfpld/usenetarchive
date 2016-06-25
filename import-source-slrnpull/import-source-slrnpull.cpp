@@ -213,6 +213,7 @@ int main( int argc, char** argv )
 
         RawImportMeta metaPacket = { offset, size, csize };
         fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
+        offset += csize;
     }
     printf( "%i files processed.\n", list.size() );
 

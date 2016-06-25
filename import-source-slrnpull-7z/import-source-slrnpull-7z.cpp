@@ -235,6 +235,7 @@ int main( int argc, char** argv )
 
         RawImportMeta metaPacket = { offset, outSizeProcessed, csize };
         fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
+        offset += csize;
     }
     printf( "%i files processed.\n", db.db.NumFiles );
 
