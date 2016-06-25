@@ -17,6 +17,10 @@
 
 #include "../contrib/lz4/lz4.h"
 #include "../contrib/lz4/lz4hc.h"
+#include "../contrib/lzma/7z.h"
+#include "../contrib/lzma/7zCrc.h"
+#include "../contrib/lzma/7zFile.h"
+#include "../contrib/lzma/Types.h"
 #include "../common/RawImportMeta.hpp"
 
 static bool Exists( const std::string& path )
@@ -65,70 +69,6 @@ static bool CreateDirStruct( const std::string& path )
     return true;
 }
 
-static std::vector<std::string> ListDirectory( const std::string& path )
-{
-    std::vector<std::string> ret;
-
-#ifdef _WIN32
-    WIN32_FIND_DATA ffd;
-    HANDLE h;
-
-    std::string p = path + "/*";
-    for( unsigned int i=0; i<p.size(); i++ )
-    {
-        if( p[i] == '/' )
-        {
-            p[i] = '\\';
-        }
-    }
-
-    h = FindFirstFile( ( p ).c_str(), &ffd );
-    if( h == INVALID_HANDLE_VALUE )
-    {
-        return ret;
-    }
-
-    do
-    {
-        std::string s = ffd.cFileName;
-        if( s != "." && s != ".." )
-        {
-            if( ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-            {
-                s += "/";
-            }
-            ret.emplace_back( std::move( s ) );
-        }
-    }
-    while( FindNextFile( h, &ffd ) );
-
-    FindClose( h );
-#else
-    DIR* dir = opendir( path.c_str() );
-    if( dir == nullptr )
-    {
-        return ret;
-    }
-
-    struct dirent* ent;
-    while( ( ent = readdir( dir ) ) != nullptr )
-    {
-        std::string s = ent->d_name;
-        if( s != "." && s != ".." )
-        {
-            if( ent->d_type == DT_DIR )
-            {
-                s += "/";
-            }
-            ret.emplace_back( std::move( s ) );
-        }
-    }
-    closedir( dir );
-#endif
-
-    return ret;
-}
-
 class ExpandingBuffer
 {
 public:
@@ -150,6 +90,74 @@ private:
     int m_size = 0;
 };
 
+static void* MemAlloc( void* p, size_t size )
+{
+    if( size == 0 ) return nullptr;
+    return new char[size];
+}
+
+static void MemFree( void* p, void* address )
+{
+    delete[] (char*)address;
+}
+
+static ISzAlloc s_alloc = { MemAlloc, MemFree };
+
+static void PosixClose( struct CSzFile* ptr )
+{
+    if( ptr->ptr )
+    {
+        fclose( (FILE*)ptr->ptr );
+        ptr->ptr = nullptr;
+    }
+}
+
+static int PosixRead( struct CSzFile* ptr, void* data, size_t* size )
+{
+    const size_t orig = *size;
+
+    if( orig == 0 ) return 0;
+
+    *size = fread( data, 1, orig, (FILE*)ptr->ptr );
+    return ( *size == orig ) ? 0 : ferror( (FILE*)ptr->ptr );
+}
+
+static int PosixSeek( struct CSzFile* ptr, Int64* pos, int origin )
+{
+    int moveMethod;
+    int res;
+    switch (origin)
+    {
+    case SZ_SEEK_SET: moveMethod = SEEK_SET; break;
+    case SZ_SEEK_CUR: moveMethod = SEEK_CUR; break;
+    case SZ_SEEK_END: moveMethod = SEEK_END; break;
+    default: return 1;
+    }
+    res = fseek( (FILE*)ptr->ptr, (long)*pos, moveMethod );
+    *pos = ftell( (FILE*)ptr->ptr );
+    return res;
+}
+
+static int PosixLength( struct CSzFile* ptr, UInt64* length )
+{
+    const long pos = ftell( (FILE*)ptr->ptr );
+    const int res = fseek( (FILE*)ptr->ptr, 0, SEEK_END );
+    *length = ftell( (FILE*)ptr->ptr );
+    fseek( (FILE*)ptr->ptr, pos, SEEK_SET );
+    return res;
+}
+
+CFileInStream Mount7z_Posix( FILE* f )
+{
+    CFileInStream stream;
+    stream.file.ptr = f;
+    stream.file.close = PosixClose;
+    stream.file.read = PosixRead;
+    stream.file.seek = PosixSeek;
+    stream.file.length = PosixLength;
+    return stream;
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 3 )
@@ -159,7 +167,7 @@ int main( int argc, char** argv )
     }
     if( !Exists( argv[1] ) )
     {
-        fprintf( stderr, "Source directory doesn't exist.\n" );
+        fprintf( stderr, "Source archive doesn't exist.\n" );
         exit( 1 );
     }
     if( Exists( argv[2] ) )
@@ -168,9 +176,19 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    CreateDirStruct( argv[2] );
-    const auto list = ListDirectory( argv[1] );
+    CFileInStream stream = Mount7z_Posix( fopen( argv[1], "rb" ) );
+    CLookToRead lookStream;
+    FileInStream_CreateVTable( &stream );
+    LookToRead_CreateVTable( &lookStream, False );
+    lookStream.realStream = &stream.s;
+    LookToRead_Init( &lookStream );
 
+    CSzArEx db;
+    CrcGenerateTable();
+    SzArEx_Init( &db );
+    SzArEx_Open( &db, &lookStream.s, &s_alloc, &s_alloc );
+
+    CreateDirStruct( argv[2] );
     std::string metafn = argv[2];
     metafn.append( "/" );
     std::string datafn = metafn;
@@ -181,43 +199,50 @@ int main( int argc, char** argv )
 
     uint64_t offset = 0;
 
-    ExpandingBuffer eb1, eb2;
-    char in[1024];
-    int fpos = strlen( argv[1] );
-    memcpy( in, argv[1], fpos );
-    in[fpos++] = '/';
-    int idx = 0;
-    for( const auto& f : list )
+    ExpandingBuffer eb2, fnbuf;
+    uint32_t blockIndex = 0;
+    char* outBuffer = nullptr;
+    size_t outBufferSize = 0;
+    size_t lzmaOffset;
+    for( int idx=0; idx<db.db.NumFiles; idx++ )
     {
+        const CSzFileItem* f = db.db.Files + idx;
+
         if( ( idx & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", idx, list.size() );
+            printf( "%i/%i\r", idx, db.db.NumFiles );
             fflush( stdout );
         }
-        idx++;
 
-        if( f[0] == '.' ) continue;
+        if( f->IsDir ) continue;
 
-        strcpy( in+fpos, f.c_str() );
-        uint64_t size = GetFileSize( in );
-        char* buf = eb1.Request( size );
-        FILE* src = fopen( in, "rb" );
-        fread( buf, 1, size, src );
-        fclose( src );
+        size_t len = SzArEx_GetFileNameUtf16( &db, idx, nullptr );
+        uint16_t* fn = (uint16_t*)fnbuf.Request( 2 * len );
+        SzArEx_GetFileNameUtf16( &db, idx, fn );
 
-        int maxSize = LZ4_compressBound( size );
+        if( fn[0] == L'.' ) continue;
+
+        size_t outSizeProcessed;
+        SzArEx_Extract( &db, &lookStream.s, idx, &blockIndex,
+            (Byte**)&outBuffer, &outBufferSize, &lzmaOffset, &outSizeProcessed,
+            &s_alloc, &s_alloc );
+
+        int maxSize = LZ4_compressBound( outSizeProcessed );
         char* compressed = eb2.Request( maxSize );
-        int csize = LZ4_compress_HC( buf, compressed, size, maxSize, 16 );
+        int csize = LZ4_compress_HC( outBuffer + lzmaOffset, compressed, outSizeProcessed, maxSize, 16 );
 
         fwrite( compressed, 1, csize, data );
 
-        RawImportMeta metaPacket = { offset, size, csize };
+        RawImportMeta metaPacket = { offset, outSizeProcessed, csize };
         fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
     }
-    printf( "%i files processed.\n", list.size() );
+    printf( "%i files processed.\n", db.db.NumFiles );
 
     fclose( meta );
     fclose( data );
+
+    delete[] outBuffer;
+    SzArEx_Free( &db, &s_alloc );
 
     return 0;
 }
