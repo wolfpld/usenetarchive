@@ -53,6 +53,8 @@ int main( int argc, char** argv )
     FileMap<uint32_t> midmeta2( base2 + "midmeta" );
     FileMap<char> middata2( base2 + "middata" );
 
+    printf( "Src1 size: %i. Src2 size: %i.\n", meta1.Size() / sizeof( RawImportMeta ), meta2.Size() / sizeof( RawImportMeta ) );
+
     std::string meta3fn = base3 + "meta";
     std::string data3fn = base3 + "data";
 
