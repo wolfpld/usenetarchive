@@ -54,7 +54,8 @@ int main( int argc, char** argv )
     FILE* middata = fopen( middatafn.c_str(), "wb" );
 
     uint32_t offset = 0;
-    ExpandingBuffer eb, eb2;
+    ExpandingBuffer eb;
+    char zero = 0;
     for( int i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -77,15 +78,11 @@ int main( int argc, char** argv )
         buf += 13;
         auto end = buf;
         while( *end != '>' ) end++;
-
-        uint32_t midsize = end - buf + 1;
-        char* tmp = eb2.Request( midsize );
-        memcpy( tmp, buf, end-buf );
-        tmp[end-buf] = '\0';
-        fwrite( tmp, 1, midsize, middata );
+        fwrite( buf, 1, end-buf, middata );
+        fwrite( &zero, 1, 1, middata );
 
         fwrite( &offset, 1, sizeof( offset ), midmeta );
-        offset += midsize;
+        offset += end-buf+1;
     }
 
     fclose( midmeta );
