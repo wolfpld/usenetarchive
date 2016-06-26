@@ -72,8 +72,27 @@ int main( int argc, char** argv )
     {
         if( line.size() > 5 && strncmp( line.data(), "From ", 5 ) == 0 )
         {
-            if( !post.empty() )
+            post.clear();
+            int lines = -1;
+            while( ReadLine( in, line ) )
             {
+                if( strncmp( line.data(), "Lines: ", 7 ) == 0 )
+                {
+                    lines = atoi( line.c_str() + 7 );
+                }
+                post.append( line );
+                post.append( "\n" );
+                if( line.empty() ) break;
+            }
+            if( lines != -1 )
+            {
+                while( lines-- )
+                {
+                    ReadLine( in, line );
+                    post.append( line );
+                    post.append( "\n" );
+                }
+
                 int maxSize = LZ4_compressBound( post.size() );
                 char* compressed = eb2.Request( maxSize );
                 int csize = LZ4_compress_HC( post.data(), compressed, post.size(), maxSize, 16 );
@@ -84,8 +103,6 @@ int main( int argc, char** argv )
                 fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
                 offset += csize;
 
-                post.clear();
-
                 if( ( idx & 0x3FF ) == 0 )
                 {
                     printf( "%i\r", idx );
@@ -93,11 +110,6 @@ int main( int argc, char** argv )
                 }
                 idx++;
             }
-        }
-        else
-        {
-            post.append( line );
-            post.append( "\n" );
         }
     }
     printf( "%i files processed.\n", idx );
