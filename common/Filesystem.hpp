@@ -9,14 +9,14 @@ bool CreateDirStruct( const std::string& path );
 
 static inline bool Exists( const std::string& path )
 {
-    struct stat buf;
-    return stat( path.c_str(), &buf ) == 0;
+    struct _stat64 buf;
+    return _stat64( path.c_str(), &buf ) == 0;
 }
 
 static inline uint64_t GetFileSize( const char* path )
 {
-    struct stat buf;
-    stat( path, &buf );
+    struct _stat64 buf;
+    _stat64( path, &buf );
     return buf.st_size;
 }
 
