@@ -130,6 +130,18 @@ int main( int argc, char** argv )
         fwrite( &num, 1, sizeof( num ), midhashdata );
         fwrite( bucket[i].data(), 1, num * sizeof( HashData ), midhashdata );
         offset += sizeof( num ) + num * sizeof( HashData );
+
+        if( num != 0 )
+        {
+            for( int j=0; j<num-1; j++ )
+            {
+                if( bucket[i][j].offset == bucket[i][j+1].offset )
+                {
+                    fprintf( stderr,"Duplicate Message ID!\n" );
+                    exit( 1 );
+                }
+            }
+        }
     }
 
     fclose( midhash );
