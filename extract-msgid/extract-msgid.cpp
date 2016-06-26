@@ -58,13 +58,7 @@ int main( int argc, char** argv )
         auto buf = post;
         assert( dec == meta[i].compressedSize );
 
-        while( ( buf - post + 14 ) < postsize && strncmp( buf, "Message-ID: <", 13 ) != 0 && strncmp( buf, "Message-Id: <", 13 ) != 0 ) buf++;
-        if( strncmp( buf, "Message-ID: <", 13 ) != 0 && strncmp( buf, "Message-Id: <", 13 ) != 0 )
-        {
-            std::string error( post, post+postsize );
-            fprintf( stderr, "Malformed message! ID=%i\n\n%s\n", i, error.c_str() );
-            exit( 1 );
-        }
+        while( strncmp( buf, "Message-ID: <", 13 ) != 0 && strncmp( buf, "Message-Id: <", 13 ) != 0 ) buf++;
         buf += 13;
         auto end = buf;
         while( *end != '>' ) end++;
