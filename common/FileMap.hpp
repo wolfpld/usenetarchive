@@ -15,6 +15,11 @@ public:
         : m_size( GetFileSize( fn.c_str() ) )
     {
         FILE* f = fopen( fn.c_str(), "rb" );
+        if( !f )
+        {
+            fprintf( stderr, "Cannot open %s\n", fn.c_str() );
+            exit( 1 );
+        }
         m_ptr = (T*)mmap( nullptr, m_size, PROT_READ, MAP_SHARED, fileno( f ), 0 );
         fclose( f );
     }
