@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -5,11 +6,14 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <vector>
 
 #include "../contrib/lz4/lz4.h"
+#include "../contrib/xxhash/xxhash.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/MsgIdHash.hpp"
 #include "../common/RawImportMeta.hpp"
 
 static int strnicmpl( const char* l, const char* r, int n )
@@ -22,6 +26,12 @@ static int strnicmpl( const char* l, const char* r, int n )
     }
     return 0;
 }
+
+struct HashData
+{
+    uint32_t offset;
+    uint32_t idx;
+};
 
 int main( int argc, char** argv )
 {
@@ -53,10 +63,12 @@ int main( int argc, char** argv )
     FILE* midmeta = fopen( midmetafn.c_str(), "wb" );
     FILE* middata = fopen( middatafn.c_str(), "wb" );
 
+    auto bucket = new std::vector<HashData>[MsgIdHashSize];
+
     uint32_t offset = 0;
     ExpandingBuffer eb;
     char zero = 0;
-    for( int i=0; i<size; i++ )
+    for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
         {
@@ -82,6 +94,10 @@ int main( int argc, char** argv )
         fwrite( &zero, 1, 1, middata );
 
         fwrite( &offset, 1, sizeof( offset ), midmeta );
+
+        uint32_t hash = XXH32( buf, end-buf, 0 ) & MsgIdHashMask;
+        bucket[hash].emplace_back( HashData { offset, i } );
+
         offset += end-buf+1;
     }
 
@@ -89,6 +105,39 @@ int main( int argc, char** argv )
     fclose( middata );
 
     printf( "Processed %i MsgIDs.\n", size );
+
+    std::string midhashfn = base + "midhash";
+    std::string midhashdatafn = base + "midhashdata";
+
+    FILE* midhash = fopen( midhashfn.c_str(), "wb" );
+    FILE* midhashdata = fopen( midhashdatafn.c_str(), "wb" );
+
+    FileMap<char> msgid( middatafn );
+    offset = 0;
+    for( uint32_t i=0; i<MsgIdHashSize; i++ )
+    {
+        if( ( i & 0x3FF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        std::sort( bucket[i].begin(), bucket[i].end(), [&msgid]( const HashData& l, const HashData& r ) { return strcmp( msgid + l.offset, msgid + r.offset ) > 0; } );
+
+        fwrite( &offset, 1, sizeof( offset ), midhash );
+
+        uint32_t num = bucket[i].size();
+        fwrite( &num, 1, sizeof( num ), midhashdata );
+        fwrite( bucket[i].data(), 1, num * sizeof( HashData ), midhashdata );
+        offset += sizeof( num ) + num * sizeof( HashData );
+    }
+
+    fclose( midhash );
+    fclose( midhashdata );
+
+    delete[] bucket;
+
+    printf( "Processed %i buckets.\n", MsgIdHashSize );
 
     return 0;
 }

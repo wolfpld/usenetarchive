@@ -10,6 +10,9 @@
     <Filter Include="lz4">
       <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xxhash">
+      <UniqueIdentifier>{3ba565ec-913a-4cbe-9c55-56363b312097}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\extract-msgid.cpp">
@@ -20,6 +23,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\common\mmap.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
+      <Filter>xxhash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,11 +41,14 @@
     <ClInclude Include="..\..\..\common\mmap.hpp">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\common\MsgIdMeta.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\common\FileMap.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MsgIdHash.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
+      <Filter>xxhash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
