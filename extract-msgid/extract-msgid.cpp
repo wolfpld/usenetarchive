@@ -12,6 +12,17 @@
 #include "../common/FileMap.hpp"
 #include "../common/RawImportMeta.hpp"
 
+static int strnicmpl( const char* l, const char* r, int n )
+{
+    while( n-- )
+    {
+        if( tolower( *l ) != *r ) return 1;
+        else if( *l == '\0' ) return 0;
+        l++; r++;
+    }
+    return 0;
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -58,7 +69,7 @@ int main( int argc, char** argv )
         auto buf = post;
         assert( dec == meta[i].compressedSize );
 
-        while( strncmp( buf, "Message-ID: <", 13 ) != 0 && strncmp( buf, "Message-Id: <", 13 ) != 0 ) buf++;
+        while( strnicmpl( buf, "message-id: <", 13 ) != 0 ) buf++;
         buf += 13;
         auto end = buf;
         while( *end != '>' ) end++;
