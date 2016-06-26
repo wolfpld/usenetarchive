@@ -24,6 +24,7 @@
     <ClCompile Include="..\..\extract-msgid.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\MsgIdMeta.hpp" />

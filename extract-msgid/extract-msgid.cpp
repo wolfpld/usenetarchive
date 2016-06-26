@@ -9,7 +9,7 @@
 #include "../contrib/lz4/lz4.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
-#include "../common/mmap.hpp"
+#include "../common/FileMap.hpp"
 #include "../common/RawImportMeta.hpp"
 
 int main( int argc, char** argv )
@@ -31,16 +31,10 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    auto metasize = GetFileSize( metafn.c_str() );
-    FILE* f = fopen( metafn.c_str(), "rb" );
-    RawImportMeta* meta = (RawImportMeta*)mmap( nullptr, metasize, PROT_READ, MAP_SHARED, fileno( f ), 0 );
-    fclose( f );
-    auto datasize = GetFileSize( datafn.c_str() );
-    f = fopen( datafn.c_str(), "rb" );
-    char* data = (char*)mmap( nullptr, datasize, PROT_READ, MAP_SHARED, fileno( f ), 0 );
-    fclose( f );
+    FileMap<RawImportMeta> meta( metafn );
+    FileMap<char> data( datafn );
 
-    auto size = metasize / sizeof( RawImportMeta );
+    auto size = meta.Size() / sizeof( RawImportMeta );
 
     std::string midmetafn = base + "midmeta";
     std::string middatafn = base + "middata";
@@ -87,9 +81,6 @@ int main( int argc, char** argv )
 
     fclose( midmeta );
     fclose( middata );
-
-    munmap( data, datasize );
-    munmap( meta, metasize );
 
     printf( "Processed %i MsgIDs.\n", size );
 
