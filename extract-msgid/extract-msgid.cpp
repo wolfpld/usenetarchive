@@ -69,7 +69,11 @@ int main( int argc, char** argv )
         auto buf = post;
         assert( dec == meta[i].compressedSize );
 
-        while( strnicmpl( buf, "message-id: <", 13 ) != 0 ) buf++;
+        while( strnicmpl( buf, "message-id: <", 13 ) != 0 )
+        {
+            buf++;
+            while( *buf++ != '\n' ) {}
+        }
         buf += 13;
         auto end = buf;
         while( *end != '>' ) end++;
