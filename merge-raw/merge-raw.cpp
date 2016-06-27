@@ -98,9 +98,8 @@ int main( int argc, char** argv )
             added++;
             auto idx = *ptr;
             fwrite( data2 + meta2[idx].offset, 1, meta2[idx].compressedSize, data3 );
-            RawImportMeta meta = meta2[idx];
-            meta.offset = offset1;
-            fwrite( &meta, 1, sizeof( RawImportMeta ), meta3 );
+            RawImportMeta metaPacket = { offset1, meta2[idx].size, meta2[idx].compressedSize };
+            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta3 );
             offset1 += meta2[idx].compressedSize;
         }
     }
