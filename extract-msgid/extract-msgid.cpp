@@ -57,7 +57,7 @@ int main( int argc, char** argv )
 
     uint32_t offset = 0;
     ExpandingBuffer eb;
-    char zero = 0;
+    uint32_t zero = 0;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -103,7 +103,8 @@ int main( int argc, char** argv )
     FILE* midhashdata = fopen( midhashdatafn.c_str(), "wb" );
 
     FileMap<char> msgid( middatafn );
-    offset = 0;
+    fwrite( &zero, 1, sizeof( uint32_t ), midhashdata );
+    offset = sizeof( uint32_t );
     for( uint32_t i=0; i<MsgIdHashSize; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -114,12 +115,18 @@ int main( int argc, char** argv )
 
         std::sort( bucket[i].begin(), bucket[i].end(), [&msgid]( const HashData& l, const HashData& r ) { return strcmp( msgid + l.offset, msgid + r.offset ) > 0; } );
 
-        fwrite( &offset, 1, sizeof( offset ), midhash );
-
         uint32_t num = bucket[i].size();
-        fwrite( &num, 1, sizeof( num ), midhashdata );
-        fwrite( bucket[i].data(), 1, num * sizeof( HashData ), midhashdata );
-        offset += sizeof( num ) + num * sizeof( HashData );
+        if( num == 0 )
+        {
+            fwrite( &zero, 1, sizeof( uint32_t ), midhash );
+        }
+        else
+        {
+            fwrite( &offset, 1, sizeof( offset ), midhash );
+            fwrite( &num, 1, sizeof( num ), midhashdata );
+            fwrite( bucket[i].data(), 1, num * sizeof( HashData ), midhashdata );
+            offset += sizeof( num ) + num * sizeof( HashData );
+        }
     }
 
     fclose( midhash );
