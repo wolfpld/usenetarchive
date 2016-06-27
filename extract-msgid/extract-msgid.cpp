@@ -60,7 +60,7 @@ int main( int argc, char** argv )
     uint32_t zero = 0;
     for( uint32_t i=0; i<size; i++ )
     {
-        if( ( i & 0x3FF ) == 0 )
+        if( ( i & 0x1FFF ) == 0 )
         {
             printf( "%i/%i\r", i, size );
             fflush( stdout );
@@ -107,7 +107,7 @@ int main( int argc, char** argv )
     offset = sizeof( uint32_t );
     for( uint32_t i=0; i<MsgIdHashSize; i++ )
     {
-        if( ( i & 0x3FF ) == 0 )
+        if( ( i & 0xFFF ) == 0 )
         {
             printf( "%i/%i\r", i, size );
             fflush( stdout );
