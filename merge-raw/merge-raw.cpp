@@ -72,7 +72,7 @@ int main( int argc, char** argv )
     uint64_t offset1 = data1.Size();
     for( int i=0; i<size2; i++ )
     {
-        if( ( i & 0x3FF ) == 0 )
+        if( ( i & 0x1FFF ) == 0 )
         {
             printf( "%i/%i\r", i, size2 );
             fflush( stdout );
