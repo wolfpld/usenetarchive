@@ -16,17 +16,7 @@
 #include "../common/FileMap.hpp"
 #include "../common/MsgIdHash.hpp"
 #include "../common/RawImportMeta.hpp"
-
-static int strnicmpl( const char* l, const char* r, int n )
-{
-    while( n-- )
-    {
-        if( tolower( *l ) != *r ) return 1;
-        else if( *l == '\0' ) return 0;
-        l++; r++;
-    }
-    return 0;
-}
+#include "../common/String.hpp"
 
 struct HashData
 {

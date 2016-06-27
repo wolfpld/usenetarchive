@@ -30,6 +30,7 @@
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>

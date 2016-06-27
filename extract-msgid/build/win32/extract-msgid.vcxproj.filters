@@ -50,5 +50,8 @@
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
       <Filter>xxhash</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\String.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
