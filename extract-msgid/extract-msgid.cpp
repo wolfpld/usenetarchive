@@ -6,7 +6,6 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unordered_set>
 #include <vector>
 
 #include "../contrib/lz4/lz4.h"
@@ -59,7 +58,6 @@ int main( int argc, char** argv )
     uint32_t offset = 0;
     ExpandingBuffer eb;
     char zero = 0;
-    std::unordered_set<std::string> unique;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -84,14 +82,6 @@ int main( int argc, char** argv )
         while( *end != '>' ) end++;
         fwrite( buf, 1, end-buf, middata );
         fwrite( &zero, 1, 1, middata );
-
-        std::string tmp( buf, end );
-        if( unique.find( tmp ) != unique.end() )
-        {
-            fprintf( stderr, "Duplicate Msg ID! %s\n", tmp.c_str() );
-            exit( 1 );
-        }
-        unique.emplace( std::move( tmp ) );
 
         fwrite( &offset, 1, sizeof( offset ), midmeta );
 
