@@ -97,11 +97,10 @@ int main( int argc, char** argv )
         if( !found )
         {
             added++;
-            auto idx = *ptr;
-            fwrite( data2 + meta2[idx].offset, 1, meta2[idx].compressedSize, data3 );
-            RawImportMeta metaPacket = { offset1, meta2[idx].size, meta2[idx].compressedSize };
+            fwrite( data2 + meta2[i].offset, 1, meta2[i].compressedSize, data3 );
+            RawImportMeta metaPacket = { offset1, meta2[i].size, meta2[i].compressedSize };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta3 );
-            offset1 += meta2[idx].compressedSize;
+            offset1 += meta2[i].compressedSize;
         }
     }
 
