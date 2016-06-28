@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <string>
 
-#include "../contrib/lz4/lz4.h"
 #include "../contrib/xxhash/xxhash.h"
-#include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/MessageView.hpp"
+#include "../common/MetaView.hpp"
 #include "../common/MsgIdHash.hpp"
-#include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
 
 #define CSTR(x) strcmp( argv[2], x ) == 0
@@ -23,21 +22,6 @@ enum class Mode
     QueryMsgId,
     QueryPost
 };
-
-static void PrintPost( uint32_t idx, const RawImportMeta* meta, const char* data )
-{
-    ExpandingBuffer eb;
-    auto postsize = meta[idx].size;
-    auto post = eb.Request( postsize );
-    auto dec = LZ4_decompress_fast( data + meta[idx].offset, post, postsize );
-    assert( dec == meta[idx].compressedSize );
-
-    for( int i=0; i<postsize; i++ )
-    {
-        putchar( *post++ );
-    }
-    printf( "\n" );
-}
 
 int main( int argc, char** argv )
 {
@@ -94,14 +78,11 @@ int main( int argc, char** argv )
     std::string base = argv[1];
     base.append( "/" );
 
-    FileMap<RawImportMeta> meta( base + "meta" );
-    FileMap<char> data( base + "data" );
-    FileMap<char> middata( base + "middata" );
-    FileMap<uint32_t> midmeta( base + "midmeta" );
-    FileMap<uint32_t> midhash( base + "midhash" );
-    FileMap<uint32_t> midhashdata( base + "midhashdata" );
+    MessageView mview( base + "meta", base + "data" );
+    MetaView<uint32_t, char> mid( base + "midmeta", base + "middata" );
+    MetaView<uint32_t, uint32_t> midhash( base + "midhash", base + "midhashdata" );
 
-    auto size = meta.Size() / sizeof( RawImportMeta );
+    const auto size = mview.Size();
 
     if( mode == Mode::Info )
     {
@@ -112,20 +93,20 @@ int main( int argc, char** argv )
     {
         for( uint32_t i=0; i<size; i++ )
         {
-            printf( "%s\n", middata + midmeta[i] );
+            const char* payload = mid[i];
+            printf( "%s\n", payload );
         }
     }
     else if( mode == Mode::QueryMsgId )
     {
         auto hash = XXH32( argv[3], strlen( argv[3] ), 0 ) & MsgIdHashMask;
-        auto offset = midhash[hash] / sizeof( uint32_t );
-        const uint32_t* ptr = midhashdata + offset;
+        const uint32_t* ptr = midhash[hash];
         auto num = *ptr++;
         for( int j=0; j<num; j++ )
         {
-            if( strcmp( argv[3], middata + *ptr++ ) == 0 )
+            if( strcmp( argv[3], mid + *ptr++ ) == 0 )
             {
-                PrintPost( *ptr, meta, data );
+                printf( "%s\n", mview[*ptr] );
                 return 0;
             }
             ptr++;
@@ -141,7 +122,7 @@ int main( int argc, char** argv )
             fprintf( stderr, "Index out of range: 0 <= %i < %i\n", idx, size );
             exit( 1 );
         }
-        PrintPost( idx, meta, data );
+        printf( "%s\n", mview[idx] );
     }
 
     return 0;
