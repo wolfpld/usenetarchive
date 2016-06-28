@@ -25,6 +25,11 @@ public:
         return m_data + m_meta[idx] / sizeof( Data );
     }
 
+    size_t Size() const
+    {
+        return m_meta.Size() / sizeof( Meta );
+    }
+
 private:
     const FileMap<Meta> m_meta;
     const FileMap<Data> m_data;
