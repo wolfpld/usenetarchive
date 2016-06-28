@@ -7,9 +7,6 @@
     <Filter Include="common">
       <UniqueIdentifier>{d991e927-d255-4fae-8641-a731116a9b60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lz4">
-      <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="xxhash">
       <UniqueIdentifier>{1446bf4b-05a7-4a0a-b30d-f31d6d3169ab}</UniqueIdentifier>
     </Filter>
@@ -17,9 +14,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\merge-raw.cpp">
       <Filter>merge-raw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\lz4\lz4.c">
-      <Filter>lz4</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\common\Filesystem.cpp">
       <Filter>common</Filter>
@@ -35,9 +29,6 @@
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\contrib\lz4\lz4.h">
-      <Filter>lz4</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
       <Filter>common</Filter>
     </ClInclude>
@@ -52,6 +43,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
       <Filter>xxhash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MetaView.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,10 +3,11 @@
 #include <stdlib.h>
 #include <string>
 
-#include "../contrib/lz4/lz4.h"
 #include "../contrib/xxhash/xxhash.h"
 #include "../common/FileMap.hpp"
 #include "../common/Filesystem.hpp"
+#include "../common/MessageView.hpp"
+#include "../common/MetaView.hpp"
 #include "../common/MsgIdHash.hpp"
 #include "../common/RawImportMeta.hpp"
 
@@ -42,18 +43,14 @@ int main( int argc, char** argv )
     std::string base3( argv[3] );
     base3 += "/";
 
-    FileMap<RawImportMeta> meta1( base1 + "meta" );
-    FileMap<char> data1( base1 + "data" );
+    MessageView mview1( base1 + "meta", base1 + "data" );
     FileMap<char> middata1( base1 + "middata" );
-    FileMap<uint32_t> midhash1( base1 + "midhash" );
-    FileMap<uint32_t> midhashdata1( base1 + "midhashdata" );
+    MetaView<uint32_t, uint32_t> midhash1( base1 + "midhash", base1 + "midhashdata" );
 
-    FileMap<RawImportMeta> meta2( base2 + "meta" );
-    FileMap<char> data2( base2 + "data" );
-    FileMap<uint32_t> midmeta2( base2 + "midmeta" );
-    FileMap<char> middata2( base2 + "middata" );
+    MessageView mview2( base2 + "meta", base2 + "data" );
+    MetaView<uint32_t, char> mid2( base2 + "midmeta", base2 + "middata" );
 
-    printf( "Src1 size: %i. Src2 size: %i.\n", meta1.Size() / sizeof( RawImportMeta ), meta2.Size() / sizeof( RawImportMeta ) );
+    printf( "Src1 size: %i. Src2 size: %i.\n", mview1.Size(), mview2.Size() );
     fflush( stdout );
 
     std::string meta3fn = base3 + "meta";
@@ -62,14 +59,15 @@ int main( int argc, char** argv )
     FILE* meta3 = fopen( meta3fn.c_str(), "wb" );
     FILE* data3 = fopen( data3fn.c_str(), "wb" );
 
-    fwrite( meta1, 1, meta1.Size(), meta3 );
-    fwrite( data1, 1, data1.Size(), data3 );
+    auto ptrs = mview1.Pointers();
+    fwrite( ptrs.meta, 1, ptrs.metasize, meta3 );
+    fwrite( ptrs.data, 1, ptrs.datasize, data3 );
 
     uint32_t added = 0;
     uint32_t dupes = 0;
-    auto size1 = meta1.Size() / sizeof( RawImportMeta );
-    auto size2 = midmeta2.Size() / sizeof( uint32_t );
-    uint64_t offset1 = data1.Size();
+    const auto size1 = mview1.Size();
+    const auto size2 = mid2.Size();
+    uint64_t offset1 = ptrs.datasize;
     for( int i=0; i<size2; i++ )
     {
         if( ( i & 0x1FFF ) == 0 )
@@ -78,10 +76,9 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        const char* msgid = middata2 + midmeta2[i];
+        auto msgid = mid2[i];
         auto hash = XXH32( msgid, strlen( msgid ), 0 ) & MsgIdHashMask;
-        auto offset = midhash1[hash] / sizeof( uint32_t );
-        const uint32_t* ptr = midhashdata1 + offset;
+        auto ptr = midhash1[hash];
         auto num = *ptr++;
         bool found = false;
         for( int j=0; j<num; j++ )
@@ -97,10 +94,11 @@ int main( int argc, char** argv )
         if( !found )
         {
             added++;
-            fwrite( data2 + meta2[i].offset, 1, meta2[i].compressedSize, data3 );
-            RawImportMeta metaPacket = { offset1, meta2[i].size, meta2[i].compressedSize };
+            const auto raw = mview2.Raw( i );
+            fwrite( raw.ptr, 1, raw.compressedSize, data3 );
+            RawImportMeta metaPacket = { offset1, raw.size, raw.compressedSize };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta3 );
-            offset1 += meta2[i].compressedSize;
+            offset1 += raw.compressedSize;
         }
     }
 
