@@ -9,10 +9,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "../contrib/lz4/lz4.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/MessageView.hpp"
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
 
@@ -38,19 +38,9 @@ int main( int argc, char** argv )
 
     std::string base = argv[1];
     base.append( "/" );
-    std::string metafn = base + "meta";
-    std::string datafn = base + "data";
 
-    if( !Exists( metafn ) || !Exists( datafn ) )
-    {
-        fprintf( stderr, "Raw data files do not exist.\n" );
-        exit( 1 );
-    }
-
-    FileMap<RawImportMeta> meta( metafn );
-    FileMap<char> data( datafn );
-
-    auto size = meta.Size() / sizeof( RawImportMeta );
+    MessageView mview( base + "meta", base + "data" );
+    const auto size = mview.Size();
 
     std::string dbase = argv[2];
     dbase.append( "/" );
@@ -73,11 +63,8 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        auto postsize = meta[i].size;
-        auto post = eb.Request( postsize );
-        auto dec = LZ4_decompress_fast( data + meta[i].offset, post, postsize );
+        auto post = mview[i];
         auto buf = post;
-        assert( dec == meta[i].compressedSize );
 
         while( strnicmpl( buf, "message-id: <", 13 ) != 0 )
         {
@@ -94,11 +81,12 @@ int main( int argc, char** argv )
             unique.emplace( std::move( tmp ) );
             cntu++;
 
-            fwrite( data + meta[i].offset, 1, meta[i].compressedSize, ddata );
+            const auto raw = mview.Raw( i );
+            fwrite( raw.ptr, 1, raw.compressedSize, ddata );
 
-            RawImportMeta metaPacket = { offset, meta[i].size, meta[i].compressedSize };
+            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
-            offset += meta[i].compressedSize;
+            offset += raw.compressedSize;
         }
         else
         {
