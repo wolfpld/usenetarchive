@@ -31,6 +31,19 @@ public:
         return buf;
     }
 
+    struct RawMessage
+    {
+        const char* ptr;
+        size_t size;
+        size_t compressedSize;
+    };
+
+    RawMessage Raw( const size_t idx )
+    {
+        const auto meta = m_meta[idx];
+        return RawMessage { m_data + meta.offset, meta.size, meta.compressedSize };
+    }
+
     size_t Size() const
     {
         return m_meta.Size() / sizeof( RawImportMeta );
