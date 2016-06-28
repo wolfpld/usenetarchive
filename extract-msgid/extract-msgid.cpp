@@ -8,13 +8,11 @@
 #include <sys/stat.h>
 #include <vector>
 
-#include "../contrib/lz4/lz4.h"
 #include "../contrib/xxhash/xxhash.h"
-#include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/MessageView.hpp"
 #include "../common/MsgIdHash.hpp"
-#include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
 
 struct HashData
@@ -33,19 +31,9 @@ int main( int argc, char** argv )
 
     std::string base = argv[1];
     base.append( "/" );
-    std::string metafn = base + "meta";
-    std::string datafn = base + "data";
 
-    if( !Exists( metafn ) || !Exists( datafn ) )
-    {
-        fprintf( stderr, "Raw data files do not exist.\n" );
-        exit( 1 );
-    }
-
-    FileMap<RawImportMeta> meta( metafn );
-    FileMap<char> data( datafn );
-
-    auto size = meta.Size() / sizeof( RawImportMeta );
+    MessageView mview( base + "meta", base + "data" );
+    const auto size = mview.Size();
 
     std::string midmetafn = base + "midmeta";
     std::string middatafn = base + "middata";
@@ -66,11 +54,8 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        auto postsize = meta[i].size;
-        auto post = eb.Request( postsize );
-        auto dec = LZ4_decompress_fast( data + meta[i].offset, post, postsize );
+        auto post = mview[i];
         auto buf = post;
-        assert( dec == meta[i].compressedSize );
 
         while( strnicmpl( buf, "message-id: <", 13 ) != 0 )
         {
