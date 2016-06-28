@@ -35,7 +35,7 @@
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F4589BE3-DB05-4D70-9C97-EE1DD099D807}</ProjectGuid>
+    <ProjectGuid>{D3C6CB90-62D6-4DAA-B5B6-4E352A3068AE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>mergeraw</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>

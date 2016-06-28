@@ -35,7 +35,7 @@
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F4589BE3-DB05-4D70-9C97-EE1DD099D807}</ProjectGuid>
+    <ProjectGuid>{55B9C491-E271-4BDF-9A31-09400035F7AA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>queryraw</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>

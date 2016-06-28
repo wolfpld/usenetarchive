@@ -34,7 +34,7 @@
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F4589BE3-DB05-4D70-9C97-EE1DD099D807}</ProjectGuid>
+    <ProjectGuid>{EE865277-EE31-4E2E-A9FA-6F1D7CFC08DD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>killduplicates</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>

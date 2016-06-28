@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kill-duplicates", "kill-duplicates.vcxproj", "{F4589BE3-DB05-4D70-9C97-EE1DD099D807}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kill-duplicates", "kill-duplicates.vcxproj", "{EE865277-EE31-4E2E-A9FA-6F1D7CFC08DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

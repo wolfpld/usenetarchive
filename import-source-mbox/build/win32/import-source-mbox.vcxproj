@@ -32,7 +32,7 @@
     <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F4589BE3-DB05-4D70-9C97-EE1DD099D807}</ProjectGuid>
+    <ProjectGuid>{9B29E4F4-5BCC-4007-92C8-C89E0BBA5AD1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>importsourcembox</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
