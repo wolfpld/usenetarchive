@@ -44,6 +44,18 @@ public:
         return RawMessage { m_data + meta.offset, meta.size, meta.compressedSize };
     }
 
+    struct Ptrs
+    {
+        const RawImportMeta* meta;
+        const char* data;
+        size_t metasize, datasize;
+    };
+
+    Ptrs Pointers()
+    {
+        return Ptrs { m_meta, m_data, m_meta.Size(), m_data.Size() };
+    }
+
     size_t Size() const
     {
         return m_meta.Size() / sizeof( RawImportMeta );
