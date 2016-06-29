@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 
 #include "../contrib/xxhash/xxhash.h"
 #include "../common/Filesystem.hpp"

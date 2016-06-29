@@ -7,6 +7,8 @@
 #  include <dirent.h>
 #endif
 
+#include <string.h>
+
 bool CreateDirStruct( const std::string& path )
 {
     if( Exists( path ) ) return true;
