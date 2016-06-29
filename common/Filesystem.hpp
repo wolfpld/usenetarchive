@@ -7,16 +7,20 @@
 
 bool CreateDirStruct( const std::string& path );
 
+#ifdef _WIN32
+#  define stat64 _stat64
+#endif
+
 static inline bool Exists( const std::string& path )
 {
-    struct _stat64 buf;
-    return _stat64( path.c_str(), &buf ) == 0;
+    struct stat64 buf;
+    return stat64( path.c_str(), &buf ) == 0;
 }
 
 static inline uint64_t GetFileSize( const char* path )
 {
-    struct _stat64 buf;
-    _stat64( path, &buf );
+    struct stat64 buf;
+    stat64( path, &buf );
     return buf.st_size;
 }
 
