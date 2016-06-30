@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "merge-raw", "..\merge-raw\b
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "query-raw", "..\query-raw\build\win32\query-raw.vcxproj", "{55B9C491-E271-4BDF-9A31-09400035F7AA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utf8ize", "..\utf8ize\build\win32\utf8ize.vcxproj", "{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,10 @@ Global
 		{55B9C491-E271-4BDF-9A31-09400035F7AA}.Debug|x64.Build.0 = Debug|x64
 		{55B9C491-E271-4BDF-9A31-09400035F7AA}.Release|x64.ActiveCfg = Release|x64
 		{55B9C491-E271-4BDF-9A31-09400035F7AA}.Release|x64.Build.0 = Release|x64
+		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Debug|x64.ActiveCfg = Debug|x64
+		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Debug|x64.Build.0 = Debug|x64
+		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Release|x64.ActiveCfg = Release|x64
+		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
