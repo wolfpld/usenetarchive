@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "query-raw", "..\query-raw\b
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utf8ize", "..\utf8ize\build\win32\utf8ize.vcxproj", "{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "repack-zstd", "..\repack-zstd\build\win32\repack-zstd.vcxproj", "{7992D794-0C07-4C35-8666-C80288F61DDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -57,6 +59,10 @@ Global
 		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Debug|x64.Build.0 = Debug|x64
 		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Release|x64.ActiveCfg = Release|x64
 		{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}.Release|x64.Build.0 = Release|x64
+		{7992D794-0C07-4C35-8666-C80288F61DDF}.Debug|x64.ActiveCfg = Debug|x64
+		{7992D794-0C07-4C35-8666-C80288F61DDF}.Debug|x64.Build.0 = Debug|x64
+		{7992D794-0C07-4C35-8666-C80288F61DDF}.Release|x64.ActiveCfg = Release|x64
+		{7992D794-0C07-4C35-8666-C80288F61DDF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
