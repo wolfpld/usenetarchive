@@ -137,8 +137,11 @@ int main( int argc, char** argv )
             {
                 auto name = g_mime_header_iter_get_name( hit );
                 auto value = g_mime_header_iter_get_value( hit );
-                auto decode = g_mime_utils_header_decode_phrase( g_mime_utils_header_decode_text( value ) );
+                auto tmp = g_mime_utils_header_decode_text( value );
+                auto decode = g_mime_utils_header_decode_phrase( tmp );
+                g_free( tmp );
                 ss << name << ": " << decode << "\n";
+                g_free( decode );
                 if( !g_mime_header_iter_next( hit ) ) break;
             }
         }
@@ -179,6 +182,7 @@ int main( int argc, char** argv )
         }
 
         ss << "\n" << content;
+        g_object_unref( message );
 
         uint64_t size = ss.str().size();
         int maxSize = LZ4_compressBound( size );
