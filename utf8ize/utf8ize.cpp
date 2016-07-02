@@ -198,6 +198,8 @@ int main( int argc, char** argv )
         ss.str( "" );
     }
 
+    printf( "Processed %i files.\n", size );
+
     fclose( dmeta );
     fclose( ddata );
 
