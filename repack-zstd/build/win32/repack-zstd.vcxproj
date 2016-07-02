@@ -29,6 +29,8 @@
     <ClCompile Include="..\..\..\contrib\zstd\compress\fse_compress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\huf_compress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\zstd_compress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\divsufsort.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\zdict.c" />
     <ClCompile Include="..\..\repack-zstd.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +52,8 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
     <ClInclude Include="..\..\..\contrib\zstd\compress\zstd_opt.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\divsufsort.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\zdict.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7992D794-0C07-4C35-8666-C80288F61DDF}</ProjectGuid>

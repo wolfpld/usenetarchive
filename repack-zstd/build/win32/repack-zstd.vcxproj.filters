@@ -19,6 +19,9 @@
     <Filter Include="zstd\compress">
       <UniqueIdentifier>{e3948998-b35a-4485-8ccf-17b32782215b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="zstd\dictBuilder">
+      <UniqueIdentifier>{904bb09b-c7df-457c-93b4-98a701bf9f88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\repack-zstd.cpp">
@@ -53,6 +56,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c">
       <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\divsufsort.c">
+      <Filter>zstd\dictBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\zdict.c">
+      <Filter>zstd\dictBuilder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h">
       <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\divsufsort.h">
+      <Filter>zstd\dictBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\zdict.h">
+      <Filter>zstd\dictBuilder</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
