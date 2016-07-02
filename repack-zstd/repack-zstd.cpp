@@ -51,20 +51,6 @@ int main( int argc, char** argv )
     std::string zdictfn = zbase + "zdict";
 
     printf( "Building dictionary\n" );
-    uint64_t total = 0;
-    for( uint32_t i=0; i<size; i++ )
-    {
-        if( ( i & 0xFFF ) == 0 )
-        {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
-        }
-
-        auto raw = mview.Raw( i );
-        total += raw.size;
-    }
-
-    printf( "\nData buffer size: %i MB\n", total / 1024 / 1024 );
 
     std::string buf1fn = zbase + ".sb.tmp";
     std::string buf2fn = zbase + ".ss.tmp";
