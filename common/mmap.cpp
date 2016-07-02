@@ -1,6 +1,6 @@
 #include "mmap.hpp"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #  include <io.h>
 #  include <windows.h>
 

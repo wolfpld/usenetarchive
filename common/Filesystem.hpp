@@ -7,8 +7,11 @@
 
 bool CreateDirStruct( const std::string& path );
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #  define stat64 _stat64
+#endif
+#ifdef __CYGWIN__
+#  define stat64 stat
 #endif
 
 static inline bool Exists( const std::string& path )
