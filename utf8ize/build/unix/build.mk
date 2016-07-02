@@ -1,8 +1,8 @@
-CFLAGS += 
+CFLAGS += $(shell pkg-config --cflags gmime-2.6)
 CXXFLAGS := $(CFLAGS) -std=gnu++11
 DEFINES +=
 INCLUDES :=
-LIBS :=
+LIBS := $(shell pkg-config --libs gmime-2.6)
 IMAGE := utf8ize
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
