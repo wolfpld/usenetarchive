@@ -8,10 +8,11 @@
 #include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <vector>
 
 #include <gmime/gmime.h>
 
+#include "../contrib/lz4/lz4.h"
+#include "../contrib/lz4/lz4hc.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
@@ -108,6 +109,7 @@ int main( int argc, char** argv )
 
     std::ostringstream ss;
     ExpandingBuffer eb;
+    uint64_t offset = 0;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -178,20 +180,16 @@ int main( int argc, char** argv )
 
         ss << "\n" << content;
 
-        printf( "%s\n--==--\n", ss.str().c_str() );
+        uint64_t size = ss.str().size();
+        int maxSize = LZ4_compressBound( size );
+        char* compressed = eb.Request( maxSize );
+        int csize = LZ4_compress_HC( ss.str().c_str(), compressed, size, maxSize, 16 );
 
-        /*
-        GMimeStream* ostream = g_mime_stream_mem_new();
-        g_mime_object_write_to_stream( g_mime_message_get_body( message ), ostream );
-        //g_mime_object_write_to_stream( (GMimeObject*)message, ostream );
-        g_mime_stream_flush( ostream );
+        fwrite( compressed, 1, csize, ddata );
 
-        GByteArray* out = g_mime_stream_mem_get_byte_array( GMIME_STREAM_MEM( ostream ) );
-        printf( "%s\n", std::string( out->data, out->data + out->len ).c_str() );
-
-        g_object_unref( message );
-        g_object_unref( ostream );
-        */
+        RawImportMeta packet = { offset, size, csize };
+        fwrite( &packet, 1, sizeof( RawImportMeta ), dmeta );
+        offset += csize;
 
         ss.str( "" );
     }

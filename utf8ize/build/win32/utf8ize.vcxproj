@@ -22,9 +22,11 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
+    <ClCompile Include="..\..\..\contrib\lz4\lz4hc.c" />
     <ClCompile Include="..\..\utf8ize.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp" />
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\MessageView.hpp" />
@@ -33,6 +35,7 @@
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
+    <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{04E59AF2-6A7F-4B0D-A32A-9AC634D8ACC0}</ProjectGuid>
