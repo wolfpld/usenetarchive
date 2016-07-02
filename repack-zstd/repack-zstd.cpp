@@ -92,7 +92,11 @@ int main( int argc, char** argv )
     printf( "\nWorking...\n" );
     fflush( stdout );
 
-    auto realDictSize = ZDICT_trainFromBuffer( dict, DictSize, samplesBuf, samplesSizes, size );
+    ZDICT_params_t params;
+    memset( &params, 0, sizeof( ZDICT_params_t ) );
+    params.notificationLevel = 3;
+    params.compressionLevel = 16;
+    auto realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, size, params );
 
     printf( "Dict size: %i\n", realDictSize );
 
