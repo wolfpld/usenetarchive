@@ -66,10 +66,11 @@ int main( int argc, char** argv )
 
     printf( "\nData buffer size: %i MB\n", total / 1024 / 1024 );
 
-    auto samplesBuf = new char[total];
-    auto samplesSizes = new size_t[size];
-    auto ptr = samplesBuf;
-    auto ss = samplesSizes;
+    std::string buf1fn = zbase + ".sb.tmp";
+    std::string buf2fn = zbase + ".ss.tmp";
+
+    FILE* buf1 = fopen( buf1fn.c_str(), "wb" );
+    FILE* buf2 = fopen( buf2fn.c_str(), "wb" );
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -81,27 +82,34 @@ int main( int argc, char** argv )
         auto post = mview[i];
         auto raw = mview.Raw( i );
 
-        memcpy( ptr, post, raw.size );
-        ptr += raw.size;
-        *ss++ = raw.size;
+        fwrite( post, 1, raw.size, buf1 );
+        fwrite( &raw.size, 1, sizeof( size_t ), buf2 );
     }
+    fclose( buf1 );
+    fclose( buf2 );
 
     enum { DictSize = 1024*1024 };
     auto dict = new char[DictSize];
+    size_t realDictSize;
 
-    printf( "\nWorking...\n" );
-    fflush( stdout );
+    {
+        auto samplesBuf = FileMap<char>( buf1fn );
+        auto samplesSizes = FileMap<size_t>( buf2fn );
 
-    ZDICT_params_t params;
-    memset( &params, 0, sizeof( ZDICT_params_t ) );
-    params.notificationLevel = 3;
-    params.compressionLevel = 16;
-    auto realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, size, params );
+        printf( "\nWorking...\n" );
+        fflush( stdout );
+
+        ZDICT_params_t params;
+        memset( &params, 0, sizeof( ZDICT_params_t ) );
+        params.notificationLevel = 3;
+        params.compressionLevel = 16;
+        realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, size, params );
+    }
+
+    unlink( buf1fn.c_str() );
+    unlink( buf2fn.c_str() );
 
     printf( "Dict size: %i\n", realDictSize );
-
-    delete[] samplesBuf;
-    delete[] samplesSizes;
 
     auto zdict = ZSTD_createCDict( dict, realDictSize, 16 );
     auto zctx = ZSTD_createCCtx();
