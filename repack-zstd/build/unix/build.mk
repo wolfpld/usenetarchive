@@ -1,7 +1,7 @@
 CFLAGS += -DZDICT_STATIC_LINKING_ONLY
 CXXFLAGS := $(CFLAGS) -std=c++11
 DEFINES +=
-INCLUDES :=
+INCLUDES := -I../../../contrib/zstd/common
 LIBS :=
 IMAGE := repack-zstd
 
