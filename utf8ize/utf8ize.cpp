@@ -20,6 +20,45 @@
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
 
+static const char* userEncodings[] = {
+    "ISO8859-2",
+    "CP1250",
+    nullptr
+};
+
+static int deductions[sizeof(userEncodings)/sizeof(const char*)] = {};
+
+static std::string ConvertToUTF8( guint8* data, gint64 len )
+{
+    if( g_utf8_validate( (gchar*)data, len, nullptr ) == TRUE )
+    {
+        return std::string( data, data + len );
+    }
+
+    auto charset = userEncodings;
+    while( *charset )
+    {
+        iconv_t cv = g_mime_iconv_open( "UTF-8", *charset );
+        char* converted = g_mime_iconv_strndup( cv, (const char*)data, len );
+        if( converted && g_utf8_validate( converted, -1, nullptr ) == TRUE )
+        {
+            deductions[charset - userEncodings]++;
+            fprintf( stderr, "Deduced encoding: %s\n", *charset );
+            fprintf( stderr, "%s\n", converted );
+            std::string ret = converted;
+            g_free( converted );
+            g_mime_iconv_close( cv );
+            return ret;
+        }
+        g_mime_iconv_close( cv );
+        charset++;
+    }
+
+    fprintf( stderr, "ERROR: Cannot deduce encoding.\n\n%s", data );
+    exit( 1 );
+    return "";
+}
+
 static std::string mime_part_to_text( GMimeObject* obj )
 {
     std::string ret;
@@ -46,7 +85,7 @@ static std::string mime_part_to_text( GMimeObject* obj )
         {
             if( b )
             {
-                ret = std::string( (const char*)b, len );
+                ret = ConvertToUTF8( b, len );
             }
         }
         g_mime_iconv_close( cv );
@@ -55,7 +94,7 @@ static std::string mime_part_to_text( GMimeObject* obj )
     {
         if( b )
         {
-            ret = std::string( (const char*)b, len );
+            ret = ConvertToUTF8( b, len );
         }
     }
 
@@ -204,6 +243,13 @@ int main( int argc, char** argv )
     fclose( ddata );
 
     g_mime_shutdown();
+
+    int idx = 0;
+    while( userEncodings[idx] )
+    {
+        printf( "Deductions of %s encoding: %i\n", userEncodings[idx], deductions[idx] );
+        idx++;
+    }
 
     return 0;
 }
