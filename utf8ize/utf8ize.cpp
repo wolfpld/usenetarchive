@@ -23,10 +23,20 @@
 static const char* userEncodings[] = {
     "ISO8859-2",
     "CP1250",
+    "CP852",
     nullptr
 };
 
-static int deductions[sizeof(userEncodings)/sizeof(const char*)] = {};
+// Tables for polish characters extracted from polish.c v4.3.20 https://ipsec.pl/cpl
+static const unsigned char plChars[][18] = {
+    { 161,198,202,163,209,211,166,172,175,177,230,234,179,241,243,182,188,191 },
+    { 165,198,202,163,209,211,140,143,175,185,230,234,179,241,243,156,159,191 },
+    { 164,143,168,157,227,224,151,141,189,165,134,169,136,228,162,152,171,190 }
+};
+
+int weights[18]= { 1, 1, 1, 1, 1, 1, 1, 1, 1, 15, 10, 16, 19, 1, 13, 13, 1, 18 };
+
+static int deductions[sizeof(userEncodings)/sizeof(const char*)-1] = {};
 
 static std::string ConvertToUTF8( guint8* data, gint64 len )
 {
@@ -35,23 +45,57 @@ static std::string ConvertToUTF8( guint8* data, gint64 len )
         return std::string( data, data + len );
     }
 
+    int res[sizeof(userEncodings)/sizeof(const char*)-1] = {};
     auto charset = userEncodings;
+    auto test = plChars;
+    int idx = 0;
     while( *charset )
     {
-        iconv_t cv = g_mime_iconv_open( "UTF-8", *charset );
-        char* converted = g_mime_iconv_strndup( cv, (const char*)data, len );
-        if( converted && g_utf8_validate( converted, -1, nullptr ) == TRUE )
+        int cnt[18] = {};
+        for( int i=0; i<len; i++ )
         {
-            deductions[charset - userEncodings]++;
-            fprintf( stderr, "Deduced encoding: %s\n", *charset );
-            fprintf( stderr, "%s\n", converted );
-            std::string ret = converted;
-            g_free( converted );
-            g_mime_iconv_close( cv );
-            return ret;
+            for( int j=0; j<18; j++ )
+            {
+                if( data[i] == (*test)[j] )
+                {
+                    cnt[j]++;
+                    break;
+                }
+            }
         }
-        g_mime_iconv_close( cv );
+        for( int i=0; i<18; i++ )
+        {
+            res[idx] += cnt[i] * weights[i];
+        }
         charset++;
+        test++;
+        idx++;
+    }
+
+    int sel = 0;
+    int sres = res[0];
+    for( int i=1; i<sizeof(userEncodings)/sizeof(const char*)-1; i++ )
+    {
+        if( res[i] > sres )
+        {
+            sres = res[i];
+            sel = i;
+        }
+    }
+
+    if( sres != 0 )
+    {
+        deductions[sel]++;
+    }
+
+    iconv_t cv = g_mime_iconv_open( "UTF-8", userEncodings[sel] );
+    char* converted = g_mime_iconv_strndup( cv, (const char*)data, len );
+    if( converted && g_utf8_validate( converted, -1, nullptr ) == TRUE )
+    {
+        std::string ret = converted;
+        g_free( converted );
+        g_mime_iconv_close( cv );
+        return ret;
     }
 
     fprintf( stderr, "ERROR: Cannot deduce encoding.\n\n%s", data );
