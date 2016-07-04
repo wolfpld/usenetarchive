@@ -36,7 +36,7 @@ static const unsigned char plChars[][18] = {
 
 int weights[18]= { 1, 1, 1, 1, 1, 1, 1, 1, 1, 15, 10, 16, 19, 1, 13, 13, 1, 18 };
 
-static int deductions[sizeof(userEncodings)/sizeof(const char*)-1] = {};
+static int deductions[sizeof(userEncodings)/sizeof(const char*)] = {};
 
 static std::string ConvertToUTF8( guint8* data, gint64 len )
 {
@@ -98,9 +98,8 @@ static std::string ConvertToUTF8( guint8* data, gint64 len )
         return ret;
     }
 
-    fprintf( stderr, "ERROR: Cannot deduce encoding.\n\n%s", data );
-    exit( 1 );
-    return "";
+    deductions[sizeof(userEncodings)/sizeof(const char*)-1]++;
+    return std::string( data, data + len );
 }
 
 static std::string mime_part_to_text( GMimeObject* obj )
@@ -294,6 +293,7 @@ int main( int argc, char** argv )
         printf( "Deductions of %s encoding: %i\n", userEncodings[idx], deductions[idx] );
         idx++;
     }
+    printf( "Deductions failed: %i\n", deductions[idx] );
 
     return 0;
 }
