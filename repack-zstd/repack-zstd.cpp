@@ -4,9 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <vector>
+
+#ifndef _WIN32
+#  include <unistd.h>
+#endif
 
 #include "../contrib/zstd/common/zstd.h"
 #include "../contrib/zstd/dictBuilder/zdict.h"
