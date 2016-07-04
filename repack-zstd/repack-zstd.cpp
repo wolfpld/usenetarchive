@@ -20,23 +20,16 @@
 
 int main( int argc, char** argv )
 {
-    if( argc != 3 )
+    if( argc != 2 )
     {
-        fprintf( stderr, "USAGE: %s source destination\n", argv[0] );
+        fprintf( stderr, "USAGE: %s directory\n", argv[0] );
         exit( 1 );
     }
     if( !Exists( argv[1] ) )
     {
-        fprintf( stderr, "Source directory doesn't exist.\n" );
+        fprintf( stderr, "Directory doesn't exist.\n" );
         exit( 1 );
     }
-    if( Exists( argv[2] ) )
-    {
-        fprintf( stderr, "Destination directory already exists.\n" );
-        exit( 1 );
-    }
-
-    CreateDirStruct( argv[2] );
 
     std::string base = argv[1];
     base.append( "/" );
@@ -44,16 +37,14 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
-    std::string zbase = argv[2];
-    zbase.append( "/" );
-    std::string zmetafn = zbase + "zmeta";
-    std::string zdatafn = zbase + "zdata";
-    std::string zdictfn = zbase + "zdict";
+    std::string zmetafn = base + "zmeta";
+    std::string zdatafn = base + "zdata";
+    std::string zdictfn = base + "zdict";
 
     printf( "Building dictionary\n" );
 
-    std::string buf1fn = zbase + ".sb.tmp";
-    std::string buf2fn = zbase + ".ss.tmp";
+    std::string buf1fn = base + ".sb.tmp";
+    std::string buf2fn = base + ".ss.tmp";
 
     FILE* buf1 = fopen( buf1fn.c_str(), "wb" );
     FILE* buf2 = fopen( buf2fn.c_str(), "wb" );
