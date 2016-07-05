@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include <mutex>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +23,8 @@
 #include "../common/MessageView.hpp"
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
+#include "../common/System.hpp"
+#include "../common/TaskDispatch.hpp"
 
 int main( int argc, char** argv )
 {
@@ -105,18 +108,81 @@ int main( int argc, char** argv )
     printf( "Dict size: %i\n", realDictSize );
 
     auto zdict = ZSTD_createCDict( dict, realDictSize, 16 );
-    auto zctx = ZSTD_createCCtx();
 
     FILE* zdictfile = fopen( zdictfn.c_str(), "wb" );
     fwrite( dict, 1, realDictSize, zdictfile );
     fclose( zdictfile );
     delete[] dict;
 
+    const auto cpus = System::CPUCores();
+
+    printf( "Repacking (%i threads)\n", cpus );
+
+    struct Buffer
+    {
+        uint32_t compressedSize;
+        uint32_t size;
+        const char* data;
+    };
+
+    Buffer* data = new Buffer[size];
+
+    std::mutex mtx, cntmtx;
+    TaskDispatch tasks( cpus );
+    uint32_t start = 0;
+    uint32_t inPass = ( size + cpus - 1 ) / cpus;
+    uint32_t left = size;
+    uint32_t cnt = 0;
+    for( int i=0; i<cpus; i++ )
+    {
+        uint32_t todo = std::min( left, inPass );
+        tasks.Queue( [data, zdict, start, todo, &mview, &mtx, &cnt, &cntmtx, size] () {
+            auto zctx = ZSTD_createCCtx();
+            ExpandingBuffer eb1, eb2;
+            for( uint32_t i=start; i<start+todo; i++ )
+            {
+                cntmtx.lock();
+                auto c = cnt++;
+                cntmtx.unlock();
+                if( ( c & 0x3FF ) == 0 )
+                {
+                    printf( "%i/%i\r", c, size );
+                    fflush( stdout );
+                }
+
+                auto raw = mview.Raw( i );
+                auto post = eb1.Request( raw.size );
+                mtx.lock();
+                auto _post = mview[i];
+                memcpy( post, _post, raw.size );
+                mtx.unlock();
+
+                auto predSize = ZSTD_compressBound( raw.size );
+                auto dst = eb2.Request( predSize );
+                auto dstSize = ZSTD_compress_usingCDict( zctx, dst, predSize, post, raw.size, zdict );
+
+                char* buf = new char[dstSize];
+                memcpy( buf, dst, dstSize );
+
+                data[i].compressedSize = dstSize;
+                data[i].size = raw.size;
+                data[i].data = buf;
+            }
+            ZSTD_freeCCtx( zctx );
+        } );
+        start += todo;
+        left -= todo;
+    }
+    tasks.Sync();
+
+    ZSTD_freeCDict( zdict );
+
+    printf( "\nWriting to disk...\n" );
+    fflush( stdout );
+
     FILE* zmeta = fopen( zmetafn.c_str(), "wb" );
     FILE* zdata = fopen( zdatafn.c_str(), "wb" );
 
-    printf( "Repacking\n" );
-    ExpandingBuffer eb;
     uint64_t offset = 0;
     for( uint32_t i=0; i<size; i++ )
     {
@@ -126,25 +192,17 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        auto post = mview[i];
-        auto raw = mview.Raw( i );
-
-        auto predSize = ZSTD_compressBound( raw.size );
-        auto dst = eb.Request( predSize );
-        auto dstSize = ZSTD_compress_usingCDict( zctx, dst, predSize, post, raw.size, zdict );
-
-        RawImportMeta packet = { offset, raw.size, dstSize };
+        RawImportMeta packet = { offset, data[i].size, data[i].compressedSize };
         fwrite( &packet, 1, sizeof( RawImportMeta ), zmeta );
 
-        fwrite( dst, 1, dstSize, zdata );
-        offset += dstSize;
+        fwrite( data[i].data, 1, data[i].compressedSize, zdata );
+        offset += data[i].compressedSize;
     }
-
-    ZSTD_freeCDict( zdict );
-    ZSTD_freeCCtx( zctx );
 
     fclose( zmeta );
     fclose( zdata );
+
+    delete[] data;
 
     return 0;
 }

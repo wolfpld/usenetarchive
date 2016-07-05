@@ -63,6 +63,12 @@
     <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\zdict.c">
       <Filter>zstd\dictBuilder</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\System.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -124,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\zdict.h">
       <Filter>zstd\dictBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\System.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\TaskDispatch.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

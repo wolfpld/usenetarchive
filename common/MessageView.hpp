@@ -38,7 +38,7 @@ public:
         size_t compressedSize;
     };
 
-    RawMessage Raw( const size_t idx )
+    RawMessage Raw( const size_t idx ) const
     {
         const auto meta = m_meta[idx];
         return RawMessage { m_data + meta.offset, meta.size, meta.compressedSize };
@@ -51,7 +51,7 @@ public:
         size_t metasize, datasize;
     };
 
-    Ptrs Pointers()
+    Ptrs Pointers() const
     {
         return Ptrs { m_meta, m_data, m_meta.Size(), m_data.Size() };
     }
