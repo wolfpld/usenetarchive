@@ -54,6 +54,8 @@ int main( int argc, char** argv )
     FILE* buf1 = fopen( buf1fn.c_str(), "wb" );
     FILE* buf2 = fopen( buf2fn.c_str(), "wb" );
     uint64_t total = 0;
+    auto samples = size;
+    bool limitHit = false;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -63,11 +65,11 @@ int main( int argc, char** argv )
         }
 
         auto raw = mview.Raw( i );
-        if( total + raw.size >= ( 1U<<31 ) )
+        if( !limitHit && total + raw.size >= ( 1U<<31 ) )
         {
             printf( "Limiting sample size to %i MB - %i samples in, %i samples out.\n", total >> 20, i, size - i );
-            size = i;
-            break;
+            samples = i;
+            limitHit = true;
         }
         total += raw.size;
 
@@ -94,7 +96,7 @@ int main( int argc, char** argv )
         memset( &params, 0, sizeof( ZDICT_params_t ) );
         params.notificationLevel = 3;
         params.compressionLevel = 16;
-        realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, size, params );
+        realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, samples, params );
     }
 
     unlink( buf1fn.c_str() );
