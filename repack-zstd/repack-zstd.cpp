@@ -40,7 +40,7 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
-    const auto size = mview.Size();
+    auto size = mview.Size();
 
     std::string zmetafn = base + "zmeta";
     std::string zdatafn = base + "zdata";
@@ -53,6 +53,7 @@ int main( int argc, char** argv )
 
     FILE* buf1 = fopen( buf1fn.c_str(), "wb" );
     FILE* buf2 = fopen( buf2fn.c_str(), "wb" );
+    uint64_t total = 0;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x3FF ) == 0 )
@@ -61,8 +62,16 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        auto post = mview[i];
         auto raw = mview.Raw( i );
+        if( total + raw.size >= ( 1U<<31 ) )
+        {
+            printf( "Limiting sample size to %i MB - %i samples in, %i samples out.\n", total >> 20, i, size - i );
+            size = i;
+            break;
+        }
+        total += raw.size;
+
+        auto post = mview[i];
 
         fwrite( post, 1, raw.size, buf1 );
         fwrite( &raw.size, 1, sizeof( size_t ), buf2 );
