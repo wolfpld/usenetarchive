@@ -42,11 +42,11 @@ int main( int argc, char** argv )
     std::string base3( argv[3] );
     base3 += "/";
 
-    MessageView mview1( base1 + "meta", base1 + "data" );
-    HashSearch hash1( base1 + "middata", base1 + "midhash", base1 + "midhashdata" );
+    const MessageView mview1( base1 + "meta", base1 + "data" );
+    const HashSearch hash1( base1 + "middata", base1 + "midhash", base1 + "midhashdata" );
 
-    MessageView mview2( base2 + "meta", base2 + "data" );
-    MetaView<uint32_t, char> mid2( base2 + "midmeta", base2 + "middata" );
+    const MessageView mview2( base2 + "meta", base2 + "data" );
+    const MetaView<uint32_t, char> mid2( base2 + "midmeta", base2 + "middata" );
 
     printf( "Src1 size: %i. Src2 size: %i.\n", mview1.Size(), mview2.Size() );
     fflush( stdout );
