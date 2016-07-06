@@ -5,9 +5,8 @@
 #include <string>
 #include <string.h>
 
-#include "../contrib/xxhash/xxhash.h"
 #include "../common/Filesystem.hpp"
-#include "../common/FileMap.hpp"
+#include "../common/HashSearch.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/MsgIdHash.hpp"
@@ -80,8 +79,8 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
-    MetaView<uint32_t, char> mid( base + "midmeta", base + "middata" );
-    MetaView<uint32_t, uint32_t> midhash( base + "midhash", base + "midhashdata" );
+    const MetaView<uint32_t, char> mid( base + "midmeta", base + "middata" );
+    const HashSearch hash( base + "middata", base + "midhash", base + "midhashdata" );
 
     const auto size = mview.Size();
 
@@ -100,17 +99,11 @@ int main( int argc, char** argv )
     }
     else if( mode == Mode::QueryMsgId )
     {
-        auto hash = XXH32( argv[3], strlen( argv[3] ), 0 ) & MsgIdHashMask;
-        const uint32_t* ptr = midhash[hash];
-        auto num = *ptr++;
-        for( int j=0; j<num; j++ )
+        auto idx = hash.Search( argv[3] );
+        if( idx >= 0 )
         {
-            if( strcmp( argv[3], mid + *ptr++ ) == 0 )
-            {
-                printf( "%s\n", mview[*ptr] );
-                return 0;
-            }
-            ptr++;
+            printf( "%s\n", mview[idx] );
+            return 0;
         }
         fprintf( stderr, "Invalid Message ID %s\n", argv[3] );
         exit( 1 );
