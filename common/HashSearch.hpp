@@ -2,6 +2,7 @@
 #define __HASHSEARCH_HPP__
 
 #include <string>
+#include <string.h>
 
 #include "../contrib/xxhash/xxhash.h"
 
