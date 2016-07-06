@@ -4,12 +4,10 @@
 #include <string>
 #include <string.h>
 
-#include "../contrib/xxhash/xxhash.h"
-#include "../common/FileMap.hpp"
 #include "../common/Filesystem.hpp"
+#include "../common/HashSearch.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
-#include "../common/MsgIdHash.hpp"
 #include "../common/RawImportMeta.hpp"
 
 int main( int argc, char** argv )
@@ -45,8 +43,7 @@ int main( int argc, char** argv )
     base3 += "/";
 
     MessageView mview1( base1 + "meta", base1 + "data" );
-    FileMap<char> middata1( base1 + "middata" );
-    MetaView<uint32_t, uint32_t> midhash1( base1 + "midhash", base1 + "midhashdata" );
+    HashSearch hash1( base1 + "middata", base1 + "midhash", base1 + "midhashdata" );
 
     MessageView mview2( base2 + "meta", base2 + "data" );
     MetaView<uint32_t, char> mid2( base2 + "midmeta", base2 + "middata" );
@@ -77,22 +74,11 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        auto msgid = mid2[i];
-        auto hash = XXH32( msgid, strlen( msgid ), 0 ) & MsgIdHashMask;
-        auto ptr = midhash1[hash];
-        auto num = *ptr++;
-        bool found = false;
-        for( int j=0; j<num; j++ )
+        if( hash1.Search( mid2[i] ) >= 0 )
         {
-            if( strcmp( msgid, middata1 + *ptr++ ) == 0 )
-            {
-                dupes++;
-                found = true;
-                break;
-            }
-            ptr++;
+            dupes++;
         }
-        if( !found )
+        else
         {
             added++;
             const auto raw = mview2.Raw( i );

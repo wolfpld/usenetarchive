@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\HashSearch.hpp" />
     <ClInclude Include="..\..\..\common\MessageView.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
