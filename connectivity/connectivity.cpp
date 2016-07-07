@@ -19,6 +19,19 @@ struct Message
     std::vector<uint32_t> children;
 };
 
+void ValidateMsgId( const char* begin, const char* end, char* dst )
+{
+    while( begin != end )
+    {
+        if( *begin != ' ' && *begin != '\t' )
+        {
+            *dst++ = *begin;
+        }
+        begin++;
+    }
+    *dst++ = '\0';
+}
+
 int main( int argc, char** argv )
 {
     if( argc < 2 )
@@ -86,8 +99,7 @@ int main( int argc, char** argv )
             while( *--buf != '<' ) {}
             buf++;
             assert( end - buf < 1024 );
-            memcpy( tmp, buf, end - buf );
-            tmp[end - buf] = '\0';
+            ValidateMsgId( buf, end, tmp );
 
             auto idx = hash.Search( tmp );
             if( idx >= 0 )
