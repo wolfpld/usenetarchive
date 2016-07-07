@@ -1,0 +1,85 @@
+INN as a whole and all code contained in it not otherwise marked with
+different licenses and/or copyrights is covered by the following copyright
+and license:
+
+   Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
+       2013, 2014, 2015 by Internet Systems Consortium, Inc. ("ISC")
+   Copyright (c) 1991, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+       2002, 2003 by The Internet Software Consortium and Rich Salz
+
+   This code is derived from software contributed to the Internet Software
+   Consortium by Rich Salz.
+
+   Permission to use, copy, modify, and distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+   REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY
+   SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Some specific portions of INN are covered by different licenses.  Those
+licenses, if present, will be noted prominantly at the top of those source
+files.  Specifically (but possibly not comprehensively):
+
+   backends/send-uucp.in and control/perl-nocem.in are under the GNU
+   General Public License version 2 or later.  See doc/GPL for a copy of
+   the GPL v2.
+
+   backends/shrinkfile.c, frontends/scanspool.in, lib/alloca.c, lib/concat.c,
+   lib/inet_aton.c, lib/inet_ntoa.c, lib/memcmp.c, lib/pread.c, lib/pwrite.c,
+   lib/setenv.c, lib/seteuid.c, lib/strlcat.c and lib/strlcpy.c are in
+   the public domain.
+
+   lib/snprintf.c may be used for any purpose as long as the author's
+   notice remains intact in all source code distributions.
+
+   control/pgpverify.in and control/signcontrol.in are under a BSD-style
+   license (with the advertising clause) with UUNET Technologies, Inc. as
+   the copyright holder.  See the end of those files for details.
+
+   control/controlchan.in and control/modules/*.pl are covered by a
+   two-clause BSD-style license (no advertising clause).  See the
+   beginning of those files for details.
+
+   lib/strcasecmp.c, lib/strspn.c, and lib/strtok.c are taken from BSD
+   sources and are covered by the standard BSD license.  See those files
+   for more details.
+
+   lib/md5.c is covered under the standard free MD5 license from RSA Data
+   Security.  See the file for more details.  A clarification is also
+   provided here:  <http://www.ietf.org/ietf/IPR/RSA-MD-all>.
+
+      "Implementations of these message-digest algorithms, including
+      implementations derived from the reference C code in RFC-1319,
+      RFC-1320, and RFC-1321, may be made, used, and sold without
+      license from RSA for any purpose."
+
+   history/his.c and history/hisv6/hisv6.c are under a license very
+   similar to the new BSD license (no advertising clause) but with Thus
+   plc as the copyright holder.  See those files for details.
+
+   lib/tst.c, include/inn/tst.h and doc/pod/tst.pod are derived from
+   <http://www.octavian.org/cs/tst1.3.tar.gz> and are under the new BSD
+   license (no advertising clause), but with Peter A. Friend as the
+   copyright holder.
+
+   tests/runtests.c is covered under a license very similar to the MIT/X
+   Consortium license.  See the beginning of the file for details.
+
+Note that all portions of INN that link with core INN code have to be
+covered by licenses compatible with the license at the top of this file,
+and since INN links with several external libraries if so configured (such
+as OpenSSL), should also be compatible with the licenses of those external
+libraries to be safe.  Some portions of this distribution are covered by
+more restrictive licenses, but all of that code is completely stand-alone,
+either as a standalone script or as code that compiles into a separate
+executable.
+
+Please note that the files in the contrib directory are not properly part
+of INN and may be under widely varying licenses.  Please see each file
+and/or its documentation for license information.
