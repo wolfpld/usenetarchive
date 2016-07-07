@@ -1,6 +1,6 @@
-# Usenet Archive
+# Usenet Archive Toolkit
 
-Usenet Archive project aims to provide a set of tools to process various sources of usenet messages into a coherent, searchable archive.
+Usenet Archive Toolkit project aims to provide a set of tools to process various sources of usenet messages into a coherent, searchable archive.
 
 ### Import Formats
 
@@ -25,10 +25,10 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 ### Data Access
 
 - query-raw --- Implements queries on LZ4 database. Supports:
-  * Message count.
-  * Listing of message identifiers.
-  * Query message by identifier.
-  * Query message by database record number.
+    * Message count.
+    * Listing of message identifiers.
+    * Query message by identifier.
+    * Query message by database record number.
 
 ### License
 
