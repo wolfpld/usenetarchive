@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,6 +21,11 @@ struct Message
     int32_t parent = -1;
     std::vector<uint32_t> children;
 };
+
+void Sort( std::vector<uint32_t>& vec, const Message* msg )
+{
+    std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
+}
 
 bool ValidateMsgId( const char* begin, const char* end, char* dst )
 {
@@ -128,7 +134,6 @@ int main( int argc, char** argv )
     fflush( stdout );
 
     unsigned int baddate = 0;
-
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
@@ -161,6 +166,23 @@ int main( int argc, char** argv )
     }
 
     printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i\n", toplevel.size(), missing.size(), broken, baddate );
+
+    printf( "Sorting top level...\n" );
+    fflush( stdout );
+    Sort( toplevel, data );
+    printf( "Sorting children...\n" );
+    for( uint32_t i=0; i<size; i++ )
+    {
+        if( ( i & 0xFFF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+        if( !data[i].children.empty() )
+        {
+            Sort( data[i].children, data );
+        }
+    }
 
     delete[] data;
     return 0;
