@@ -12,6 +12,8 @@
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
+extern "C" { time_t parsedate_rfc5322_lax(const char *date); }
+
 struct Message
 {
     uint32_t epoch = 0;
@@ -19,17 +21,23 @@ struct Message
     std::vector<uint32_t> children;
 };
 
-void ValidateMsgId( const char* begin, const char* end, char* dst )
+bool ValidateMsgId( const char* begin, const char* end, char* dst )
 {
+    bool broken = false;
     while( begin != end )
     {
         if( *begin != ' ' && *begin != '\t' )
         {
             *dst++ = *begin;
         }
+        else
+        {
+            broken = true;
+        }
         begin++;
     }
     *dst++ = '\0';
+    return broken;
 }
 
 int main( int argc, char** argv )
@@ -56,6 +64,7 @@ int main( int argc, char** argv )
     printf( "Building graph...\n" );
     fflush( stdout );
 
+    unsigned int broken = 0;
     std::unordered_set<std::string> missing;
     std::vector<uint32_t> toplevel;
     auto data = new Message[size];
@@ -99,7 +108,7 @@ int main( int argc, char** argv )
             while( *--buf != '<' ) {}
             buf++;
             assert( end - buf < 1024 );
-            ValidateMsgId( buf, end, tmp );
+            broken += ValidateMsgId( buf, end, tmp );
 
             auto idx = hash.Search( tmp );
             if( idx >= 0 )
@@ -115,7 +124,43 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\n", toplevel.size(), missing.size() );
+    printf( "\nRetrieving timestamps...\n" );
+    fflush( stdout );
+
+    unsigned int baddate = 0;
+
+    for( uint32_t i=0; i<size; i++ )
+    {
+        if( ( i & 0xFFF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        auto post = mview[i];
+        auto buf = post;
+
+        while( strnicmpl( buf, "date: ", 6 ) != 0 )
+        {
+            buf++;
+            while( *buf++ != '\n' ) {}
+        }
+        buf += 6;
+        auto end = buf;
+        while( *++end != '\n' ) {}
+        memcpy( tmp, buf, end-buf );
+        tmp[end-buf] = '\0';
+
+        auto date = parsedate_rfc5322_lax( tmp );
+        if( date == -1 )
+        {
+            baddate++;
+            date = 0;
+        }
+        data[i].epoch = date;
+    }
+
+    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i\n", toplevel.size(), missing.size(), broken, baddate );
 
     delete[] data;
     return 0;

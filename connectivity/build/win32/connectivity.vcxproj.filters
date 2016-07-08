@@ -13,6 +13,9 @@
     <Filter Include="xxhash">
       <UniqueIdentifier>{f1558b5d-26e3-4172-8be9-e4384a7ed641}</UniqueIdentifier>
     </Filter>
+    <Filter Include="inn">
+      <UniqueIdentifier>{aa160b34-20ec-41f5-bd6e-578471acd125}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\connectivity.cpp">
@@ -26,6 +29,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
       <Filter>xxhash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\inn\date.cpp">
+      <Filter>inn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
