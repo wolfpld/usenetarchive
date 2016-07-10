@@ -184,6 +184,38 @@ int main( int argc, char** argv )
         }
     }
 
+    printf( "\nSaving...\n" );
+    FILE* tlout = fopen( ( base + "toplevel" ).c_str(), "wb" );
+    fwrite( toplevel.data(), 1, sizeof( uint32_t ) * toplevel.size(), tlout );
+    fclose( tlout );
+
+    FILE* cdata = fopen( ( base + "conndata" ).c_str(), "wb" );
+    FILE* cmeta = fopen( ( base + "connmeta" ).c_str(), "wb" );
+    uint32_t offset = 0;
+    for( uint32_t i=0; i<size; i++ )
+    {
+        if( ( i & 0x1FFF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        fwrite( &offset, 1, sizeof( uint32_t ), cmeta );
+
+        offset += fwrite( &data[i].epoch, 1, sizeof( Message::epoch ), cdata );
+        offset += fwrite( &data[i].parent, 1, sizeof( Message::parent ), cdata );
+        uint32_t cnum = data[i].children.size();
+        offset += fwrite( &cnum, 1, sizeof( cnum ), cdata );
+        for( auto& v : data[i].children )
+        {
+            offset += fwrite( &v, 1, sizeof( v ), cdata );
+        }
+    }
+    fclose( cdata );
+    fclose( cmeta );
+
+    printf( "\n" );
+
     delete[] data;
     return 0;
 }
