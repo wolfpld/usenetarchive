@@ -68,7 +68,7 @@ TreeModel::TreeModel(const Archive &data, QObject *parent)
     QVector<QVariant> rootData;
     rootData << "Subject" << "Posts" << "Author" << "Date";
     rootItem = new TreeItem();
-    rootItem->setData(rootData);
+    rootItem->setData( std::move( rootData ) );
     setupModelData(data, rootItem);
 }
 
@@ -186,7 +186,7 @@ static int CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data
         char* tmp = asctime( localtime( &t ) );
         tmp[strlen(tmp)-1] = '\0';
         columns << tmp;
-        item->setData( columns );
+        item->setData( std::move( columns ) );
         totalDepth += depth;
     }
     return totalDepth;

@@ -61,7 +61,7 @@ public:
     ~TreeItem();
 
     void appendChild(TreeItem *child);
-    void setData(const QVector<QVariant>& data);
+    void setData(QVector<QVariant>&& data);
 
     TreeItem *child(int row);
     int childCount() const;

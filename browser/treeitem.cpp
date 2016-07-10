@@ -73,9 +73,9 @@ void TreeItem::appendChild(TreeItem *item)
     m_childItems.append(item);
 }
 
-void TreeItem::setData(const QVector<QVariant> &data)
+void TreeItem::setData(QVector<QVariant>&& data)
 {
-    m_itemData = data;
+    std::swap( m_itemData, data );
 }
 
 TreeItem *TreeItem::child(int row)
