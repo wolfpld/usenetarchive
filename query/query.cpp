@@ -8,10 +8,12 @@
 
 void PrintHelp()
 {
-    printf( "info        - archive info\n" );
-    printf( "toplevel    - list toplevel messages\n" );
-    printf( "query msgid - view message with given message id\n" );
-    printf( "view idx    - view message of given idx\n" );
+    printf( "info         - archive info\n" );
+    printf( "parent msgid - view message's parent\n" );
+    printf( "parenti idx  - view message's parent\n" );
+    printf( "toplevel     - list toplevel messages\n" );
+    printf( "view msgid   - view message with given message id\n" );
+    printf( "viewi idx    - view message of given idx\n" );
 }
 
 void Info( const Archive& archive )
@@ -40,9 +42,9 @@ int main( int argc, char** argv )
 
     while( char* cmd = linenoise( "\x1b[1;32mcmd>\x1b[0m " ) )
     {
-        if( strncmp( cmd, "view ", 5 ) == 0 )
+        if( strncmp( cmd, "viewi ", 6 ) == 0 )
         {
-            int idx = atoi( cmd+5 );
+            int idx = atoi( cmd+6 );
             auto msg = archive.GetMessage( idx );
             if( msg )
             {
@@ -65,9 +67,9 @@ int main( int argc, char** argv )
         {
             Info( archive );
         }
-        else if( strncmp( cmd, "query ", 6 ) == 0 )
+        else if( strncmp( cmd, "view ", 5 ) == 0 )
         {
-            auto msg = archive.GetMessage( cmd+6 );
+            auto msg = archive.GetMessage( cmd+5 );
             if( msg )
             {
                 printf( "%s\n", msg );
@@ -75,6 +77,30 @@ int main( int argc, char** argv )
             else
             {
                 printf( "Invalid message id.\n" );
+            }
+        }
+        else if( strncmp( cmd, "parent ", 7 ) == 0 )
+        {
+            auto parent = archive.GetParent( cmd+7 );
+            if( parent >= 0 )
+            {
+                printf( "Parent: %i\n", parent );
+            }
+            else
+            {
+                printf( "No parent.\n" );
+            }
+        }
+        else if( strncmp( cmd, "parenti ", 8 ) == 0 )
+        {
+            auto parent = archive.GetParent( atoi( cmd+8 ) );
+            if( parent >= 0 )
+            {
+                printf( "Parent: %i\n", parent );
+            }
+            else
+            {
+                printf( "No parent.\n" );
             }
         }
         else

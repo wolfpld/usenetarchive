@@ -23,11 +23,15 @@ public:
     ViewReference<uint32_t> GetTopLevel() const;
     size_t NumberOfTopLevel() const { return m_toplevel.Size(); }
 
+    int32_t GetParent( uint32_t idx ) const;
+    int32_t GetParent( const char* msgid ) const;
+
 private:
     ZMessageView m_mview;
     size_t m_mcnt;
     FileMap<uint32_t> m_toplevel;
     HashSearch m_midhash;
+    MetaView<uint32_t, uint32_t> m_connectivity;
 };
 
 #endif
