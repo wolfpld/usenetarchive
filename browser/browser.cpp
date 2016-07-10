@@ -40,4 +40,8 @@ void Browser::FillTree()
 {
     m_model = std::make_unique<TreeModel>( *m_archive );
     ui->treeView->setModel( m_model.get() );
+    for( int i=0; i<4; i++ )
+    {
+        ui->treeView->resizeColumnToContents( i );
+    }
 }
