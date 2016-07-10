@@ -31,6 +31,7 @@ public:
 
     operator const T*() const { return m_ptr; }
     uint64_t Size() const { return m_size; }
+    uint64_t DataSize() const { return m_size / sizeof( T ); }
 
 private:
     T* m_ptr;

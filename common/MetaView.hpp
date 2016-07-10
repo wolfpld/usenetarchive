@@ -27,7 +27,7 @@ public:
 
     size_t Size() const
     {
-        return m_meta.Size() / sizeof( Meta );
+        return m_meta.DataSize();
     }
 
 private:
