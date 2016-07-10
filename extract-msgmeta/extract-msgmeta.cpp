@@ -1,25 +1,20 @@
 #include <algorithm>
 #include <assert.h>
+#include <unordered_map>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <vector>
 
-#include "../contrib/xxhash/xxhash.h"
 #include "../common/Filesystem.hpp"
-#include "../common/FileMap.hpp"
 #include "../common/MessageView.hpp"
-#include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
 
-struct HashData
+struct Offsets
 {
-    uint32_t offset;
-    uint32_t idx;
+    uint32_t from;
+    uint32_t subject;
 };
 
 int main( int argc, char** argv )
@@ -36,17 +31,12 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
-    std::string midmetafn = base + "midmeta";
-    std::string middatafn = base + "middata";
+    Offsets* data = new Offsets[size];
 
-    FILE* midmeta = fopen( midmetafn.c_str(), "wb" );
-    FILE* middata = fopen( middatafn.c_str(), "wb" );
-
-    auto bucket = new std::vector<HashData>[MsgIdHashSize];
-
+    FILE* strout = fopen( ( base + "strings" ).c_str(), "wb" );
     uint32_t offset = 0;
-    ExpandingBuffer eb;
-    uint32_t zero = 0;
+    std::unordered_map<std::string, uint32_t> refs;
+
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0x1FFF ) == 0 )
@@ -58,69 +48,73 @@ int main( int argc, char** argv )
         auto post = mview[i];
         auto buf = post;
 
-        while( strnicmpl( buf, "message-id: <", 13 ) != 0 )
+        bool fdone = false;
+        bool sdone = false;
+        const char* fptr;
+        const char* sptr;
+        while( !fdone || !sdone )
         {
-            buf++;
-            while( *buf++ != '\n' ) {}
+            bool skip = false;
+            if( !fdone )
+            {
+                if( strnicmpl( buf, "from: ", 6 ) == 0 )
+                {
+                    buf += 6;
+                    fptr = buf;
+                    skip = true;
+                    fdone = true;
+                }
+            }
+            if( !sdone && !skip )
+            {
+                if( strnicmpl( buf, "subject: ", 9 ) == 0 )
+                {
+                    buf += 9;
+                    sptr = buf;
+                    sdone = true;
+                }
+            }
+            while( *buf++ != '\n' ) {};
         }
-        buf += 13;
-        auto end = buf;
-        while( *end != '>' ) end++;
-        fwrite( buf, 1, end-buf, middata );
-        fwrite( &zero, 1, 1, middata );
 
-        fwrite( &offset, 1, sizeof( offset ), midmeta );
+        auto fend = fptr;
+        while( *++fend != '\n' ) {};
+        auto send = sptr;
+        while( *++send != '\n' ) {};
 
-        uint32_t hash = XXH32( buf, end-buf, 0 ) & MsgIdHashMask;
-        bucket[hash].emplace_back( HashData { offset, i } );
+        std::string fstr( fptr, fend );
+        std::string sstr( sptr, send );
 
-        offset += end-buf+1;
+        if( refs.find( fstr ) == refs.end() )
+        {
+            fwrite( fstr.c_str(), 1, fstr.size()+1, strout );
+            refs.emplace( fstr, offset );
+            offset += fstr.size()+1;
+        }
+        if( refs.find( sstr ) == refs.end() )
+        {
+            fwrite( sstr.c_str(), 1, sstr.size()+1, strout );
+            refs.emplace( sstr, offset );
+            offset += sstr.size()+1;
+        }
+
+        data[i].from = refs[fstr];
+        data[i].subject = refs[sstr];
     }
+    fclose( strout );
 
-    fclose( midmeta );
-    fclose( middata );
+    printf( "\nSaving...\n" );
+    fflush( stdout );
 
-    printf( "Processed %i MsgIDs.\n", size );
-
-    std::string midhashfn = base + "midhash";
-    std::string midhashdatafn = base + "midhashdata";
-
-    FILE* midhash = fopen( midhashfn.c_str(), "wb" );
-    FILE* midhashdata = fopen( midhashdatafn.c_str(), "wb" );
-
-    FileMap<char> msgid( middatafn );
-    fwrite( &zero, 1, sizeof( uint32_t ), midhashdata );
-    offset = sizeof( uint32_t );
-    for( uint32_t i=0; i<MsgIdHashSize; i++ )
+    FILE* out = fopen( ( base + "strmeta" ).c_str(), "wb" );
+    for( uint32_t i=0; i<size; i++ )
     {
-        if( ( i & 0xFFF ) == 0 )
-        {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
-        }
-
-        std::sort( bucket[i].begin(), bucket[i].end(), [&msgid]( const HashData& l, const HashData& r ) { return strcmp( msgid + l.offset, msgid + r.offset ) > 0; } );
-
-        uint32_t num = bucket[i].size();
-        if( num == 0 )
-        {
-            fwrite( &zero, 1, sizeof( uint32_t ), midhash );
-        }
-        else
-        {
-            fwrite( &offset, 1, sizeof( offset ), midhash );
-            fwrite( &num, 1, sizeof( num ), midhashdata );
-            fwrite( bucket[i].data(), 1, num * sizeof( HashData ), midhashdata );
-            offset += sizeof( num ) + num * sizeof( HashData );
-        }
+        fwrite( &data[i].from, 1, sizeof( Offsets::from ), out );
+        fwrite( &data[i].subject, 1, sizeof( Offsets::subject ), out );
     }
+    fclose( out );
 
-    fclose( midhash );
-    fclose( midhashdata );
-
-    delete[] bucket;
-
-    printf( "Processed %i buckets.\n", MsgIdHashSize );
+    delete[] data;
 
     return 0;
 }
