@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "../contrib/linenoise-ng/linenoise.h"
 
@@ -10,6 +11,8 @@ void PrintHelp()
 {
     printf( "child msgid  - view message's children\n" );
     printf( "childi idx   - view message's children\n" );
+    printf( "date msgid   - view message's date\n" );
+    printf( "datei idx    - view message's date\n" );
     printf( "info         - archive info\n" );
     printf( "parent msgid - view message's parent\n" );
     printf( "parenti idx  - view message's parent\n" );
@@ -120,6 +123,18 @@ int main( int argc, char** argv )
             {
                 printf( "%i\n", children.ptr[i] );
             }
+        }
+        else if( strncmp( cmd, "date ", 5 ) == 0 )
+        {
+            auto date = archive.GetDate( cmd+6 );
+            time_t t = { date };
+            printf( "%s\n", asctime( localtime( &t ) ) );
+        }
+        else if( strncmp( cmd, "datei ", 6 ) == 0 )
+        {
+            auto date = archive.GetDate( atoi( cmd+7 ) );
+            time_t t = { date };
+            printf( "%s\n", asctime( localtime( &t ) ) );
         }
         else
         {

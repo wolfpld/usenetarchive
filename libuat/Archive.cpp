@@ -51,3 +51,15 @@ ViewReference<uint32_t> Archive::GetChildren( const char* msgid ) const
     auto idx = m_midhash.Search( msgid );
     return idx >= 0 ? GetChildren( idx ) : ViewReference<uint32_t> { nullptr, 0 };
 }
+
+uint32_t Archive::GetDate( uint32_t idx ) const
+{
+    auto data = m_connectivity[idx];
+    return *data;
+}
+
+uint32_t Archive::GetDate( const char* msgid ) const
+{
+    auto idx = m_midhash.Search( msgid );
+    return idx >= 0 ? GetDate( idx ) : 0;
+}
