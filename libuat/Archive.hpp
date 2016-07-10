@@ -26,6 +26,9 @@ public:
     int32_t GetParent( uint32_t idx ) const;
     int32_t GetParent( const char* msgid ) const;
 
+    ViewReference<uint32_t> GetChildren( uint32_t idx ) const;
+    ViewReference<uint32_t> GetChildren( const char* msgid ) const;
+
 private:
     ZMessageView m_mview;
     size_t m_mcnt;

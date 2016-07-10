@@ -8,6 +8,8 @@
 
 void PrintHelp()
 {
+    printf( "child msgid  - view message's children\n" );
+    printf( "childi idx   - view message's children\n" );
     printf( "info         - archive info\n" );
     printf( "parent msgid - view message's parent\n" );
     printf( "parenti idx  - view message's parent\n" );
@@ -101,6 +103,22 @@ int main( int argc, char** argv )
             else
             {
                 printf( "No parent.\n" );
+            }
+        }
+        else if( strncmp( cmd, "child ", 6 ) == 0 )
+        {
+            auto children = archive.GetChildren( cmd+6 );
+            for( uint64_t i=0; i<children.size; i++ )
+            {
+                printf( "%i\n", children.ptr[i] );
+            }
+        }
+        else if( strncmp( cmd, "childi ", 7 ) == 0 )
+        {
+            auto children = archive.GetChildren( atoi( cmd+7 ) );
+            for( uint64_t i=0; i<children.size; i++ )
+            {
+                printf( "%i\n", children.ptr[i] );
             }
         }
         else

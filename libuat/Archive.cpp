@@ -37,3 +37,17 @@ int32_t Archive::GetParent( const char* msgid ) const
     auto idx = m_midhash.Search( msgid );
     return idx >= 0 ? GetParent( idx ) : -1;
 }
+
+ViewReference<uint32_t> Archive::GetChildren( uint32_t idx ) const
+{
+    auto data = m_connectivity[idx];
+    data += 2;
+    auto num = *data++;
+    return ViewReference<uint32_t> { data, num };
+}
+
+ViewReference<uint32_t> Archive::GetChildren( const char* msgid ) const
+{
+    auto idx = m_midhash.Search( msgid );
+    return idx >= 0 ? GetChildren( idx ) : ViewReference<uint32_t> { nullptr, 0 };
+}
