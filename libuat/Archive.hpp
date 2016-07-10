@@ -19,6 +19,7 @@ public:
     size_t NumberOfMessages() const { return m_mcnt; }
 
     ViewReference<uint32_t> GetTopLevel() const;
+    size_t NumberOfTopLevel() const { return m_toplevel.Size(); }
 
 private:
     ZMessageView m_mview;

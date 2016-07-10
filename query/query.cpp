@@ -8,8 +8,15 @@
 
 void PrintHelp()
 {
-    printf( "toplevel - list toplevel messages\n" );
-    printf( "view idx - view message of given idx\n" );
+    printf( "info        - archive info\n" );
+    printf( "toplevel    - list toplevel messages\n" );
+    printf( "view idx    - view message of given idx\n" );
+}
+
+void Info( const Archive& archive )
+{
+    printf( "Number of messages: %i\n", archive.NumberOfMessages() );
+    printf( "Number of toplevel messages: %i\n", archive.NumberOfTopLevel() );
 }
 
 int main( int argc, char** argv )
@@ -27,7 +34,8 @@ int main( int argc, char** argv )
 
     Archive archive( argv[1] );
 
-    printf( "Usenet archive %s opened. Number of messages: %i\n", argv[1], archive.NumberOfMessages() );
+    printf( "Usenet archive %s opened.\n", argv[1] );
+    Info( archive );
 
     while( char* cmd = linenoise( "\x1b[1;32mcmd>\x1b[0m " ) )
     {
@@ -51,6 +59,10 @@ int main( int argc, char** argv )
             {
                 printf( "%i\n", view.ptr[i] );
             }
+        }
+        else if( strcmp( cmd, "info" ) == 0 )
+        {
+            Info( archive );
         }
         else
         {
