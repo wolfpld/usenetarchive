@@ -107,6 +107,7 @@ int main( int argc, char** argv )
         {
             PrintHelp();
         }
+        free( cmd );
     }
 
     return 0;
