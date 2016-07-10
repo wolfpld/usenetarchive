@@ -7,57 +7,117 @@
     <Filter Include="common">
       <UniqueIdentifier>{d991e927-d255-4fae-8641-a731116a9b60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lz4">
-      <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
+    <Filter Include="libuat">
+      <UniqueIdentifier>{5d4a0925-d535-4314-b779-e594bb8f8626}</UniqueIdentifier>
     </Filter>
-    <Filter Include="xxhash">
-      <UniqueIdentifier>{f1558b5d-26e3-4172-8be9-e4384a7ed641}</UniqueIdentifier>
+    <Filter Include="zstd">
+      <UniqueIdentifier>{8ed80d4c-1526-4dfb-a785-1b461b07a6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstd\common">
+      <UniqueIdentifier>{cb7a3c2f-a86a-4cfe-ba65-c7945529383f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstd\decompress">
+      <UniqueIdentifier>{5d52ab30-8fac-409c-aad0-cd54309cc27c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="linenoise-ng">
+      <UniqueIdentifier>{ff9e0b71-def0-4f2d-8239-be7bfefe35d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\query.cpp">
       <Filter>query</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\lz4\lz4.c">
-      <Filter>lz4</Filter>
+    <ClCompile Include="..\..\..\libuat\Archive.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c">
+      <Filter>zstd\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\common\mmap.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
-      <Filter>xxhash</Filter>
+    <ClCompile Include="..\..\..\contrib\linenoise-ng\ConvertUTF.cpp">
+      <Filter>linenoise-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\linenoise-ng\linenoise.cpp">
+      <Filter>linenoise-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\linenoise-ng\wcwidth.cpp">
+      <Filter>linenoise-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c">
+      <Filter>zstd\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
+      <Filter>zstd\decompress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\common\mmap.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\common\FileMap.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\common\MsgIdHash.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\lz4\lz4.h">
-      <Filter>lz4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
-      <Filter>xxhash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\libuat\Archive.hpp">
+      <Filter>libuat</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\MetaView.hpp">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\ZMessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\error_public.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\fse.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\huf.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\mem.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zbuff.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\mmap.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\linenoise-ng\ConvertUTF.h">
+      <Filter>linenoise-ng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\linenoise-ng\linenoise.h">
+      <Filter>linenoise-ng</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
