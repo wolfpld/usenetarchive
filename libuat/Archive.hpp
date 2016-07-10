@@ -32,12 +32,19 @@ public:
     uint32_t GetDate( uint32_t idx ) const;
     uint32_t GetDate( const char* msgid ) const;
 
+    const char* GetFrom( uint32_t idx ) const;
+    const char* GetFrom( const char* msgid ) const;
+
+    const char* GetSubject( uint32_t idx ) const;
+    const char* GetSubject( const char* msgid ) const;
+
 private:
     ZMessageView m_mview;
     size_t m_mcnt;
     FileMap<uint32_t> m_toplevel;
     HashSearch m_midhash;
     MetaView<uint32_t, uint32_t> m_connectivity;
+    MetaView<uint32_t, char> m_strings;
 };
 
 #endif

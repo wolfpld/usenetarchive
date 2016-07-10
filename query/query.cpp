@@ -9,16 +9,20 @@
 
 void PrintHelp()
 {
-    printf( "child msgid  - view message's children\n" );
-    printf( "childi idx   - view message's children\n" );
-    printf( "date msgid   - view message's date\n" );
-    printf( "datei idx    - view message's date\n" );
-    printf( "info         - archive info\n" );
-    printf( "parent msgid - view message's parent\n" );
-    printf( "parenti idx  - view message's parent\n" );
-    printf( "toplevel     - list toplevel messages\n" );
-    printf( "view msgid   - view message with given message id\n" );
-    printf( "viewi idx    - view message of given idx\n" );
+    printf( "child msgid   - view message's children\n" );
+    printf( "childi idx    - view message's children\n" );
+    printf( "date msgid    - view message's date\n" );
+    printf( "datei idx     - view message's date\n" );
+    printf( "from msgid    - view from: field\n" );
+    printf( "fromi idx     - view from: field\n" );
+    printf( "info          - archive info\n" );
+    printf( "parent msgid  - view message's parent\n" );
+    printf( "parenti idx   - view message's parent\n" );
+    printf( "subject msgid - view subject: field\n" );
+    printf( "subjecti idx  - view subject: field\n" );
+    printf( "toplevel      - list toplevel messages\n" );
+    printf( "view msgid    - view message with given message id\n" );
+    printf( "viewi idx     - view message of given idx\n" );
 }
 
 void Info( const Archive& archive )
@@ -135,6 +139,54 @@ int main( int argc, char** argv )
             auto date = archive.GetDate( atoi( cmd+7 ) );
             time_t t = { date };
             printf( "%s\n", asctime( localtime( &t ) ) );
+        }
+        else if( strncmp( cmd, "from ", 5 ) == 0 )
+        {
+            auto data = archive.GetFrom( cmd+5 );
+            if( data )
+            {
+                printf( "%s\n", data );
+            }
+            else
+            {
+                printf( "Invalid message id.\n" );
+            }
+        }
+        else if( strncmp( cmd, "fromi ", 6 ) == 0 )
+        {
+            auto data = archive.GetFrom( atoi( cmd+6 ) );
+            if( data )
+            {
+                printf( "%s\n", data );
+            }
+            else
+            {
+                printf( "Invalid message id.\n" );
+            }
+        }
+        else if( strncmp( cmd, "subject ", 8 ) == 0 )
+        {
+            auto data = archive.GetSubject( cmd+8 );
+            if( data )
+            {
+                printf( "%s\n", data );
+            }
+            else
+            {
+                printf( "Invalid message id.\n" );
+            }
+        }
+        else if( strncmp( cmd, "subjecti ", 9 ) == 0 )
+        {
+            auto data = archive.GetSubject( atoi( cmd+9 ) );
+            if( data )
+            {
+                printf( "%s\n", data );
+            }
+            else
+            {
+                printf( "Invalid message id.\n" );
+            }
         }
         else
         {

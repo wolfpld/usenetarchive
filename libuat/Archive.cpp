@@ -6,6 +6,7 @@ Archive::Archive( const std::string& dir )
     , m_toplevel( dir + "/toplevel" )
     , m_midhash( dir + "/middata", dir + "/midhash", dir + "/midhashdata" )
     , m_connectivity( dir + "/connmeta", dir + "/conndata" )
+    , m_strings( dir + "/strmeta", dir + "/strings" )
 {
 }
 
@@ -62,4 +63,26 @@ uint32_t Archive::GetDate( const char* msgid ) const
 {
     auto idx = m_midhash.Search( msgid );
     return idx >= 0 ? GetDate( idx ) : 0;
+}
+
+const char* Archive::GetFrom( uint32_t idx ) const
+{
+    return m_strings[idx*2];
+}
+
+const char* Archive::GetFrom( const char* msgid ) const
+{
+    auto idx = m_midhash.Search( msgid );
+    return idx >= 0 ? GetFrom( idx ) : nullptr;
+}
+
+const char* Archive::GetSubject( uint32_t idx ) const
+{
+    return m_strings[idx*2+1];
+}
+
+const char* Archive::GetSubject( const char* msgid ) const
+{
+    auto idx = m_midhash.Search( msgid );
+    return idx >= 0 ? GetSubject( idx ) : nullptr;
 }
