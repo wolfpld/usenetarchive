@@ -34,8 +34,8 @@ public:
         assert( idx < m_meta.Size() );
         const auto meta = m_meta[idx];
         auto buf = m_eb.Request( meta.size + 1 );
-        const auto dec = ZSTD_decompress_usingDDict( m_ctx, buf, meta.size, m_data + meta.offset, meta.size, m_dict );
-        assert( dec == meta.compressedSize );
+        const auto dec = ZSTD_decompress_usingDDict( m_ctx, buf, meta.size, m_data + meta.offset, meta.compressedSize, m_dict );
+        assert( dec == meta.size );
         buf[meta.size] = '\0';
         return buf;
     }
