@@ -10,6 +10,7 @@ void PrintHelp()
 {
     printf( "info        - archive info\n" );
     printf( "toplevel    - list toplevel messages\n" );
+    printf( "query msgid - view message with given message id\n" );
     printf( "view idx    - view message of given idx\n" );
 }
 
@@ -63,6 +64,18 @@ int main( int argc, char** argv )
         else if( strcmp( cmd, "info" ) == 0 )
         {
             Info( archive );
+        }
+        else if( strncmp( cmd, "query ", 6 ) == 0 )
+        {
+            auto msg = archive.GetMessage( cmd+6 );
+            if( msg )
+            {
+                printf( "%s\n", msg );
+            }
+            else
+            {
+                printf( "Invalid message id.\n" );
+            }
         }
         else
         {

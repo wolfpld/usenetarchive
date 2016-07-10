@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../common/FileMap.hpp"
+#include "../common/HashSearch.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/ZMessageView.hpp"
 
@@ -16,6 +17,7 @@ public:
     Archive( const std::string& dir );
 
     const char* GetMessage( uint32_t idx );
+    const char* GetMessage( const char* msgid );
     size_t NumberOfMessages() const { return m_mcnt; }
 
     ViewReference<uint32_t> GetTopLevel() const;
@@ -25,6 +27,7 @@ private:
     ZMessageView m_mview;
     size_t m_mcnt;
     FileMap<uint32_t> m_toplevel;
+    HashSearch m_midhash;
 };
 
 #endif
