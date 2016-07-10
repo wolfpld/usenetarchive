@@ -170,7 +170,7 @@ static int CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data
     {
         uint32_t depth = 1;
         const auto idx = data.ptr[i];
-        auto item = new TreeItem( parent );
+        auto item = new TreeItem( parent, idx );
         parent->appendChild( item );
         const auto children = arch.GetChildren( idx );
         if( children.size > 0 )

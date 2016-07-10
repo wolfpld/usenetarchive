@@ -58,9 +58,10 @@
 
 #include "treeitem.hpp"
 
-TreeItem::TreeItem(TreeItem *parent)
+TreeItem::TreeItem(TreeItem *parent, uint32_t idx)
+    : m_parentItem( parent )
+    , m_idx( idx )
 {
-    m_parentItem = parent;    
 }
 
 TreeItem::~TreeItem()
