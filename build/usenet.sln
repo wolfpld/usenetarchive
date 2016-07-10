@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "repack-zstd", "..\repack-zs
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "connectivity", "..\connectivity\build\win32\connectivity.vcxproj", "{D373D31A-561B-459D-9A92-1F47A606CD2B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "query", "..\query\build\win32\query.vcxproj", "{46BDFB0E-EC9E-4F16-AD72-1960DA04CB2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -69,6 +71,10 @@ Global
 		{D373D31A-561B-459D-9A92-1F47A606CD2B}.Debug|x64.Build.0 = Debug|x64
 		{D373D31A-561B-459D-9A92-1F47A606CD2B}.Release|x64.ActiveCfg = Release|x64
 		{D373D31A-561B-459D-9A92-1F47A606CD2B}.Release|x64.Build.0 = Release|x64
+		{46BDFB0E-EC9E-4F16-AD72-1960DA04CB2A}.Debug|x64.ActiveCfg = Debug|x64
+		{46BDFB0E-EC9E-4F16-AD72-1960DA04CB2A}.Debug|x64.Build.0 = Debug|x64
+		{46BDFB0E-EC9E-4F16-AD72-1960DA04CB2A}.Release|x64.ActiveCfg = Release|x64
+		{46BDFB0E-EC9E-4F16-AD72-1960DA04CB2A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
