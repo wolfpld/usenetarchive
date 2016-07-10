@@ -119,5 +119,11 @@
     <ClInclude Include="..\..\..\contrib\linenoise-ng\linenoise.h">
       <Filter>linenoise-ng</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\libuat\ViewReference.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\FileMap.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

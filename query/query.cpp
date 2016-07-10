@@ -8,6 +8,7 @@
 
 void PrintHelp()
 {
+    printf( "toplevel - list toplevel messages\n" );
     printf( "view idx - view message of given idx\n" );
 }
 
@@ -41,6 +42,14 @@ int main( int argc, char** argv )
             else
             {
                 printf( "Invalid message index (max %i).\n", archive.NumberOfMessages() );
+            }
+        }
+        else if( strcmp( cmd, "toplevel" ) == 0 )
+        {
+            auto view = archive.GetTopLevel();
+            for( uint64_t i=0; i<view.size; i++ )
+            {
+                printf( "%i\n", view.ptr[i] );
             }
         }
         else

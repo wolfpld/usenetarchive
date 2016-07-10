@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp" />
+    <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\MessageView.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
     <ClInclude Include="..\..\..\libuat\Archive.hpp" />
+    <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{46BDFB0E-EC9E-4F16-AD72-1960DA04CB2A}</ProjectGuid>
