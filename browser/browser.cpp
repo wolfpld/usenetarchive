@@ -134,7 +134,38 @@ void Browser::SetText( const char* txt )
             }
             else
             {
-                s << "<font>";
+                int level = 0;
+                auto test = txt;
+                while( test != end )
+                {
+                    if( *test == '>' || *test == ':' || *test == '|' )
+                    {
+                        level++;
+                    }
+                    else if( *test != ' ' )
+                    {
+                        break;
+                    }
+                    test++;
+                }
+                switch( level )
+                {
+                case 0:
+                    s << "<font>";
+                    break;
+                case 1:
+                    s << "<font color=\"#ae4a00\">";
+                    break;
+                case 2:
+                    s << "<font color=\"#980e76\">";
+                    break;
+                case 3:
+                    s << "<font color=\"#4e47ab\">";
+                    break;
+                default:
+                    s << "<font color=\"#225025\">";
+                    break;
+                }
             }
             Encode( s, txt, end );
             s << "</font><br/>";
