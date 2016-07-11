@@ -18,8 +18,10 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 
 - kill-duplicates --- Removes duplicate messages. It is relatively rare, but data sets from even a single NNTP server may contain the same message twice.
 - extract-msgid --- Extracts unique identifier of each message and builds reference table for fast access to any message through its ID.
+- extract-msgmeta --- Extracts "From" and "Subject" fields, as a quick reference for archive browsers.
 - merge-raw --- Merges two imported data sets into one. Does not duplicate messages.
 - utf8ize --- Converts messages to a common character encoding, UTF-8.
+- connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
 
 ### Data Access
@@ -29,6 +31,12 @@ Raw imported messages have to be processed to be of any use. We provide the foll
     * Listing of message identifiers.
     * Query message by identifier.
     * Query message by database record number.
+- libuat --- Archive access library. Operates on zstd database.
+- query --- Testbed for libuat. Exposes all provided functionality.
+
+### End-user Utilities
+
+- browser --- Graphical browser of archives.
 
 ### License
 
