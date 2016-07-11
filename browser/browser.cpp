@@ -1,6 +1,8 @@
 #include <QFileDialog>
+#include <sstream>
 
 #include "../libuat/Archive.hpp"
+#include "../common/String.hpp"
 
 #include "browser.h"
 #include "ui_browser.h"
@@ -49,9 +51,87 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
+static void Encode( std::ostringstream& s, const char* txt, const char* end )
+{
+    while( txt != end )
+    {
+        if( *txt == '<' )
+        {
+            s << "&lt;";
+        }
+        else if( *txt == '>' )
+        {
+            s << "&gt;";
+        }
+        else
+        {
+            s.put( *txt );
+        }
+        txt++;
+    }
+}
+
 void Browser::SetText( const char* txt )
 {
-    ui->textBrowser->setPlainText( txt );
+    std::ostringstream s;
+    s << "<body><html>";
+    s << "<p style=\"background-color: #1c1c1c\">";
+
+    bool headers = true;
+    bool first = true;
+    for(;;)
+    {
+        auto end = txt;
+        while( *end != '\n' && *end != '\0' ) end++;
+        if( headers )
+        {
+            if( end-txt == 0 )
+            {
+                s << "</p>";
+                headers = false;
+            }
+            else
+            {
+                if( !first )
+                {
+                    s << "<br/>";
+                }
+                first = false;
+                if( strnicmp( "from: ", txt, 6 ) == 0 )
+                {
+                    s << "<font color=\"#f6a200\">";
+                }
+                else if( strnicmp( "newsgroups: ", txt, 12 ) == 0 )
+                {
+                    s << "<font color=\"#0068f6\">";
+                }
+                else if( strnicmp( "subject: ", txt, 9 ) == 0 )
+                {
+                    s << "<font color=\"#74f600\">";
+                }
+                else if( strnicmp( "date: ", txt, 6 ) == 0 )
+                {
+                    s << "<font color=\"#f6002e\">";
+                }
+                else
+                {
+                    s << "<font color=\"#555555\">";
+                }
+                Encode( s, txt, end );
+                s << "</font>";
+            }
+        }
+        else
+        {
+            Encode( s, txt, end );
+            s << "<br/>";
+        }
+        if( *end == '\0' ) break;
+        txt = end + 1;
+    }
+
+    s << "</html></body>";
+    ui->textBrowser->setHtml( s.str().c_str() );
 }
 
 void Browser::on_treeView_clicked(const QModelIndex &index)
