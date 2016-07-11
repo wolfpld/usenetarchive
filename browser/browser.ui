@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Browser</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="minimumSize">
     <size>
