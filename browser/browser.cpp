@@ -44,6 +44,7 @@ void Browser::FillTree()
     {
         ui->treeView->resizeColumnToContents( i );
     }
+    connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
 void Browser::on_treeView_clicked(const QModelIndex &index)
@@ -52,4 +53,9 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
     if( idx == -1 ) return;
 
     ui->textBrowser->setPlainText( m_archive->GetMessage( idx ) );
+}
+
+void Browser::onTreeSelectionChanged( const QModelIndex& index )
+{
+    on_treeView_clicked( index );
 }

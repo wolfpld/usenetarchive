@@ -42,7 +42,11 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QTreeView" name="treeView"/>
+          <widget class="QTreeView" name="treeView">
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectItems</enum>
+           </property>
+          </widget>
           <widget class="QTextBrowser" name="textBrowser">
            <property name="font">
             <font>

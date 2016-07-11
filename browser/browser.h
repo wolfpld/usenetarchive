@@ -24,6 +24,7 @@ public:
 private slots:
     void on_actionOpen_triggered();
     void on_treeView_clicked(const QModelIndex &index);
+    void onTreeSelectionChanged( const QModelIndex& index );
 
 private:
     void FillTree();
