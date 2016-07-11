@@ -26,7 +26,7 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 
 ### Data Access
 
-- query-raw --- Implements queries on LZ4 database. Supports:
+- query-raw --- Implements queries on LZ4 database. Requires results of extract-msgid utility. Supports:
     * Message count.
     * Listing of message identifiers.
     * Query message by identifier.
@@ -37,6 +37,10 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 ### End-user Utilities
 
 - browser --- Graphical browser of archives.
+
+### Typical Workflow
+
+![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/pipeline.svg)
 
 ### License
 

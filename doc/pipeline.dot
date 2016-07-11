@@ -1,0 +1,37 @@
+digraph
+{
+    src1[label="First source", color=red];
+    src2[label="Second source", color=red];
+    dst1[label="Archive", color=blue];
+
+    mbox[label="import-source-mbox"];
+    slrnpull[label="import-source-slrnpull"];
+
+    kill1[label="kill-duplicates"];
+    kill2[label="kill-duplicates"];
+
+    msgid1[label="extract-msgid"];
+    msgid2[label="extract-msgid"];
+    msgid3[label="extract-msgid"];
+
+    merge[label="merge-raw"];
+    msgmeta[label="extract-msgmeta"];
+    repack[label="repack-zstd"];
+
+    src1 -> mbox;
+    src2 -> slrnpull;
+    mbox -> kill1;
+    slrnpull -> kill2;
+    kill1 -> msgid1;
+    kill2 -> msgid2;
+    msgid1 -> merge;
+    msgid2 -> merge;
+    merge -> utf8ize;
+    utf8ize -> msgid3;
+    msgid3 -> msgmeta;
+    msgmeta -> connectivity;
+    connectivity -> repack;
+    repack -> dst1;
+    dst1 -> query;
+    dst1 -> browser;
+}
