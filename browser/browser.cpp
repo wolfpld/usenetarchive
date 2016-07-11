@@ -33,6 +33,8 @@ void Browser::on_actionOpen_triggered()
         str += " messages.";
         ui->statusBar->showMessage( str, 10000 );
         FillTree();
+        auto idx = dir.find_last_of( '/' );
+        ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
     }
 }
 
