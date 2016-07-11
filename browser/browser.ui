@@ -46,6 +46,9 @@
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectItems</enum>
            </property>
+           <property name="allColumnsShowFocus">
+            <bool>true</bool>
+           </property>
           </widget>
           <widget class="QTextBrowser" name="textBrowser">
            <property name="font">
