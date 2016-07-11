@@ -61,3 +61,22 @@ void Browser::onTreeSelectionChanged( const QModelIndex& index )
 {
     on_treeView_clicked( index );
 }
+
+void Browser::on_treeView_expanded(const QModelIndex &index)
+{
+    if( m_model->IsRoot( index ) )
+    {
+        RecursiveExpand(index);
+    }
+}
+
+void Browser::RecursiveExpand(const QModelIndex& index)
+{
+    auto num = m_model->rowCount(index);
+    for( int i=0; i<num; i++ )
+    {
+        auto idx = m_model->index( i, 0, index );
+        ui->treeView->expand(idx);
+        RecursiveExpand(idx);
+    }
+}

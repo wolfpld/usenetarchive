@@ -107,6 +107,17 @@ uint32_t TreeModel::GetIdx(const QModelIndex& index) const
     return item->GetIdx();
 }
 
+bool TreeModel::IsRoot(const QModelIndex& index) const
+{
+    if (!index.isValid())
+        return false;
+
+    TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem *parentItem = childItem->parentItem();
+
+    return parentItem == rootItem;
+}
+
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
