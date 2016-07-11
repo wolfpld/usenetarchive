@@ -90,6 +90,8 @@ void Browser::SetText( const char* txt )
             {
                 s << "</p>";
                 headers = false;
+                while( *end == '\n' ) end++;
+                end--;
             }
             else
             {
