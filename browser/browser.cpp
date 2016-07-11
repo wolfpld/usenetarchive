@@ -31,7 +31,7 @@ void Browser::on_actionOpen_triggered()
         str += "Loaded archive with ";
         str += QString::number( m_archive->NumberOfMessages() );
         str += " messages.";
-        ui->statusBar->showMessage( str, 10000 );
+        ui->statusBar->showMessage( str, 0 );
         FillTree();
         auto idx = dir.find_last_of( '/' );
         ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
