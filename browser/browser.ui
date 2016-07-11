@@ -43,7 +43,14 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QTreeView" name="treeView"/>
-          <widget class="QTextBrowser" name="textBrowser"/>
+          <widget class="QTextBrowser" name="textBrowser">
+           <property name="font">
+            <font>
+             <family>Lucida Console</family>
+             <pointsize>11</pointsize>
+            </font>
+           </property>
+          </widget>
          </widget>
         </item>
        </layout>

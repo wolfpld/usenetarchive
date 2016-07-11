@@ -98,6 +98,15 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     return item->data(index.column());
 }
 
+uint32_t TreeModel::GetIdx(const QModelIndex& index) const
+{
+    if (!index.isValid())
+        return -1;
+
+    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    return item->GetIdx();
+}
+
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())

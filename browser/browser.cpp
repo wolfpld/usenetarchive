@@ -45,3 +45,11 @@ void Browser::FillTree()
         ui->treeView->resizeColumnToContents( i );
     }
 }
+
+void Browser::on_treeView_clicked(const QModelIndex &index)
+{
+    auto idx = m_model->GetIdx( index );
+    if( idx == -1 ) return;
+
+    ui->textBrowser->setPlainText( m_archive->GetMessage( idx ) );
+}
