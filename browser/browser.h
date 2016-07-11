@@ -30,6 +30,7 @@ private slots:
 private:
     void FillTree();
     void RecursiveExpand(const QModelIndex& index);
+    void SetText( const char* txt );
 
     Ui::Browser *ui;
     std::unique_ptr<Archive> m_archive;

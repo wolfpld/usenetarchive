@@ -49,12 +49,17 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
+void Browser::SetText( const char* txt )
+{
+    ui->textBrowser->setPlainText( txt );
+}
+
 void Browser::on_treeView_clicked(const QModelIndex &index)
 {
     auto idx = m_model->GetIdx( index );
     if( idx == -1 ) return;
 
-    ui->textBrowser->setPlainText( m_archive->GetMessage( idx ) );
+    SetText( m_archive->GetMessage( idx ) );
 }
 
 void Browser::onTreeSelectionChanged( const QModelIndex& index )
