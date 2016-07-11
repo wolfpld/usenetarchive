@@ -79,6 +79,7 @@ void Browser::SetText( const char* txt )
 
     bool headers = true;
     bool first = true;
+    bool sig = false;
     for(;;)
     {
         auto end = txt;
@@ -123,8 +124,20 @@ void Browser::SetText( const char* txt )
         }
         else
         {
+            if( strncmp( "-- \n", txt, 4 ) == 0 )
+            {
+                sig = true;
+            }
+            if( sig )
+            {
+                s << "<font color=\"#666666\">";
+            }
+            else
+            {
+                s << "<font>";
+            }
             Encode( s, txt, end );
-            s << "<br/>";
+            s << "</font><br/>";
         }
         if( *end == '\0' ) break;
         txt = end + 1;
