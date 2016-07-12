@@ -101,19 +101,19 @@ void Browser::SetText( const char* txt )
                     s << "<br/>";
                 }
                 first = false;
-                if( strnicmp( "from: ", txt, 6 ) == 0 )
+                if( strnicmpl( "from: ", txt, 6 ) == 0 )
                 {
                     s << "<font color=\"#f6a200\">";
                 }
-                else if( strnicmp( "newsgroups: ", txt, 12 ) == 0 )
+                else if( strnicmpl( "newsgroups: ", txt, 12 ) == 0 )
                 {
                     s << "<font color=\"#0068f6\">";
                 }
-                else if( strnicmp( "subject: ", txt, 9 ) == 0 )
+                else if( strnicmpl( "subject: ", txt, 9 ) == 0 )
                 {
                     s << "<font color=\"#74f600\">";
                 }
-                else if( strnicmp( "date: ", txt, 6 ) == 0 )
+                else if( strnicmpl( "date: ", txt, 6 ) == 0 )
                 {
                     s << "<font color=\"#f6002e\">";
                 }
