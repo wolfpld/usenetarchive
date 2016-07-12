@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include <sstream>
+#include <memory>
 
 #include "../libuat/Archive.hpp"
 #include "../common/String.hpp"
