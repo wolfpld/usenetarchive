@@ -1,7 +1,7 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++11
 DEFINES +=
-INCLUDES :=
+INCLUDES := -I../../../contrib/inn
 LIBS :=
 IMAGE := connectivity
 

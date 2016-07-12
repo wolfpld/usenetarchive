@@ -10,6 +10,7 @@
 #include "clibrary.h"
 #include <ctype.h>
 #include <time.h>
+#include <strings.h>
 
 #include "inn/libinn.h"
 
