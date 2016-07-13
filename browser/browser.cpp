@@ -52,21 +52,21 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
-static void Encode( std::ostringstream& s, const char* txt, const char* end )
+static void Encode( TextBuf& buf, const char* txt, const char* end )
 {
     while( txt != end )
     {
         if( *txt == '<' )
         {
-            s << "&lt;";
+            buf.Write( "&lt;" );
         }
         else if( *txt == '>' )
         {
-            s << "&gt;";
+            buf.Write( "&gt;" );
         }
         else
         {
-            s.put( *txt );
+            buf.PutC( *txt );
         }
         txt++;
     }
@@ -74,9 +74,8 @@ static void Encode( std::ostringstream& s, const char* txt, const char* end )
 
 void Browser::SetText( const char* txt )
 {
-    std::ostringstream s;
-    s << "<body><html><pre style=\"font-family: Consolas\">";
-    s << "<p style=\"background-color: #1c1c1c\">";
+    m_buf.Reset();
+    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\">" );
 
     bool headers = true;
     bool first = true;
@@ -89,7 +88,7 @@ void Browser::SetText( const char* txt )
         {
             if( end-txt == 0 )
             {
-                s << "</p>";
+                m_buf.Write( "</p>" );
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
@@ -98,31 +97,31 @@ void Browser::SetText( const char* txt )
             {
                 if( !first )
                 {
-                    s << "<br/>";
+                    m_buf.Write( "<br/>" );
                 }
                 first = false;
                 if( strnicmpl( txt, "from: ", 6 ) == 0 )
                 {
-                    s << "<font color=\"#f6a200\">";
+                    m_buf.Write( "<font color=\"#f6a200\">" );
                 }
                 else if( strnicmpl( txt, "newsgroups: ", 12 ) == 0 )
                 {
-                    s << "<font color=\"#0068f6\">";
+                    m_buf.Write( "<font color=\"#0068f6\">" );
                 }
                 else if( strnicmpl( txt, "subject: ", 9 ) == 0 )
                 {
-                    s << "<font color=\"#74f600\">";
+                    m_buf.Write( "<font color=\"#74f600\">" );
                 }
                 else if( strnicmpl( txt, "date: ", 6 ) == 0 )
                 {
-                    s << "<font color=\"#f6002e\">";
+                    m_buf.Write( "<font color=\"#f6002e\">" );
                 }
                 else
                 {
-                    s << "<font color=\"#555555\">";
+                    m_buf.Write( "<font color=\"#555555\">" );
                 }
-                Encode( s, txt, end );
-                s << "</font>";
+                Encode( m_buf, txt, end );
+                m_buf.Write( "</font>" );
             }
         }
         else
@@ -133,7 +132,7 @@ void Browser::SetText( const char* txt )
             }
             if( sig )
             {
-                s << "<font color=\"#666666\">";
+                m_buf.Write( "<font color=\"#666666\">" );
             }
             else
             {
@@ -154,31 +153,31 @@ void Browser::SetText( const char* txt )
                 switch( level )
                 {
                 case 0:
-                    s << "<font>";
+                    m_buf.Write( "<font>" );
                     break;
                 case 1:
-                    s << "<font color=\"#ae4a00\">";
+                    m_buf.Write( "<font color=\"#ae4a00\">" );
                     break;
                 case 2:
-                    s << "<font color=\"#980e76\">";
+                    m_buf.Write( "<font color=\"#980e76\">" );
                     break;
                 case 3:
-                    s << "<font color=\"#4e47ab\">";
+                    m_buf.Write( "<font color=\"#4e47ab\">" );
                     break;
                 default:
-                    s << "<font color=\"#225025\">";
+                    m_buf.Write( "<font color=\"#225025\">" );
                     break;
                 }
             }
-            Encode( s, txt, end );
-            s << "</font><br/>";
+            Encode( m_buf, txt, end );
+            m_buf.Write( "</font><br/>" );
         }
         if( *end == '\0' ) break;
         txt = end + 1;
     }
 
-    s << "</pre></html></body>";
-    ui->textBrowser->setHtml( s.str().c_str() );
+    m_buf.Write( "</pre></html></body>" );
+    ui->textBrowser->setHtml( QString( m_buf ) );
 }
 
 void Browser::on_treeView_clicked(const QModelIndex &index)

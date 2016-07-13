@@ -5,6 +5,7 @@
 #include <QMainWindow>
 
 #include "treemodel.hpp"
+#include "TextBuf.hpp"
 
 class Archive;
 
@@ -35,6 +36,7 @@ private:
     Ui::Browser *ui;
     std::unique_ptr<Archive> m_archive;
     std::unique_ptr<TreeModel> m_model;
+    TextBuf m_buf;
 };
 
 #endif

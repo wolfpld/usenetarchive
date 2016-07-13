@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     ../contrib/zstd/decompress/huf_decompress.c \
     ../contrib/zstd/decompress/zstd_decompress.c \
     treemodel.cpp \
-    treeitem.cpp
+    treeitem.cpp \
+    TextBuf.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -43,7 +44,8 @@ HEADERS  += browser.h \
     ../contrib/zstd/common/zstd.h \
     ../contrib/zstd/common/zstd_internal.h \
     treemodel.hpp \
-    treeitem.hpp
+    treeitem.hpp \
+    TextBuf.hpp
 
 FORMS    += browser.ui
 
