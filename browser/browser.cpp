@@ -75,7 +75,7 @@ static void Encode( std::ostringstream& s, const char* txt, const char* end )
 void Browser::SetText( const char* txt )
 {
     std::ostringstream s;
-    s << "<body><html>";
+    s << "<body><html><pre style=\"font-family: Consolas\">";
     s << "<p style=\"background-color: #1c1c1c\">";
 
     bool headers = true;
@@ -89,7 +89,7 @@ void Browser::SetText( const char* txt )
         {
             if( end-txt == 0 )
             {
-                s << "</p><pre style=\"font-family: Consolas\">";
+                s << "</p>";
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
