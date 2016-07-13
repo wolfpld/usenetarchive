@@ -75,7 +75,7 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
 void Browser::SetText( const char* txt )
 {
     m_buf.Reset();
-    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\">" );
+    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\"><font color=\"#555555\">" );
 
     bool headers = true;
     bool first = true;
@@ -88,13 +88,14 @@ void Browser::SetText( const char* txt )
         {
             if( end-txt == 0 )
             {
-                m_buf.Write( "</p>" );
+                m_buf.Write( "</font></p>" );
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
             }
             else
             {
+                bool font = true;
                 if( !first )
                 {
                     m_buf.Write( "<br/>" );
@@ -118,14 +119,18 @@ void Browser::SetText( const char* txt )
                 }
                 else
                 {
-                    m_buf.Write( "<font color=\"#555555\">" );
+                    font = false;
                 }
                 Encode( m_buf, txt, end );
-                m_buf.Write( "</font>" );
+                if( font )
+                {
+                    m_buf.Write( "</font>" );
+                }
             }
         }
         else
         {
+            bool font = true;
             if( strncmp( "-- \n", txt, 4 ) == 0 )
             {
                 sig = true;
@@ -153,7 +158,7 @@ void Browser::SetText( const char* txt )
                 switch( level )
                 {
                 case 0:
-                    m_buf.Write( "<font>" );
+                    font = false;
                     break;
                 case 1:
                     m_buf.Write( "<font color=\"#ae4a00\">" );
@@ -170,7 +175,14 @@ void Browser::SetText( const char* txt )
                 }
             }
             Encode( m_buf, txt, end );
-            m_buf.Write( "</font><br/>" );
+            if( font )
+            {
+                m_buf.Write( "</font><br/>" );
+            }
+            else
+            {
+                m_buf.Write( "<br/>" );
+            }
         }
         if( *end == '\0' ) break;
         txt = end + 1;
