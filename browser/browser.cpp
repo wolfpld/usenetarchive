@@ -89,7 +89,7 @@ void Browser::SetText( const char* txt )
         {
             if( end-txt == 0 )
             {
-                s << "</p>";
+                s << "</p><pre style=\"font-family: Consolas\">";
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
@@ -177,7 +177,7 @@ void Browser::SetText( const char* txt )
         txt = end + 1;
     }
 
-    s << "</html></body>";
+    s << "</pre></html></body>";
     ui->textBrowser->setHtml( s.str().c_str() );
 }
 
