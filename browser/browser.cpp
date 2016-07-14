@@ -181,6 +181,10 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
         {
             EncodeSpecial( buf, txt, end, '_', 'u' );
         }
+        else if( *txt == '\t' )
+        {
+            buf.Write( "        ", 8 );
+        }
         else
         {
             buf.PutC( *txt );
