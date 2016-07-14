@@ -99,6 +99,10 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
         {
             buf.Write( "&gt;" );
         }
+        else if( *txt == '&' )
+        {
+            buf.Write( "&amp;" );
+        }
         else if( *txt == '*' )
         {
             EncodeSpecial( buf, txt, end, '*', 'b' );
