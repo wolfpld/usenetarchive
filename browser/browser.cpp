@@ -93,15 +93,15 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
     {
         if( *txt == '<' )
         {
-            buf.Write( "&lt;" );
+            buf.Write( "&lt;", 4 );
         }
         else if( *txt == '>' )
         {
-            buf.Write( "&gt;" );
+            buf.Write( "&gt;", 4 );
         }
         else if( *txt == '&' )
         {
-            buf.Write( "&amp;" );
+            buf.Write( "&amp;", 5 );
         }
         else if( *txt == '*' )
         {
@@ -126,7 +126,7 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
 void Browser::SetText( const char* txt )
 {
     m_buf.Reset();
-    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\"><font color=\"#555555\">" );
+    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\"><font color=\"#555555\">", 106 );
 
     bool headers = true;
     bool first = true;
@@ -139,7 +139,7 @@ void Browser::SetText( const char* txt )
         {
             if( end-txt == 0 )
             {
-                m_buf.Write( "</font></p>" );
+                m_buf.Write( "</font></p>", 11 );
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
@@ -149,24 +149,24 @@ void Browser::SetText( const char* txt )
                 bool font = true;
                 if( !first )
                 {
-                    m_buf.Write( "<br/>" );
+                    m_buf.Write( "<br/>", 5 );
                 }
                 first = false;
                 if( strnicmpl( txt, "from: ", 6 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#f6a200\">" );
+                    m_buf.Write( "<font color=\"#f6a200\">", 22 );
                 }
                 else if( strnicmpl( txt, "newsgroups: ", 12 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#0068f6\">" );
+                    m_buf.Write( "<font color=\"#0068f6\">", 22 );
                 }
                 else if( strnicmpl( txt, "subject: ", 9 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#74f600\">" );
+                    m_buf.Write( "<font color=\"#74f600\">", 22 );
                 }
                 else if( strnicmpl( txt, "date: ", 6 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#f6002e\">" );
+                    m_buf.Write( "<font color=\"#f6002e\">", 22 );
                 }
                 else
                 {
@@ -175,7 +175,7 @@ void Browser::SetText( const char* txt )
                 Encode( m_buf, txt, end );
                 if( font )
                 {
-                    m_buf.Write( "</font>" );
+                    m_buf.Write( "</font>", 7 );
                 }
             }
         }
@@ -188,7 +188,7 @@ void Browser::SetText( const char* txt )
             }
             if( sig )
             {
-                m_buf.Write( "<font color=\"#666666\">" );
+                m_buf.Write( "<font color=\"#666666\">", 22 );
             }
             else
             {
@@ -212,34 +212,34 @@ void Browser::SetText( const char* txt )
                     font = false;
                     break;
                 case 1:
-                    m_buf.Write( "<font color=\"#ae4a00\">" );
+                    m_buf.Write( "<font color=\"#ae4a00\">", 22 );
                     break;
                 case 2:
-                    m_buf.Write( "<font color=\"#980e76\">" );
+                    m_buf.Write( "<font color=\"#980e76\">", 22 );
                     break;
                 case 3:
-                    m_buf.Write( "<font color=\"#4e47ab\">" );
+                    m_buf.Write( "<font color=\"#4e47ab\">", 22 );
                     break;
                 default:
-                    m_buf.Write( "<font color=\"#225025\">" );
+                    m_buf.Write( "<font color=\"#225025\">", 22 );
                     break;
                 }
             }
             Encode( m_buf, txt, end );
             if( font )
             {
-                m_buf.Write( "</font><br/>" );
+                m_buf.Write( "</font><br/>", 12 );
             }
             else
             {
-                m_buf.Write( "<br/>" );
+                m_buf.Write( "<br/>", 5 );
             }
         }
         if( *end == '\0' ) break;
         txt = end + 1;
     }
 
-    m_buf.Write( "</pre></html></body>" );
+    m_buf.Write( "</pre></html></body>", 20 );
     ui->textBrowser->setHtml( QString( m_buf ) );
 }
 
