@@ -2,6 +2,12 @@
 #include <sstream>
 #include <memory>
 
+#ifdef _WIN32
+#  include <malloc.h>
+#else
+#  include <alloca.h>
+#endif
+
 #include "../libuat/Archive.hpp"
 #include "../common/String.hpp"
 
@@ -12,6 +18,8 @@ Browser::Browser( QWidget *parent )
     : QMainWindow( parent )
     , ui( new Ui::Browser )
     , m_index( -1 )
+    , m_rawMessage( false )
+    , m_rot13( false )
 {
     ui->setupUi( this );
 }
@@ -40,6 +48,7 @@ void Browser::on_actionOpen_triggered()
         auto idx = dir.find_last_of( '/' );
         ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
         ui->actionRaw_message->setEnabled( true );
+        ui->actionROT13->setEnabled( true );
     }
 }
 
@@ -47,8 +56,48 @@ void Browser::on_actionRaw_message_triggered(bool checked)
 {
     if( m_index == -1 ) return;
 
+    m_rawMessage = checked;
     auto msg = m_archive->GetMessage( m_index );
-    if(checked)
+    ShowMessage( msg );
+}
+
+void Browser::on_actionROT13_triggered(bool checked)
+{
+    if( m_index == -1 ) return;
+
+    m_rot13 = checked;
+    auto msg = m_archive->GetMessage( m_index );
+    ShowMessage( msg );
+}
+
+void Browser::ShowMessage( const char* msg )
+{
+    if( m_rot13 )
+    {
+        auto size = strlen( msg );
+        char* tmp = (char*)alloca( size + 1 );
+        for( int i=0; i<size; i++ )
+        {
+            if( ( msg[i] >= 'a' && msg[i] <= 'm' ) ||
+                ( msg[i] >= 'A' && msg[i] <= 'M' ) )
+            {
+                tmp[i] = msg[i] + 13;
+            }
+            else if( ( msg[i] >= 'n' && msg[i] <= 'z' ) ||
+                     ( msg[i] >= 'N' && msg[i] <= 'Z' ) )
+            {
+                tmp[i] = msg[i] - 13;
+            }
+            else
+            {
+                tmp[i] = msg[i];
+            }
+        }
+        tmp[size] = '\0';
+        msg = tmp;
+    }
+
+    if( m_rawMessage )
     {
         ui->textBrowser->setPlainText( msg );
     }
@@ -265,8 +314,12 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
     m_index = m_model->GetIdx( index );
     if( m_index == -1 ) return;
 
-    SetText( m_archive->GetMessage( m_index ) );
     ui->actionRaw_message->setChecked( false );
+    ui->actionROT13->setChecked( false );
+    m_rot13 = false;
+    m_rawMessage = false;
+
+    SetText( m_archive->GetMessage( m_index ) );
 }
 
 void Browser::onTreeSelectionChanged( const QModelIndex& index )
