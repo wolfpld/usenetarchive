@@ -195,13 +195,26 @@ static void Encode( TextBuf& buf, const char* txt, const char* end, bool special
     }
 }
 
+static void WriteHeader( TextBuf& buf, const char* txt, const char* end, const char* color, bool last = false )
+{
+    buf.Write( "<font color=\"#", 14 );
+    buf.Write( color, 6 );
+    buf.Write( "\">", 2 );
+    Encode( buf, txt, end );
+    buf.Write( "</font>", 7 );
+    if( !last )
+    {
+        buf.Write( "<br/>", 5 );
+    }
+}
+
 void Browser::SetText( const char* txt )
 {
     m_buf.Reset();
-    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\"><font color=\"#555555\">", 106 );
+    m_buf.Write( "<body><html><pre style=\"font-family: Consolas\"><p style=\"background-color: #1c1c1c\">", 84 );
 
+    const char *fs = nullptr, *fe, *ns = nullptr, *ne, *ss = nullptr, *se, *ds = nullptr, *de;
     bool headers = true;
-    bool first = true;
     bool sig = false;
     for(;;)
     {
@@ -211,43 +224,37 @@ void Browser::SetText( const char* txt )
         {
             if( end-txt == 0 )
             {
-                m_buf.Write( "</font></p>", 11 );
+                WriteHeader( m_buf, fs, fe, "f6a200" );
+                WriteHeader( m_buf, ns, ne, "0068f6" );
+                WriteHeader( m_buf, ss, se, "74f600" );
+                WriteHeader( m_buf, ds, de, "f6002e", true );
+
+                m_buf.Write( "</p>", 4 );
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
             }
             else
             {
-                bool font = true;
-                if( !first )
-                {
-                    m_buf.Write( "<br/>", 5 );
-                }
-                first = false;
                 if( strnicmpl( txt, m_rot13 ? "sebz: " : "from: ", 6 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#f6a200\">", 22 );
+                    fs = txt;
+                    fe = end;
                 }
                 else if( strnicmpl( txt, m_rot13 ? "arjftebhcf: " : "newsgroups: ", 12 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#0068f6\">", 22 );
+                    ns = txt;
+                    ne = end;
                 }
                 else if( strnicmpl( txt, m_rot13 ? "fhowrpg: " : "subject: ", 9 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#74f600\">", 22 );
+                    ss = txt;
+                    se = end;
                 }
                 else if( strnicmpl( txt, m_rot13 ? "qngr: " : "date: ", 6 ) == 0 )
                 {
-                    m_buf.Write( "<font color=\"#f6002e\">", 22 );
-                }
-                else
-                {
-                    font = false;
-                }
-                Encode( m_buf, txt, end );
-                if( font )
-                {
-                    m_buf.Write( "</font>", 7 );
+                    ds = txt;
+                    de = end;
                 }
             }
         }
