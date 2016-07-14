@@ -64,6 +64,96 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
         {
             buf.Write( "&gt;" );
         }
+        else if( *txt == '*' )
+        {
+            const char* tmp = txt+1;
+            for(;;)
+            {
+                if( tmp == end || *tmp == ' ' )
+                {
+                    tmp = end;
+                    break;
+                }
+                if( *tmp == '*' )
+                {
+                    break;
+                }
+                tmp++;
+            }
+            if( tmp == end || tmp - txt == 1 )
+            {
+                buf.PutC( *txt );
+            }
+            else
+            {
+                buf.PutC( '*' );
+                buf.Write( "<b>" );
+                buf.Write( txt+1, tmp - txt - 1 );
+                buf.Write( "</b>" );
+                buf.PutC( '*' );
+                txt = tmp;
+            }
+        }
+        else if( *txt == '/' )
+        {
+            const char* tmp = txt+1;
+            for(;;)
+            {
+                if( tmp == end || *tmp == ' ' )
+                {
+                    tmp = end;
+                    break;
+                }
+                if( *tmp == '/' )
+                {
+                    break;
+                }
+                tmp++;
+            }
+            if( tmp == end || tmp - txt == 1 )
+            {
+                buf.PutC( *txt );
+            }
+            else
+            {
+                buf.PutC( '/' );
+                buf.Write( "<i>" );
+                buf.Write( txt+1, tmp - txt - 1 );
+                buf.Write( "</i>" );
+                buf.PutC( '/' );
+                txt = tmp;
+            }
+        }
+        else if( *txt == '_' )
+        {
+            const char* tmp = txt+1;
+            for(;;)
+            {
+                if( tmp == end || *tmp == ' ' )
+                {
+                    tmp = end;
+                    break;
+                }
+                if( *tmp == '_' )
+                {
+                    break;
+                }
+                tmp++;
+            }
+            if( tmp == end || tmp - txt == 1 )
+            {
+                buf.PutC( *txt );
+            }
+            else
+            {
+                buf.PutC( '_' );
+                buf.Write( "<u>" );
+                buf.Write( txt+1, tmp - txt - 1 );
+                buf.Write( "</u>" );
+                buf.PutC( '_' );
+                txt = tmp;
+            }
+        }
         else
         {
             buf.PutC( *txt );
