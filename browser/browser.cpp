@@ -224,19 +224,19 @@ void Browser::SetText( const char* txt )
                     m_buf.Write( "<br/>", 5 );
                 }
                 first = false;
-                if( strnicmpl( txt, "from: ", 6 ) == 0 )
+                if( strnicmpl( txt, m_rot13 ? "sebz: " : "from: ", 6 ) == 0 )
                 {
                     m_buf.Write( "<font color=\"#f6a200\">", 22 );
                 }
-                else if( strnicmpl( txt, "newsgroups: ", 12 ) == 0 )
+                else if( strnicmpl( txt, m_rot13 ? "arjftebhcf: " : "newsgroups: ", 12 ) == 0 )
                 {
                     m_buf.Write( "<font color=\"#0068f6\">", 22 );
                 }
-                else if( strnicmpl( txt, "subject: ", 9 ) == 0 )
+                else if( strnicmpl( txt, m_rot13 ? "fhowrpg: " : "subject: ", 9 ) == 0 )
                 {
                     m_buf.Write( "<font color=\"#74f600\">", 22 );
                 }
-                else if( strnicmpl( txt, "date: ", 6 ) == 0 )
+                else if( strnicmpl( txt, m_rot13 ? "qngr: " : "date: ", 6 ) == 0 )
                 {
                     m_buf.Write( "<font color=\"#f6002e\">", 22 );
                 }
