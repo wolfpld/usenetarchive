@@ -118,6 +118,8 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
+void Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
+
 static void EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char trigger, char tag )
 {
     const char* tmp = txt+1;
@@ -144,7 +146,7 @@ static void EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char
         buf.PutC( '<' );
         buf.PutC( tag );
         buf.PutC( '>' );
-        buf.Write( txt+1, tmp - txt - 1 );
+        Encode( buf, txt+1, tmp, false );
         buf.Write( "</", 2 );
         buf.PutC( tag );
         buf.PutC( '>' );
@@ -153,7 +155,7 @@ static void EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char
     }
 }
 
-static void Encode( TextBuf& buf, const char* txt, const char* end )
+static void Encode( TextBuf& buf, const char* txt, const char* end, bool special )
 {
     while( txt != end )
     {
@@ -169,15 +171,15 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
         {
             buf.Write( "&amp;", 5 );
         }
-        else if( *txt == '*' )
+        else if( special && *txt == '*' )
         {
             EncodeSpecial( buf, txt, end, '*', 'b' );
         }
-        else if( *txt == '/' )
+        else if( special && *txt == '/' )
         {
             EncodeSpecial( buf, txt, end, '/', 'i' );
         }
-        else if( *txt == '_' )
+        else if( special && *txt == '_' )
         {
             EncodeSpecial( buf, txt, end, '_', 'u' );
         }
