@@ -52,6 +52,41 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
+static void EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char trigger, char tag )
+{
+    const char* tmp = txt+1;
+    for(;;)
+    {
+        if( tmp == end || *tmp == ' ' )
+        {
+            tmp = end;
+            break;
+        }
+        if( *tmp == trigger )
+        {
+            break;
+        }
+        tmp++;
+    }
+    if( tmp == end || tmp - txt == 1 )
+    {
+        buf.PutC( *txt );
+    }
+    else
+    {
+        buf.PutC( trigger );
+        buf.PutC( '<' );
+        buf.PutC( tag );
+        buf.PutC( '>' );
+        buf.Write( txt+1, tmp - txt - 1 );
+        buf.Write( "</", 2 );
+        buf.PutC( tag );
+        buf.PutC( '>' );
+        buf.PutC( trigger );
+        txt = tmp;
+    }
+}
+
 static void Encode( TextBuf& buf, const char* txt, const char* end )
 {
     while( txt != end )
@@ -66,93 +101,15 @@ static void Encode( TextBuf& buf, const char* txt, const char* end )
         }
         else if( *txt == '*' )
         {
-            const char* tmp = txt+1;
-            for(;;)
-            {
-                if( tmp == end || *tmp == ' ' )
-                {
-                    tmp = end;
-                    break;
-                }
-                if( *tmp == '*' )
-                {
-                    break;
-                }
-                tmp++;
-            }
-            if( tmp == end || tmp - txt == 1 )
-            {
-                buf.PutC( *txt );
-            }
-            else
-            {
-                buf.PutC( '*' );
-                buf.Write( "<b>" );
-                buf.Write( txt+1, tmp - txt - 1 );
-                buf.Write( "</b>" );
-                buf.PutC( '*' );
-                txt = tmp;
-            }
+            EncodeSpecial( buf, txt, end, '*', 'b' );
         }
         else if( *txt == '/' )
         {
-            const char* tmp = txt+1;
-            for(;;)
-            {
-                if( tmp == end || *tmp == ' ' )
-                {
-                    tmp = end;
-                    break;
-                }
-                if( *tmp == '/' )
-                {
-                    break;
-                }
-                tmp++;
-            }
-            if( tmp == end || tmp - txt == 1 )
-            {
-                buf.PutC( *txt );
-            }
-            else
-            {
-                buf.PutC( '/' );
-                buf.Write( "<i>" );
-                buf.Write( txt+1, tmp - txt - 1 );
-                buf.Write( "</i>" );
-                buf.PutC( '/' );
-                txt = tmp;
-            }
+            EncodeSpecial( buf, txt, end, '/', 'i' );
         }
         else if( *txt == '_' )
         {
-            const char* tmp = txt+1;
-            for(;;)
-            {
-                if( tmp == end || *tmp == ' ' )
-                {
-                    tmp = end;
-                    break;
-                }
-                if( *tmp == '_' )
-                {
-                    break;
-                }
-                tmp++;
-            }
-            if( tmp == end || tmp - txt == 1 )
-            {
-                buf.PutC( *txt );
-            }
-            else
-            {
-                buf.PutC( '_' );
-                buf.Write( "<u>" );
-                buf.Write( txt+1, tmp - txt - 1 );
-                buf.Write( "</u>" );
-                buf.PutC( '_' );
-                txt = tmp;
-            }
+            EncodeSpecial( buf, txt, end, '_', 'u' );
         }
         else
         {
