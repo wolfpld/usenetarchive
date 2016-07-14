@@ -24,6 +24,7 @@ public:
 
 private slots:
     void on_actionOpen_triggered();
+    void on_actionRaw_message_triggered(bool checked);
     void on_treeView_clicked(const QModelIndex &index);
     void onTreeSelectionChanged( const QModelIndex& index );
     void on_treeView_expanded(const QModelIndex &index);
@@ -37,6 +38,7 @@ private:
     std::unique_ptr<Archive> m_archive;
     std::unique_ptr<TreeModel> m_model;
     TextBuf m_buf;
+    int32_t m_index;
 };
 
 #endif

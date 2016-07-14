@@ -11,6 +11,7 @@
 Browser::Browser( QWidget *parent )
     : QMainWindow( parent )
     , ui( new Ui::Browser )
+    , m_index( -1 )
 {
     ui->setupUi( this );
 }
@@ -38,6 +39,22 @@ void Browser::on_actionOpen_triggered()
         FillTree();
         auto idx = dir.find_last_of( '/' );
         ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
+        ui->actionRaw_message->setEnabled( true );
+    }
+}
+
+void Browser::on_actionRaw_message_triggered(bool checked)
+{
+    if( m_index == -1 ) return;
+
+    auto msg = m_archive->GetMessage( m_index );
+    if(checked)
+    {
+        ui->textBrowser->setPlainText( msg );
+    }
+    else
+    {
+        SetText( msg );
     }
 }
 
@@ -245,10 +262,11 @@ void Browser::SetText( const char* txt )
 
 void Browser::on_treeView_clicked(const QModelIndex &index)
 {
-    auto idx = m_model->GetIdx( index );
-    if( idx == -1 ) return;
+    m_index = m_model->GetIdx( index );
+    if( m_index == -1 ) return;
 
-    SetText( m_archive->GetMessage( idx ) );
+    SetText( m_archive->GetMessage( m_index ) );
+    ui->actionRaw_message->setChecked( false );
 }
 
 void Browser::onTreeSelectionChanged( const QModelIndex& index )
