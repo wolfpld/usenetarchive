@@ -138,8 +138,12 @@ int main( int argc, char** argv )
             {
                 const char* line = end;
                 while( *end != '\n' && *end != '\0' ) end++;
-                SplitLine( line, end, wordbuf );
-                Add( data, wordbuf, i );
+                while( *line == ' ' || *line == '>' || *line == ':' || *line == '|' || *line == '\t' ) line++;
+                if( line != end )
+                {
+                    SplitLine( line, end, wordbuf );
+                    Add( data, wordbuf, i );
+                }
                 if( *end == '\0' ) break;
                 post = end + 1;
             }
