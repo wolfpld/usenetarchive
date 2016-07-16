@@ -138,7 +138,7 @@ int main( int argc, char** argv )
 
         bool headers = true;
         bool signature = false;
-        int basePos = 0;
+        int basePos[5] = {};
 
         int children = -1;
         CountChildren( conn, i, children );
@@ -214,8 +214,8 @@ int main( int argc, char** argv )
                             break;
                         }
                     }
-                    Add( data, wordbuf, i, t, basePos, children );
-                    basePos += wordbuf.size();
+                    Add( data, wordbuf, i, t, basePos[t], children );
+                    basePos[t] += wordbuf.size();
                 }
                 if( *end == '\0' ) break;
                 post = end + 1;
