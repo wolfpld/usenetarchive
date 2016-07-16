@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <ctype.h>
-#include <map>
+#include <unordered_map>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
@@ -84,7 +84,7 @@ enum Type
     T_Header
 };
 
-using HitData = std::map<std::string, std::map<uint32_t, std::vector<uint16_t>>>;
+using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint16_t>>>;
 
 enum { MaxChildren = 0x1F };
 
