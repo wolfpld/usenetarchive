@@ -1,7 +1,9 @@
 #include <ctype.h>
+#include <map>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #ifdef _WIN32
 #  include <malloc.h>
@@ -9,42 +11,20 @@
 #  include <alloca.h>
 #endif
 
+#include <unicode/locid.h>
+#include <unicode/brkiter.h>
+#include <unicode/unistr.h>
+
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
-const char* IgnoredHeaders[] = {
-    "newsgroups",
-    "date",
-    "lines",
-    "message-id",
-    "mime-version",
-    "path",
-    "x-trace",
-    "x-complaints-to",
-    "nntp-posting-date",
-    "xref",
-    "references",
-    "x-in-reply-to",
-    "x-newsgroup",
-    "x-msmail-priority",
-    "x-mimeole",
-    "cancel-lock",
-    "x-face",
-    "x-orig-path",
-    "x-tech-contact",
-    "x-server-info",
-    "x-original-path",
-    "x-no-archive",
-    "to",
-    "supersedes",
-    "replyto",
-    "reply-to",
-    "followup-to",
-    "cc",
+const char* AllowedHeaders[] = {
+    "from",
+    "subject",
     nullptr
 };
 
-bool IsHeaderIgnored( const char* hdr, const char* end )
+bool IsHeaderAllowed( const char* hdr, const char* end )
 {
     int size = end - hdr;
     char* tmp = (char*)alloca( size+1 );
@@ -54,7 +34,7 @@ bool IsHeaderIgnored( const char* hdr, const char* end )
     }
     tmp[size] = '\0';
 
-    auto test = IgnoredHeaders;
+    auto test = AllowedHeaders;
     while( *test )
     {
         if( strncmp( tmp, *test, size+1 ) == 0 )
@@ -64,6 +44,42 @@ bool IsHeaderIgnored( const char* hdr, const char* end )
         test++;
     }
     return false;
+}
+
+void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out )
+{
+    out.clear();
+    auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
+    auto lower = us.toLower( icu::Locale::getEnglish() );
+    UErrorCode err = U_ZERO_ERROR;
+    auto it = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), err );
+    it->setText( lower );
+    int32_t p0 = 0;
+    int32_t p1 = it->first();
+    while( p1 != icu::BreakIterator::DONE )
+    {
+        auto part = lower.tempSubStringBetween( p0, p1 );
+        std::string str;
+        part.toUTF8String( str );
+        if( str.size() > 2 && str.size() < 14 )
+        {
+            out.emplace_back( std::move( str ) );
+        }
+        p0 = p1;
+        p1 = it->next();
+    }
+    delete it;
+}
+
+using HitData = std::map<std::string, std::map<uint32_t, std::vector<uint16_t>>>;
+
+void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx )
+{
+    for( auto& w : words )
+    {
+        auto& hits = data[w];
+        hits[idx].emplace_back( 0 );
+    }
 }
 
 int main( int argc, char** argv )
@@ -79,10 +95,12 @@ int main( int argc, char** argv )
 
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
+    std::vector<std::string> wordbuf;
+    HitData data;
 
     for( uint32_t i=0; i<size; i++ )
     {
-        if( ( i & 0x1FFF ) == 0 )
+        if( ( i & 0x3FF ) == 0 )
         {
             printf( "%i/%i\r", i, size );
             fflush( stdout );
@@ -103,21 +121,27 @@ int main( int argc, char** argv )
                 }
                 while( *end != ':' ) end++;
                 end += 2;
-                if( IsHeaderIgnored( post, end-2 ) )
-                {
-                    while( *end != '\n' ) end++;
-                }
-                else
+                if( IsHeaderAllowed( post, end-2 ) )
                 {
                     const char* line = end;
                     while( *end != '\n' ) end++;
-
+                    SplitLine( line, end, wordbuf );
+                    Add( data, wordbuf, i );
+                }
+                else
+                {
+                    while( *end != '\n' ) end++;
                 }
                 post = end + 1;
             }
             else
             {
-                break;
+                const char* line = end;
+                while( *end != '\n' && *end != '\0' ) end++;
+                SplitLine( line, end, wordbuf );
+                Add( data, wordbuf, i );
+                if( *end == '\0' ) break;
+                post = end + 1;
             }
         }
     }
