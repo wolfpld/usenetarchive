@@ -15,6 +15,7 @@
 #include <unicode/brkiter.h>
 #include <unicode/unistr.h>
 
+#include "../common/MetaView.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
@@ -84,13 +85,28 @@ enum Type
 
 using HitData = std::map<std::string, std::map<uint32_t, std::vector<uint16_t>>>;
 
+enum { MaxChildren = 0x1F };
+
 void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
     for( auto& w : words )
     {
-        uint16_t hit = ( basePos++ & 0xFF ) | ( ( childCount & 0x1F ) << 8 ) | ( type << 13 );
+        uint16_t hit = ( basePos++ & 0xFF ) | ( childCount << 8 ) | ( type << 13 );
         auto& hits = data[w];
         hits[idx].emplace_back( hit );
+    }
+}
+
+void CountChildren( MetaView<uint32_t, uint32_t>& conn, uint32_t idx, int& cnt )
+{
+    if( ++cnt == MaxChildren ) return;
+    auto data = conn[idx];
+    data += 2;
+    auto num = *data++;
+    for( int i=0; i<num; i++ )
+    {
+        CountChildren( conn, *data++, cnt );
+        if( cnt == MaxChildren ) return;
     }
 }
 
@@ -106,6 +122,7 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
+    MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
     const auto size = mview.Size();
     std::vector<std::string> wordbuf;
     HitData data;
@@ -122,6 +139,8 @@ int main( int argc, char** argv )
         bool signature = false;
         int basePos = 0;
 
+        int children = -1;
+        CountChildren( conn, i, children );
         auto post = mview[i];
         for(;;)
         {
@@ -140,7 +159,7 @@ int main( int argc, char** argv )
                     const char* line = end;
                     while( *end != '\n' ) end++;
                     SplitLine( line, end, wordbuf );
-                    Add( data, wordbuf, i, T_Header, 0, 0 );
+                    Add( data, wordbuf, i, T_Header, 0, children );
                 }
                 else
                 {
@@ -194,7 +213,7 @@ int main( int argc, char** argv )
                             break;
                         }
                     }
-                    Add( data, wordbuf, i, t, basePos, 0 );
+                    Add( data, wordbuf, i, t, basePos, children );
                     basePos += wordbuf.size();
                 }
                 if( *end == '\0' ) break;
