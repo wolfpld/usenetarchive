@@ -46,16 +46,18 @@ bool IsHeaderAllowed( const char* hdr, const char* end )
     return false;
 }
 
+UErrorCode wordItErr = U_ZERO_ERROR;
+auto wordIt = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), wordItErr );
+
 void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out )
 {
     out.clear();
     auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
     auto lower = us.toLower( icu::Locale::getEnglish() );
-    UErrorCode err = U_ZERO_ERROR;
-    auto it = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), err );
-    it->setText( lower );
+
+    wordIt->setText( lower );
     int32_t p0 = 0;
-    int32_t p1 = it->first();
+    int32_t p1 = wordIt->first();
     while( p1 != icu::BreakIterator::DONE )
     {
         auto part = lower.tempSubStringBetween( p0, p1 );
@@ -66,9 +68,8 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
             out.emplace_back( std::move( str ) );
         }
         p0 = p1;
-        p1 = it->next();
+        p1 = wordIt->next();
     }
-    delete it;
 }
 
 using HitData = std::map<std::string, std::map<uint32_t, std::vector<uint16_t>>>;
