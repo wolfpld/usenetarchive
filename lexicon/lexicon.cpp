@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <ctype.h>
+#include <limits>
 #include <unordered_map>
 #include <stdint.h>
 #include <stdio.h>
@@ -222,6 +223,60 @@ int main( int argc, char** argv )
             }
         }
     }
+
+    printf( "\nSaving...\n" );
+    fflush( stdout );
+
+    FILE* fmeta = fopen( ( base + "lexmeta" ).c_str(), "wb" );
+    FILE* fstr = fopen( ( base + "lexstr" ).c_str(), "wb" );
+    FILE* fdata = fopen( ( base + "lexdata" ).c_str(), "wb" );
+    FILE* fhit = fopen( ( base + "lexhit" ).c_str(), "wb" );
+
+    static const uint32_t terminator = 0xFFFFFFFF;
+    uint32_t ostr = 0;
+    uint32_t odata = 0;
+    uint32_t ohit = 0;
+
+    uint32_t idx;
+    const auto dataSize = data.size();
+    for( auto& v : data )
+    {
+        if( ( idx & 0x3FF ) == 0 )
+        {
+            printf( "%i/%i\r", idx, dataSize );
+            fflush( stdout );
+        }
+        idx++;
+
+        fwrite( &ostr, 1, sizeof( uint32_t ), fmeta );
+        fwrite( &odata, 1, sizeof( uint32_t ), fmeta );
+
+        auto strsize = v.first.size() + 1;
+        fwrite( v.first.c_str(), 1, strsize, fstr );
+        ostr += strsize;
+
+        for( auto& d : v.second )
+        {
+            fwrite( &d.first, 1, sizeof( uint32_t ), fdata );
+            fwrite( &ohit, 1, sizeof( uint32_t ), fdata );
+
+            uint16_t num = std::min<uint16_t>( std::numeric_limits<uint16_t>::max(), d.second.size() );
+            fwrite( &num, 1, sizeof( uint16_t ), fhit );
+            const uint16_t* ptr = d.second.data();
+            for( uint16_t i=0; i<num; i++ )
+            {
+                fwrite( ptr++, 1, sizeof( uint16_t ), fhit );
+            }
+            ohit += sizeof( uint16_t ) * (num+1);
+        }
+        fwrite( &terminator, 1, sizeof( uint32_t ), fdata );
+        odata += sizeof( uint32_t ) * ( v.second.size() * 2 + 1 );
+    }
+
+    fclose( fmeta );
+    fclose( fstr );
+    fclose( fdata );
+    fclose( fhit );
 
     printf( "\n" );
 
