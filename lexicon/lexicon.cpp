@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <ctype.h>
 #include <map>
 #include <stdint.h>
@@ -91,7 +92,7 @@ void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, in
 {
     for( auto& w : words )
     {
-        uint16_t hit = ( basePos++ & 0xFF ) | ( childCount << 8 ) | ( type << 13 );
+        uint16_t hit = std::min( 0xFF, basePos++ ) | ( childCount << 8 ) | ( type << 13 );
         auto& hits = data[w];
         hits[idx].emplace_back( hit );
     }
