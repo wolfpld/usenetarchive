@@ -72,14 +72,25 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
     }
 }
 
+enum Type
+{
+    T_Content,
+    T_Signature,
+    T_Quote1,
+    T_Quote2,
+    T_Quote3,
+    T_Header
+};
+
 using HitData = std::map<std::string, std::map<uint32_t, std::vector<uint16_t>>>;
 
-void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx )
+void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
     for( auto& w : words )
     {
+        uint16_t hit = ( basePos++ & 0xFF ) | ( ( childCount & 0x1F ) << 8 ) | ( type << 13 );
         auto& hits = data[w];
-        hits[idx].emplace_back( 0 );
+        hits[idx].emplace_back( hit );
     }
 }
 
@@ -108,6 +119,8 @@ int main( int argc, char** argv )
         }
 
         bool headers = true;
+        bool signature = false;
+        int basePos = 0;
 
         auto post = mview[i];
         for(;;)
@@ -127,7 +140,7 @@ int main( int argc, char** argv )
                     const char* line = end;
                     while( *end != '\n' ) end++;
                     SplitLine( line, end, wordbuf );
-                    Add( data, wordbuf, i );
+                    Add( data, wordbuf, i, T_Header, 0, 0 );
                 }
                 else
                 {
@@ -138,12 +151,51 @@ int main( int argc, char** argv )
             else
             {
                 const char* line = end;
+                int quotLevel = 0;
                 while( *end != '\n' && *end != '\0' ) end++;
-                while( *line == ' ' || *line == '>' || *line == ':' || *line == '|' || *line == '\t' ) line++;
+                if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 )
+                {
+                    signature = true;
+                }
+                else
+                {
+                    while( *line == ' ' || *line == '>' || *line == ':' || *line == '|' || *line == '\t' )
+                    {
+                        if( *line == '>' || *line == ':' || *line == '|' )
+                        {
+                            quotLevel++;
+                        }
+                        line++;
+                    }
+                }
                 if( line != end )
                 {
                     SplitLine( line, end, wordbuf );
-                    Add( data, wordbuf, i );
+                    Type t;
+                    if( signature )
+                    {
+                        t = T_Signature;
+                    }
+                    else
+                    {
+                        switch( quotLevel )
+                        {
+                        case 0:
+                            t = T_Content;
+                            break;
+                        case 1:
+                            t = T_Quote1;
+                            break;
+                        case 2:
+                            t = T_Quote2;
+                            break;
+                        default:
+                            t = T_Quote3;
+                            break;
+                        }
+                    }
+                    Add( data, wordbuf, i, t, basePos, 0 );
+                    basePos += wordbuf.size();
                 }
                 if( *end == '\0' ) break;
                 post = end + 1;
