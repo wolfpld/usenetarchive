@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "query", "..\query\build\win
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract-msgmeta", "..\extract-msgmeta\build\win32\extract-msgmeta.vcxproj", "{73490CE1-5DA1-4EFA-821E-C700033E1CF4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexicon", "..\lexicon\build\win32\lexicon.vcxproj", "{9EA67423-0F1B-4457-9F9C-E1531AAABEFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,10 @@ Global
 		{73490CE1-5DA1-4EFA-821E-C700033E1CF4}.Debug|x64.Build.0 = Debug|x64
 		{73490CE1-5DA1-4EFA-821E-C700033E1CF4}.Release|x64.ActiveCfg = Release|x64
 		{73490CE1-5DA1-4EFA-821E-C700033E1CF4}.Release|x64.Build.0 = Release|x64
+		{9EA67423-0F1B-4457-9F9C-E1531AAABEFE}.Debug|x64.ActiveCfg = Debug|x64
+		{9EA67423-0F1B-4457-9F9C-E1531AAABEFE}.Debug|x64.Build.0 = Debug|x64
+		{9EA67423-0F1B-4457-9F9C-E1531AAABEFE}.Release|x64.ActiveCfg = Release|x64
+		{9EA67423-0F1B-4457-9F9C-E1531AAABEFE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
