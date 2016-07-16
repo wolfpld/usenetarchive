@@ -35,6 +35,9 @@
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9EA67423-0F1B-4457-9F9C-E1531AAABEFE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -170,5 +173,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\ICU4C_57_1.0.0.5\build\native\ICU4C_57_1.targets" Condition="Exists('packages\ICU4C_57_1.0.0.5\build\native\ICU4C_57_1.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\ICU4C_57_1.0.0.5\build\native\ICU4C_57_1.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ICU4C_57_1.0.0.5\build\native\ICU4C_57_1.targets'))" />
+  </Target>
 </Project>
