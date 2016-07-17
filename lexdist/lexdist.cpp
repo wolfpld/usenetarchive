@@ -120,5 +120,31 @@ int main( int argc, char** argv )
     }
     tasks.Sync();
 
+    FILE* fdata = fopen( ( base + "lexdist" ).c_str(), "wb" );
+    FILE* fmeta = fopen( ( base + "lexdistmeta" ).c_str(), "wb" );
+
+    const uint32_t zero = 0;
+    fwrite( &zero, 1, sizeof( uint32_t ), fdata );
+
+    uint32_t offset = sizeof( uint32_t );
+    for( int i=0; i<size; i++ )
+    {
+        if( data[i].empty() )
+        {
+            fwrite( &zero, 1, sizeof( uint32_t ), fmeta );
+        }
+        else
+        {
+            fwrite( &offset, 1, sizeof( uint32_t ), fmeta );
+            uint32_t size = data[i].size();
+            fwrite( &size, 1, sizeof( uint32_t ), fdata );
+            fwrite( data[i].data(), 1, sizeof( uint32_t ) * size, fdata );
+            offset += sizeof( uint32_t ) * ( size + 1 );
+        }
+    }
+
+    fclose( fdata );
+    fclose( fmeta );
+
     return 0;
 }
