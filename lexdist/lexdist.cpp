@@ -98,9 +98,19 @@ int main( int argc, char** argv )
                     auto mp2 = meta + j;
                     auto s2 = str + mp2->str;
 
-                    if( levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
+                    if( lengths[i] == 3 )
                     {
-                        data[i].push_back( mp2->str );
+                        if( lengths[j] == 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 1 )
+                        {
+                            data[i].push_back( mp2->str );
+                        }
+                    }
+                    else
+                    {
+                        if( lengths[j] > 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
+                        {
+                            data[i].push_back( mp2->str );
+                        }
                     }
                 }
             }
