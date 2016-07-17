@@ -17,6 +17,7 @@
 #include <unicode/brkiter.h>
 #include <unicode/unistr.h>
 
+#include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
@@ -74,16 +75,6 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
         p1 = wordIt->next();
     }
 }
-
-enum Type
-{
-    T_Content,
-    T_Signature,
-    T_Quote1,
-    T_Quote2,
-    T_Quote3,
-    T_Header
-};
 
 using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint16_t>>>;
 
@@ -195,7 +186,7 @@ int main( int argc, char** argv )
                 if( line != end )
                 {
                     SplitLine( line, end, wordbuf );
-                    Type t;
+                    LexiconType t;
                     if( signature )
                     {
                         t = T_Signature;
