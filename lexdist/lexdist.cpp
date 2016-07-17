@@ -13,9 +13,10 @@
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
 static unsigned int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
 {
-    std::vector<unsigned int> col(len2+1), prevCol(len2+1);
+    static thread_local unsigned int _col[128], _prevCol[128];
+    unsigned int *col = _col, *prevCol = _prevCol;
 
-    for( unsigned int i = 0; i < prevCol.size(); i++ )
+    for( unsigned int i = 0; i < len2+1; i++ )
     {
         prevCol[i] = i;
     }
@@ -26,7 +27,7 @@ static unsigned int levenshtein_distance( const char* s1, const unsigned int len
         {
             col[j+1] = std::min( { prevCol[1 + j] + 1, col[j] + 1, prevCol[j] + (s1[i]==s2[j] ? 0 : 1) } );
         }
-        col.swap( prevCol );
+        std::swap( col, prevCol );
     }
     return prevCol[len2];
 }
