@@ -47,6 +47,10 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 
 ![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/pipeline.svg)
 
+### Notes
+
+Be advised that some utilities (repack-zstd, lexicon) do require enormous amounts of memory. Processing large groups (eg. 2 million messages, 3 GB data) will swap heavily on a 16 GB machine.
+
 ### License
 
     Usenet Archive
