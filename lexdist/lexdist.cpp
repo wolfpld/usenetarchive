@@ -10,6 +10,27 @@
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
 
+// https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
+static unsigned int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
+{
+    std::vector<unsigned int> col(len2+1), prevCol(len2+1);
+
+    for( unsigned int i = 0; i < prevCol.size(); i++ )
+    {
+        prevCol[i] = i;
+    }
+    for( unsigned int i = 0; i < len1; i++ )
+    {
+        col[0] = i+1;
+        for( unsigned int j = 0; j < len2; j++ )
+        {
+            col[j+1] = std::min( { prevCol[1 + j] + 1, col[j] + 1, prevCol[j] + (s1[i]==s2[j] ? 0 : 1) } );
+        }
+        col.swap( prevCol );
+    }
+    return prevCol[len2];
+}
+
 struct MetaPacket
 {
     uint32_t str;
@@ -29,17 +50,19 @@ int main( int argc, char** argv )
     base.append( "/" );
     FileMap<MetaPacket> meta( base + "lexmeta" );
     FileMap<char> str( base + "lexstr" );
-    FileMap<uint32_t> ldata( base + "lexdata" );
-    FileMap<uint16_t> hits( base + "lexhit" );
-
-    std::vector<std::pair<const char*, uint32_t>> data;
 
     const auto size = meta.DataSize();
-    uint64_t sizes[6] = {};
-    uint64_t totalSize = 0;
+    auto data = new std::vector<uint32_t>[size];
+    auto lengths = new unsigned int[size];
     for( uint32_t i=0; i<size; i++ )
     {
-        if( ( i & 0x1FFF ) == 0 )
+        auto mp = meta + i;
+        auto s = str + mp->str;
+        lengths[i] = strlen( s );
+    }
+    for( uint32_t i=0; i<size; i++ )
+    {
+        if( ( i & 0x1F ) == 0 )
         {
             printf( "%i/%i\r", i, size );
             fflush( stdout );
@@ -47,36 +70,18 @@ int main( int argc, char** argv )
 
         auto mp = meta + i;
         auto s = str + mp->str;
-        uint32_t cnt = 0;
 
-        auto dptr = ldata + ( mp->data / sizeof( uint32_t ) );
-        for( uint32_t j=0; j<mp->dataSize; j++ )
+        for( uint32_t j=0; j<size; j++ )
         {
-            dptr++;
-            auto hptr = hits + ( *dptr++ / sizeof( uint16_t ) );
-            auto hnum = *hptr++;
-            for( uint16_t k=0; k<hnum; k++ )
+            if( i == j ) continue;
+            auto mp2 = meta + j;
+            auto s2 = str + mp2->str;
+
+            if( levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
             {
-                cnt++;
-                totalSize++;
-                sizes[(*hptr++) >> 13]++;
+                data[i].push_back( mp2->str );
             }
         }
-
-        data.emplace_back( s, cnt );
-    }
-
-    printf( "Total words: %" PRIu64 "\n", totalSize );
-    for( int i=0; i<6; i++ )
-    {
-        printf( "Lexicon category %s: %" PRIu64 " hits (%.1f%%)\n", LexiconNames[i], sizes[i], sizes[i] * 100.f / totalSize );
-    }
-
-    std::sort( data.begin(), data.end(), [] ( const auto& lhs, const auto& rhs ) { return lhs.second > rhs.second; } );
-
-    for( auto& v : data )
-    {
-        fprintf( stderr, "%i\t%s\n", v.second, v.first );
     }
 
     return 0;
