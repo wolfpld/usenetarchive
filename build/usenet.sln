@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexicon", "..\lexicon\build
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexstats", "..\lexstats\build\win32\lexstats.vcxproj", "{36FAFE93-DA1E-4EC9-87B3-D72427F47505}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexdist", "..\lexdist\build\win32\lexdist.vcxproj", "{5396A9AB-DDF0-4D66-B026-78E313F765D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -93,6 +95,10 @@ Global
 		{36FAFE93-DA1E-4EC9-87B3-D72427F47505}.Debug|x64.Build.0 = Debug|x64
 		{36FAFE93-DA1E-4EC9-87B3-D72427F47505}.Release|x64.ActiveCfg = Release|x64
 		{36FAFE93-DA1E-4EC9-87B3-D72427F47505}.Release|x64.Build.0 = Release|x64
+		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Debug|x64.ActiveCfg = Debug|x64
+		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Debug|x64.Build.0 = Debug|x64
+		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Release|x64.ActiveCfg = Release|x64
+		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
