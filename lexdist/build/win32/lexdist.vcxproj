@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\System.cpp" />
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
     <ClCompile Include="..\..\lexdist.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +33,8 @@
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\common\System.hpp" />
+    <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5396A9AB-DDF0-4D66-B026-78E313F765D9}</ProjectGuid>

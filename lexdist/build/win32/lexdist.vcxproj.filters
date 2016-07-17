@@ -15,6 +15,12 @@
     <ClCompile Include="..\..\..\common\mmap.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\System.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -39,6 +45,12 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\System.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\TaskDispatch.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

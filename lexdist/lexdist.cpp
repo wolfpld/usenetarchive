@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <inttypes.h>
+#include <mutex>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +9,8 @@
 
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
+#include "../common/System.hpp"
+#include "../common/TaskDispatch.hpp"
 
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
 static unsigned int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
@@ -61,29 +63,52 @@ int main( int argc, char** argv )
         auto s = str + mp->str;
         lengths[i] = strlen( s );
     }
-    for( uint32_t i=0; i<size; i++ )
+
+    const auto cpus = System::CPUCores();
+    printf( "Running %i threads...\n", cpus );
+
+    std::mutex mtx;
+    TaskDispatch tasks( cpus );
+    uint32_t start = 0;
+    uint32_t inPass = ( size + cpus - 1 ) / cpus;
+    uint32_t left = size;
+    uint32_t cnt = 0;
+
+    for( int i=0; i<cpus; i++ )
     {
-        if( ( i & 0x1F ) == 0 )
-        {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
-        }
-
-        auto mp = meta + i;
-        auto s = str + mp->str;
-
-        for( uint32_t j=0; j<size; j++ )
-        {
-            if( i == j ) continue;
-            auto mp2 = meta + j;
-            auto s2 = str + mp2->str;
-
-            if( levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
+        uint32_t todo = std::min( left, inPass );
+        tasks.Queue( [data, lengths, start, &mtx, &cnt, size, &meta, &str, todo] () {
+            for( uint32_t i=start; i<start+todo; i++ )
             {
-                data[i].push_back( mp2->str );
+                mtx.lock();
+                auto c = cnt++;
+                mtx.unlock();
+                if( ( c & 0x3F ) == 0 )
+                {
+                    printf( "%i/%i\r", c, size );
+                    fflush( stdout );
+                }
+
+                auto mp = meta + i;
+                auto s = str + mp->str;
+
+                for( uint32_t j=0; j<size; j++ )
+                {
+                    if( i == j ) continue;
+                    auto mp2 = meta + j;
+                    auto s2 = str + mp2->str;
+
+                    if( levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
+                    {
+                        data[i].push_back( mp2->str );
+                    }
+                }
             }
-        }
+        } );
+        start += todo;
+        left -= todo;
     }
+    tasks.Sync();
 
     return 0;
 }
