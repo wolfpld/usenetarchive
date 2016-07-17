@@ -235,7 +235,6 @@ int main( int argc, char** argv )
     FILE* fdata = fopen( ( base + "lexdata" ).c_str(), "wb" );
     FILE* fhit = fopen( ( base + "lexhit" ).c_str(), "wb" );
 
-    static const uint32_t terminator = 0xFFFFFFFF;
     uint32_t ostr = 0;
     uint32_t odata = 0;
     uint32_t ohit = 0;
@@ -251,8 +250,10 @@ int main( int argc, char** argv )
         }
         idx++;
 
+        uint32_t dsize = v.second.size();
         fwrite( &ostr, 1, sizeof( uint32_t ), fmeta );
         fwrite( &odata, 1, sizeof( uint32_t ), fmeta );
+        fwrite( &dsize, 1, sizeof( uint32_t ), fmeta );
 
         auto strsize = v.first.size() + 1;
         fwrite( v.first.c_str(), 1, strsize, fstr );
@@ -272,16 +273,13 @@ int main( int argc, char** argv )
             }
             ohit += sizeof( uint16_t ) * (num+1);
         }
-        fwrite( &terminator, 1, sizeof( uint32_t ), fdata );
-        odata += sizeof( uint32_t ) * ( v.second.size() * 2 + 1 );
+        odata += sizeof( uint32_t ) * dsize * 2;
     }
 
     fclose( fmeta );
     fclose( fstr );
     fclose( fdata );
     fclose( fhit );
-
-    printf( "\n" );
 
     return 0;
 }
