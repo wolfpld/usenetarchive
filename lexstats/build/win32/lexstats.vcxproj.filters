@@ -29,9 +29,6 @@
     <ClInclude Include="..\..\..\common\FileMap.hpp">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\common\MsgIdHash.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp">
       <Filter>common</Filter>
     </ClInclude>
@@ -39,6 +36,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

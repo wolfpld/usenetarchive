@@ -11,4 +11,13 @@ enum LexiconType
     T_Header
 };
 
+const char* LexiconNames[] = {
+    "Content",
+    "Signature",
+    "Quote1",
+    "Quote2",
+    "Quote3",
+    "Header"
+};
+
 #endif
