@@ -38,6 +38,7 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 
 - lexicon --- Build a list of words and hit-tables for each word.
 - lexstats --- Display lexicon statistics.
+- lexdist --- Calculate distances between words.
 
 ### End-user Utilities
 
