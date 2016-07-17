@@ -127,7 +127,10 @@ int main( int argc, char** argv )
     MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
     const auto size = mview.Size();
     std::vector<std::string> wordbuf;
-    HitData data;
+
+    // Purposefully disable destruction to not waste time at application exit
+    HitData* dataPtr = new HitData();
+    HitData& data = *dataPtr;
 
     for( uint32_t i=0; i<size; i++ )
     {
