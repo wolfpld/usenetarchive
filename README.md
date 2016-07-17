@@ -34,6 +34,11 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - libuat --- Archive access library. Operates on zstd database.
 - query --- Testbed for libuat. Exposes all provided functionality.
 
+### Data Search
+
+- lexicon --- Build a list of words and hit-tables for each word.
+- lexstats --- Display lexicon statistics.
+
 ### End-user Utilities
 
 - browser --- Graphical browser of archives.
