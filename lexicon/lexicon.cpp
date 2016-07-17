@@ -237,7 +237,7 @@ int main( int argc, char** argv )
     uint32_t odata = 0;
     uint32_t ohit = 0;
 
-    uint32_t idx;
+    uint32_t idx = 0;
     const auto dataSize = data.size();
     for( auto& v : data )
     {
