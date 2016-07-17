@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <math.h>
 #include <mutex>
 #include <stdint.h>
 #include <stdio.h>
@@ -95,6 +96,8 @@ int main( int argc, char** argv )
                 for( uint32_t j=0; j<size; j++ )
                 {
                     if( i == j ) continue;
+                    if( abs( int( lengths[i] ) - int( lengths[j] ) ) > 2 ) continue;
+
                     auto mp2 = meta + j;
                     auto s2 = str + mp2->str;
 
