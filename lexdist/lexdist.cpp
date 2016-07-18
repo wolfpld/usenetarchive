@@ -15,11 +15,11 @@
 #include "../common/TaskDispatch.hpp"
 
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
-static unsigned int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
+static int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
 {
     // max word length generated in lexicon is 13 letters
-    static thread_local unsigned int _col[16], _prevCol[16];
-    unsigned int *col = _col, *prevCol = _prevCol;
+    static thread_local int _col[16], _prevCol[16];
+    int *col = _col, *prevCol = _prevCol;
 
     for( unsigned int i = 0; i < len2+1; i++ )
     {
@@ -30,7 +30,7 @@ static unsigned int levenshtein_distance( const char* s1, const unsigned int len
         col[0] = i+1;
         for( unsigned int j = 0; j < len2; j++ )
         {
-            col[j+1] = std::min( { prevCol[1 + j] + 1, col[j] + 1, prevCol[j] + (s1[i]==s2[j] ? 0 : 1) } );
+            col[j+1] = std::min( { prevCol[1 + j], col[j], prevCol[j] - (s1[i]==s2[j] ? 1 : 0) } ) + 1;
         }
         std::swap( col, prevCol );
     }
