@@ -1,3 +1,4 @@
+#include <chrono>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -191,7 +192,10 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "search ", 7 ) == 0 )
         {
+            auto t0 = std::chrono::high_resolution_clock::now();
             auto data = archive.Search( cmd+7 );
+            auto t1 = std::chrono::high_resolution_clock::now();
+            printf( "Query time %fs.\n", std::chrono::duration_cast<std::chrono::milliseconds>( t1 - t0 ).count() / 1000.f );
             printf( "Found %i messages.\n", data.size() );
             if( !data.empty() )
             {
