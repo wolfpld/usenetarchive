@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iterator>
 
 #include "Archive.hpp"
@@ -131,7 +132,7 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
         wdata.emplace_back();
         auto& vec = wdata.back();
         vec.reserve( meta.dataSize );
-        for( int i=0; i<meta.dataSize; i++ )
+        for( uint32_t i=0; i<meta.dataSize; i++ )
         {
             uint8_t children = data->postid >> LexiconChildShift;
             auto hits = m_lexhit + data->hitoffset;
@@ -140,6 +141,36 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
             data++;
         }
     }
+
+    std::vector<PostData> merged;
+    if( wdata.size() == 1 )
+    {
+        std::swap( merged, *wdata.begin() );
+    }
+    else
+    {
+        auto& vec = *wdata.begin();
+        auto wsize = wdata.size();
+        for( auto& post : vec )
+        {
+            bool ok = true;
+            for( size_t i=1; i<wsize; i++ )
+            {
+                auto& vtest = wdata[i];
+                if( !std::binary_search( vtest.begin(), vtest.end(), post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } ) )
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            if( ok )
+            {
+                merged.emplace_back( post );
+            }
+        }
+    }
+
+    if( merged.empty() ) return ret;
 
     return ret;
 }
