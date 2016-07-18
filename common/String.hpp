@@ -1,7 +1,9 @@
 #ifndef __STRING_HPP__
 #define __STRING_HPP__
 
+#include <algorithm>
 #include <ctype.h>
+#include <string>
 
 static inline int strnicmpl( const char* l, const char* r, int n )
 {
@@ -12,6 +14,29 @@ static inline int strnicmpl( const char* l, const char* r, int n )
         l++; r++;
     }
     return 0;
+}
+
+template <class T>
+static inline void split( const char* s, T o )
+{
+    typedef const char* iter;
+
+    iter i = s, j;
+    iter e = s;
+    while( *e ) e++;
+
+    while( i != e )
+    {
+        i = std::find_if( i, e, []( char c ){ return !isspace( c ); } );
+        j = std::find_if( i, e, []( char c ){ return isspace( c ); } );
+
+        if( i != e )
+        {
+            *o++ = std::string( i, j );
+        }
+
+        i = j;
+    }
 }
 
 #endif
