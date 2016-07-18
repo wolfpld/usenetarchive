@@ -57,6 +57,7 @@ int main( int argc, char** argv )
 
     const auto size = meta.DataSize();
     auto data = new std::vector<uint32_t>[size];
+    auto datalock = new std::mutex[size];
     auto lengths = new unsigned int[size];
     for( uint32_t i=0; i<size; i++ )
     {
@@ -70,15 +71,16 @@ int main( int argc, char** argv )
 
     std::mutex mtx;
     TaskDispatch tasks( cpus );
+    auto taskNum = cpus * 16;
     uint32_t start = 0;
-    uint32_t inPass = ( size + cpus - 1 ) / cpus;
+    uint32_t inPass = ( size + taskNum - 1 ) / taskNum;
     uint32_t left = size;
     uint32_t cnt = 0;
 
-    for( int i=0; i<cpus; i++ )
+    for( int i=0; i<taskNum; i++ )
     {
         uint32_t todo = std::min( left, inPass );
-        tasks.Queue( [data, lengths, start, &mtx, &cnt, size, &meta, &str, todo] () {
+        tasks.Queue( [data, lengths, start, &mtx, &cnt, size, &meta, &str, todo, datalock] () {
             for( uint32_t i=start; i<start+todo; i++ )
             {
                 mtx.lock();
@@ -93,9 +95,8 @@ int main( int argc, char** argv )
                 auto mp = meta + i;
                 auto s = str + mp->str;
 
-                for( uint32_t j=0; j<size; j++ )
+                for( uint32_t j=i+1; j<size; j++ )
                 {
-                    if( i == j ) continue;
                     if( abs( int( lengths[i] ) - int( lengths[j] ) ) > 2 ) continue;
 
                     auto mp2 = meta + j;
@@ -105,14 +106,24 @@ int main( int argc, char** argv )
                     {
                         if( lengths[j] == 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 1 )
                         {
+                            datalock[i].lock();
                             data[i].push_back( mp2->str );
+                            datalock[i].unlock();
+                            datalock[j].lock();
+                            data[j].push_back( mp->str );
+                            datalock[j].unlock();
                         }
                     }
                     else
                     {
                         if( lengths[j] > 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
                         {
+                            datalock[i].lock();
                             data[i].push_back( mp2->str );
+                            datalock[i].unlock();
+                            datalock[j].lock();
+                            data[j].push_back( mp->str );
+                            datalock[j].unlock();
                         }
                     }
                 }
