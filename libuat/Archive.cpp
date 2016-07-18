@@ -7,6 +7,11 @@ Archive::Archive( const std::string& dir )
     , m_midhash( dir + "/middata", dir + "/midhash", dir + "/midhashdata" )
     , m_connectivity( dir + "/connmeta", dir + "/conndata" )
     , m_strings( dir + "/strmeta", dir + "/strings" )
+    , m_lexmeta( dir + "/lexmeta" )
+    , m_lexstr( dir + "/lexstr" )
+    , m_lexdata( dir + "/lexdata" )
+    , m_lexhit( dir + "/lexhit" )
+    , m_lexhash( dir + "/lexstr", dir + "/lexhash", dir + "/lexhashdata" )
 {
 }
 

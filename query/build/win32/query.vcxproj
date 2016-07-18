@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\linenoise-ng\ConvertUTF.cpp" />
     <ClCompile Include="..\..\..\contrib\linenoise-ng\linenoise.cpp" />
@@ -36,6 +37,8 @@
     <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp" />
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\HashSearch.hpp" />
+    <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
     <ClInclude Include="..\..\..\common\MessageView.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />

@@ -6,6 +6,7 @@
 
 #include "../common/FileMap.hpp"
 #include "../common/HashSearch.hpp"
+#include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/ZMessageView.hpp"
 
@@ -45,6 +46,11 @@ private:
     HashSearch m_midhash;
     MetaView<uint32_t, uint32_t> m_connectivity;
     MetaView<uint32_t, char> m_strings;
+    FileMap<LexiconMetaPacket> m_lexmeta;
+    FileMap<char> m_lexstr;
+    FileMap<uint32_t> m_lexdata;
+    FileMap<uint8_t> m_lexhit;
+    HashSearch m_lexhash;
 };
 
 #endif

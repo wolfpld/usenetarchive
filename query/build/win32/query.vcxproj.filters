@@ -60,6 +60,9 @@
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
       <Filter>zstd\decompress</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\LexiconTypes.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -123,6 +126,12 @@
       <Filter>libuat</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\FileMap.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\HashSearch.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
