@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <algorithm>
 #include <math.h>
 #include <mutex>
@@ -95,16 +96,21 @@ int main( int argc, char** argv )
                 auto mp = meta + i;
                 auto s = str + mp->str;
 
+                bool shorti = lengths[i] == 3;
+
                 for( uint32_t j=i+1; j<size; j++ )
                 {
-                    if( abs( int( lengths[i] ) - int( lengths[j] ) ) > 2 ) continue;
+                    if( shorti && lengths[j] != 3 ) continue;
+                    auto dist = abs( int( lengths[i] ) - int( lengths[j] ) );
+                    if( dist > 2 ) continue;
 
                     auto mp2 = meta + j;
                     auto s2 = str + mp2->str;
 
-                    if( lengths[i] == 3 )
+                    if( shorti )
                     {
-                        if( lengths[j] == 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 1 )
+                        assert( lengths[j] == 3 );
+                        if( levenshtein_distance( s, 3, s2, 3 ) <= 1 )
                         {
                             datalock[i].lock();
                             data[i].push_back( mp2->str );
