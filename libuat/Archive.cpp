@@ -104,6 +104,29 @@ struct PostData
     const uint8_t* hits;
 };
 
+struct MergedData
+{
+    uint32_t postid;
+    float rank;
+};
+
+static float HitRank( const PostData& data )
+{
+    float rank = 0;
+    auto ptr = data.hits;
+    for( int i=0; i<data.hitnum; i++ )
+    {
+        auto test = LexiconHitRank( *ptr++ );
+        if( test > rank ) rank = test;
+    }
+    return rank;
+}
+
+static float PostRank( const PostData& data )
+{
+    return ( float( data.children ) / LexiconChildMax ) * 0.9f + 0.1f;
+}
+
 std::vector<uint32_t> Archive::Search( const char* query ) const
 {
     std::vector<uint32_t> ret;
@@ -111,7 +134,7 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
 
-    std::vector<int32_t> words;
+    std::vector<uint32_t> words;
     words.reserve( terms.size() );
     for( auto& v : terms )
     {
@@ -121,7 +144,6 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
             words.emplace_back( res );
         }
     }
-
     if( words.empty() ) return ret;
 
     std::vector<std::vector<PostData>> wdata;
@@ -144,35 +166,61 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
         }
     }
 
-    std::vector<PostData> merged;
+    std::vector<MergedData> merged;
     if( wdata.size() == 1 )
     {
-        std::swap( merged, *wdata.begin() );
+        merged.reserve( wdata[0].size() );
+        for( auto& v : wdata[0] )
+        {
+            merged.emplace_back( MergedData { v.postid, PostRank( v ) * HitRank( v ) } );
+        }
     }
     else
     {
+        std::vector<PostData*> list;
+        list.reserve( words.size() );
+
         auto& vec = *wdata.begin();
         auto wsize = wdata.size();
         for( auto& post : vec )
         {
+            list.clear();
             bool ok = true;
             for( size_t i=1; i<wsize; i++ )
             {
                 auto& vtest = wdata[i];
-                if( !std::binary_search( vtest.begin(), vtest.end(), post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } ) )
+                auto it = std::lower_bound( vtest.begin(), vtest.end(), post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } );
+                if( it == vtest.end() || it->postid != post.postid )
                 {
                     ok = false;
                     break;
                 }
+                else
+                {
+                    list.emplace_back( &*it );
+                }
             }
             if( ok )
             {
-                merged.emplace_back( post );
+                list.emplace_back( &post );
+                float rank = 0;
+                for( auto& v : list )
+                {
+                    rank += HitRank( *v );
+                }
+                merged.emplace_back( MergedData { post.postid, rank * PostRank( post ) } );
             }
         }
     }
-
     if( merged.empty() ) return ret;
+
+    std::sort( merged.begin(), merged.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
+
+    auto size = std::min<int>( 100, merged.size() );
+    for( int i=0; i<size; i++ )
+    {
+        ret.emplace_back( merged[i].postid );
+    }
 
     return ret;
 }
