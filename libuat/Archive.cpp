@@ -112,6 +112,7 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
     split( query, std::back_inserter( terms ) );
 
     std::vector<int32_t> words;
+    words.reserve( terms.size() );
     for( auto& v : terms )
     {
         auto res = m_lexhash.Search( v.c_str() );
@@ -124,6 +125,7 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
     if( words.empty() ) return ret;
 
     std::vector<std::vector<PostData>> wdata;
+    wdata.reserve( words.size() );
     for( auto& v : words )
     {
         auto meta = m_lexmeta[v];
