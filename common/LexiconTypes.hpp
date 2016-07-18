@@ -59,4 +59,11 @@ static inline LexiconType LexiconDecodeType( uint8_t v )
     }
 }
 
+struct LexiconMetaPacket
+{
+    uint32_t str;
+    uint32_t data;
+    uint32_t dataSize;
+};
+
 #endif

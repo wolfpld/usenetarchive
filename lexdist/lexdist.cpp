@@ -37,13 +37,6 @@ static int levenshtein_distance( const char* s1, const unsigned int len1, const 
     return prevCol[len2];
 }
 
-struct MetaPacket
-{
-    uint32_t str;
-    uint32_t data;
-    uint32_t dataSize;
-};
-
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -54,7 +47,7 @@ int main( int argc, char** argv )
 
     std::string base = argv[1];
     base.append( "/" );
-    FileMap<MetaPacket> meta( base + "lexmeta" );
+    FileMap<LexiconMetaPacket> meta( base + "lexmeta" );
     FileMap<char> str( base + "lexstr" );
 
     const auto size = meta.DataSize();

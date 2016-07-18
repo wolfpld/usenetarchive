@@ -10,13 +10,6 @@
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
 
-struct MetaPacket
-{
-    uint32_t str;
-    uint32_t data;
-    uint32_t dataSize;
-};
-
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -27,7 +20,7 @@ int main( int argc, char** argv )
 
     std::string base = argv[1];
     base.append( "/" );
-    FileMap<MetaPacket> meta( base + "lexmeta" );
+    FileMap<LexiconMetaPacket> meta( base + "lexmeta" );
     FileMap<char> str( base + "lexstr" );
     FileMap<uint32_t> ldata( base + "lexdata" );
     FileMap<uint8_t> hits( base + "lexhit" );
