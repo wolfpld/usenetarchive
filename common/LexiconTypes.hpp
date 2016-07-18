@@ -1,6 +1,8 @@
 #ifndef __LEXICONTYPES_HPP__
 #define __LEXICONTYPES_HPP__
 
+#include <stdint.h>
+
 enum LexiconType
 {
     T_Content,
@@ -11,46 +13,16 @@ enum LexiconType
     T_Header
 };
 
-const char* LexiconNames[] = {
-    "Content",
-    "Signature",
-    "Quote1",
-    "Quote2",
-    "Quote3",
-    "Header"
-};
-
-float LexiconWeights[] = {
-    1.0f,
-    0.5f,
-    0.7f,
-    0.5f,
-    0.3f,
-    0.1f
-};
+extern const char* LexiconNames[];
+extern const float LexiconWeights[];
 
 enum { LexiconPostMask = 0x07FFFFFF };
 enum { LexiconChildMask = 0xF8000000 };
 enum { LexiconChildShift = 27 };
 enum { LexiconChildMax = 0x1F };
 
-const uint8_t LexiconHitTypeEncoding[] = {
-    0x00,   // 0000 0000
-    0xE0,   // 1110 0000
-    0x80,   // 1000 0000
-    0xA0,   // 1010 0000
-    0xC0,   // 1100 0000
-    0xF0    // 1111 0000
-};
-
-const uint8_t LexiconHitPosMask[] = {
-    0x7F,   // 0111 1111
-    0x1F,   // 0001 1111
-    0x1F,   // 0001 1111
-    0x1F,   // 0001 1111
-    0x0F,   // 0000 1111
-    0x0F    // 0000 1111
-};
+extern const uint8_t LexiconHitTypeEncoding[];
+extern const uint8_t LexiconHitPosMask[];
 
 static inline LexiconType LexiconDecodeType( uint8_t v )
 {
