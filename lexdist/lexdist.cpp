@@ -17,7 +17,8 @@
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
 static unsigned int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
 {
-    static thread_local unsigned int _col[128], _prevCol[128];
+    // max word length generated in lexicon is 13 letters
+    static thread_local unsigned int _col[16], _prevCol[16];
     unsigned int *col = _col, *prevCol = _prevCol;
 
     for( unsigned int i = 0; i < len2+1; i++ )
