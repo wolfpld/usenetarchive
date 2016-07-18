@@ -102,5 +102,18 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
 
+    std::vector<int32_t> words;
+    for( auto& v : terms )
+    {
+        auto res = m_lexhash.Search( v.c_str() );
+        if( res >= 0 )
+        {
+            words.emplace_back( res );
+        }
+    }
+
+    if( words.empty() ) return ret;
+
+
     return ret;
 }
