@@ -23,6 +23,7 @@ const char* LexiconNames[] = {
 enum { LexiconPostMask = 0x07FFFFFF };
 enum { LexiconChildMask = 0xF8000000 };
 enum { LexiconChildShift = 27 };
+enum { LexiconChildMax = 0x1F };
 
 const uint8_t LexiconHitTypeEncoding[] = {
     0x00,   // 0000 0000

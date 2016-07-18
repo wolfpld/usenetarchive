@@ -79,11 +79,12 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
 
 using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint8_t>>>;
 
-enum { MaxChildren = 0x1F };
+enum { MaxChildren = 0xF8 };
 
 void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
     assert( ( idx & LexiconPostMask ) == idx );
+    assert( childCount <= LexiconChildMax );
     idx = ( idx & LexiconPostMask ) | ( childCount << LexiconChildShift );
 
     uint8_t enc = LexiconHitTypeEncoding[type];
@@ -147,6 +148,8 @@ int main( int argc, char** argv )
 
         int children = -1;
         CountChildren( conn, i, children );
+        children /= 8;
+
         auto post = mview[i];
         for(;;)
         {
