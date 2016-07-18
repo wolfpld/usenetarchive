@@ -23,7 +23,7 @@ public:
         const auto hash = XXH32( str, strlen( str ), 0 ) & MsgIdHashMask;
         auto ptr = m_hash[hash];
         const auto num = *ptr++;
-        for( int i=0; i<num; i++ )
+        for( uint32_t i=0; i<num; i++ )
         {
             if( strcmp( str, m_data + *ptr++ ) == 0 )
             {
