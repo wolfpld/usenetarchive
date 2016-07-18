@@ -204,6 +204,10 @@ int main( int argc, char** argv )
                 printf( "\n" );
             }
         }
+        else if( strcmp( cmd, "exit" ) == 0 || strcmp( cmd, "quit" ) == 0 )
+        {
+            return 0;
+        }
         else
         {
             PrintHelp();
