@@ -95,6 +95,14 @@ const char* Archive::GetSubject( const char* msgid ) const
     return idx >= 0 ? GetSubject( idx ) : nullptr;
 }
 
+struct PostData
+{
+    uint32_t postid;
+    uint8_t hitnum;
+    uint8_t children;
+    const uint8_t* hits;
+};
+
 std::vector<uint32_t> Archive::Search( const char* query ) const
 {
     std::vector<uint32_t> ret;
@@ -114,6 +122,24 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
 
     if( words.empty() ) return ret;
 
+    std::vector<std::vector<PostData>> wdata;
+    for( auto& v : words )
+    {
+        auto meta = m_lexmeta[v];
+        auto data = m_lexdata + ( meta.data / sizeof( LexiconDataPacket ) );
+
+        wdata.emplace_back();
+        auto& vec = wdata.back();
+        vec.reserve( meta.dataSize );
+        for( int i=0; i<meta.dataSize; i++ )
+        {
+            uint8_t children = data->postid >> LexiconChildShift;
+            auto hits = m_lexhit + data->hitoffset;
+            auto hitnum = *hits++;
+            vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+            data++;
+        }
+    }
 
     return ret;
 }
