@@ -20,6 +20,15 @@ const char* LexiconNames[] = {
     "Header"
 };
 
+float LexiconWeights[] = {
+    1.0f,
+    0.5f,
+    0.7f,
+    0.5f,
+    0.3f,
+    0.1f
+};
+
 enum { LexiconPostMask = 0x07FFFFFF };
 enum { LexiconChildMask = 0xF8000000 };
 enum { LexiconChildShift = 27 };
@@ -65,5 +74,12 @@ struct LexiconMetaPacket
     uint32_t data;
     uint32_t dataSize;
 };
+
+static inline float LexiconHitRank( uint8_t v )
+{
+    auto type = LexiconDecodeType( v );
+    auto pos = 1.f - float( v & LexiconHitPosMask[type] ) / LexiconHitPosMask[type];
+    return LexiconWeights[type] * ( pos * 0.9f + 0.1f );
+}
 
 #endif
