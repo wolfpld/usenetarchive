@@ -10,7 +10,9 @@
 #include "clibrary.h"
 #include <ctype.h>
 #include <time.h>
-#include <strings.h>
+#ifndef _MSC_VER
+#  include <strings.h>
+#endif
 
 #include "inn/libinn.h"
 
