@@ -30,7 +30,7 @@ int main( int argc, char** argv )
     FileMap<MetaPacket> meta( base + "lexmeta" );
     FileMap<char> str( base + "lexstr" );
     FileMap<uint32_t> ldata( base + "lexdata" );
-    FileMap<uint16_t> hits( base + "lexhit" );
+    FileMap<uint8_t> hits( base + "lexhit" );
 
     std::vector<std::pair<const char*, uint32_t>> data;
 
@@ -55,11 +55,11 @@ int main( int argc, char** argv )
             dptr++;
             auto hptr = hits + ( *dptr++ / sizeof( uint16_t ) );
             auto hnum = *hptr++;
-            for( uint16_t k=0; k<hnum; k++ )
+            for( uint8_t k=0; k<hnum; k++ )
             {
                 cnt++;
                 totalSize++;
-                sizes[(*hptr++) >> 13]++;
+                sizes[LexiconDecodeType(*hptr++)]++;
             }
         }
 

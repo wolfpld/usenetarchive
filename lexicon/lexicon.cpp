@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <algorithm>
 #include <ctype.h>
 #include <limits>
@@ -76,17 +77,26 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
     }
 }
 
-using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint16_t>>>;
+using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint8_t>>>;
 
 enum { MaxChildren = 0x1F };
 
 void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
+    assert( ( idx & LexiconPostMask ) == idx );
+    idx = ( idx & LexiconPostMask ) | ( childCount << LexiconChildShift );
+
+    uint8_t enc = LexiconHitTypeEncoding[type];
+    uint8_t max = LexiconHitPosMask[type];
     for( auto& w : words )
     {
-        uint16_t hit = std::min( 0xFF, basePos++ ) | ( childCount << 8 ) | ( type << 13 );
         auto& hits = data[w];
-        hits[idx].emplace_back( hit );
+        auto& vec = hits[idx];
+        if( vec.size() < std::numeric_limits<uint8_t>::max() )
+        {
+            uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
+            vec.emplace_back( hit );
+        }
     }
 }
 
@@ -255,14 +265,10 @@ int main( int argc, char** argv )
             fwrite( &d.first, 1, sizeof( uint32_t ), fdata );
             fwrite( &ohit, 1, sizeof( uint32_t ), fdata );
 
-            uint16_t num = std::min<uint16_t>( std::numeric_limits<uint16_t>::max(), d.second.size() );
-            fwrite( &num, 1, sizeof( uint16_t ), fhit );
-            const uint16_t* ptr = d.second.data();
-            for( uint16_t i=0; i<num; i++ )
-            {
-                fwrite( ptr++, 1, sizeof( uint16_t ), fhit );
-            }
-            ohit += sizeof( uint16_t ) * (num+1);
+            uint8_t num = std::min<uint8_t>( std::numeric_limits<uint8_t>::max(), d.second.size() );
+            fwrite( &num, 1, sizeof( uint8_t ), fhit );
+            fwrite( d.second.data(), 1, sizeof( uint8_t ) * num, fhit );
+            ohit += sizeof( uint8_t ) * (num+1);
         }
         odata += sizeof( uint32_t ) * dsize * 2;
     }
