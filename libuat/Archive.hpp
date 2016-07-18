@@ -51,7 +51,7 @@ private:
     MetaView<uint32_t, char> m_strings;
     FileMap<LexiconMetaPacket> m_lexmeta;
     FileMap<char> m_lexstr;
-    FileMap<uint32_t> m_lexdata;
+    FileMap<LexiconDataPacket> m_lexdata;
     FileMap<uint8_t> m_lexhit;
     HashSearch m_lexhash;
 };

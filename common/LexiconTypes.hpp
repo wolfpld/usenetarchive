@@ -47,6 +47,12 @@ struct LexiconMetaPacket
     uint32_t dataSize;
 };
 
+struct LexiconDataPacket
+{
+    uint32_t postid;
+    uint32_t hitoffset;
+};
+
 static inline float LexiconHitRank( uint8_t v )
 {
     auto type = LexiconDecodeType( v );
