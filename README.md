@@ -24,7 +24,19 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
 
+### Data Search
+
+Search in archive is performed with the help of a word lexicon. The following tools are used for its preparation:
+
+- lexicon --- Build a list of words and hit-tables for each word.
+- lexstats --- Display lexicon statistics.
+- lexdist --- Calculate distances between words.
+- lexhash --- Prepare lexicon hash table.
+- lexsort --- Sort lexicon data.
+
 ### Data Access
+
+These tools provide access to archive data:
 
 - query-raw --- Implements queries on LZ4 database. Requires results of extract-msgid utility. Supports:
     * Message count.
@@ -33,12 +45,6 @@ Raw imported messages have to be processed to be of any use. We provide the foll
     * Query message by database record number.
 - libuat --- Archive access library. Operates on zstd database.
 - query --- Testbed for libuat. Exposes all provided functionality.
-
-### Data Search
-
-- lexicon --- Build a list of words and hit-tables for each word.
-- lexstats --- Display lexicon statistics.
-- lexdist --- Calculate distances between words.
 
 ### End-user Utilities
 
