@@ -18,6 +18,7 @@ void PrintHelp()
     printf( "info          - archive info\n" );
     printf( "parent msgid  - view message's parent\n" );
     printf( "parenti idx   - view message's parent\n" );
+    printf( "search query  - search archive\n" );
     printf( "subject msgid - view subject: field\n" );
     printf( "subjecti idx  - view subject: field\n" );
     printf( "toplevel      - list toplevel messages\n" );
@@ -186,6 +187,21 @@ int main( int argc, char** argv )
             else
             {
                 printf( "Invalid message id.\n" );
+            }
+        }
+        else if( strncmp( cmd, "search ", 7 ) == 0 )
+        {
+            auto data = archive.Search( cmd+7 );
+            printf( "Found %i messages.\n", data.size() );
+            if( !data.empty() )
+            {
+                bool first = true;
+                for( auto& v : data )
+                {
+                    printf( "%s%i", first ? "" : ", ", v );
+                    first = false;
+                }
+                printf( "\n" );
             }
         }
         else

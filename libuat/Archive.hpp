@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include "../common/FileMap.hpp"
 #include "../common/HashSearch.hpp"
@@ -38,6 +39,8 @@ public:
 
     const char* GetSubject( uint32_t idx ) const;
     const char* GetSubject( const char* msgid ) const;
+
+    std::vector<uint32_t> Search( const char* query ) const;
 
 private:
     ZMessageView m_mview;

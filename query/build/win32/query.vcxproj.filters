@@ -134,5 +134,8 @@
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\String.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

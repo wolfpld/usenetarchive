@@ -1,4 +1,7 @@
+#include <iterator>
+
 #include "Archive.hpp"
+#include "../common/String.hpp"
 
 Archive::Archive( const std::string& dir )
     : m_mview( dir + "/zmeta", dir + "/zdata", dir + "/zdict" )
@@ -90,4 +93,14 @@ const char* Archive::GetSubject( const char* msgid ) const
 {
     auto idx = m_midhash.Search( msgid );
     return idx >= 0 ? GetSubject( idx ) : nullptr;
+}
+
+std::vector<uint32_t> Archive::Search( const char* query ) const
+{
+    std::vector<uint32_t> ret;
+
+    std::vector<std::string> terms;
+    split( query, std::back_inserter( terms ) );
+
+    return ret;
 }
