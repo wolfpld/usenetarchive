@@ -1,7 +1,9 @@
 #include <chrono>
 #include <QFileDialog>
+#include <QLabel>
 #include <sstream>
 #include <memory>
+#include <time.h>
 
 #ifdef _WIN32
 #  include <malloc.h>
@@ -371,4 +373,47 @@ void Browser::on_lineEdit_returnPressed()
     str += QString::number( std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );
     str += "ms.";
     ui->statusBar->showMessage( str, 0 );
+
+    ui->SearchContentsScroll->setUpdatesEnabled( false );
+    QLayoutItem* item;
+    while( item = ui->SearchContents->layout()->takeAt( 0 ) )
+    {
+        delete item;
+    }
+    for( auto& v : res )
+    {
+        auto panel = new QFrame();
+        panel->setFrameShape( QFrame::StyledPanel );
+        auto vbox = new QVBoxLayout( panel );
+        vbox->setMargin( 3 );
+
+        auto gridwidget = new QWidget();
+        auto grid = new QGridLayout( gridwidget );
+        grid->setMargin( 0 );
+
+        auto from = new QLabel( ( std::string( "From: <b>" ) + m_archive->GetFrom( v.postid ) + "</b>" ).c_str() );
+        from->setTextFormat( Qt::RichText );
+        grid->addWidget( from, 0, 0 );
+        auto subject = new QLabel( ( std::string( "Subject: <b>" ) + m_archive->GetSubject( v.postid ) + "</b>" ).c_str() );
+        subject->setTextFormat( Qt::RichText );
+        grid->addWidget( subject, 1, 0 );
+
+        const auto epoch = time_t( m_archive->GetDate( v.postid ) );
+        char buf[64];
+        strftime( buf, 64, "Date: <b>%a %F %T</b>", localtime( &epoch ) );
+        auto date = new QLabel( buf );
+        grid->addWidget( date, 0, 1 );
+
+        sprintf( buf, "<font color=\"#666666\">Rank: %.2f</font>", v.rank );
+        auto rank = new QLabel( buf );
+        grid->addWidget( rank, 1, 1 );
+
+        auto content = new QTextBrowser();
+        content->setPlainText( "dupa dupa dyrdymaly" );
+
+        vbox->addWidget( gridwidget );
+        vbox->addWidget( content );
+        ui->SearchContents->addWidget( panel );
+    }
+    ui->SearchContentsScroll->setUpdatesEnabled( true );
 }
