@@ -2,6 +2,7 @@
 #define BROWSER_H
 
 #include <memory>
+#include <vector>
 #include <QMainWindow>
 
 #include "treemodel.hpp"
@@ -44,6 +45,7 @@ private:
     int32_t m_index;
     bool m_rawMessage;
     bool m_rot13;
+    std::vector<QWidget*> m_searchItems;
 };
 
 #endif

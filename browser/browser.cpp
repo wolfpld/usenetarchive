@@ -375,11 +375,11 @@ void Browser::on_lineEdit_returnPressed()
     ui->statusBar->showMessage( str, 0 );
 
     ui->SearchContentsScroll->setUpdatesEnabled( false );
-    QLayoutItem* item;
-    while( item = ui->SearchContents->layout()->takeAt( 0 ) )
+    for( auto& v : m_searchItems )
     {
-        delete item;
+        delete v;
     }
+    m_searchItems.clear();
     for( auto& v : res )
     {
         auto panel = new QFrame();
@@ -408,12 +408,88 @@ void Browser::on_lineEdit_returnPressed()
         auto rank = new QLabel( buf );
         grid->addWidget( rank, 1, 1 );
 
+        auto msg = std::string( m_archive->GetMessage( v.postid ) );
+        std::string lower = msg;
+        std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
+
+        std::vector<size_t> tpos;
+        for( auto& match : v.matched )
+        {
+            size_t pos = 0;
+            while( ( pos = lower.find( match, pos+1 ) ) != std::string::npos ) tpos.emplace_back( pos );
+        }
+        std::sort( tpos.begin(), tpos.end() );
+
+        std::vector<std::pair<size_t, size_t>> ranges;
+        int stop = std::min<int>( 6, tpos.size() );
+        for( int i=0; i<stop; i++ )
+        {
+            size_t start = tpos[i];
+            for( int j=0; j<5; j++ )
+            {
+                if( start == 0 ) break;
+                start--;
+                while( start > 0 && msg[start] != ' ' && msg[start] != '\n' ) start--;
+            }
+            size_t end = tpos[i];
+            for( int j=0; j<5; j++ )
+            {
+                if( end == msg.size() ) break;
+                end++;
+                while( end < msg.size() && msg[end] != ' ' && msg[end] != '\n' ) end++;
+            }
+            ranges.emplace_back( start, end );
+        }
+
+        for( int i=ranges.size()-1; i>0; i-- )
+        {
+            if( ranges[i].first <= ranges[i-1].second )
+            {
+                ranges[i-1].second = ranges[i].second;
+                ranges.erase( ranges.begin() + i );
+            }
+        }
+
+        std::ostringstream s;
+        s << "<pre>";
+        for( auto& v : ranges )
+        {
+            s << " <font color=\"#666666\">(...)</font>";
+            for( size_t i = v.first; i<v.second; i++ )
+            {
+                switch( msg[i] )
+                {
+                case '\n':
+                    s << "<br/>";
+                    break;
+                case '<':
+                    s << "&lt;";
+                    break;
+                case '>':
+                    s << "&gt;";
+                    break;
+                case '&':
+                    s << "&amp;";
+                    break;
+                default:
+                    s.put( msg[i] );
+                    break;
+                }
+            }
+        }
+        s << " <font color=\"#666666\">(...)</font></pre>";
+
         auto content = new QTextBrowser();
-        content->setPlainText( "dupa dupa dyrdymaly" );
+        content->setHtml( s.str().c_str() );
+        content->setLineWrapMode( QTextEdit::WidgetWidth );
+        content->document()->adjustSize();
+        content->setMinimumHeight( content->document()->size().height() + 2 );
 
         vbox->addWidget( gridwidget );
         vbox->addWidget( content );
         ui->SearchContents->addWidget( panel );
+        m_searchItems.emplace_back( panel );
     }
+
     ui->SearchContentsScroll->setUpdatesEnabled( true );
 }
