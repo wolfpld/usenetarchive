@@ -22,6 +22,7 @@ void PrintHelp()
     printf( "search query  - search archive\n" );
     printf( "subject msgid - view subject: field\n" );
     printf( "subjecti idx  - view subject: field\n" );
+    printf( "timechart     - print time chart\n" );
     printf( "toplevel      - list toplevel messages\n" );
     printf( "view msgid    - view message with given message id\n" );
     printf( "viewi idx     - view message of given idx\n" );
@@ -206,6 +207,14 @@ int main( int argc, char** argv )
                     first = false;
                 }
                 printf( "\n" );
+            }
+        }
+        else if( strcmp( cmd, "timechart" ) == 0 )
+        {
+            auto tc = archive.TimeChart();
+            for( auto& v : tc )
+            {
+                printf( "%s,%i\n", v.first.c_str(), v.second );
             }
         }
         else if( strcmp( cmd, "exit" ) == 0 || strcmp( cmd, "quit" ) == 0 )
