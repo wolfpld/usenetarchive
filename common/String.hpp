@@ -16,6 +16,11 @@ static inline int strnicmpl( const char* l, const char* r, int n )
     return 0;
 }
 
+static inline bool _isspace( char c )
+{
+    return c == ' ';
+}
+
 template <class T>
 static inline void split( const char* s, T o )
 {
@@ -27,8 +32,8 @@ static inline void split( const char* s, T o )
 
     while( i != e )
     {
-        i = std::find_if( i, e, []( char c ){ return !isspace( c ); } );
-        j = std::find_if( i, e, []( char c ){ return isspace( c ); } );
+        i = std::find_if( i, e, []( char c ){ return !_isspace( c ); } );
+        j = std::find_if( i, e, []( char c ){ return _isspace( c ); } );
 
         if( i != e )
         {
