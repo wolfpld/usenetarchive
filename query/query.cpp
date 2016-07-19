@@ -203,7 +203,7 @@ int main( int argc, char** argv )
                 bool first = true;
                 for( auto& v : data )
                 {
-                    printf( "%s%i", first ? "" : ", ", v );
+                    printf( "%s%i (%.2f)", first ? "" : ", ", v.postid, v.rank );
                     first = false;
                 }
                 printf( "\n" );

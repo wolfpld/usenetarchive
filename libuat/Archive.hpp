@@ -14,6 +14,13 @@
 
 #include "ViewReference.hpp"
 
+struct SearchResult
+{
+    uint32_t postid;
+    float rank;
+    uint32_t timestamp;
+};
+
 class Archive
 {
 public:
@@ -41,7 +48,7 @@ public:
     const char* GetSubject( uint32_t idx ) const;
     const char* GetSubject( const char* msgid ) const;
 
-    std::vector<uint32_t> Search( const char* query ) const;
+    std::vector<SearchResult> Search( const char* query ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 
 private:

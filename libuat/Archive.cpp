@@ -128,9 +128,9 @@ static float PostRank( const PostData& data )
     return ( float( data.children ) / LexiconChildMax ) * 0.9f + 0.1f;
 }
 
-std::vector<uint32_t> Archive::Search( const char* query ) const
+std::vector<SearchResult> Archive::Search( const char* query ) const
 {
-    std::vector<uint32_t> ret;
+    std::vector<SearchResult> ret;
 
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
@@ -220,7 +220,8 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
     auto size = std::min<int>( 100, merged.size() );
     for( int i=0; i<size; i++ )
     {
-        ret.emplace_back( merged[i].postid );
+        const auto postid = merged[i].postid;
+        ret.emplace_back( SearchResult { postid, merged[i].rank, *m_connectivity[postid] } );
     }
 
     return ret;
