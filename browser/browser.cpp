@@ -1,3 +1,4 @@
+#include <chrono>
 #include <QFileDialog>
 #include <sstream>
 #include <memory>
@@ -49,6 +50,7 @@ void Browser::on_actionOpen_triggered()
         ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
         ui->actionRaw_message->setEnabled( true );
         ui->actionROT13->setEnabled( true );
+        ui->SearchTab->setEnabled( true );
     }
 }
 
@@ -350,4 +352,23 @@ void Browser::RecursiveExpand(const QModelIndex& index)
         ui->treeView->expand(idx);
         RecursiveExpand(idx);
     }
+}
+
+void Browser::on_lineEdit_returnPressed()
+{
+    const auto query = ui->lineEdit->text();
+    if( query.size() == 0 ) return;
+
+    auto t0 = std::chrono::high_resolution_clock::now();
+    auto tmp = query.toStdString();
+    const auto res = m_archive->Search( tmp.c_str() );
+    auto t1 = std::chrono::high_resolution_clock::now();
+
+    QString str;
+    str += "Search query found ";
+    str += QString::number( res.size() );
+    str += " messages in ";
+    str += QString::number( std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );
+    str += "ms.";
+    ui->statusBar->showMessage( str, 0 );
 }
