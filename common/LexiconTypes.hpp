@@ -36,6 +36,7 @@ static inline LexiconType LexiconDecodeType( uint8_t v )
     case 0x40:
         return T_Quote3;
     case 0x60:
+    default:
         return (v&0x10) == 0 ? T_Signature : T_Header;
     }
 }
