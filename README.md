@@ -2,6 +2,18 @@
 
 Usenet Archive Toolkit project aims to provide a set of tools to process various sources of usenet messages into a coherent, searchable archive.
 
+## Motivation
+
+Usenet is dead. You may believe it's not, but it really is.
+
+![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/stats.png)
+
+People went away to various forums, facebooks and twitters and seem fine there. Meanwhile, the old discussions slowly rot away. Google groups is a sad, unusable joke. Archive.org dataset, at least with regard to polish usenet archives, is vastly incomplete. There is no easy way to get the data, browse it, or search it. So, maybe something needs to be done. How hard can it be anyway?
+
+## Toolkit description
+
+UAT provides a multitude of utilities, each specialized for its own task. You can find a brief description of each one below.
+
 ### Import Formats
 
 Usenet messages may be retrieved from a number of different sources. Currently we support:
@@ -57,6 +69,8 @@ These tools provide access to archive data:
 ### Notes
 
 Be advised that some utilities (repack-zstd, lexicon) do require enormous amounts of memory. Processing large groups (eg. 2 million messages, 3 GB data) will swap heavily on a 16 GB machine.
+
+UAT only works on 64 bit machines.
 
 ### License
 
