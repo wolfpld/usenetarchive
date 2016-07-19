@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iterator>
+#include <time.h>
 
 #include "Archive.hpp"
 #include "../common/String.hpp"
@@ -220,6 +221,23 @@ std::vector<uint32_t> Archive::Search( const char* query ) const
     for( int i=0; i<size; i++ )
     {
         ret.emplace_back( merged[i].postid );
+    }
+
+    return ret;
+}
+
+std::map<std::string, uint32_t> Archive::TimeChart() const
+{
+    std::map<std::string, uint32_t> ret;
+
+    const auto size = m_connectivity.Size();
+    for( size_t i=0; i<size; i++ )
+    {
+        const auto epoch = time_t( *m_connectivity[i] );
+        if( epoch == 0 ) continue;
+        char buf[16];
+        strftime( buf, 16, "%Y%m", gmtime( &epoch ) );
+        ret[buf]++;
     }
 
     return ret;

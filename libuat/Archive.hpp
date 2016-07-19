@@ -1,6 +1,7 @@
 #ifndef __ARCHIVE_HPP__
 #define __ARCHIVE_HPP__
 
+#include <map>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -41,6 +42,7 @@ public:
     const char* GetSubject( const char* msgid ) const;
 
     std::vector<uint32_t> Search( const char* query ) const;
+    std::map<std::string, uint32_t> TimeChart() const;
 
 private:
     ZMessageView m_mview;
