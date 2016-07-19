@@ -135,6 +135,7 @@ std::vector<SearchResult> Archive::Search( const char* query ) const
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
 
+    std::vector<std::string> matched;
     std::vector<uint32_t> words;
     words.reserve( terms.size() );
     for( auto& v : terms )
@@ -143,6 +144,7 @@ std::vector<SearchResult> Archive::Search( const char* query ) const
         if( res >= 0 )
         {
             words.emplace_back( res );
+            matched.emplace_back( v );
         }
     }
     if( words.empty() ) return ret;
@@ -221,7 +223,7 @@ std::vector<SearchResult> Archive::Search( const char* query ) const
     for( int i=0; i<size; i++ )
     {
         const auto postid = merged[i].postid;
-        ret.emplace_back( SearchResult { postid, merged[i].rank, *m_connectivity[postid] } );
+        ret.emplace_back( SearchResult { postid, merged[i].rank, *m_connectivity[postid], matched } );
     }
 
     return ret;
