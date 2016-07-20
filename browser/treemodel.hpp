@@ -54,6 +54,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <vector>
 
 class TreeItem;
 class Archive;
@@ -78,10 +79,14 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
+    QModelIndex GetIndexFor( uint32_t idx ) const;
+    void SetIndex( uint32_t idx, const QModelIndex& index ) { m_indices[idx] = index; }
+
 private:
     void setupModelData(const Archive &data, TreeItem *parent);
 
     TreeItem *rootItem;
+    std::vector<QModelIndex> m_indices;
 };
 
 #endif

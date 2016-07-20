@@ -35,6 +35,7 @@ private slots:
 private:
     void FillTree();
     void RecursiveExpand(const QModelIndex& index);
+    void RecursiveSetIndex(const QModelIndex& index);
     void SetText( const char* txt );
     void ShowMessage( const char* msg );
     void SwitchToMessage( uint32_t idx );

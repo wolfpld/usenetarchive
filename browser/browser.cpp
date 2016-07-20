@@ -116,6 +116,11 @@ void Browser::FillTree()
 {
     m_model = std::make_unique<TreeModel>( *m_archive );
     ui->treeView->setModel( m_model.get() );
+    auto rows = m_model->rowCount();
+    for( int i=0; i<rows; i++ )
+    {
+        RecursiveSetIndex( m_model->index( i, 0 ) );
+    }
     for( int i=0; i<4; i++ )
     {
         ui->treeView->resizeColumnToContents( i );
@@ -357,6 +362,16 @@ void Browser::RecursiveExpand(const QModelIndex& index)
     }
 }
 
+void Browser::RecursiveSetIndex(const QModelIndex& index)
+{
+    m_model->SetIndex( m_model->GetIdx( index ), index );
+    auto num = m_model->rowCount(index);
+    for( int i=0; i<num; i++ )
+    {
+        RecursiveSetIndex( m_model->index( i, 0, index ) );
+    }
+}
+
 void Browser::on_lineEdit_returnPressed()
 {
     const auto query = ui->lineEdit->text();
@@ -503,5 +518,6 @@ void Browser::on_lineEdit_returnPressed()
 
 void Browser::SwitchToMessage( uint32_t idx )
 {
-
+    ui->treeView->setCurrentIndex( m_model->GetIndexFor( idx ) );
+    ui->tabWidget->setCurrentIndex( 0 );
 }

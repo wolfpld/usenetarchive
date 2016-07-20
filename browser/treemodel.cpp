@@ -64,6 +64,7 @@
 
 TreeModel::TreeModel(const Archive &data, QObject *parent)
     : QAbstractItemModel(parent)
+    , m_indices( data.NumberOfMessages() )
 {
     QVector<QVariant> rootData;
     rootData << "Subject" << "Posts" << "Author" << "Date";
@@ -216,4 +217,9 @@ void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
 {
     auto top = data.GetTopLevel();
     CreateLevel( data, data.GetTopLevel(), parent );
+}
+
+QModelIndex TreeModel::GetIndexFor( uint32_t idx ) const
+{
+    return m_indices[idx];
 }
