@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>960</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -98,10 +98,22 @@
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
              </spacer>
             </item>
             <item>
              <widget class="QScrollArea" name="scrollArea">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="maximumSize">
                <size>
                 <width>1024</width>
@@ -116,8 +128,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>196</width>
-                 <height>333</height>
+                 <width>914</width>
+                 <height>493</height>
                 </rect>
                </property>
                <layout class="QGridLayout" name="gridLayout_4">
@@ -132,6 +144,12 @@
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
               </property>
              </spacer>
             </item>
