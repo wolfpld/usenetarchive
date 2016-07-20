@@ -1,6 +1,7 @@
 #include <chrono>
 #include <QFileDialog>
 #include <QLabel>
+#include <QPushButton>
 #include <sstream>
 #include <memory>
 #include <time.h>
@@ -408,6 +409,13 @@ void Browser::on_lineEdit_returnPressed()
         auto rank = new QLabel( buf );
         grid->addWidget( rank, 1, 1 );
 
+        auto btn = new QPushButton();
+        btn->setText( "View message" );
+        grid->addWidget( btn, 0, 2, 2, 1 );
+
+        auto postid = v.postid;
+        connect( btn, &QPushButton::clicked, [this, postid] { this->SwitchToMessage( postid ); } );
+
         auto msg = std::string( m_archive->GetMessage( v.postid ) );
         std::string lower = msg;
         std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
@@ -492,4 +500,9 @@ void Browser::on_lineEdit_returnPressed()
     }
 
     ui->SearchContentsScroll->setUpdatesEnabled( true );
+}
+
+void Browser::SwitchToMessage( uint32_t idx )
+{
+
 }

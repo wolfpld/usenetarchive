@@ -37,6 +37,7 @@ private:
     void RecursiveExpand(const QModelIndex& index);
     void SetText( const char* txt );
     void ShowMessage( const char* msg );
+    void SwitchToMessage( uint32_t idx );
 
     Ui::Browser *ui;
     std::unique_ptr<Archive> m_archive;
