@@ -382,12 +382,20 @@ void Browser::on_lineEdit_returnPressed()
     const auto res = m_archive->Search( tmp.c_str() );
     auto t1 = std::chrono::high_resolution_clock::now();
 
+    enum { DisplayLimit = 250 };
+
     QString str;
     str += "Search query found ";
     str += QString::number( res.size() );
     str += " messages in ";
     str += QString::number( std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );
     str += "ms.";
+    if( res.size() > DisplayLimit )
+    {
+        str += " (Limiting display to ";
+        str += QString::number( DisplayLimit );
+        str += " messages.)";
+    }
     ui->statusBar->showMessage( str, 0 );
 
     ui->SearchContentsScroll->setUpdatesEnabled( false );
@@ -396,8 +404,10 @@ void Browser::on_lineEdit_returnPressed()
         delete v;
     }
     m_searchItems.clear();
-    for( auto& v : res )
+    const auto size = std::min<size_t>( DisplayLimit, res.size() );
+    for( size_t i=0; i<size; i++ )
     {
+        auto& v = res[i];
         auto panel = new QFrame();
         panel->setFrameShape( QFrame::StyledPanel );
         auto vbox = new QVBoxLayout( panel );
