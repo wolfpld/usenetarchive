@@ -62,6 +62,10 @@ These tools provide access to archive data:
 
 - browser --- Graphical browser of archives.
 
+![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/browser1.png)
+
+![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/browser2.png)
+
 ### Typical Workflow
 
 ![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/pipeline.svg)
