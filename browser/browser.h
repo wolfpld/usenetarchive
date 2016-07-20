@@ -31,6 +31,7 @@ private slots:
     void onTreeSelectionChanged( const QModelIndex& index );
     void on_treeView_expanded(const QModelIndex &index);
     void on_lineEdit_returnPressed();
+    void on_actionGo_to_message_triggered();
 
 private:
     void FillTree();

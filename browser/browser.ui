@@ -173,6 +173,7 @@
    <addaction name="actionOpen"/>
    <addaction name="actionRaw_message"/>
    <addaction name="actionROT13"/>
+   <addaction name="actionGo_to_message"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -200,6 +201,14 @@
    </property>
    <property name="text">
     <string>ROT13</string>
+   </property>
+  </action>
+  <action name="actionGo_to_message">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Go to message</string>
    </property>
   </action>
  </widget>

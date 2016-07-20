@@ -2,6 +2,8 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QPushButton>
+#include <QInputDialog>
+#include <QMessageBox>
 #include <sstream>
 #include <memory>
 #include <time.h>
@@ -53,6 +55,7 @@ void Browser::on_actionOpen_triggered()
         ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
         ui->actionRaw_message->setEnabled( true );
         ui->actionROT13->setEnabled( true );
+        ui->actionGo_to_message->setEnabled( true );
         ui->SearchTab->setEnabled( true );
     }
 }
@@ -530,4 +533,22 @@ void Browser::SwitchToMessage( uint32_t idx )
 {
     ui->treeView->setCurrentIndex( m_model->GetIndexFor( idx ) );
     ui->tabWidget->setCurrentIndex( 0 );
+}
+
+void Browser::on_actionGo_to_message_triggered()
+{
+    bool ok;
+    QString msgid = QInputDialog::getText( this, "Go to message", "Enter Message-ID:", QLineEdit::Normal, QString(), &ok );
+    if( ok && !msgid.isEmpty() )
+    {
+        auto idx = m_archive->GetMessageIndex( msgid.toStdString().c_str() );
+        if( idx >= 0 )
+        {
+            SwitchToMessage( idx );
+        }
+        else
+        {
+            QMessageBox::warning( this, "Error", "Message-ID doesn't exist.", QMessageBox::NoButton, QMessageBox::Ok );
+        }
+    }
 }
