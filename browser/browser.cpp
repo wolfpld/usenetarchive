@@ -433,14 +433,14 @@ void Browser::on_lineEdit_returnPressed()
         for( int i=0; i<stop; i++ )
         {
             size_t start = tpos[i];
-            for( int j=0; j<5; j++ )
+            for( int j=0; j<10; j++ )
             {
                 if( start == 0 ) break;
                 start--;
                 while( start > 0 && msg[start] != ' ' && msg[start] != '\n' ) start--;
             }
             size_t end = tpos[i];
-            for( int j=0; j<5; j++ )
+            for( int j=0; j<10; j++ )
             {
                 if( end == msg.size() ) break;
                 end++;
@@ -459,10 +459,9 @@ void Browser::on_lineEdit_returnPressed()
         }
 
         std::ostringstream s;
-        s << "<pre>";
         for( auto& v : ranges )
         {
-            s << " <font color=\"#666666\">(...)</font>";
+            s << "<font color=\"#666666\"> ... </font>";
             for( size_t i = v.first; i<v.second; i++ )
             {
                 switch( msg[i] )
@@ -485,7 +484,7 @@ void Browser::on_lineEdit_returnPressed()
                 }
             }
         }
-        s << " <font color=\"#666666\">(...)</font></pre>";
+        s << "<font color=\"#666666\"> ... </font>";
 
         auto content = new QTextBrowser();
         content->setHtml( s.str().c_str() );
