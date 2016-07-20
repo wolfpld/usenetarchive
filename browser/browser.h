@@ -32,6 +32,7 @@ private slots:
     void on_treeView_expanded(const QModelIndex &index);
     void on_lineEdit_returnPressed();
     void on_actionGo_to_message_triggered();
+    void on_actionAbout_triggered();
 
 private:
     void FillTree();

@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     treemodel.cpp \
     treeitem.cpp \
     TextBuf.cpp \
-    ../common/LexiconTypes.cpp
+    ../common/LexiconTypes.cpp \
+    about.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -47,9 +48,11 @@ HEADERS  += browser.h \
     treemodel.hpp \
     treeitem.hpp \
     TextBuf.hpp \
-    ../common/LexiconTypes.hpp
+    ../common/LexiconTypes.hpp \
+    about.h
 
-FORMS    += browser.ui
+FORMS    += browser.ui \
+    about.ui
 
 DISTFILES += \
     build/win32/x64/Debug/browser.ilk \

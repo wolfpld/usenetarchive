@@ -17,6 +17,7 @@
 #include "../libuat/Archive.hpp"
 #include "../common/String.hpp"
 
+#include "about.h"
 #include "browser.h"
 #include "ui_browser.h"
 
@@ -551,4 +552,10 @@ void Browser::on_actionGo_to_message_triggered()
             QMessageBox::warning( this, "Error", "Message-ID doesn't exist.", QMessageBox::NoButton, QMessageBox::Ok );
         }
     }
+}
+
+void Browser::on_actionAbout_triggered()
+{
+    auto about = new About();
+    about->exec();
 }
