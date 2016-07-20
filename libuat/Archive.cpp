@@ -219,8 +219,7 @@ std::vector<SearchResult> Archive::Search( const char* query ) const
 
     std::sort( merged.begin(), merged.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
 
-    auto size = std::min<int>( 100, merged.size() );
-    for( int i=0; i<size; i++ )
+    for( int i=0; i<merged.size(); i++ )
     {
         const auto postid = merged[i].postid;
         ret.emplace_back( SearchResult { postid, merged[i].rank, *m_connectivity[postid], matched } );
