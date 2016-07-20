@@ -19,7 +19,7 @@ struct SearchResult
     uint32_t postid;
     float rank;
     uint32_t timestamp;
-    std::vector<std::string> matched;
+    std::vector<const char*> matched;
 };
 
 class Archive

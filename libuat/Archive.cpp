@@ -135,7 +135,7 @@ std::vector<SearchResult> Archive::Search( const char* query ) const
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
 
-    std::vector<std::string> matched;
+    std::vector<const char*> matched;
     std::vector<uint32_t> words;
     words.reserve( terms.size() );
     for( auto& v : terms )
@@ -144,7 +144,7 @@ std::vector<SearchResult> Archive::Search( const char* query ) const
         if( res >= 0 )
         {
             words.emplace_back( res );
-            matched.emplace_back( v );
+            matched.emplace_back( m_lexstr + m_lexmeta[res].str );
         }
     }
     if( words.empty() ) return ret;
