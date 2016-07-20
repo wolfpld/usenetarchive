@@ -31,6 +31,11 @@ const char* Archive::GetMessage( const char* msgid )
     return idx >= 0 ? GetMessage( idx ) : nullptr;
 }
 
+int Archive::GetMessageIndex( const char* msgid ) const
+{
+    return m_midhash.Search( msgid );
+}
+
 ViewReference<uint32_t> Archive::GetTopLevel() const
 {
     return ViewReference<uint32_t> { m_toplevel, m_toplevel.DataSize() };

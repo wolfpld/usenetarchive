@@ -31,6 +31,8 @@ public:
     const char* GetMessage( const char* msgid );
     size_t NumberOfMessages() const { return m_mcnt; }
 
+    int GetMessageIndex( const char* msgid ) const;
+
     ViewReference<uint32_t> GetTopLevel() const;
     size_t NumberOfTopLevel() const { return m_toplevel.Size(); }
 
