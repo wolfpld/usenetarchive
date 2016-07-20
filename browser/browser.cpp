@@ -132,10 +132,11 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
 }
 
-void Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
+int Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
 
-static void EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char trigger, char tag )
+static int EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char trigger, char tag )
 {
+    int cnt = 0;
     const char* tmp = txt+1;
     for(;;)
     {
@@ -153,60 +154,75 @@ static void EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char
     if( tmp == end || tmp - txt == 1 )
     {
         buf.PutC( *txt );
+        cnt++;
     }
     else
     {
         buf.PutC( trigger );
+        cnt++;
         buf.PutC( '<' );
         buf.PutC( tag );
         buf.PutC( '>' );
-        Encode( buf, txt+1, tmp, false );
+        cnt += Encode( buf, txt+1, tmp, false );
         buf.Write( "</", 2 );
         buf.PutC( tag );
         buf.PutC( '>' );
         buf.PutC( trigger );
+        cnt++;
         txt = tmp;
     }
+    return cnt;
 }
 
-static void Encode( TextBuf& buf, const char* txt, const char* end, bool special )
+static int Encode( TextBuf& buf, const char* txt, const char* end, bool special )
 {
+    int cnt = 0;
     while( txt != end )
     {
         if( *txt == '<' )
         {
             buf.Write( "&lt;", 4 );
+            cnt++;
         }
         else if( *txt == '>' )
         {
             buf.Write( "&gt;", 4 );
+            cnt++;
         }
         else if( *txt == '&' )
         {
             buf.Write( "&amp;", 5 );
+            cnt++;
         }
         else if( special && *txt == '*' )
         {
-            EncodeSpecial( buf, txt, end, '*', 'b' );
+            cnt += EncodeSpecial( buf, txt, end, '*', 'b' );
         }
         else if( special && *txt == '/' )
         {
-            EncodeSpecial( buf, txt, end, '/', 'i' );
+            cnt += EncodeSpecial( buf, txt, end, '/', 'i' );
         }
         else if( special && *txt == '_' )
         {
-            EncodeSpecial( buf, txt, end, '_', 'u' );
+            cnt += EncodeSpecial( buf, txt, end, '_', 'u' );
         }
         else if( *txt == '\t' )
         {
-            buf.Write( "        ", 8 );
+            int tab = 8 - ( cnt % 8 );
+            for( int i=0; i<tab; i++ )
+            {
+                buf.PutC( ' ' );
+            }
+            cnt += tab;
         }
         else
         {
             buf.PutC( *txt );
+            cnt++;
         }
         txt++;
     }
+    return cnt;
 }
 
 void Browser::SetText( const char* txt )
