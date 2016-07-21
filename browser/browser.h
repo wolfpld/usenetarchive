@@ -41,6 +41,7 @@ private:
     void SetText( const char* txt );
     void ShowMessage( const char* msg );
     void SwitchToMessage( uint32_t idx );
+    void ClearSearch();
 
     Ui::Browser *ui;
     std::unique_ptr<Archive> m_archive;

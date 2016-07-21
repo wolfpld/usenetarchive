@@ -58,6 +58,9 @@ void Browser::on_actionOpen_triggered()
         ui->actionROT13->setEnabled( true );
         ui->actionGo_to_message->setEnabled( true );
         ui->SearchTab->setEnabled( true );
+        ui->SearchContentsScroll->setUpdatesEnabled( false );
+        ClearSearch();
+        ui->SearchContentsScroll->setUpdatesEnabled( true );
     }
 }
 
@@ -421,11 +424,7 @@ void Browser::on_lineEdit_returnPressed()
     ui->statusBar->showMessage( str, 0 );
 
     ui->SearchContentsScroll->setUpdatesEnabled( false );
-    for( auto& v : m_searchItems )
-    {
-        delete v;
-    }
-    m_searchItems.clear();
+    ClearSearch();
     const auto size = std::min<size_t>( DisplayLimit, res.size() );
     for( size_t i=0; i<size; i++ )
     {
@@ -576,4 +575,13 @@ void Browser::on_actionAbout_triggered()
 {
     auto about = new About();
     about->exec();
+}
+
+void Browser::ClearSearch()
+{
+    for( auto& v : m_searchItems )
+    {
+        delete v;
+    }
+    m_searchItems.clear();
 }
