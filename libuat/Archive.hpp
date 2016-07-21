@@ -51,6 +51,9 @@ public:
     const char* GetSubject( uint32_t idx ) const;
     const char* GetSubject( const char* msgid ) const;
 
+    const char* GetRealName( uint32_t idx ) const;
+    const char* GetRealName( const char* msgid ) const;
+
     std::vector<SearchResult> Search( const char* query ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 

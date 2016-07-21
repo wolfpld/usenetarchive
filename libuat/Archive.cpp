@@ -82,7 +82,7 @@ uint32_t Archive::GetDate( const char* msgid ) const
 
 const char* Archive::GetFrom( uint32_t idx ) const
 {
-    return m_strings[idx*2];
+    return m_strings[idx*3];
 }
 
 const char* Archive::GetFrom( const char* msgid ) const
@@ -93,10 +93,21 @@ const char* Archive::GetFrom( const char* msgid ) const
 
 const char* Archive::GetSubject( uint32_t idx ) const
 {
-    return m_strings[idx*2+1];
+    return m_strings[idx*3+1];
 }
 
 const char* Archive::GetSubject( const char* msgid ) const
+{
+    auto idx = m_midhash.Search( msgid );
+    return idx >= 0 ? GetSubject( idx ) : nullptr;
+}
+
+const char* Archive::GetRealName( uint32_t idx ) const
+{
+    return m_strings[idx*3+2];
+}
+
+const char* Archive::GetRealName( const char* msgid ) const
 {
     auto idx = m_midhash.Search( msgid );
     return idx >= 0 ? GetSubject( idx ) : nullptr;
