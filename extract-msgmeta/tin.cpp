@@ -196,6 +196,16 @@ gnksa_split_from(
     return GNKSA_OK;
 }
 
+static void replace( std::string& str, const char* from, size_t fromsize, const char* to, size_t tosize )
+{
+    size_t pos = 0;
+    while( ( pos = str.find( from, pos ) ) != std::string::npos )
+    {
+        str.replace( pos, fromsize, to );
+        pos += tosize;
+    }
+}
+
 std::string GetUserName( const char* from )
 {
     char address[HEADER_LEN];
@@ -204,16 +214,19 @@ std::string GetUserName( const char* from )
     gnksa_split_from( from, address, realname, &addrtype );
     if( *realname )
     {
-        auto last = strlen( realname ) - 1;
-        if( realname[0] == '\"' && realname[last] == '\"' )
+        auto size = strlen( realname );
+        auto str = realname;
+        if( realname[0] == '\"' && realname[size-1] == '\"' )
         {
-            realname[last] = '\0';
-            return realname + 1;
+            realname[size-1] = '\0';
+            str++;
         }
-        else
-        {
-            return realname;
-        }
+        std::string ret = str;
+        replace( ret, "\\\"", 2, "\"", 1 );
+        replace( ret, "\\\(", 2, "(", 1 );
+        replace( ret, "\\\)", 2, ")", 1 );
+        replace( ret, "\\\\", 2, "\\", 1 );
+        return ret;
     }
     else
     {
