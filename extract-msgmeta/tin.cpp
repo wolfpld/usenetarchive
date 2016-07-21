@@ -204,7 +204,16 @@ std::string GetUserName( const char* from )
     gnksa_split_from( from, address, realname, &addrtype );
     if( *realname )
     {
-        return realname;
+        auto last = strlen( realname ) - 1;
+        if( realname[0] == '\"' && realname[last] == '\"' )
+        {
+            realname[last] = '\0';
+            return realname + 1;
+        }
+        else
+        {
+            return realname;
+        }
     }
     else
     {
