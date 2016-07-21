@@ -438,7 +438,7 @@ void Browser::on_lineEdit_returnPressed()
         auto grid = new QGridLayout( gridwidget );
         grid->setMargin( 0 );
 
-        auto from = new QLabel( ( std::string( "From: <b>" ) + m_archive->GetFrom( v.postid ) + "</b>" ).c_str() );
+        auto from = new QLabel( ( std::string( "From: <b>" ) + m_archive->GetRealName( v.postid ) + "</b>" ).c_str() );
         from->setTextFormat( Qt::RichText );
         grid->addWidget( from, 0, 0 );
         auto subject = new QLabel( ( std::string( "Subject: <b>" ) + m_archive->GetSubject( v.postid ) + "</b>" ).c_str() );

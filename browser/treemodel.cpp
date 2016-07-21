@@ -201,7 +201,7 @@ static int CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data
         QVector<QVariant> columns;
         columns << arch.GetSubject( idx );
         columns << QString::number( depth );
-        columns << arch.GetFrom( idx );
+        columns << arch.GetRealName( idx );
         auto date = arch.GetDate( idx );
         time_t t = { date };
         char* tmp = asctime( localtime( &t ) );
