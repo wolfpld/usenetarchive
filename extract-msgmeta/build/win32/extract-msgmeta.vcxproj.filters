@@ -27,6 +27,9 @@
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
       <Filter>xxhash</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\tin.cpp">
+      <Filter>extract-msgmeta</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\tin.hpp">
+      <Filter>extract-msgmeta</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

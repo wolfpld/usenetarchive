@@ -11,10 +11,13 @@
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
+#include "tin.hpp"
+
 struct Offsets
 {
     uint32_t from;
     uint32_t subject;
+    uint32_t realname;
 };
 
 int main( int argc, char** argv )
@@ -84,6 +87,7 @@ int main( int argc, char** argv )
 
         std::string fstr( fptr, fend );
         std::string sstr( sptr, send );
+        std::string rstr = GetUserName( fstr.c_str() );
 
         if( refs.find( fstr ) == refs.end() )
         {
@@ -97,9 +101,16 @@ int main( int argc, char** argv )
             refs.emplace( sstr, offset );
             offset += sstr.size()+1;
         }
+        if( refs.find( rstr ) == refs.end() )
+        {
+            fwrite( rstr.c_str(), 1, rstr.size()+1, strout );
+            refs.emplace( rstr, offset );
+            offset += rstr.size()+1;
+        }
 
         data[i].from = refs[fstr];
         data[i].subject = refs[sstr];
+        data[i].realname = refs[rstr];
     }
     fclose( strout );
 
@@ -111,6 +122,7 @@ int main( int argc, char** argv )
     {
         fwrite( &data[i].from, 1, sizeof( Offsets::from ), out );
         fwrite( &data[i].subject, 1, sizeof( Offsets::subject ), out );
+        fwrite( &data[i].realname, 1, sizeof( Offsets::realname ), out );
     }
     fclose( out );
 

@@ -23,6 +23,7 @@
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c" />
     <ClCompile Include="..\..\extract-msgmeta.cpp" />
+    <ClCompile Include="..\..\tin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
+    <ClInclude Include="..\..\tin.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73490CE1-5DA1-4EFA-821E-C700033E1CF4}</ProjectGuid>
