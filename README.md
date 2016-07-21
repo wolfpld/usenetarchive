@@ -6,7 +6,7 @@ Usenet Archive Toolkit project aims to provide a set of tools to process various
 
 Usenet is dead. You may believe it's not, but it really is.
 
-![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/stats.png)
+![](doc/stats.png)
 
 People went away to various forums, facebooks and twitters and seem fine there. Meanwhile, the old discussions slowly rot away. Google groups is a sad, unusable joke. Archive.org dataset, at least with regard to polish usenet archives, is vastly incomplete. There is no easy way to get the data, browse it, or search it. So, maybe something needs to be done. How hard can it be anyway?
 
@@ -62,13 +62,13 @@ These tools provide access to archive data:
 
 - browser --- Graphical browser of archives.
 
-![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/browser1.png)
+![](doc/browser1.png)
 
-![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/browser2.png)
+![](doc/browser2.png)
 
 ### Typical Workflow
 
-![](https://bitbucket.org/wolfpld/usenetarchive/raw/master/doc/pipeline.svg)
+![](doc/pipeline.svg)
 
 ### Notes
 
