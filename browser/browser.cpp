@@ -119,6 +119,7 @@ void Browser::ShowMessage( const char* msg )
 void Browser::FillTree()
 {
     m_model = std::make_unique<TreeModel>( *m_archive );
+    ui->treeView->setUpdatesEnabled( false );
     ui->treeView->setModel( m_model.get() );
     auto rows = m_model->rowCount();
     for( int i=0; i<rows; i++ )
@@ -130,6 +131,7 @@ void Browser::FillTree()
         ui->treeView->resizeColumnToContents( i );
     }
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
+    ui->treeView->setUpdatesEnabled( true );
 }
 
 int Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
