@@ -29,6 +29,7 @@ Imported messages are stored in a per-message LZ4 compressed meta+payload databa
 Raw imported messages have to be processed to be of any use. We provide the following utilities:
 
 - kill-duplicates --- Removes duplicate messages. It is relatively rare, but data sets from even a single NNTP server may contain the same message twice.
+- filter-newsgroups --- Some data sources (eg. Archive.org's giganews collection) contain messages that were not sent to the collection's newsgroup. This utility will remove such bogus messages.
 - extract-msgid --- Extracts unique identifier of each message and builds reference table for fast access to any message through its ID.
 - extract-msgmeta --- Extracts "From" and "Subject" fields, as a quick reference for archive browsers.
 - merge-raw --- Merges two imported data sets into one. Does not duplicate messages.
