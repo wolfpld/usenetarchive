@@ -129,6 +129,8 @@ int main( int argc, char** argv )
                 {
                     missing.emplace( tmp );
                 }
+
+                if( *buf == '>' ) buf--;
             }
         }
     }
