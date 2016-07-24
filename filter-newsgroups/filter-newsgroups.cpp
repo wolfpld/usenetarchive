@@ -65,12 +65,14 @@ int main( int argc, char** argv )
 
         auto post = mview[i];
         auto buf = post;
+        auto raw = mview.Raw( i );
 
-        while( strnicmpl( buf, "newsgroups: ", 12 ) != 0 )
+        while( strnicmpl( buf, "newsgroups: ", 12 ) != 0 && buf - post < raw.size )
         {
             buf++;
-            while( *buf++ != '\n' ) {}
+            while( *buf++ != '\n' && buf - post < raw.size ) {}
         }
+        if( buf - post >= raw.size ) continue;
         buf += 12;
         auto end = buf;
         bool good = false;
