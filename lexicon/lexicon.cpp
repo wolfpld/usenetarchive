@@ -276,6 +276,8 @@ int main( int argc, char** argv )
         odata += sizeof( uint32_t ) * dsize * 2;
     }
 
+    printf( "\n" );
+
     fclose( fmeta );
     fclose( fstr );
     fclose( fdata );
