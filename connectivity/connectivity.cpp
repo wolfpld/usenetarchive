@@ -101,31 +101,34 @@ int main( int argc, char** argv )
         const auto terminate = buf;
         while( *buf != '\n' ) buf++;
 
-        buf--;
-        for(;;)
+        if( buf != terminate )
         {
-            while( *buf != '>' && buf != terminate ) buf--;
-            if( buf == terminate )
+            buf--;
+            for(;;)
             {
-                toplevel.push_back( i );
-                break;
-            }
-            auto end = buf;
-            while( *--buf != '<' ) {}
-            buf++;
-            assert( end - buf < 1024 );
-            broken += ValidateMsgId( buf, end, tmp );
+                while( *buf != '>' && buf != terminate ) buf--;
+                if( buf == terminate )
+                {
+                    toplevel.push_back( i );
+                    break;
+                }
+                auto end = buf;
+                while( *--buf != '<' ) {}
+                buf++;
+                assert( end - buf < 1024 );
+                broken += ValidateMsgId( buf, end, tmp );
 
-            auto idx = hash.Search( tmp );
-            if( idx >= 0 )
-            {
-                data[i].parent = idx;
-                data[idx].children.emplace_back( i );
-                break;
-            }
-            else
-            {
-                missing.emplace( tmp );
+                auto idx = hash.Search( tmp );
+                if( idx >= 0 )
+                {
+                    data[i].parent = idx;
+                    data[idx].children.emplace_back( i );
+                    break;
+                }
+                else
+                {
+                    missing.emplace( tmp );
+                }
             }
         }
     }
