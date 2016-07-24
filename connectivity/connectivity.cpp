@@ -98,10 +98,17 @@ int main( int argc, char** argv )
             continue;
         }
         buf += 12;
-        const auto terminate = buf;
-        while( *buf != '\n' ) buf++;
 
-        if( buf != terminate )
+        const auto terminate = buf;
+        int valid = 0;
+        while( *buf != '\n' )
+        {
+            if( *buf == '<' ) valid++;
+            else if( *buf == '>' ) valid--;
+            buf++;
+        }
+
+        if( valid == 0 && buf != terminate )
         {
             buf--;
             for(;;)
