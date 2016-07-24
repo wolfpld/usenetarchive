@@ -14,6 +14,7 @@ digraph
     msgid2[label="extract-msgid"];
     msgid3[label="extract-msgid"];
 
+    filter[label="filter-newsgroups"];
     merge[label="merge-raw"];
     msgmeta[label="extract-msgmeta"];
     repack[label="repack-zstd"];
@@ -22,7 +23,8 @@ digraph
     src2 -> slrnpull;
     mbox -> kill1;
     slrnpull -> kill2;
-    kill1 -> msgid1;
+    kill1 -> filter;
+    filter -> msgid1;
     kill2 -> msgid2;
     msgid1 -> merge;
     msgid2 -> merge;
@@ -31,7 +33,10 @@ digraph
     msgid3 -> msgmeta;
     msgmeta -> connectivity;
     connectivity -> repack;
-    repack -> dst1;
+    repack -> lexicon;
+    lexicon -> lexhash;
+    lexhash -> lexsort;
+    lexsort -> dst1;
     dst1 -> query;
     dst1 -> browser;
 }
