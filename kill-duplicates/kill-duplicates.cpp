@@ -66,12 +66,14 @@ int main( int argc, char** argv )
         auto post = mview[i];
         auto buf = post;
 
-        while( strnicmpl( buf, "message-id: <", 13 ) != 0 )
+        while( strnicmpl( buf, "message-id: ", 12 ) != 0 )
         {
             buf++;
             while( *buf++ != '\n' ) {}
         }
-        buf += 13;
+        buf += 12;
+        while( *buf != '<' ) buf++;
+        buf++;
         auto end = buf;
         while( *end != '>' ) end++;
 
