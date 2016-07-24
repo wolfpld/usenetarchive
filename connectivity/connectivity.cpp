@@ -150,8 +150,8 @@ int main( int argc, char** argv )
 
         while( strnicmpl( buf, "date: ", 6 ) != 0 )
         {
+            while( *buf != '\n' ) buf++;
             buf++;
-            while( *buf++ != '\n' ) {}
         }
         buf += 6;
         auto end = buf;
