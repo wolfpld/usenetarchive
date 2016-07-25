@@ -21,7 +21,37 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_base.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_bit_entropy.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_datalib.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_fast_substring_compression.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_hyperspace.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_markov.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_markov_microgroom.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_matrix.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_matrix_util.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_pca.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_pca_lib_fncts.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_regex_tre.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_strnhash.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm_lib_fncts.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm_quad_prog.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_util.c" />
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_vector_tokenize.c" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
+    <ClCompile Include="..\..\..\contrib\tre\regcomp.c" />
+    <ClCompile Include="..\..\..\contrib\tre\regerror.c" />
+    <ClCompile Include="..\..\..\contrib\tre\regexec.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-ast.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-compile.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-match-approx.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-match-backtrack.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-match-parallel.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-mem.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-parse.c" />
+    <ClCompile Include="..\..\..\contrib\tre\tre-stack.c" />
+    <ClCompile Include="..\..\..\contrib\tre\xmalloc.c" />
     <ClCompile Include="..\..\filter-spam.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -32,7 +62,31 @@
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_config.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_datalib.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_internal.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_lib.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_matrix.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_matrix_util.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_pca.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_pca_lib_fncts.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_regex.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_structs.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm_lib_fncts.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm_quad_prog.h" />
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_sysincludes.h" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
+    <ClInclude Include="..\..\..\contrib\tre\regex.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-ast.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-compile.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-config.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-internal.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-match-utils.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-mem.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-parse.h" />
+    <ClInclude Include="..\..\..\contrib\tre\tre-stack.h" />
+    <ClInclude Include="..\..\..\contrib\tre\xmalloc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}</ProjectGuid>
@@ -122,6 +176,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalIncludeDirectories>..\..\..\contrib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

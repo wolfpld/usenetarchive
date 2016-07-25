@@ -10,6 +10,12 @@
     <Filter Include="lz4">
       <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tre">
+      <UniqueIdentifier>{c3acfc9c-2a0f-4bb1-b19b-4559c36136a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libcrm114">
+      <UniqueIdentifier>{97c31713-4de4-43e4-b874-2e28bd5475d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\filter-spam.cpp">
@@ -23,6 +29,96 @@
     </ClCompile>
     <ClCompile Include="..\..\..\common\Filesystem.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_base.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_bit_entropy.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_datalib.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_fast_substring_compression.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_hyperspace.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_markov.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_markov_microgroom.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_matrix.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_matrix_util.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_pca.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_pca_lib_fncts.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_regex_tre.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_strnhash.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm_lib_fncts.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm_quad_prog.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_util.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_vector_tokenize.c">
+      <Filter>libcrm114</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\regcomp.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\regerror.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\regexec.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-ast.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-compile.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-match-approx.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-match-backtrack.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-match-parallel.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-mem.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-parse.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\tre-stack.c">
+      <Filter>tre</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\tre\xmalloc.c">
+      <Filter>tre</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +145,78 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_config.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_datalib.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_internal.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_lib.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_matrix.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_matrix_util.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_pca.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_pca_lib_fncts.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_regex.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_structs.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm_lib_fncts.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm_quad_prog.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_sysincludes.h">
+      <Filter>libcrm114</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\regex.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-ast.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-compile.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-config.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-internal.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-match-utils.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-mem.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-parse.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\tre-stack.h">
+      <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\tre\xmalloc.h">
+      <Filter>tre</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
