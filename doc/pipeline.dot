@@ -13,6 +13,8 @@ digraph
     msgid1[label="extract-msgid"];
     msgid2[label="extract-msgid"];
     msgid3[label="extract-msgid"];
+    msgid4[label="extract-msgid"];
+    conn2[label="connectivity"];
 
     filter[label="filter-newsgroups"];
     merge[label="merge-raw"];
@@ -23,7 +25,9 @@ digraph
     src2 -> slrnpull;
     mbox -> kill1;
     slrnpull -> kill2;
-    kill1 -> filter;
+    kill1 -> msgid4;
+    msgid4 -> conn2;
+    conn2 -> filter;
     filter -> msgid1;
     kill2 -> msgid2;
     msgid1 -> merge;
