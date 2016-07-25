@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexsort", "..\lexsort\build
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter-newsgroups", "..\filter-newsgroups\build\win32\filter-newsgroups.vcxproj", "{96CE0604-1E5E-4877-A02E-B4C12216201C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter-spam", "..\filter-spam\build\win32\filter-spam.vcxproj", "{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -117,6 +119,10 @@ Global
 		{96CE0604-1E5E-4877-A02E-B4C12216201C}.Debug|x64.Build.0 = Debug|x64
 		{96CE0604-1E5E-4877-A02E-B4C12216201C}.Release|x64.ActiveCfg = Release|x64
 		{96CE0604-1E5E-4877-A02E-B4C12216201C}.Release|x64.Build.0 = Release|x64
+		{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}.Debug|x64.ActiveCfg = Debug|x64
+		{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}.Debug|x64.Build.0 = Debug|x64
+		{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}.Release|x64.ActiveCfg = Release|x64
+		{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
