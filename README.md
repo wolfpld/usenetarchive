@@ -88,7 +88,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *lex* → **lexdist** → adds: *lexdist* (unused)  
 *lex* → **lexstats** → user interaction  
 *LZ4*, *msgid* → **query-raw** → user interaction  
-*zstd*, *msgid*, *conn*, *lex*, *lexhash* → **libuat** → user interaction
+*zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction
 
 ### Typical Workflow
 
