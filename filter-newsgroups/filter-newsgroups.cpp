@@ -11,6 +11,7 @@
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/MetaView.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
@@ -39,6 +40,8 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
+    MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
+
     CreateDirStruct( argv[3] );
 
     std::string dbase = argv[3];
@@ -63,9 +66,18 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
+        auto date = *conn[i];
+        const auto raw = mview.Raw( i );
+
+        if( date == 0 )
+        {
+            savec += raw.compressedSize;
+            saveu += raw.size;
+            continue;
+        }
+
         auto post = mview[i];
         auto buf = post;
-        auto raw = mview.Raw( i );
 
         while( strnicmpl( buf, "newsgroups: ", 12 ) != 0 && buf - post < raw.size )
         {
@@ -100,7 +112,6 @@ int main( int argc, char** argv )
         }
         if( !good )
         {
-            const auto raw = mview.Raw( i );
             savec += raw.compressedSize;
             saveu += raw.size;
         }
