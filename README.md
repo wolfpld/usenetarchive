@@ -67,6 +67,29 @@ These tools provide access to archive data:
 
 ![](doc/browser2.png)
 
+### Workflow
+
+Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completly new database indexing schema, which invalidates rest of databases.
+
+slrnpull directory → **import-source-slrnpull** → produces: *LZ4*  
+slrnpull compressed → **import-source-slrnpull-7z** → produces: *LZ4*  
+mbox file → **import-source-mbox** → produces: *LZ4*  
+*LZ4* → **kill-duplicates** → produces: *LZ4*  
+*LZ4* → **extract-msgid** → adds: *msgid*  
+*LZ4*, *msgid* → **connectivity** → adds: *conn*  
+*LZ4*, *conn* → **filter-newsgroups** -> produces: *LZ4*  
+*LZ4* → **extract-msgmeta** → adds: *str*  
+(*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  
+*LZ4* → **utf8ize** → produces: *LZ4*  
+*LZ4* → **repack-zstd** → adds: *zstd*  
+*LZ4*, *conn* → **lexicon** → adds: *lex*  
+*lex* → **lexhash** → adds: *lexhash*  
+*lex* → **lexsort** → modifies: *lex*  
+*lex* → **lexdist** → adds: *lexdist* (unused)  
+*lex* → **lexstats** → user interaction  
+*LZ4*, *msgid* → **query-raw** → user interaction  
+*zstd*, *msgid*, *conn*, *lex*, *lexhash* → **libuat** → user interaction
+
 ### Typical Workflow
 
 ![](doc/pipeline.svg)
