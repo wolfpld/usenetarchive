@@ -19,6 +19,12 @@
 
 */
 
+#ifdef _MSC_VER
+#  include <malloc.h>
+#endif
+
+#define TRE_REGEX_T_FIELD value
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */

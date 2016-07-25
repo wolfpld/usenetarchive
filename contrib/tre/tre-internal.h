@@ -42,7 +42,8 @@
 
 #define elementsof(x)	( sizeof(x) / sizeof(x[0]) )
 
-#ifdef HAVE_MBRTOWC
+//#ifdef HAVE_MBRTOWC
+#if 1
 #define tre_mbrtowc(pwc, s, n, ps) (mbrtowc((pwc), (s), (n), (ps)))
 #else /* !HAVE_MBRTOWC */
 #ifdef HAVE_MBTOWC

@@ -25,6 +25,7 @@
      function calls.
 */
 
+#define TRE_REGEX_T_FIELD value
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

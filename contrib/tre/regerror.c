@@ -33,9 +33,8 @@
 
 #include "tre-internal.h"
 #include "regex.h"
-#include "gettext.h"
-#define _(String) dgettext(PACKAGE, String)
 #define gettext_noop(String) String
+#define gettext(String) String
 
 /* Error message strings for error codes listed in `regex.h'.  This list
    needs to be in sync with the codes listed there, naturally. */

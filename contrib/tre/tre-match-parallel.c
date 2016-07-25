@@ -40,6 +40,10 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#ifdef _MSC_VER
+#  include <malloc.h>
+#endif
+
 #ifdef TRE_USE_ALLOCA
 /* AIX requires this to be the first thing in the file.	 */
 #ifndef __GNUC__

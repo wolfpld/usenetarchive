@@ -19,6 +19,10 @@
 
 */
 
+#ifdef _MSC_VER
+#  include <malloc.h>
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
