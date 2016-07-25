@@ -33,13 +33,13 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    CreateDirStruct( argv[3] );
-
     std::string base = argv[2];
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
+
+    CreateDirStruct( argv[3] );
 
     std::string dbase = argv[3];
     dbase.append( "/" );
