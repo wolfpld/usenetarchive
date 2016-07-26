@@ -2198,8 +2198,8 @@ CRM114_ERR crm114_learn_text_bit_entropy(CRM114_DATABLOCK **db,
 
   //    All done munging the markov chain.
 
-  (*db)->cb.class[whichclass].documents++;
-  (*db)->cb.class[whichclass].features = header->totalbits;
+  (*db)->cb.cls[whichclass].documents++;
+  (*db)->cb.cls[whichclass].features = header->totalbits;
 
   return (CRM114_OK);
 }
@@ -2631,9 +2631,9 @@ CRM114_ERR crm114_classify_text_bit_entropy(const CRM114_DATABLOCK *db,
   result->unk_features = totalfeatures;
   for (i = 0; i < ncls; i++)
     {
-      result->class[i].u.bit_entropy.entropy = total_entropy[i];
-      result->class[i].u.bit_entropy.jumps = firjumps[i];
-      result->class[i].hits = totalfeatures - firjumps[i];
+      result->cls[i].u.bit_entropy.entropy = total_entropy[i];
+      result->cls[i].u.bit_entropy.jumps = firjumps[i];
+      result->cls[i].hits = totalfeatures - firjumps[i];
     };
 
   // all done

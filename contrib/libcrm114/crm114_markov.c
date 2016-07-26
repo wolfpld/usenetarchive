@@ -81,9 +81,9 @@ CRM114_ERR crm114_learn_features_markov (CRM114_DATABLOCK **db,
 	fprintf (stderr, " enabling microgrooming.\n");
     };
 
-  (*db)->cb.class[icls].documents += sense;
-  if ((*db)->cb.class[icls].documents < 0)
-    (*db)->cb.class[icls].documents = 0;
+  (*db)->cb.cls[icls].documents += sense;
+  if ((*db)->cb.cls[icls].documents < 0)
+    (*db)->cb.cls[icls].documents = 0;
 
   //    and the big loop... go through all of the text.
   for (i = 0; i < featurecount; i++)
@@ -119,7 +119,7 @@ CRM114_ERR crm114_learn_features_markov (CRM114_DATABLOCK **db,
 	      if (zeroedfeatures == 0)
 		return CRM114_CLASS_FULL;
 
-	      (*db)->cb.class[icls].features -= zeroedfeatures;
+	      (*db)->cb.cls[icls].features -= zeroedfeatures;
 
 	      //  since things may have moved after a
 	      //  microgroom, restart our search
@@ -160,7 +160,7 @@ CRM114_ERR crm114_learn_features_markov (CRM114_DATABLOCK **db,
       //      adding it...
       //
       //     let the embedded feature counter sorta keep up...
-      (*db)->cb.class[icls].features += sense;
+      (*db)->cb.cls[icls].features += sense;
 
       if (sense > 0 )
 	{
@@ -381,8 +381,8 @@ CRM114_ERR crm114_classify_features_markov (const CRM114_DATABLOCK *db,
   total_features = 0;
   for (i = 0; i < ncls; i++)
     {
-      total_learns   += db->cb.class[i].documents;
-      total_features += db->cb.class[i].features;
+      total_learns   += db->cb.cls[i].documents;
+      total_features += db->cb.cls[i].features;
     };
 
   for (i = 0; i < ncls; i++)
@@ -396,11 +396,11 @@ CRM114_ERR crm114_classify_features_markov (const CRM114_DATABLOCK *db,
 	//  new cpcorr - from Fidelis' work on evaluators.  Note that
 	//   we renormalize _all_ terms, not just the min term.
 	cpcorr [i] =  ((double)total_learns / (double) ncls) /
-	  (double)db->cb.class[i].documents;
+	  (double)db->cb.cls[i].documents;
 
       if (crm114__internal_trace)
 	fprintf(stderr, "total_learns:%lu class:%d learns:%d cpcorr:%f\n",
-		total_learns, i, db->cb.class[i].documents, cpcorr[i]);
+		total_learns, i, db->cb.cls[i].documents, cpcorr[i]);
     };
 
 
@@ -679,8 +679,8 @@ CRM114_ERR crm114_classify_features_markov (const CRM114_DATABLOCK *db,
 
       for (i = 0; i < ncls; i++)
 	{
-	  features_here = db->cb.class[i].features;
-	    learns_here = db->cb.class[i].documents;
+	  features_here = db->cb.cls[i].features;
+	    learns_here = db->cb.cls[i].documents;
 	  avg_features_per_doc = 1.0 + features_here / ( learns_here + 1.0);
 	  this_doc_relative_len = (double)unk_features / avg_features_per_doc;
 	  // expected = 1 + this_doc_relative_len * avg_features_per_doc / 3.0;
@@ -725,9 +725,9 @@ CRM114_ERR crm114_classify_features_markov (const CRM114_DATABLOCK *db,
   // copy per-class hits, chi2
   for (i = 0; i < ncls; i++)
     {
-      result->class[i].hits = totalhits[i];
+      result->cls[i].hits = totalhits[i];
       if (use_chisquared)
-	result->class[i].u.markov.chi2 = chi2[i];
+	result->cls[i].u.markov.chi2 = chi2[i];
     }
 
   return (CRM114_OK);

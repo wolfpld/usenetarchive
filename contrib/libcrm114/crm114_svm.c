@@ -2342,10 +2342,10 @@ CRM114_ERR crm114_learn_features_svm(CRM114_DATABLOCK **db,
 			     //It could change.
 			     (classifier_flags & CRM114_MICROGROOM) != 0);
 
-      (*db)->cb.class[0].documents = blck.n0;
-      (*db)->cb.class[0].features  = blck.n0f;
-      (*db)->cb.class[1].documents = blck.n1;
-      (*db)->cb.class[1].features  = blck.n1f;
+      (*db)->cb.cls[0].documents = blck.n0;
+      (*db)->cb.cls[0].features  = blck.n0f;
+      (*db)->cb.cls[1].documents = blck.n1;
+      (*db)->cb.cls[1].features  = blck.n1f;
     }
   }
 
@@ -2583,24 +2583,24 @@ CRM114_ERR crm114_classify_features_svm(CRM114_DATABLOCK *db,
   //annnnnnd... write it all back out
   crm114__clear_copy_result(result, &db->cb);
   result->unk_features = (int)nfeat(nex);
-  result->class[0].hits = hits[0];
-  result->class[1].hits = hits[1];
+  result->cls[0].hits = hits[0];
+  result->cls[1].hits = hits[1];
   result->bestmatch_index = class;
   //these are very arbitrary units of measurement
   //i picked tanh because... it's a function with a middle at 0
   //and nice asymptotic properties near 1
   //yay!
-  result->class[0].prob = 0.5 + 0.5*tanh(dottheta);
-  result->class[0].pR   = sgn*(pow(11, fabs(dottheta))-1);
-  result->class[1].prob = 1.0 - result->class[0].prob;
-  result->class[1].pR   = -1.0 * result->class[0].pR;
+  result->cls[0].prob = 0.5 + 0.5*tanh(dottheta);
+  result->cls[0].pR   = sgn*(pow(11, fabs(dottheta))-1);
+  result->cls[1].prob = 1.0 - result->cls[0].prob;
+  result->cls[1].pR   = -1.0 * result->cls[0].pR;
   {
     int nsucc = 0;
     int c;
     double remainder;
 
     for (c = 0; c < result->how_many_classes; c++)
-      if (result->class[c].success)
+      if (result->cls[c].success)
 	nsucc++;
     switch (nsucc)
       {
@@ -2609,18 +2609,18 @@ CRM114_ERR crm114_classify_features_svm(CRM114_DATABLOCK *db,
 	result->tsprob = 0.0;
 	remainder = 0.0;
 	for (c = 0; c < result->how_many_classes; c++)
-	  if (result->class[c].success)
-	    result->tsprob += result->class[c].prob;
+	  if (result->cls[c].success)
+	    result->tsprob += result->cls[c].prob;
 	  else
-	    remainder += result->class[c].prob;
+	    remainder += result->cls[c].prob;
 	// kluge!
 	result->overall_pR = crm114__pR(result->tsprob, remainder);
 	break;
       case 1:
 	for (c = 0; c < result->how_many_classes; c++)
-	  if (result->class[c].success) {
-	    result->tsprob = result->class[c].prob;
-	    result->overall_pR = result->class[c].pR;
+	  if (result->cls[c].success) {
+	    result->tsprob = result->cls[c].prob;
+	    result->overall_pR = result->cls[c].pR;
 	    break;
 	  }
 	break;

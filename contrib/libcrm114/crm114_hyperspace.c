@@ -114,8 +114,8 @@ CRM114_ERR crm114_learn_features_hyperspace (CRM114_DATABLOCK **db,
 
   //  Make sure we have enough space (features + sentinel)
 
-  if ((*db)->cb.class[whichclass].features
-      + (*db)->cb.class[whichclass].documents
+  if ((*db)->cb.cls[whichclass].features
+      + (*db)->cb.cls[whichclass].documents
       + featurecount + 1 >
       (*db)->cb.block[whichclass].allocated_size / sizeof (HYPERSPACE_FEATUREBUCKET))
     {
@@ -153,26 +153,26 @@ CRM114_ERR crm114_learn_features_hyperspace (CRM114_DATABLOCK **db,
     {
       //  Nextslot is zero-based, which is why this next thing is NOT ...+1
       nextslot =
-	(*db)->cb.class[whichclass].documents
-	+ (*db)->cb.class[whichclass].features;
+	(*db)->cb.cls[whichclass].documents
+	+ (*db)->cb.cls[whichclass].features;
       hashes[nextslot].hash = features[i].feature;
       //  reserve the zero hash value as a sentinel; promote zeroes to +1
       if (hashes[nextslot].hash == 0)
 	hashes[nextslot].hash = 1;
-      (*db)->cb.class[whichclass].features ++;
+      (*db)->cb.cls[whichclass].features ++;
     };
 
   //  put in the zero sentinel at the end and update learns count
   nextslot =
-    (*db)->cb.class[whichclass].documents
-    + (*db)->cb.class[whichclass].features;
+    (*db)->cb.cls[whichclass].documents
+    + (*db)->cb.cls[whichclass].features;
   hashes[nextslot].hash = 0;
-  (*db)->cb.class[whichclass].documents++;
+  (*db)->cb.cls[whichclass].documents++;
 
   //   Update estimate of remaining space
   (*db)->cb.block[whichclass].size_used =
-    ( (*db)->cb.class[whichclass].documents
-      + (*db)->cb.class[whichclass].features)
+    ( (*db)->cb.cls[whichclass].documents
+      + (*db)->cb.cls[whichclass].features)
     * (int)sizeof (HYPERSPACE_FEATUREBUCKET);
 
 
@@ -185,8 +185,8 @@ CRM114_ERR crm114_learn_features_hyperspace (CRM114_DATABLOCK **db,
 		 (*db)->cb.block[i].start_offset,
 		 (*db)->cb.block[i].allocated_size,
 		 (*db)->cb.block[i].size_used,
-		 (*db)->cb.class[i].documents,
-		 (*db)->cb.class[i].features);
+		 (*db)->cb.cls[i].documents,
+		 (*db)->cb.cls[i].features);
       fprintf (stderr, " ... returning.\n");
     }
 
@@ -240,8 +240,8 @@ CRM114_ERR crm114_classify_features_hyperspace(const CRM114_DATABLOCK *db,
 
       //   how many valid hashes + sentinels are there here?
       htlen =
-	db->cb.class[class].documents
-	+ db->cb.class[class].features;
+	db->cb.cls[class].documents
+	+ db->cb.cls[class].features;
 
       //   prepare to do two-finger on this class;
       upt = 0;   // the unknown document finger
@@ -312,8 +312,8 @@ CRM114_ERR crm114_classify_features_hyperspace(const CRM114_DATABLOCK *db,
 
       //  Done with this class, so now stuff this class's results into
       //  the results array.
-      result->class[class].hits = hits;
-      result->class[class].u.hyperspace.radiance = (float)radiance;
+      result->cls[class].hits = hits;
+      result->cls[class].u.hyperspace.radiance = (float)radiance;
     };
 
   //   Build the output result!
@@ -331,7 +331,7 @@ CRM114_ERR crm114_classify_features_hyperspace(const CRM114_DATABLOCK *db,
     tradiance = 0.0;
     for (class = 0; class < db->cb.how_many_classes; class++)
       {
-	tradiance += result->class[class].u.hyperspace.radiance;
+	tradiance += result->cls[class].u.hyperspace.radiance;
       }
 
     //  If tradiance is zero, we get a DIVZERO problem... so
@@ -341,8 +341,8 @@ CRM114_ERR crm114_classify_features_hyperspace(const CRM114_DATABLOCK *db,
     //   calculate each class's normalized probability
     for (class = 0; class < db->cb.how_many_classes; class++)
       {
-	result->class[class].prob =
-	  result->class[class].u.hyperspace.radiance / tradiance;
+	result->cls[class].prob =
+	  result->cls[class].u.hyperspace.radiance / tradiance;
       };
 
     // calc and set per-class pR, tsprob, overall_pR, bestmatch
@@ -371,8 +371,8 @@ int crm114__hyperspace_learned_write_text_fp(const CRM114_DATABLOCK *db,
 					 + db->cb.block[b].start_offset);
       //   how many valid hashes + sentinels are here?
       htlen =
-	db->cb.class[b].documents
-	+ db->cb.class[b].features;
+	db->cb.cls[b].documents
+	+ db->cb.cls[b].features;
 
       fprintf(fp, TN_BLOCK " %d\n", b);
       for (i = 0; i < htlen; i++)
@@ -399,8 +399,8 @@ int crm114__hyperspace_learned_read_text_fp(CRM114_DATABLOCK **db, FILE *fp)
 					 + (*db)->cb.block[b].start_offset);
       //   how many valid hashes + sentinels are here?
       htlen =
-	(*db)->cb.class[b].documents
-	+ (*db)->cb.class[b].features;
+	(*db)->cb.cls[b].documents
+	+ (*db)->cb.cls[b].features;
 
       if (fscanf(fp, " " TN_BLOCK " %d", &chkb) != 1 || chkb != b)
 	return FALSE;

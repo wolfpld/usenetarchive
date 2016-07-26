@@ -625,20 +625,20 @@ void crm114_cb_setclassdefaults(CRM114_CONTROLBLOCK *p_cb)
     case CRM114_PCA:
       p_cb->how_many_blocks = 1;
       p_cb->how_many_classes = 2;
-      p_cb->class[0].success = 1;
-      p_cb->class[1].success = 0;
+      p_cb->cls[0].success = 1;
+      p_cb->cls[1].success = 0;
       break;
     case CRM114_FSCM:
       p_cb->how_many_classes = DEFAULT_HOW_MANY_CLASSES;
       p_cb->how_many_blocks = 2 * p_cb->how_many_classes;
-      p_cb->class[0].success = 1;
-      p_cb->class[1].success = 0;
+      p_cb->cls[0].success = 1;
+      p_cb->cls[1].success = 0;
       break;
     default:
       p_cb->how_many_blocks = p_cb->how_many_classes = DEFAULT_HOW_MANY_CLASSES;
       // ??? default: first class success, all others failure
-      p_cb->class[0].success = 1;  // first class default success
-      p_cb->class[1].success = 0;  // second class default fails
+      p_cb->cls[0].success = 1;  // first class default success
+      p_cb->cls[1].success = 0;  // second class default fails
       break;
     }
   crm114_cb_setblockdefaults(p_cb);
@@ -1194,11 +1194,11 @@ int crm114_cb_write_text_fp(const CRM114_CONTROLBLOCK *cb, FILE *fp)
   fprintf(fp, TN_CLASSES " %d\n", cb->how_many_classes);
   for (i = 0; i < cb->how_many_classes; i++)
     {
-      write_text_string_fp(cb->class[i].name, fp);
+      write_text_string_fp(cb->cls[i].name, fp);
       fprintf(fp, " %s %d %d\n",
-	      cb->class[i].success ? TN_CLASS_SUCCESS : TN_CLASS_FAILURE,
-	      cb->class[i].documents,
-	      cb->class[i].features);
+	      cb->cls[i].success ? TN_CLASS_SUCCESS : TN_CLASS_FAILURE,
+	      cb->cls[i].documents,
+	      cb->cls[i].features);
     }
 
   return TRUE;			// optimistic, aren't we?
@@ -1352,16 +1352,16 @@ CRM114_CONTROLBLOCK *crm114_cb_read_text_fp(FILE *fp)
     goto err1;
   for (i = 0; i < cb->how_many_classes; i++)
     {
-      if ( !read_text_string_fp(cb->class[i].name,
-				sizeof(cb->class[i].name),
+      if ( !read_text_string_fp(cb->cls[i].name,
+				sizeof(cb->cls[i].name),
 				fp))
 	goto err1;
-      if ( !crm114__tf_read_text_fp(&cb->class[i].success, TN_CLASS_SUCCESS,
+      if ( !crm114__tf_read_text_fp(&cb->cls[i].success, TN_CLASS_SUCCESS,
 			       TN_CLASS_FAILURE, fp))
 	goto err1;
       if (fscanf(fp, " %d %d",
-		 &cb->class[i].documents,
-		 &cb->class[i].features) != 2)
+		 &cb->cls[i].documents,
+		 &cb->cls[i].features) != 2)
 	goto err1;
     }
 

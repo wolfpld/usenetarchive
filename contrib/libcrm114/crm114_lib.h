@@ -158,7 +158,7 @@ typedef struct
     int success;	// T/F: this is a success class (default 1,0,0...)
     int documents;	// # of documents learned into this class
     int features;	// # of features learned into this class
-  } class[CRM114_MAX_CLASSES];
+  } cls[CRM114_MAX_CLASSES];
 } CRM114_CONTROLBLOCK;
 
 
@@ -276,7 +276,7 @@ typedef struct
       //{
       //} pca;
     } u;			// short name ("union")
-  } class [CRM114_MAX_CLASSES];
+  } cls [CRM114_MAX_CLASSES];
 } CRM114_MATCHRESULT;
 
 
@@ -367,7 +367,7 @@ CRM114_ERR crm114_classify_features_hyperspace(const CRM114_DATABLOCK *db,
 
 // support vector machine
 CRM114_ERR crm114_learn_features_svm(CRM114_DATABLOCK **db,
-				     int class,
+				     int cls,
 				     const struct crm114_feature_row features[],
 				     long featurecount);
 CRM114_ERR crm114_classify_features_svm(CRM114_DATABLOCK *db,
@@ -376,7 +376,7 @@ CRM114_ERR crm114_classify_features_svm(CRM114_DATABLOCK *db,
 
 // principal component analysis
 CRM114_ERR crm114_learn_features_pca(CRM114_DATABLOCK **db,
-				     int class,
+				     int cls,
 				     const struct crm114_feature_row features[],
 				     long featurecount);
 CRM114_ERR crm114_classify_features_pca(CRM114_DATABLOCK *db,

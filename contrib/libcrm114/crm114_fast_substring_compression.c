@@ -713,8 +713,8 @@ CRM114_ERR crm114_learn_features_fscm (CRM114_DATABLOCK **db,
     };
 
   //   update the feature count and learn count
-  (*db)->cb.class[whichclass].features += featurecount;
-  (*db)->cb.class[whichclass].documents ++;
+  (*db)->cb.cls[whichclass].features += featurecount;
+  (*db)->cb.cls[whichclass].documents ++;
 
   //   all done.
   return (CRM114_OK);
@@ -1223,13 +1223,13 @@ CRM114_ERR crm114_classify_features_fscm (const CRM114_DATABLOCK *db,
 
       chain_search_one_chain_link (0, 0, 0, 1);  // init the chain-cache
 
-      result->class[classnum].u.fscm.compression
+      result->cls[classnum].u.fscm.compression
 	= compress_me (
 		       unk_indexes,
 		       nfr,          // unk_hashcount,
 		       chains,
 		       (double) 1.35);
-      result->class[classnum].hits = classhits;
+      result->cls[classnum].hits = classhits;
 
       chain_search_one_chain_link (0, 0, 0, -1);  // free the chain-cache
 
@@ -1248,13 +1248,13 @@ CRM114_ERR crm114_classify_features_fscm (const CRM114_DATABLOCK *db,
   tprob = 0.0;
   for (i = 0; i < db->cb.how_many_classes; i++)
     {
-      if (result->class[i].u.fscm.compression < 0.000001)
-	result->class[i].u.fscm.compression =   0.000001;
-      tprob = tprob + result->class[i].u.fscm.compression;
+      if (result->cls[i].u.fscm.compression < 0.000001)
+	result->cls[i].u.fscm.compression =   0.000001;
+      tprob = tprob + result->cls[i].u.fscm.compression;
     };
   //     Renormalize probabilities
   for (i = 0; i < db->cb.how_many_classes; i++)
-    result->class[i].prob = result->class[i].u.fscm.compression / tprob;
+    result->cls[i].prob = result->cls[i].u.fscm.compression / tprob;
 
   //     Assemble result
   result->unk_features = unk_features;
@@ -1267,8 +1267,8 @@ CRM114_ERR crm114_classify_features_fscm (const CRM114_DATABLOCK *db,
       for (k = 0; k < db->cb.how_many_classes; k++)
 	fprintf (stderr, "Match for file %ld: compress: %f prob: %f\n",
 		 k,
-		 result->class[k].u.fscm.compression,
-		 result->class[k].prob);
+		 result->cls[k].u.fscm.compression,
+		 result->cls[k].prob);
     };
 
   return (CRM114_OK);
