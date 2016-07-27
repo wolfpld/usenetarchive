@@ -105,6 +105,8 @@ int main( int argc, char** argv )
             auto post = mview[idx];
             auto raw = mview.Raw( idx );
 
+            printf("\033[2J\033[0;0H");
+
             printf( "\n\t\033[36;1m-= Message %i =-\033[0m\n\n", idx );
             printf( "\033[35;1mFrom: %s\n\033[33;1mSubject: %s\033[0m\n\n", strings[idx*3], strings[idx*3+1] );
 
