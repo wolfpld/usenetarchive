@@ -118,14 +118,22 @@ int main( int argc, char** argv )
         FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
         FILE* ddata = fopen( ddatafn.c_str(), "wb" );
 
-        printf( "Killed:\n" );
-        fflush( stdout );
+        struct Data
+        {
+            uint32_t id;
+            float prob;
+        };
 
-        uint64_t offset = 0;
-        uint64_t savec = 0, saveu = 0;
-        uint32_t cntbad = 0;
+        std::vector<Data> data;
+
         for( uint32_t i=0; i<size; i++ )
         {
+            if( ( i & 0xFF ) == 0 )
+            {
+                printf( "%i/%i\r", i, size );
+                fflush( stdout );
+            }
+
             const auto raw = mview.Raw( i );
             auto cdata = conn[i];
             auto parent = cdata[1];
@@ -137,28 +145,45 @@ int main( int argc, char** argv )
                 crm114_classify_text( crm_db, post, raw.size, &res );
                 if( res.bestmatch_index != 0 )
                 {
-                    printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\t%s\n", strings[i*3+1], strings[i*3], msgid[i] );
+                    data.emplace_back( Data { i, float( res.tsprob ) } );
+                }
+            }
+        }
+
+        printf( "\n%i messages marked as spam. Killed:\n", data.size() );
+
+        uint64_t offset = 0;
+        uint64_t savec = 0, saveu = 0;
+        uint32_t cntbad = 0;
+        auto it = data.begin();
+        for( uint32_t i=0; i<size; i++ )
+        {
+            const auto raw = mview.Raw( i );
+
+            if( it != data.end() && it->id == i )
+            {
+                printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%.3f\033[0m\t%s\n", strings[i*3+1], strings[i*3], it->prob, msgid[i] );
+                fflush( stdout );
+                ++it;
+                bool spam = true;
+                if( argc == 5 )
+                {
+                    printf( "\033[31;1mSelect [s]pam or [v]alid.\033[0m\n" );
                     fflush( stdout );
-                    bool spam = true;
-                    if( argc == 5 )
+                    char c;
+                    do
                     {
-                        printf( "\033[31;1mSelect [s]pam or [v]alid.\033[0m\n" );
-                        fflush( stdout );
-                        char c;
-                        do
-                        {
-                            c = getchar();
-                        }
-                        while( c != 's' && c != 'v' );
-                        if( c == 'v' ) spam = false;
+                        c = getchar();
                     }
-                    if( spam )
-                    {
-                        savec += raw.compressedSize;
-                        saveu += raw.size;
-                        cntbad++;
-                        continue;
-                    }
+                    while( c != 's' && c != 'v' );
+                    if( c == 'v' ) spam = false;
+                }
+                if( spam )
+                {
+                    savec += raw.compressedSize;
+                    saveu += raw.size;
+                    cntbad++;
+                    continue;
                 }
             }
 
