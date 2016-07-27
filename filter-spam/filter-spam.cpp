@@ -9,7 +9,6 @@
 #include <sys/stat.h>
 #include <vector>
 
-#include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
 #include "../common/MessageView.hpp"
@@ -104,7 +103,6 @@ int main( int argc, char** argv )
 
         printf( "Killed:\n" );
 
-        ExpandingBuffer eb;
         uint64_t offset = 0;
         for( uint32_t i=0; i<size; i++ )
         {
@@ -227,7 +225,7 @@ int main( int argc, char** argv )
                 printf( "\033[31;1mClassification: spam" );
             }
             printf( "   success probability: %.3f.\n", res.tsprob );
-            printf( "Press [s] for spam or [v] for valid. Press [W] to write database or [Q] to quit.\033[0m\n" );
+            printf( "Press [s] for spam or [v] for valid, [i] to ignore. Press [W] to write database or [Q] to quit.\033[0m\n" );
             fflush( stdout );
 
             char c;
@@ -235,7 +233,7 @@ int main( int argc, char** argv )
             {
                 c = getchar();
             }
-            while( c != 's' && c != 'v' && c != 'Q' && c != 'W' );
+            while( c != 's' && c != 'v' && c != 'Q' && c != 'W' && c != 'i' );
 
             if( c == 'Q' )
             {
@@ -245,8 +243,10 @@ int main( int argc, char** argv )
             {
                 break;
             }
-
-            crm114_learn_text( &crm_db, (c == 's') ? 1 : 0, post, raw.size );
+            else if( c != 'i' )
+            {
+                crm114_learn_text( &crm_db, (c == 's') ? 1 : 0, post, raw.size );
+            }
         }
 
         FILE* fdb = fopen( ( dbdir + "/spamdb" ).c_str(), "wb" );
