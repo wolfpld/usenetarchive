@@ -104,6 +104,8 @@ int main( int argc, char** argv )
         printf( "Killed:\n" );
 
         uint64_t offset = 0;
+        uint64_t savec = 0, saveu = 0;
+        uint32_t cntbad = 0;
         for( uint32_t i=0; i<size; i++ )
         {
             const auto raw = mview.Raw( i );
@@ -117,6 +119,9 @@ int main( int argc, char** argv )
                 crm114_classify_text( crm_db, post, raw.size, &res );
                 if( res.bestmatch_index != 0 )
                 {
+                    savec += raw.compressedSize;
+                    saveu += raw.size;
+                    cntbad++;
                     printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\n", strings[i*3+1], strings[i*3] );
                     continue;
                 }
@@ -131,6 +136,8 @@ int main( int argc, char** argv )
 
         fclose( dmeta );
         fclose( ddata );
+
+        printf( "\nKilled %i messages.\nSaved %i KB (uncompressed), %i KB (compressed)\n", cntbad, saveu / 1024, savec / 1024 );
     }
     else
     {
