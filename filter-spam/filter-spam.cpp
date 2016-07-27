@@ -145,14 +145,14 @@ int main( int argc, char** argv )
 
             if( res.bestmatch_index == 0 )
             {
-                printf( "\033[32mClassification: valid" );
+                printf( "\033[32;1mClassification: valid" );
             }
             else
             {
-                printf( "\033[31mClassification: spam" );
+                printf( "\033[31;1mClassification: spam" );
             }
-            printf( "   success probability: %.3f.\033[0m\n", res.tsprob );
-            printf( "Press [s] for spam or [v] for valid.\n" );
+            printf( "   success probability: %.3f.\n", res.tsprob );
+            printf( "Press [s] for spam or [v] for valid. Press [W] to write database or [Q] to quit.\033[0m\n" );
 
             char c;
             do
@@ -163,7 +163,16 @@ int main( int argc, char** argv )
                 c = getchar();
 #endif
             }
-            while( c != 's' && c != 'v' );
+            while( c != 's' && c != 'v' && c != 'Q' );
+
+            if( c == 'Q' )
+            {
+                return 0;
+            }
+            else if( c == 'W' )
+            {
+                break;
+            }
 
             crm114_learn_text( &crm_db, (c == 's') ? 1 : 0, post, raw.size );
         }
