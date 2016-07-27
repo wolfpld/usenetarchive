@@ -12,6 +12,7 @@
 
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/HashSearch.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
@@ -35,14 +36,20 @@ int main( int argc, char** argv )
     SetConsoleMode( GetStdHandle( STD_OUTPUT_HANDLE ), 0x07 );
 #endif
 
-    if( argc != 3 && argc != 4 )
+    if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s database source [destination]\n", argv[0] );
+        fprintf( stderr, "USAGE: %s database source [destination] | [-m msgid]\n", argv[0] );
         fprintf( stderr, "Omitting destination will start training mode.\n" );
         exit( 1 );
     }
 
-    bool training = argc == 3;
+    bool training = argc == 3 || argc == 5;
+
+    if( argc == 5 && strcmp( argv[3], "-m" ) != 0 )
+    {
+        fprintf( stderr, "Bad params!\n" );
+        exit( 1 );
+    }
 
     if( !Exists( argv[2] ) )
     {
@@ -60,6 +67,7 @@ int main( int argc, char** argv )
     MetaView<uint32_t, char> strings( base + "strmeta", base + "strings" );
     MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
     const MetaView<uint32_t, char> msgid( base + "midmeta", base + "middata" );
+    HashSearch midhash( base + "middata", base + "midhash", base + "midhashdata" );
 
     CRM114_CONTROLBLOCK* crm_cb = crm114_new_cb();
     crm114_cb_setflags( crm_cb, CRM114_OSB_BAYES );
@@ -171,20 +179,33 @@ int main( int argc, char** argv )
         printf( "Spam training mode.\n" );
 
         std::vector<uint32_t> indices;
-        for( uint32_t i=0; i<topsize; i++ )
+        if( argc == 5 )
         {
-            auto idx = toplevel[i];
-            auto children = conn[idx];
-            children += 2;
-            if( *children != 0 ) continue;
-            std::string id( msgid[idx] );
-            if( visited.find( id ) != visited.end() ) continue;
+            auto idx = midhash.Search( argv[4] );
+            if( idx == -1 )
+            {
+                fprintf( stderr, "Invalid MsgID!\n" );
+                exit( 1 );
+            }
             indices.push_back( idx );
         }
+        else
+        {
+            for( uint32_t i=0; i<topsize; i++ )
+            {
+                auto idx = toplevel[i];
+                auto children = conn[idx];
+                children += 2;
+                if( *children != 0 ) continue;
+                std::string id( msgid[idx] );
+                if( visited.find( id ) != visited.end() ) continue;
+                indices.push_back( idx );
+            }
 
-        std::random_device rd;
-        std::mt19937 rng( rd() );
-        std::shuffle( indices.begin(), indices.end(), rng );
+            std::random_device rd;
+            std::mt19937 rng( rd() );
+            std::shuffle( indices.begin(), indices.end(), rng );
+        }
 
         for( auto& idx : indices )
         {

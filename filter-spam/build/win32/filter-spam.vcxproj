@@ -52,6 +52,7 @@
     <ClCompile Include="..\..\..\contrib\tre\tre-parse.c" />
     <ClCompile Include="..\..\..\contrib\tre\tre-stack.c" />
     <ClCompile Include="..\..\..\contrib\tre\xmalloc.c" />
+    <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c" />
     <ClCompile Include="..\..\filter-spam.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +88,7 @@
     <ClInclude Include="..\..\..\contrib\tre\tre-parse.h" />
     <ClInclude Include="..\..\..\contrib\tre\tre-stack.h" />
     <ClInclude Include="..\..\..\contrib\tre\xmalloc.h" />
+    <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F8FA6FE1-8CA7-4865-B0D2-A612E895705B}</ProjectGuid>

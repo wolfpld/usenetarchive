@@ -16,6 +16,9 @@
     <Filter Include="libcrm114">
       <UniqueIdentifier>{97c31713-4de4-43e4-b874-2e28bd5475d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xxhash">
+      <UniqueIdentifier>{30058835-8cf7-4d7f-8f56-33cab2bcdb0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\filter-spam.cpp">
@@ -120,6 +123,9 @@
     <ClCompile Include="..\..\..\contrib\tre\xmalloc.c">
       <Filter>tre</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
+      <Filter>xxhash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -217,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\tre\xmalloc.h">
       <Filter>tre</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
+      <Filter>xxhash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
