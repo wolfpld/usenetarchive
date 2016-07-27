@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <unordered_set>
+#include <random>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -167,16 +168,25 @@ int main( int argc, char** argv )
 
         printf( "Spam training mode.\n" );
 
+        std::vector<uint32_t> indices;
         for( uint32_t i=0; i<topsize; i++ )
         {
             auto idx = toplevel[i];
             auto children = conn[idx];
             children += 2;
             if( *children != 0 ) continue;
-
-            std::string id( msgid[i] );
+            std::string id( msgid[idx] );
             if( visited.find( id ) != visited.end() ) continue;
-            visited.emplace( std::move( id ) );
+            indices.push_back( idx );
+        }
+
+        std::random_device rd;
+        std::mt19937 rng( rd() );
+        std::shuffle( indices.begin(), indices.end(), rng );
+
+        for( auto& idx : indices )
+        {
+            visited.emplace( msgid[idx] );
 
             auto post = mview[idx];
             auto raw = mview.Raw( idx );
