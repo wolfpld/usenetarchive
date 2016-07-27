@@ -94,6 +94,46 @@ int main( int argc, char** argv )
         }
 
         CreateDirStruct( argv[3] );
+
+        std::string dbase = argv[3];
+        dbase.append( "/" );
+        std::string dmetafn = dbase + "meta";
+        std::string ddatafn = dbase + "data";
+
+        FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
+        FILE* ddata = fopen( ddatafn.c_str(), "wb" );
+
+        printf( "Killed:\n" );
+
+        ExpandingBuffer eb;
+        uint64_t offset = 0;
+        for( uint32_t i=0; i<size; i++ )
+        {
+            const auto raw = mview.Raw( i );
+            auto cdata = conn[i];
+            auto parent = cdata[1];
+            auto children = cdata[2];
+            if( children == 0 && parent == -1 )
+            {
+                auto post = mview[i];
+                CRM114_MATCHRESULT res;
+                crm114_classify_text( crm_db, post, raw.size, &res );
+                if( res.bestmatch_index != 0 )
+                {
+                    printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\n", strings[i*3+1], strings[i*3] );
+                    continue;
+                }
+            }
+
+            fwrite( raw.ptr, 1, raw.compressedSize, ddata );
+
+            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
+            offset += raw.compressedSize;
+        }
+
+        fclose( dmeta );
+        fclose( ddata );
     }
     else
     {
