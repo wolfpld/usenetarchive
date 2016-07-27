@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include <unordered_set>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,6 +72,14 @@ int main( int argc, char** argv )
 
     CRM114_DATABLOCK* crm_db = crm114_new_db( crm_cb );
 
+    const std::string dbdir( argv[1] );
+    if( Exists( dbdir + "/spamdb" ) )
+    {
+        FILE* f = fopen( ( dbdir + "/spamdb" ).c_str(), "rb" );
+        fread( crm_db, 1, crm_cb->datablock_size, f );
+        fclose( f );
+    }
+
     if( !training )
     {
         if( !Exists( argv[1] ) )
@@ -88,9 +97,28 @@ int main( int argc, char** argv )
     }
     else
     {
-        if( !Exists( argv[1] ) )
+        const MetaView<uint32_t, char> msgid( base + "midmeta", base + "middata" );
+        std::unordered_set<std::string> visited;
+
+        if( !Exists( dbdir ) )
         {
-            CreateDirStruct( argv[1] );
+            CreateDirStruct( dbdir );
+        }
+        else if( Exists( dbdir + "/visited" ) )
+        {
+            ExpandingBuffer buf;
+            FILE* f = fopen( ( dbdir + "/visited" ).c_str(), "rb" );
+            uint32_t num;
+            fread( &num, 1, sizeof( uint32_t ), f );
+            while( num-- )
+            {
+                uint32_t size;
+                fread( &size, 1, sizeof( uint32_t ), f );
+                auto tmp = buf.Request( size );
+                fread( tmp, 1, size, f );
+                visited.emplace( tmp, tmp+size );
+            }
+            fclose( f );
         }
 
         printf( "Spam training mode.\n" );
@@ -101,6 +129,10 @@ int main( int argc, char** argv )
             auto children = conn[idx];
             children += 2;
             if( *children != 0 ) continue;
+
+            std::string id( msgid[i] );
+            if( visited.find( id ) != visited.end() ) continue;
+            visited.emplace( std::move( id ) );
 
             auto post = mview[idx];
             auto raw = mview.Raw( idx );
@@ -180,6 +212,21 @@ int main( int argc, char** argv )
 
             crm114_learn_text( &crm_db, (c == 's') ? 1 : 0, post, raw.size );
         }
+
+        FILE* fdb = fopen( ( dbdir + "/spamdb" ).c_str(), "wb" );
+        fwrite( crm_db, 1, crm_cb->datablock_size, fdb );
+        fclose( fdb );
+
+        FILE* fvis = fopen( ( dbdir + "/visited" ).c_str(), "wb" );
+        uint32_t n = visited.size();
+        fwrite( &n, 1, sizeof( uint32_t ), fvis );
+        for( auto& v : visited )
+        {
+            n = v.size();
+            fwrite( &n, 1, sizeof( uint32_t ), fvis );
+            fwrite( v.data(), 1, v.size(), fvis );
+        }
+        fclose( fvis );
     }
 
     return 0;
