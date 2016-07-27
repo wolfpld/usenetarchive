@@ -127,7 +127,7 @@ int main( int argc, char** argv )
             }
             while( !done );
 
-            for( int i=0; i<8; i++ )
+            for( int i=0; i<20; i++ )
             {
                 end = ptr;
                 while( *end != '\n' && *end != '\0' ) end++;
@@ -138,6 +138,10 @@ int main( int argc, char** argv )
                 fputc( '\n', stdout );
                 if( *end == '\0' ) break;
                 ptr = end + 1;
+            }
+            if( *end != '\0' )
+            {
+                printf( "...\n" );
             }
 
             CRM114_MATCHRESULT res;
@@ -163,7 +167,7 @@ int main( int argc, char** argv )
                 c = getchar();
 #endif
             }
-            while( c != 's' && c != 'v' && c != 'Q' );
+            while( c != 's' && c != 'v' && c != 'Q' && c != 'W' );
 
             if( c == 'Q' )
             {
