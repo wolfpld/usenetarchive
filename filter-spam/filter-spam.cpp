@@ -60,7 +60,7 @@ int main( int argc, char** argv )
     MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
 
     CRM114_CONTROLBLOCK* crm_cb = crm114_new_cb();
-    crm114_cb_setflags( crm_cb, CRM114_FSCM );
+    crm114_cb_setflags( crm_cb, CRM114_OSB_BAYES );
     crm114_cb_setclassdefaults( crm_cb );
     crm_cb->how_many_classes = 2;
     strcpy( crm_cb->cls[0].name, "valid" );
