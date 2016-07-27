@@ -59,6 +59,7 @@ int main( int argc, char** argv )
     auto topsize = toplevel.DataSize();
     MetaView<uint32_t, char> strings( base + "strmeta", base + "strings" );
     MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
+    const MetaView<uint32_t, char> msgid( base + "midmeta", base + "middata" );
 
     CRM114_CONTROLBLOCK* crm_cb = crm114_new_cb();
     crm114_cb_setflags( crm_cb, CRM114_OSB_BAYES );
@@ -124,7 +125,7 @@ int main( int argc, char** argv )
                     savec += raw.compressedSize;
                     saveu += raw.size;
                     cntbad++;
-                    printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\n", strings[i*3+1], strings[i*3] );
+                    printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\t%s\n", strings[i*3+1], strings[i*3], msgid[i] );
                     fflush( stdout );
                     continue;
                 }
@@ -144,7 +145,6 @@ int main( int argc, char** argv )
     }
     else
     {
-        const MetaView<uint32_t, char> msgid( base + "midmeta", base + "middata" );
         std::unordered_set<std::string> visited;
 
         if( !Exists( dbdir ) )
