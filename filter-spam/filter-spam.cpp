@@ -26,6 +26,7 @@ extern "C" {
 
 #ifdef _WIN32
 #  include <windows.h>
+#  include <conio.h>
 #endif
 
 int main( int argc, char** argv )
@@ -154,7 +155,11 @@ int main( int argc, char** argv )
             char c;
             do
             {
+#ifdef _WIN32
+                c = getch();
+#else
                 c = getchar();
+#endif
             }
             while( c != 's' && c != 'v' );
 
