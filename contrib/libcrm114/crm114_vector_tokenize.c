@@ -205,14 +205,14 @@ CRM114_ERR crm114_vector_tokenize
           //         skip non-graphical characthers
 	  match[0].rm_so = 0;
 	  //fprintf (stderr, "'%c'", text[text_offset+match[0].rm_so]);
-          while ( ( !isgraph (txtptr [text_offset + match[0].rm_so]))
+          while ( ( !isgraph ((unsigned char)txtptr [text_offset + match[0].rm_so]))
 		  && ( text_offset + match[0].rm_so < max_offset))
             {
 	      //fprintf (stderr, ""%c'", txtptr[text_offset+match[0].rm_so]);
 	      match[0].rm_so ++;
 	    }
           match[0].rm_eo = match[0].rm_so;
-          while ( (isgraph (txtptr [text_offset + match[0].rm_eo]))
+          while ( (isgraph ((unsigned char)txtptr [text_offset + match[0].rm_eo]))
 		  && (text_offset + match[0].rm_eo < max_offset))
 	    {
 	      //fprintf (stderr, "'%c'", txtptr[text_offset+match[0].rm_eo]);
