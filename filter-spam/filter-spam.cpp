@@ -38,17 +38,24 @@ int main( int argc, char** argv )
 
     if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s database source [destination] | [-m msgid]\n", argv[0] );
+        fprintf( stderr, "USAGE: %s database source [destination [--ask]] | [-m msgid]\n", argv[0] );
         fprintf( stderr, "Omitting destination will start training mode.\n" );
         exit( 1 );
     }
 
-    bool training = argc == 3 || argc == 5;
+    bool training = argc == 3;
 
-    if( argc == 5 && strcmp( argv[3], "-m" ) != 0 )
+    if( argc == 5 )
     {
-        fprintf( stderr, "Bad params!\n" );
-        exit( 1 );
+        if( strcmp( argv[3], "-m" ) == 0 )
+        {
+            training = true;
+        }
+        else if( strcmp( argv[4], "--ask" ) != 0 )
+        {
+            fprintf( stderr, "Bad params!\n" );
+            exit( 1 );
+        }
     }
 
     if( !Exists( argv[2] ) )
@@ -130,12 +137,28 @@ int main( int argc, char** argv )
                 crm114_classify_text( crm_db, post, raw.size, &res );
                 if( res.bestmatch_index != 0 )
                 {
-                    savec += raw.compressedSize;
-                    saveu += raw.size;
-                    cntbad++;
                     printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\t%s\n", strings[i*3+1], strings[i*3], msgid[i] );
                     fflush( stdout );
-                    continue;
+                    bool spam = true;
+                    if( argc == 5 )
+                    {
+                        printf( "\033[31;1mSelect [s]pam or [v]alid.\033[0m\n" );
+                        fflush( stdout );
+                        char c;
+                        do
+                        {
+                            c = getchar();
+                        }
+                        while( c != 's' && c != 'v' );
+                        if( c == 'v' ) spam = false;
+                    }
+                    if( spam )
+                    {
+                        savec += raw.compressedSize;
+                        saveu += raw.size;
+                        cntbad++;
+                        continue;
+                    }
                 }
             }
 
