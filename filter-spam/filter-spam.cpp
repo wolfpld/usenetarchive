@@ -27,7 +27,6 @@ extern "C" {
 
 #ifdef _WIN32
 #  include <windows.h>
-#  include <conio.h>
 #endif
 
 int main( int argc, char** argv )
@@ -229,15 +228,12 @@ int main( int argc, char** argv )
             }
             printf( "   success probability: %.3f.\n", res.tsprob );
             printf( "Press [s] for spam or [v] for valid. Press [W] to write database or [Q] to quit.\033[0m\n" );
+            fflush( stdout );
 
             char c;
             do
             {
-#ifdef _WIN32
-                c = getch();
-#else
                 c = getchar();
-#endif
             }
             while( c != 's' && c != 'v' && c != 'Q' && c != 'W' );
 
