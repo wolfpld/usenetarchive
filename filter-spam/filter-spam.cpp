@@ -103,6 +103,7 @@ int main( int argc, char** argv )
         FILE* ddata = fopen( ddatafn.c_str(), "wb" );
 
         printf( "Killed:\n" );
+        fflush( stdout );
 
         uint64_t offset = 0;
         uint64_t savec = 0, saveu = 0;
@@ -124,6 +125,7 @@ int main( int argc, char** argv )
                     saveu += raw.size;
                     cntbad++;
                     printf( "\033[33;1m%s\t\033[35;1m%s\033[0m\n", strings[i*3+1], strings[i*3] );
+                    fflush( stdout );
                     continue;
                 }
             }
