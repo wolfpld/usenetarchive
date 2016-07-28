@@ -136,6 +136,7 @@ void Browser::FillTree()
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
     ui->treeView->setCurrentIndex( m_model->index( 0, 0 ) );
     ui->treeView->setUpdatesEnabled( true );
+    ui->tabWidget->setCurrentIndex( 0 );
 }
 
 int Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
