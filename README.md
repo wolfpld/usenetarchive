@@ -83,7 +83,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4* → **kill-duplicates** → produces: *LZ4*  
 *LZ4* → **extract-msgid** → adds: *msgid*  
 *LZ4*, *msgid* → **connectivity** → adds: *conn*  
-*LZ4*, *conn* → **filter-newsgroups** -> produces: *LZ4*  
+*LZ4*, *conn* → **filter-newsgroups** → produces: *LZ4*  
 *LZ4*, *msgid*, *conn*, *str* → **filter-spam** → produces: *LZ4*  
 *LZ4* → **extract-msgmeta** → adds: *str*  
 (*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  
