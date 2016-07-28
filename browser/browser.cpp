@@ -134,6 +134,7 @@ void Browser::FillTree()
         ui->treeView->resizeColumnToContents( i );
     }
     connect( ui->treeView->selectionModel(), SIGNAL( currentChanged( QModelIndex, QModelIndex ) ), this, SLOT( onTreeSelectionChanged( QModelIndex ) ) );
+    ui->treeView->setCurrentIndex( m_model->index( 0, 0 ) );
     ui->treeView->setUpdatesEnabled( true );
 }
 
