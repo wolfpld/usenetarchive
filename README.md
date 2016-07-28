@@ -28,14 +28,20 @@ Imported messages are stored in a per-message LZ4 compressed meta+payload databa
 
 Raw imported messages have to be processed to be of any use. We provide the following utilities:
 
-- kill-duplicates --- Removes duplicate messages. It is relatively rare, but data sets from even a single NNTP server may contain the same message twice.
-- filter-newsgroups --- Some data sources (eg. Archive.org's giganews collection) contain messages that were not sent to the collection's newsgroup. This utility will remove such bogus messages.
 - extract-msgid --- Extracts unique identifier of each message and builds reference table for fast access to any message through its ID.
 - extract-msgmeta --- Extracts "From" and "Subject" fields, as a quick reference for archive browsers.
 - merge-raw --- Merges two imported data sets into one. Does not duplicate messages.
 - utf8ize --- Converts messages to a common character encoding, UTF-8.
 - connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
+
+### Data Filtering
+
+Raw data right after import is highly unfit for direct use. Messages are duplicated, there's spam. These utilities help clean it up:
+
+- kill-duplicates --- Removes duplicate messages. It is relatively rare, but data sets from even a single NNTP server may contain the same message twice.
+- filter-newsgroups --- Some data sources (eg. Archive.org's giganews collection) contain messages that were not sent to the collection's newsgroup. This utility will remove such bogus messages.
+- filter-spam --- Learns which messages look like spam and removes them.
 
 ### Data Search
 
@@ -78,6 +84,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4* → **extract-msgid** → adds: *msgid*  
 *LZ4*, *msgid* → **connectivity** → adds: *conn*  
 *LZ4*, *conn* → **filter-newsgroups** -> produces: *LZ4*  
+*LZ4*, *msgid*, *conn*, *str* → **filter-spam** → produces: *LZ4*  
 *LZ4* → **extract-msgmeta** → adds: *str*  
 (*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  
 *LZ4* → **utf8ize** → produces: *LZ4*  
