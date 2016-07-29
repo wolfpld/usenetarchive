@@ -11,12 +11,14 @@ template<typename T>
 class FileMap
 {
 public:
-    FileMap( const std::string& fn )
-        : m_size( GetFileSize( fn.c_str() ) )
+    FileMap( const std::string& fn, bool mayFail = false )
+        : m_ptr( nullptr )
+        , m_size( GetFileSize( fn.c_str() ) )
     {
         FILE* f = fopen( fn.c_str(), "rb" );
         if( !f )
         {
+            if( mayFail ) return;
             fprintf( stderr, "Cannot open %s\n", fn.c_str() );
             exit( 1 );
         }
@@ -26,7 +28,10 @@ public:
 
     ~FileMap()
     {
-        munmap( m_ptr, m_size );
+        if( m_ptr )
+        {
+            munmap( m_ptr, m_size );
+        }
     }
 
     operator const T*() const { return m_ptr; }
