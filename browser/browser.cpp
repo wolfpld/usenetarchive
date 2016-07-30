@@ -53,7 +53,24 @@ void Browser::on_actionOpen_triggered()
         ui->statusBar->showMessage( str, 0 );
         FillTree();
         auto idx = dir.find_last_of( '/' );
-        ui->tabWidget->setTabText( 0, dir.substr( idx+1 ).c_str() );
+        std::string tabText;
+        auto desc = m_archive->GetShortDescription();
+        if( desc.first )
+        {
+            for( int i=0; i<desc.second; i++ )
+            {
+                if( desc.first[i] != '\n' ) tabText += desc.first[i];
+            }
+
+            tabText += " (";
+            tabText += dir.substr( idx+1 );
+            tabText += ")";
+        }
+        else
+        {
+            tabText = dir.substr( idx+1 );
+        }
+        ui->tabWidget->setTabText( 0, tabText.c_str() );
         ui->actionRaw_message->setEnabled( true );
         ui->actionROT13->setEnabled( true );
         ui->actionGo_to_message->setEnabled( true );
