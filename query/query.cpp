@@ -14,6 +14,7 @@ void PrintHelp()
     printf( "childi idx    - view message's children\n" );
     printf( "date msgid    - view message's date\n" );
     printf( "datei idx     - view message's date\n" );
+    printf( "desc          - show descriptions\n" );
     printf( "from msgid    - view from: field\n" );
     printf( "fromi idx     - view from: field\n" );
     printf( "info          - archive info\n" );
@@ -220,6 +221,28 @@ int main( int argc, char** argv )
         else if( strcmp( cmd, "exit" ) == 0 || strcmp( cmd, "quit" ) == 0 )
         {
             return 0;
+        }
+        else if( strcmp( cmd, "desc" ) == 0 )
+        {
+            auto d1 = archive.GetShortDescription();
+            auto d2 = archive.GetLongDescription();
+
+            if( d1.first )
+            {
+                printf( "%.*s\n", d1.second, d1.first );
+            }
+            else
+            {
+                printf( "No short description.\n" );
+            }
+            if( d2.first )
+            {
+                printf( "\n%.*s\n", d2.second, d2.first );
+            }
+            else
+            {
+                printf( "No long description.\n" );
+            }
         }
         else
         {
