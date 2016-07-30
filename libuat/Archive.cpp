@@ -17,6 +17,8 @@ Archive::Archive( const std::string& dir )
     , m_lexdata( dir + "/lexdata" )
     , m_lexhit( dir + "/lexhit" )
     , m_lexhash( dir + "/lexstr", dir + "/lexhash", dir + "/lexhashdata" )
+    , m_descShort( dir + "/desc_short", true )
+    , m_descLong( dir + "/desc_long", true )
 {
 }
 
@@ -259,4 +261,14 @@ std::map<std::string, uint32_t> Archive::TimeChart() const
     }
 
     return ret;
+}
+
+std::pair<const char*, uint64_t> Archive::GetShortDescription() const
+{
+    return std::make_pair( (const char*)m_descShort, m_descShort.Size() );
+}
+
+std::pair<const char*, uint64_t> Archive::GetLongDescription() const
+{
+    return std::make_pair( (const char*)m_descLong, m_descLong.Size() );
 }

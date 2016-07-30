@@ -57,6 +57,9 @@ public:
     std::vector<SearchResult> Search( const char* query ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 
+    std::pair<const char*, uint64_t> GetShortDescription() const;
+    std::pair<const char*, uint64_t> GetLongDescription() const;
+
 private:
     ZMessageView m_mview;
     size_t m_mcnt;
@@ -69,6 +72,8 @@ private:
     FileMap<LexiconDataPacket> m_lexdata;
     FileMap<uint8_t> m_lexhit;
     HashSearch m_lexhash;
+    FileMap<char> m_descShort;
+    FileMap<char> m_descLong;
 };
 
 #endif
