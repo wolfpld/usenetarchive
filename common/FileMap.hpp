@@ -26,6 +26,23 @@ public:
         fclose( f );
     }
 
+    FileMap( const FileMap& ) = delete;
+    FileMap( FileMap&& src )
+        : m_ptr( src.m_ptr )
+        , m_size( src.m_size )
+    {
+        src.m_ptr = nullptr;
+    }
+
+    FileMap& operator=( const FileMap& ) = delete;
+    FileMap& operator=( FileMap&& )
+    {
+        m_ptr = src.m_ptr;
+        m_size = src.m_size;
+        src.m_ptr = nullptr;
+        return *this;
+    }
+
     ~FileMap()
     {
         if( m_ptr )
