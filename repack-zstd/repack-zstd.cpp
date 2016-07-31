@@ -14,7 +14,7 @@
 #  include <unistd.h>
 #endif
 
-#include "../contrib/zstd/common/zstd.h"
+#include "../contrib/zstd/zstd.h"
 #include "../contrib/zstd/dictBuilder/zdict.h"
 
 #include "../common/ExpandingBuffer.hpp"

@@ -113,9 +113,6 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\mem.h">
       <Filter>zstd\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\contrib\zstd\common\zstd.h">
-      <Filter>zstd\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h">
       <Filter>zstd\common</Filter>
     </ClInclude>
@@ -136,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\zstd.h">
+      <Filter>zstd</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string>
 
-#include "../contrib/zstd/common/zstd.h"
+#include "../contrib/zstd/zstd.h"
 
 #include "ExpandingBuffer.hpp"
 #include "FileMap.hpp"

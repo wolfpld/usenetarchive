@@ -54,8 +54,8 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\mem.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zbuff.h" />
-    <ClInclude Include="..\..\..\contrib\zstd\common\zstd.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\zstd.h" />
     <ClInclude Include="..\..\..\libuat\Archive.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
@@ -147,7 +147,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>../../../contrib/zstd/common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../contrib/zstd;../../../contrib/zstd/common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,7 +184,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>../../../contrib/zstd/common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../contrib/zstd;../../../contrib/zstd/common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-INCLUDEPATH += $$PWD/../contrib/zstd/common
+INCLUDEPATH += $$PWD/../contrib/zstd/common $$PWD/../contrib/zstd
 
 QT       += core gui
 
@@ -44,7 +44,7 @@ HEADERS  += browser.h \
     ../contrib/zstd/common/mem.h \
     ../contrib/zstd/common/xxhash.h \
     ../contrib/zstd/common/zbuff.h \
-    ../contrib/zstd/common/zstd.h \
+    ../contrib/zstd/zstd.h \
     ../contrib/zstd/common/zstd_internal.h \
     treemodel.hpp \
     treeitem.hpp \

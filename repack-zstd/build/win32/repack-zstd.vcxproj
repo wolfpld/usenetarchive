@@ -53,11 +53,11 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\huf.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\mem.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h" />
-    <ClInclude Include="..\..\..\contrib\zstd\common\zstd.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
     <ClInclude Include="..\..\..\contrib\zstd\compress\zstd_opt.h" />
     <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\divsufsort.h" />
     <ClInclude Include="..\..\..\contrib\zstd\dictBuilder\zdict.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\zstd.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7992D794-0C07-4C35-8666-C80288F61DDF}</ProjectGuid>
@@ -147,7 +147,7 @@
       <PreprocessorDefinitions>ZDICT_STATIC_LINKING_ONLY;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>../../../contrib/zstd/common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../contrib/zstd;../../../contrib/zstd/common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,7 +184,7 @@
       <PreprocessorDefinitions>ZDICT_STATIC_LINKING_ONLY;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>../../../contrib/zstd/common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../contrib/zstd;../../../contrib/zstd/common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
