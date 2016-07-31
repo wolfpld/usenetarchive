@@ -33,6 +33,7 @@ private slots:
     void on_lineEdit_returnPressed();
     void on_actionGo_to_message_triggered();
     void on_actionAbout_triggered();
+    void on_actionGroup_Charter_triggered();
 
 private:
     void FillTree();

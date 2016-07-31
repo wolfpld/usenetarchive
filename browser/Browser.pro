@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     treeitem.cpp \
     TextBuf.cpp \
     ../common/LexiconTypes.cpp \
-    about.cpp
+    about.cpp \
+    groupcharter.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -49,10 +50,12 @@ HEADERS  += browser.h \
     treeitem.hpp \
     TextBuf.hpp \
     ../common/LexiconTypes.hpp \
-    about.h
+    about.h \
+    groupcharter.h
 
 FORMS    += browser.ui \
-    about.ui
+    about.ui \
+    groupcharter.ui
 
 DISTFILES += \
     build/win32/x64/Debug/browser.ilk \

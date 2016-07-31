@@ -20,6 +20,7 @@
 #include "about.h"
 #include "browser.h"
 #include "ui_browser.h"
+#include "groupcharter.h"
 
 Browser::Browser( QWidget *parent )
     : QMainWindow( parent )
@@ -71,6 +72,7 @@ void Browser::on_actionOpen_triggered()
             tabText = dir.substr( idx+1 );
         }
         ui->tabWidget->setTabText( 0, tabText.c_str() );
+        ui->actionGroup_Charter->setEnabled( true );
         ui->actionRaw_message->setEnabled( true );
         ui->actionROT13->setEnabled( true );
         ui->actionGo_to_message->setEnabled( true );
@@ -603,4 +605,13 @@ void Browser::ClearSearch()
         delete v;
     }
     m_searchItems.clear();
+}
+
+void Browser::on_actionGroup_Charter_triggered()
+{
+    auto s = m_archive->GetShortDescription();
+    auto l = m_archive->GetLongDescription();
+
+    auto dialog = new GroupCharter( s.first, s.second, l.first, l.second );
+    dialog->exec();
 }

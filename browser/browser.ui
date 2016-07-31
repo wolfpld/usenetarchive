@@ -171,6 +171,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionGroup_Charter"/>
    <addaction name="actionRaw_message"/>
    <addaction name="actionROT13"/>
    <addaction name="actionGo_to_message"/>
@@ -215,6 +216,14 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionGroup_Charter">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Group Charter</string>
    </property>
   </action>
  </widget>
