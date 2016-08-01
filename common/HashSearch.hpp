@@ -18,6 +18,12 @@ public:
     {
     }
 
+    HashSearch( const FileMapPtrs& data, const FileMapPtrs& hash, const FileMapPtrs& hashdata )
+        : m_data( data )
+        , m_hash( hash, hashdata )
+    {
+    }
+
     int Search( const char* str ) const
     {
         const auto hash = XXH32( str, strlen( str ), 0 ) & MsgIdHashMask;

@@ -23,6 +23,15 @@ public:
         m_dict = ZSTD_createDDict( dictdata, dictdata.Size() );
     }
 
+    ZMessageView( const FileMapPtrs& meta, const FileMapPtrs& data, const FileMapPtrs& dict )
+        : m_meta( meta )
+        , m_data( data )
+        , m_ctx( ZSTD_createDCtx() )
+    {
+        const FileMap<char> dictdata( dict );
+        m_dict = ZSTD_createDDict( dictdata, dictdata.Size() );
+    }
+
     ~ZMessageView()
     {
         ZSTD_freeDCtx( m_ctx );

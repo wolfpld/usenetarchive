@@ -17,6 +17,12 @@ public:
     {
     }
 
+    MetaView( const FileMapPtrs& meta, const FileMapPtrs& data )
+        : m_meta( meta )
+        , m_data( data )
+    {
+    }
+
     operator const Data*() const { return m_data; }
 
     const Data* operator[]( const size_t idx ) const
