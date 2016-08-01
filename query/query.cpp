@@ -1,4 +1,5 @@
 #include <chrono>
+#include <memory>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -48,29 +49,34 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    Archive archive( argv[1] );
+    std::unique_ptr<Archive> archive( Archive::Open( argv[1] ) );
+    if( !archive )
+    {
+        fprintf( stderr, "Cannot open archive!\n" );
+        exit( 1 );
+    }
 
     printf( "Usenet archive %s opened.\n", argv[1] );
-    Info( archive );
+    Info( *archive );
 
     while( char* cmd = linenoise( "\x1b[1;32mcmd>\x1b[0m " ) )
     {
         if( strncmp( cmd, "viewi ", 6 ) == 0 )
         {
             int idx = atoi( cmd+6 );
-            auto msg = archive.GetMessage( idx );
+            auto msg = archive->GetMessage( idx );
             if( msg )
             {
                 printf( "%s\n", msg );
             }
             else
             {
-                printf( "Invalid message index (max %i).\n", archive.NumberOfMessages() );
+                printf( "Invalid message index (max %i).\n", archive->NumberOfMessages() );
             }
         }
         else if( strcmp( cmd, "toplevel" ) == 0 )
         {
-            auto view = archive.GetTopLevel();
+            auto view = archive->GetTopLevel();
             for( uint64_t i=0; i<view.size; i++ )
             {
                 printf( "%i\n", view.ptr[i] );
@@ -78,11 +84,11 @@ int main( int argc, char** argv )
         }
         else if( strcmp( cmd, "info" ) == 0 )
         {
-            Info( archive );
+            Info( *archive );
         }
         else if( strncmp( cmd, "view ", 5 ) == 0 )
         {
-            auto msg = archive.GetMessage( cmd+5 );
+            auto msg = archive->GetMessage( cmd+5 );
             if( msg )
             {
                 printf( "%s\n", msg );
@@ -94,7 +100,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "parent ", 7 ) == 0 )
         {
-            auto parent = archive.GetParent( cmd+7 );
+            auto parent = archive->GetParent( cmd+7 );
             if( parent >= 0 )
             {
                 printf( "Parent: %i\n", parent );
@@ -106,7 +112,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "parenti ", 8 ) == 0 )
         {
-            auto parent = archive.GetParent( atoi( cmd+8 ) );
+            auto parent = archive->GetParent( atoi( cmd+8 ) );
             if( parent >= 0 )
             {
                 printf( "Parent: %i\n", parent );
@@ -118,7 +124,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "child ", 6 ) == 0 )
         {
-            auto children = archive.GetChildren( cmd+6 );
+            auto children = archive->GetChildren( cmd+6 );
             for( uint64_t i=0; i<children.size; i++ )
             {
                 printf( "%i\n", children.ptr[i] );
@@ -126,7 +132,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "childi ", 7 ) == 0 )
         {
-            auto children = archive.GetChildren( atoi( cmd+7 ) );
+            auto children = archive->GetChildren( atoi( cmd+7 ) );
             for( uint64_t i=0; i<children.size; i++ )
             {
                 printf( "%i\n", children.ptr[i] );
@@ -134,19 +140,19 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "date ", 5 ) == 0 )
         {
-            auto date = archive.GetDate( cmd+6 );
+            auto date = archive->GetDate( cmd+6 );
             time_t t = { date };
             printf( "%s\n", asctime( localtime( &t ) ) );
         }
         else if( strncmp( cmd, "datei ", 6 ) == 0 )
         {
-            auto date = archive.GetDate( atoi( cmd+7 ) );
+            auto date = archive->GetDate( atoi( cmd+7 ) );
             time_t t = { date };
             printf( "%s\n", asctime( localtime( &t ) ) );
         }
         else if( strncmp( cmd, "from ", 5 ) == 0 )
         {
-            auto data = archive.GetFrom( cmd+5 );
+            auto data = archive->GetFrom( cmd+5 );
             if( data )
             {
                 printf( "%s\n", data );
@@ -158,7 +164,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "fromi ", 6 ) == 0 )
         {
-            auto data = archive.GetFrom( atoi( cmd+6 ) );
+            auto data = archive->GetFrom( atoi( cmd+6 ) );
             if( data )
             {
                 printf( "%s\n", data );
@@ -170,7 +176,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "subject ", 8 ) == 0 )
         {
-            auto data = archive.GetSubject( cmd+8 );
+            auto data = archive->GetSubject( cmd+8 );
             if( data )
             {
                 printf( "%s\n", data );
@@ -182,7 +188,7 @@ int main( int argc, char** argv )
         }
         else if( strncmp( cmd, "subjecti ", 9 ) == 0 )
         {
-            auto data = archive.GetSubject( atoi( cmd+9 ) );
+            auto data = archive->GetSubject( atoi( cmd+9 ) );
             if( data )
             {
                 printf( "%s\n", data );
@@ -195,7 +201,7 @@ int main( int argc, char** argv )
         else if( strncmp( cmd, "search ", 7 ) == 0 )
         {
             auto t0 = std::chrono::high_resolution_clock::now();
-            auto data = archive.Search( cmd+7 );
+            auto data = archive->Search( cmd+7 );
             auto t1 = std::chrono::high_resolution_clock::now();
             printf( "Query time %fms.\n", std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );
             printf( "Found %i messages.\n", data.size() );
@@ -212,7 +218,7 @@ int main( int argc, char** argv )
         }
         else if( strcmp( cmd, "timechart" ) == 0 )
         {
-            auto tc = archive.TimeChart();
+            auto tc = archive->TimeChart();
             for( auto& v : tc )
             {
                 printf( "%s,%i\n", v.first.c_str(), v.second );
@@ -224,8 +230,8 @@ int main( int argc, char** argv )
         }
         else if( strcmp( cmd, "desc" ) == 0 )
         {
-            auto d1 = archive.GetShortDescription();
-            auto d2 = archive.GetLongDescription();
+            auto d1 = archive->GetShortDescription();
+            auto d2 = archive->GetLongDescription();
 
             if( d1.first )
             {

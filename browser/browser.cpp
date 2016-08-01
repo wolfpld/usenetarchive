@@ -46,7 +46,12 @@ void Browser::on_actionOpen_triggered()
     if( res )
     {
         std::string dir = dialog.selectedFiles()[0].toStdString();
-        m_archive = std::make_unique<Archive>( dir );
+        m_archive.reset( Archive::Open( dir ) );
+        if( !m_archive )
+        {
+            QMessageBox::warning( this, "Error", "Cannot open archive.", QMessageBox::NoButton, QMessageBox::Ok );
+            return;
+        }
         QString str;
         str += "Loaded archive with ";
         str += QString::number( m_archive->NumberOfMessages() );

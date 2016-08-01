@@ -137,5 +137,8 @@
     <ClInclude Include="..\..\..\contrib\zstd\zstd.h">
       <Filter>zstd\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\Package.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

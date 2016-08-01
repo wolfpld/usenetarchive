@@ -25,7 +25,7 @@ struct SearchResult
 class Archive
 {
 public:
-    Archive( const std::string& dir );
+    static Archive* Open( const std::string& fn );
 
     const char* GetMessage( uint32_t idx );
     const char* GetMessage( const char* msgid );
@@ -61,6 +61,8 @@ public:
     std::pair<const char*, uint64_t> GetLongDescription() const;
 
 private:
+    Archive( const std::string& dir );
+
     ZMessageView m_mview;
     size_t m_mcnt;
     FileMap<uint32_t> m_toplevel;

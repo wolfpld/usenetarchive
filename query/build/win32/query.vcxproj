@@ -42,6 +42,7 @@
     <ClInclude Include="..\..\..\common\MessageView.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
+    <ClInclude Include="..\..\..\common\Package.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\linenoise-ng\ConvertUTF.h" />

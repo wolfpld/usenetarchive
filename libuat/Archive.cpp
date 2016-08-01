@@ -3,22 +3,50 @@
 #include <time.h>
 
 #include "Archive.hpp"
+#include "../common/Filesystem.hpp"
 #include "../common/String.hpp"
+#include "../common/Package.hpp"
+
+Archive* Archive::Open( const std::string& fn )
+{
+    if( !Exists( fn ) ) return nullptr;
+    if( IsFile( fn ) )
+    {
+        return nullptr;
+    }
+    else
+    {
+        auto base = fn + "/";
+        if( !Exists( base + "zmeta" ) || !Exists( base + "zdata" ) || !Exists( base + "zdict" ) ||
+            !Exists( base + "toplevel" ) || !Exists( base + "connmeta" ) || !Exists( base + "conndata" ) ||
+            !Exists( base + "middata" ) || !Exists( base + "midhash" ) || !Exists( base + "midhashdata" ) ||
+            !Exists( base + "strmeta" ) || !Exists( base + "strings" ) || !Exists( base + "lexmeta" ) ||
+            !Exists( base + "lexstr" ) || !Exists( base + "lexdata" ) || !Exists( base + "lexhit" ) ||
+            !Exists( base + "lexstr" ) || !Exists( base + "lexhash" ) || !Exists( base + "lexhashdata" ) )
+        {
+            return nullptr;
+        }
+        else
+        {
+            return new Archive( base );
+        }
+    }
+}
 
 Archive::Archive( const std::string& dir )
-    : m_mview( dir + "/zmeta", dir + "/zdata", dir + "/zdict" )
+    : m_mview( dir + "zmeta", dir + "zdata", dir + "zdict" )
     , m_mcnt( m_mview.Size() )
-    , m_toplevel( dir + "/toplevel" )
-    , m_midhash( dir + "/middata", dir + "/midhash", dir + "/midhashdata" )
-    , m_connectivity( dir + "/connmeta", dir + "/conndata" )
-    , m_strings( dir + "/strmeta", dir + "/strings" )
-    , m_lexmeta( dir + "/lexmeta" )
-    , m_lexstr( dir + "/lexstr" )
-    , m_lexdata( dir + "/lexdata" )
-    , m_lexhit( dir + "/lexhit" )
-    , m_lexhash( dir + "/lexstr", dir + "/lexhash", dir + "/lexhashdata" )
-    , m_descShort( dir + "/desc_short", true )
-    , m_descLong( dir + "/desc_long", true )
+    , m_toplevel( dir + "toplevel" )
+    , m_midhash( dir + "middata", dir + "midhash", dir + "midhashdata" )
+    , m_connectivity( dir + "connmeta", dir + "conndata" )
+    , m_strings( dir + "strmeta", dir + "strings" )
+    , m_lexmeta( dir + "lexmeta" )
+    , m_lexstr( dir + "lexstr" )
+    , m_lexdata( dir + "lexdata" )
+    , m_lexhit( dir + "lexhit" )
+    , m_lexhash( dir + "lexstr", dir + "lexhash", dir + "lexhashdata" )
+    , m_descShort( dir + "desc_short", true )
+    , m_descLong( dir + "desc_long", true )
 {
 }
 
