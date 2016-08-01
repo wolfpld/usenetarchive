@@ -14,10 +14,21 @@ bool CreateDirStruct( const std::string& path );
 #  define stat64 stat
 #endif
 
+#ifndef S_ISREG
+#  define S_ISREG(m) ( ( (m) & S_IFMT ) == S_IFREG )
+#endif
+
 static inline bool Exists( const std::string& path )
 {
     struct stat64 buf;
     return stat64( path.c_str(), &buf ) == 0;
+}
+
+static inline bool IsFile( const std::string& path )
+{
+    struct stat64 buf;
+    stat64( path.c_str(), &buf );
+    return S_ISREG( buf.st_mode );
 }
 
 static inline uint64_t GetFileSize( const char* path )
