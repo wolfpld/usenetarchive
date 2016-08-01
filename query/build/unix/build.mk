@@ -1,7 +1,7 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++11
 DEFINES +=
-INCLUDES := -I../../../contrib/zstd/common
+INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS :=
 IMAGE := query
 
