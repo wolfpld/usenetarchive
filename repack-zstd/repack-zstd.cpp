@@ -28,11 +28,35 @@
 
 int main( int argc, char** argv )
 {
-    if( argc != 2 )
+    int zlevel = 16;
+    int dpower = 31;
+
+    if( argc < 2 )
     {
-        fprintf( stderr, "USAGE: %s directory\n", argv[0] );
+        fprintf( stderr, "USAGE: [params] %s directory\nParams:\n", argv[0] );
+        fprintf( stderr, " -z level     - set compression level (default: %i)\n", zlevel );
+        fprintf( stderr, " -s power     - set max sample size to 2^power (default: %i)\n", dpower );
         exit( 1 );
     }
+
+    for(;;)
+    {
+        if( strcmp( argv[1], "-z" ) == 0 )
+        {
+            zlevel = atoi( argv[2] );
+            argv += 2;
+        }
+        else if( strcmp( argv[1], "-s" ) == 0 )
+        {
+            dpower = std::min( 31, std::max( 10, atoi( argv[2] ) ) );
+            argv += 2;
+        }
+        else
+        {
+            break;
+        }
+    }
+
     if( !Exists( argv[1] ) )
     {
         fprintf( stderr, "Directory doesn't exist.\n" );
@@ -68,7 +92,7 @@ int main( int argc, char** argv )
         }
 
         auto raw = mview.Raw( i );
-        if( !limitHit && total + raw.size >= ( 1U<<31 ) )
+        if( !limitHit && total + raw.size >= ( 1U << dpower ) )
         {
             printf( "Limiting sample size to %i MB - %i samples in, %i samples out.\n", total >> 20, i, size - i );
             samples = i;
@@ -98,7 +122,7 @@ int main( int argc, char** argv )
         ZDICT_params_t params;
         memset( &params, 0, sizeof( ZDICT_params_t ) );
         params.notificationLevel = 3;
-        params.compressionLevel = 16;
+        params.compressionLevel = zlevel;
         realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, samples, params );
     }
 
@@ -107,7 +131,7 @@ int main( int argc, char** argv )
 
     printf( "Dict size: %i\n", realDictSize );
 
-    auto zdict = ZSTD_createCDict( dict, realDictSize, 16 );
+    auto zdict = ZSTD_createCDict( dict, realDictSize, zlevel );
 
     FILE* zdictfile = fopen( zdictfn.c_str(), "wb" );
     fwrite( dict, 1, realDictSize, zdictfile );
