@@ -7,6 +7,12 @@
 #include "Filesystem.hpp"
 #include "mmap.hpp"
 
+struct FileMapPtrs
+{
+    const char* ptr;
+    uint64_t size;
+};
+
 template<typename T>
 class FileMap
 {
@@ -14,6 +20,7 @@ public:
     FileMap( const std::string& fn, bool mayFail = false )
         : m_ptr( nullptr )
         , m_size( GetFileSize( fn.c_str() ) )
+        , m_release( true )
     {
         FILE* f = fopen( fn.c_str(), "rb" );
         if( !f )
@@ -26,10 +33,18 @@ public:
         fclose( f );
     }
 
+    FileMap( const FileMapPtrs& ptrs )
+        : m_ptr( (T*)ptrs.ptr )
+        , m_size( ptrs.size )
+        , m_release( false )
+    {
+    }
+
     FileMap( const FileMap& ) = delete;
     FileMap( FileMap&& src )
         : m_ptr( src.m_ptr )
         , m_size( src.m_size )
+        , m_release( src.m_release )
     {
         src.m_ptr = nullptr;
     }
@@ -39,13 +54,14 @@ public:
     {
         m_ptr = src.m_ptr;
         m_size = src.m_size;
+        m_release = src.m_release;
         src.m_ptr = nullptr;
         return *this;
     }
 
     ~FileMap()
     {
-        if( m_ptr )
+        if( m_release && m_ptr )
         {
             munmap( m_ptr, m_size );
         }
@@ -58,6 +74,7 @@ public:
 private:
     T* m_ptr;
     uint64_t m_size;
+    bool m_release;
 };
 
 #endif
