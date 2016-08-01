@@ -39,9 +39,11 @@ Browser::~Browser()
 
 void Browser::on_actionOpen_triggered()
 {
+    QStringList filters;
+    filters << "Usenet archives (*.usenet)";
     QFileDialog dialog;
-    dialog.setFileMode( QFileDialog::Directory );
-    dialog.setOption( QFileDialog::ShowDirsOnly );
+    dialog.setFileMode( QFileDialog::ExistingFile );
+    dialog.setNameFilters( filters );
     int res = dialog.exec();
     if( res )
     {
