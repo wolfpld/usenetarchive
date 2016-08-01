@@ -43,9 +43,9 @@ int main( int argc, char** argv )
     {
         FILE* fin = fopen( argv[1], "rb" );
         uint64_t offset = 0;
-        char tmp[8];
-        offset += fread( tmp, 1, 8, fin );
-        if( memcmp( tmp, PackageHeader, 8 ) != 0 )
+        char tmp[PackageHeaderSize];
+        offset += fread( tmp, 1, PackageHeaderSize, fin );
+        if( memcmp( tmp, PackageHeader, PackageHeaderSize ) != 0 )
         {
             fprintf( stderr, "Source file is not an Usenet archive.\n" );
             exit( 1 );
