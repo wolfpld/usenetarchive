@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c" />
     <ClCompile Include="..\..\..\libuat\Archive.cpp" />
+    <ClCompile Include="..\..\..\libuat\PackageAccess.cpp" />
     <ClCompile Include="..\..\query.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +59,7 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
     <ClInclude Include="..\..\..\contrib\zstd\zstd.h" />
     <ClInclude Include="..\..\..\libuat\Archive.hpp" />
+    <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

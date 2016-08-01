@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "Archive.hpp"
+#include "PackageAccess.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/String.hpp"
 #include "../common/Package.hpp"
@@ -12,7 +13,9 @@ Archive* Archive::Open( const std::string& fn )
     if( !Exists( fn ) ) return nullptr;
     if( IsFile( fn ) )
     {
-        return nullptr;
+        auto pkg = PackageAccess::Open( fn );
+        if( !pkg ) return nullptr;
+        return new Archive( pkg );
     }
     else
     {
@@ -47,6 +50,24 @@ Archive::Archive( const std::string& dir )
     , m_lexhash( dir + "lexstr", dir + "lexhash", dir + "lexhashdata" )
     , m_descShort( dir + "desc_short", true )
     , m_descLong( dir + "desc_long", true )
+{
+}
+
+Archive::Archive( const PackageAccess* pkg )
+    : m_pkg( pkg )
+    , m_mview( pkg->Get( PackageFile::zmeta ), pkg->Get( PackageFile::zdata ), pkg->Get( PackageFile::zdict ) )
+    , m_mcnt( m_mview.Size() )
+    , m_toplevel( pkg->Get( PackageFile::toplevel ) )
+    , m_midhash( pkg->Get( PackageFile::middata ), pkg->Get( PackageFile::midhash ), pkg->Get( PackageFile::midhashdata ) )
+    , m_connectivity( pkg->Get( PackageFile::connmeta ), pkg->Get( PackageFile::conndata ) )
+    , m_strings( pkg->Get( PackageFile::strmeta ), pkg->Get( PackageFile::strings ) )
+    , m_lexmeta( pkg->Get( PackageFile::lexmeta ) )
+    , m_lexstr( pkg->Get( PackageFile::lexstr ) )
+    , m_lexdata( pkg->Get( PackageFile::lexdata ) )
+    , m_lexhit( pkg->Get( PackageFile::lexhit ) )
+    , m_lexhash( pkg->Get( PackageFile::lexstr ), pkg->Get( PackageFile::lexhash ), pkg->Get( PackageFile::lexhashdata ) )
+    , m_descShort( pkg->Get( PackageFile::desc_short ) )
+    , m_descLong( pkg->Get( PackageFile::desc_long ) )
 {
 }
 

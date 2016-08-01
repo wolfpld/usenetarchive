@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\libuat\PackageAccess.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -139,6 +142,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\Package.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\PackageAccess.hpp">
+      <Filter>libuat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

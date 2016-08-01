@@ -2,6 +2,7 @@
 #define __ARCHIVE_HPP__
 
 #include <map>
+#include <memory>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "../common/MetaView.hpp"
 #include "../common/ZMessageView.hpp"
 
+#include "PackageAccess.hpp"
 #include "ViewReference.hpp"
 
 struct SearchResult
@@ -62,20 +64,23 @@ public:
 
 private:
     Archive( const std::string& dir );
+    Archive( const PackageAccess* pkg );
+
+    std::unique_ptr<const PackageAccess> m_pkg;
 
     ZMessageView m_mview;
-    size_t m_mcnt;
-    FileMap<uint32_t> m_toplevel;
-    HashSearch m_midhash;
-    MetaView<uint32_t, uint32_t> m_connectivity;
-    MetaView<uint32_t, char> m_strings;
-    FileMap<LexiconMetaPacket> m_lexmeta;
-    FileMap<char> m_lexstr;
-    FileMap<LexiconDataPacket> m_lexdata;
-    FileMap<uint8_t> m_lexhit;
-    HashSearch m_lexhash;
-    FileMap<char> m_descShort;
-    FileMap<char> m_descLong;
+    const size_t m_mcnt;
+    const FileMap<uint32_t> m_toplevel;
+    const HashSearch m_midhash;
+    const MetaView<uint32_t, uint32_t> m_connectivity;
+    const MetaView<uint32_t, char> m_strings;
+    const FileMap<LexiconMetaPacket> m_lexmeta;
+    const FileMap<char> m_lexstr;
+    const FileMap<LexiconDataPacket> m_lexdata;
+    const FileMap<uint8_t> m_lexhit;
+    const HashSearch m_lexhash;
+    const FileMap<char> m_descShort;
+    const FileMap<char> m_descLong;
 };
 
 #endif

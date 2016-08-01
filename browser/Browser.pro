@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     TextBuf.cpp \
     ../common/LexiconTypes.cpp \
     about.cpp \
-    groupcharter.cpp
+    groupcharter.cpp \
+    ../libuat/PackageAccess.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -51,7 +52,8 @@ HEADERS  += browser.h \
     TextBuf.hpp \
     ../common/LexiconTypes.hpp \
     about.h \
-    groupcharter.h
+    groupcharter.h \
+    ../libuat/PackageAccess.hpp
 
 FORMS    += browser.ui \
     about.ui \
