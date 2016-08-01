@@ -32,6 +32,32 @@ static const PackMeta PackageContents[] = {
     { "zdict", false }
 };
 
+struct PackageFile
+{
+    enum type {
+        desc_short,
+        desc_long,
+        conndata,
+        connmeta,
+        lexdata,
+        lexmeta,
+        lexhash,
+        lexhashdata,
+        lexhit,
+        lexstr,
+        middata,
+        midmeta,
+        midhash,
+        midhashdata,
+        strings,
+        strmeta,
+        toplevel,
+        zdata,
+        zmeta,
+        zdict
+    };
+};
+
 enum { PackageFiles = sizeof( PackageContents ) / sizeof( PackMeta ) };
 
 enum : char { PackageVersion = 0 };
