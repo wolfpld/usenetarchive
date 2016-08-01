@@ -1,6 +1,8 @@
 #ifndef __PACKAGE_HPP__
 #define __PACKAGE_HPP__
 
+#include <stdint.h>
+
 struct PackMeta
 {
     const char* filename;
