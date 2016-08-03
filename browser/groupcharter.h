@@ -12,7 +12,7 @@ class GroupCharter : public QDialog
     Q_OBJECT
 
 public:
-    explicit GroupCharter( const char* sdesc, const size_t slen, const char* ldesc, const size_t llen, QWidget *parent = 0);
+    explicit GroupCharter( const char* sdesc, const size_t slen, const char* ldesc, const size_t llen, const char* ndesc, const size_t nlen, QWidget *parent = 0);
     ~GroupCharter();
 
 private slots:

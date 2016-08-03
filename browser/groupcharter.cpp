@@ -1,7 +1,7 @@
 #include "groupcharter.h"
 #include "ui_groupcharter.h"
 
-GroupCharter::GroupCharter( const char* sdesc, const size_t slen, const char* ldesc, const size_t llen, QWidget *parent ) :
+GroupCharter::GroupCharter( const char* sdesc, const size_t slen, const char* ldesc, const size_t llen, const char* ndesc, const size_t nlen, QWidget *parent ) :
     QDialog(parent),
     ui(new Ui::GroupCharter)
 {
@@ -18,6 +18,10 @@ GroupCharter::GroupCharter( const char* sdesc, const size_t slen, const char* ld
     else
     {
         ui->textBrowser->setHtml( "<html><body><br/><div style=\"font-size:100pt\">&nbsp;:(</div><center><b>Group charter is not available.</b></center></body></html>" );
+    }
+    if( ndesc && nlen > 0 )
+    {
+        ui->groupName->setText( QString( std::string( ndesc, nlen ).c_str() ) );
     }
 }
 

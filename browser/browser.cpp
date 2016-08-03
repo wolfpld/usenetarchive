@@ -626,7 +626,8 @@ void Browser::on_actionGroup_Charter_triggered()
 {
     auto s = m_archive->GetShortDescription();
     auto l = m_archive->GetLongDescription();
+    auto n = m_archive->GetArchiveName();
 
-    auto dialog = new GroupCharter( s.first, s.second, l.first, l.second );
+    auto dialog = new GroupCharter( s.first, s.second, l.first, l.second, n.first, n.second );
     dialog->exec();
 }

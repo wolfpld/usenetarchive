@@ -17,13 +17,30 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <widget class="QLabel" name="groupName">
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>24</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>No group name available :(</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <italic>false</italic>
-         <bold>true</bold>
+         <family>Calibri</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>true</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
