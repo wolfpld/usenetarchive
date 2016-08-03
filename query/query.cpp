@@ -232,6 +232,7 @@ int main( int argc, char** argv )
         {
             auto d1 = archive->GetShortDescription();
             auto d2 = archive->GetLongDescription();
+            auto d3 = archive->GetArchiveName();
 
             if( d1.first )
             {
@@ -248,6 +249,14 @@ int main( int argc, char** argv )
             else
             {
                 printf( "No long description.\n" );
+            }
+            if( d3.first )
+            {
+                printf( "\n%.*s\n", d3.second, d3.first );
+            }
+            else
+            {
+                printf( "No archive name.\n" );
             }
         }
         else
