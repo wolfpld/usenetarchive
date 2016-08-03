@@ -71,7 +71,15 @@ void Browser::on_actionOpen_triggered()
             }
 
             tabText += " (";
-            tabText += dir.substr( idx+1 );
+            auto name = m_archive->GetArchiveName();
+            if( name.first && name.second != 0 )
+            {
+                tabText += std::string( name.first, name.first + name.second );
+            }
+            else
+            {
+                tabText += dir.substr( idx+1 );
+            }
             tabText += ")";
         }
         else
