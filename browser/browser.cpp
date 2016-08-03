@@ -65,12 +65,16 @@ void Browser::on_actionOpen_triggered()
         auto desc = m_archive->GetShortDescription();
         if( desc.first )
         {
-            for( int i=0; i<desc.second; i++ )
+            bool shortAvailable = desc.second > 0;
+            if( shortAvailable )
             {
-                if( desc.first[i] != '\n' ) tabText += desc.first[i];
-            }
+                for( int i=0; i<desc.second; i++ )
+                {
+                    if( desc.first[i] != '\n' ) tabText += desc.first[i];
+                }
 
-            tabText += " (";
+                tabText += " (";
+            }
             auto name = m_archive->GetArchiveName();
             if( name.first && name.second != 0 )
             {
@@ -80,7 +84,10 @@ void Browser::on_actionOpen_triggered()
             {
                 tabText += dir.substr( idx+1 );
             }
-            tabText += ")";
+            if( shortAvailable )
+            {
+                tabText += ")";
+            }
         }
         else
         {
