@@ -10,6 +10,7 @@ struct PackMeta
 };
 
 static const PackMeta PackageContents[] = {
+    { "name", true },
     { "desc_short", true },
     { "desc_long", true },
     { "conndata", false },
@@ -35,6 +36,7 @@ static const PackMeta PackageContents[] = {
 struct PackageFile
 {
     enum type {
+        name,
         desc_short,
         desc_long,
         conndata,

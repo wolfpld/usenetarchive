@@ -81,6 +81,7 @@ private:
     const HashSearch m_lexhash;
     const FileMap<char> m_descShort;
     const FileMap<char> m_descLong;
+    const FileMap<char> m_name;
 };
 
 #endif

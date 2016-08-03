@@ -50,6 +50,7 @@ Archive::Archive( const std::string& dir )
     , m_lexhash( dir + "lexstr", dir + "lexhash", dir + "lexhashdata" )
     , m_descShort( dir + "desc_short", true )
     , m_descLong( dir + "desc_long", true )
+    , m_name( dir + "name", true )
 {
 }
 
@@ -68,6 +69,7 @@ Archive::Archive( const PackageAccess* pkg )
     , m_lexhash( pkg->Get( PackageFile::lexstr ), pkg->Get( PackageFile::lexhash ), pkg->Get( PackageFile::lexhashdata ) )
     , m_descShort( pkg->Get( PackageFile::desc_short ) )
     , m_descLong( pkg->Get( PackageFile::desc_long ) )
+    , m_name( pkg->Get( PackageFile::name ) )
 {
 }
 
