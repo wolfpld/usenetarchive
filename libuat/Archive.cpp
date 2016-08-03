@@ -323,3 +323,8 @@ std::pair<const char*, uint64_t> Archive::GetLongDescription() const
 {
     return std::make_pair( (const char*)m_descLong, m_descLong.Size() );
 }
+
+std::pair<const char*, uint64_t> Archive::GetArchiveName() const
+{
+    return std::make_pair( ( const char*)m_name, m_name.Size() );
+}

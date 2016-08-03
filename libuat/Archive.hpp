@@ -61,6 +61,7 @@ public:
 
     std::pair<const char*, uint64_t> GetShortDescription() const;
     std::pair<const char*, uint64_t> GetLongDescription() const;
+    std::pair<const char*, uint64_t> GetArchiveName() const;
 
 private:
     Archive( const std::string& dir );
