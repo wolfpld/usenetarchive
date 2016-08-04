@@ -75,4 +75,5 @@ DISTFILES += \
     build/win32/x64/Debug/browser.tlog/link.write.1.tlog \
     build/win32/x64/Debug/browser.log
 
-RC_ICONS = icon.ico
+win32: RC_ICONS = icon.ico
+win32: QMAKE_LFLAGS += /STACK:20000000
