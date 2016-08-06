@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QScrollBar>
 #include <sstream>
 #include <memory>
 #include <time.h>
@@ -125,6 +126,8 @@ void Browser::on_actionROT13_triggered(bool checked)
 
 void Browser::ShowMessage( const char* msg )
 {
+    auto scroll = ui->textBrowser->verticalScrollBar();
+    auto pos = scroll->value();
     if( m_rot13 )
     {
         auto size = strlen( msg );
@@ -158,6 +161,7 @@ void Browser::ShowMessage( const char* msg )
     {
         SetText( msg );
     }
+    scroll->setValue( pos );
 }
 
 void Browser::FillTree()
