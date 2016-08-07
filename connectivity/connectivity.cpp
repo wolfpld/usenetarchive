@@ -87,6 +87,7 @@ int main( int argc, char** argv )
         auto post = mview[i];
         auto buf = post;
 
+        bool isReferences = true;
         while( strnicmpl( buf, "references: ", 12 ) != 0 && *buf != '\n' )
         {
             buf++;
@@ -94,10 +95,20 @@ int main( int argc, char** argv )
         }
         if( *buf == '\n' )
         {
+            isReferences = false;
+            buf = post;
+            while( strnicmpl( buf, "in-reply-to: ", 13 ) != 0 && *buf != '\n' )
+            {
+                buf++;
+                while( *buf++ != '\n' ) {}
+            }
+        }
+        if( *buf == '\n' )
+        {
             toplevel.push_back( i );
             continue;
         }
-        buf += 12;
+        buf += isReferences ? 12 : 13;
 
         const auto terminate = buf;
         int valid = 0;
