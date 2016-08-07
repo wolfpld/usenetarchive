@@ -50,7 +50,7 @@ public:
     }
 
     FileMap& operator=( const FileMap& ) = delete;
-    FileMap& operator=( FileMap&& )
+    FileMap& operator=( FileMap&& src )
     {
         m_ptr = src.m_ptr;
         m_size = src.m_size;
