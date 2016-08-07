@@ -189,6 +189,7 @@ int main( int argc, char** argv )
     FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
     FILE* ddata = fopen( ddatafn.c_str(), "wb" );
 
+    int mime_fails = 0;
     std::ostringstream ss;
     ExpandingBuffer eb;
     uint64_t offset = 0;
@@ -262,6 +263,19 @@ int main( int argc, char** argv )
             GMimeObject* body = g_mime_message_get_body( message );
             content = mime_part_to_text( body );
         }
+        if( content.empty() )
+        {
+            mime_fails++;
+            auto buf = post;
+            for(;;)
+            {
+                auto end = buf;
+                if( *end == '\n' ) break;
+                while( *end != '\n' ) end++;
+                buf = end + 1;
+            }
+            content = buf + 1;
+        }
 
         ss << "\n" << content;
         g_object_unref( message );
@@ -294,6 +308,7 @@ int main( int argc, char** argv )
         idx++;
     }
     printf( "Deductions failed: %i\n", deductions[idx] );
+    printf( "Completly broken messages: %i\n", mime_fails );
 
     return 0;
 }
