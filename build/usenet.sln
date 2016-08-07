@@ -43,6 +43,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter-spam", "..\filter-sp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "package", "..\package\build\win32\package.vcxproj", "{26CE7C62-F648-4FBA-BD0D-9FB003A3BE89}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "repack-lz4", "..\repack-lz4\build\win32\repack-lz4.vcxproj", "{9983E1F2-8C5D-479F-9E01-7A9867B64171}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -129,6 +131,10 @@ Global
 		{26CE7C62-F648-4FBA-BD0D-9FB003A3BE89}.Debug|x64.Build.0 = Debug|x64
 		{26CE7C62-F648-4FBA-BD0D-9FB003A3BE89}.Release|x64.ActiveCfg = Release|x64
 		{26CE7C62-F648-4FBA-BD0D-9FB003A3BE89}.Release|x64.Build.0 = Release|x64
+		{9983E1F2-8C5D-479F-9E01-7A9867B64171}.Debug|x64.ActiveCfg = Debug|x64
+		{9983E1F2-8C5D-479F-9E01-7A9867B64171}.Debug|x64.Build.0 = Debug|x64
+		{9983E1F2-8C5D-479F-9E01-7A9867B64171}.Release|x64.ActiveCfg = Release|x64
+		{9983E1F2-8C5D-479F-9E01-7A9867B64171}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
