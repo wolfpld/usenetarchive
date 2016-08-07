@@ -34,6 +34,8 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - utf8ize --- Converts messages to a common character encoding, UTF-8.
 - connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
+- repack-lz4 --- Converts zstd database to LZ4 database.
+- package --- Packages all databases into a single file. Supports unpacking.
 
 ### Data Filtering
 
@@ -89,13 +91,21 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 (*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  
 *LZ4* → **utf8ize** → produces: *LZ4*  
 *LZ4* → **repack-zstd** → adds: *zstd*  
+*zstd* → **repack-lz4** → adds: *LZ4*  
 *LZ4*, *conn* → **lexicon** → adds: *lex*  
 *lex* → **lexhash** → adds: *lexhash*  
 *lex* → **lexsort** → modifies: *lex*  
 *lex* → **lexdist** → adds: *lexdist* (unused)  
 *lex* → **lexstats** → user interaction  
 *LZ4*, *msgid* → **query-raw** → user interaction  
-*zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction
+*zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction  
+*everything but LZ4* → **package** → *one file archive*
+
+Additional, optional information files, not created by any of the above utilities, but used in user-facing programs:
+
+- name --- Group name.
+- desc\_short --- A short description about the purpose of the group ([per 7.6.6 in RFC 3977](https://tools.ietf.org/html/rfc3977#section-7.6.6)).
+- desc\_long --- Group charter. (*Some newsgroups regularly post a description to the group that describes its intention. These descriptions are posted by the people involved with the newsgroup creation and/or administration. If the group has such a description, it almost always includes the word "charter", so you can quickly find it by searching the newsgroup for that word. A charter is the "set of rules and guidelines" which supposedly govern the users of that group.*)
 
 ### Typical Workflow
 
