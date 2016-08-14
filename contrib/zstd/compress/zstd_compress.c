@@ -940,8 +940,8 @@ static void ZSTD_fillHashTable (ZSTD_CCtx* zc, const void* end, const U32 mls)
 
 FORCE_INLINE
 void ZSTD_compressBlock_fast_generic(ZSTD_CCtx* cctx,
-                                 const void* src, size_t srcSize,
-                                 const U32 mls)
+                               const void* src, size_t srcSize,
+                               const U32 mls)
 {
     U32* const hashTable = cctx->hashTable;
     U32  const hBits = cctx->params.cParams.hashLog;
@@ -973,7 +973,7 @@ void ZSTD_compressBlock_fast_generic(ZSTD_CCtx* cctx,
         const BYTE* match = base + matchIndex;
         hashTable[h] = current;   /* update hash table */
 
-        if ((offset_1 > 0) & (MEM_read32(ip+1-offset_1) == MEM_read32(ip+1))) { /* note : by construction, offset_1 <= current */
+        if ((offset_1 > 0) & (MEM_read32(ip+1-offset_1) == MEM_read32(ip+1))) {
             mLength = ZSTD_count(ip+1+4, ip+1+4-offset_1, iend) + 4;
             ip++;
             ZSTD_storeSeq(seqStorePtr, ip-anchor, anchor, 0, mLength-MINMATCH);
@@ -2205,8 +2205,13 @@ static ZSTD_blockCompressor ZSTD_selectBlockCompressor(ZSTD_strategy strat, int 
 static size_t ZSTD_compressBlock_internal(ZSTD_CCtx* zc, void* dst, size_t dstCapacity, const void* src, size_t srcSize)
 {
     ZSTD_blockCompressor const blockCompressor = ZSTD_selectBlockCompressor(zc->params.cParams.strategy, zc->lowLimit < zc->dictLimit);
+    const BYTE* const base = zc->base;
+    const BYTE* const istart = (const BYTE*)src;
+    const U32 current = (U32)(istart-base);
     if (srcSize < MIN_CBLOCK_SIZE+ZSTD_blockHeaderSize+1) return 0;   /* don't even attempt compression below a certain srcSize */
     ZSTD_resetSeqStore(&(zc->seqStore));
+    if (current > zc->nextToUpdate + 384)
+        zc->nextToUpdate = current - MIN(192, (U32)(current - zc->nextToUpdate - 384));   /* update tree not updated after finding very long rep matches */
     blockCompressor(zc, src, srcSize);
     return ZSTD_compressSequences(zc, dst, dstCapacity, srcSize);
 }
