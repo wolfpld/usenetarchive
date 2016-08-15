@@ -51,7 +51,7 @@ Search in archive is performed with the help of a word lexicon. The following to
 
 - lexicon --- Build a list of words and hit-tables for each word.
 - lexstats --- Display lexicon statistics.
-- lexdist --- Calculate distances between words.
+- lexdist --- Calculate distances between words (unused).
 - lexhash --- Prepare lexicon hash table.
 - lexsort --- Sort lexicon data.
 
