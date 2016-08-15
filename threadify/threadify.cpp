@@ -54,6 +54,11 @@ struct Message
     std::vector<uint32_t> children;
 };
 
+void Sort( std::vector<uint32_t>& vec, const Message* msg )
+{
+    std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -219,44 +224,58 @@ int main( int argc, char** argv )
         }
     }
 
-    archive.reset();
-
-    printf( "\nSaving...\n" );
-    FILE* tlout = fopen( ( base + "toplevel" ).c_str(), "wb" );
-    fwrite( toplevel.data(), 1, sizeof( uint32_t ) * toplevel.size(), tlout );
-    fclose( tlout );
-
-    FILE* cdata = fopen( ( base + "conndata" ).c_str(), "wb" );
-    FILE* cmeta = fopen( ( base + "connmeta" ).c_str(), "wb" );
-    uint32_t offset = 0;
-    for( uint32_t i=0; i<size; i++ )
-    {
-        if( ( i & 0x1FFF ) == 0 )
-        {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
-        }
-
-        fwrite( &offset, 1, sizeof( uint32_t ), cmeta );
-
-        offset += fwrite( &msgdata[i].epoch, 1, sizeof( Message::epoch ), cdata );
-        offset += fwrite( &msgdata[i].parent, 1, sizeof( Message::parent ), cdata );
-        uint32_t cnum = msgdata[i].children.size();
-        offset += fwrite( &cnum, 1, sizeof( cnum ), cdata );
-        for( auto& v : msgdata[i].children )
-        {
-            offset += fwrite( &v, 1, sizeof( v ), cdata );
-        }
-    }
-    fclose( cdata );
-    fclose( cmeta );
-
-    printf( "\nFound %i new threads, %i broken threads (bad references).\nSurely matched %i messages (same thread line), also %i good and %i guesses.\n", cntnew, cntrefs, cntsure, cntgood, cntbad );
-
+    printf( "\nApplying changes...\n" );
+    fflush( stdout );
     for( auto& v : found )
     {
-        printf( "%i -> %i\n", v.first, v.second );
+        msgdata[v.first].parent = v.second;
+        msgdata[v.second].children.push_back( v.first );
+
+        Sort( msgdata[v.second].children, msgdata );
+
+        auto it = std::find( toplevel.begin(), toplevel.end(), v.first );
+        assert( it != toplevel.end() );
+        toplevel.erase( it );
     }
+
+    archive.reset();
+
+    if( !found.empty() )
+    {
+        printf( "Saving...\n" );
+        printf( "WARNING! Lexicon data has been invalidated!\n" );
+
+        FILE* tlout = fopen( ( base + "toplevel" ).c_str(), "wb" );
+        fwrite( toplevel.data(), 1, sizeof( uint32_t ) * toplevel.size(), tlout );
+        fclose( tlout );
+
+        FILE* cdata = fopen( ( base + "conndata" ).c_str(), "wb" );
+        FILE* cmeta = fopen( ( base + "connmeta" ).c_str(), "wb" );
+        uint32_t offset = 0;
+        for( uint32_t i=0; i<size; i++ )
+        {
+            if( ( i & 0x1FFF ) == 0 )
+            {
+                printf( "%i/%i\r", i, size );
+                fflush( stdout );
+            }
+
+            fwrite( &offset, 1, sizeof( uint32_t ), cmeta );
+
+            offset += fwrite( &msgdata[i].epoch, 1, sizeof( Message::epoch ), cdata );
+            offset += fwrite( &msgdata[i].parent, 1, sizeof( Message::parent ), cdata );
+            uint32_t cnum = msgdata[i].children.size();
+            offset += fwrite( &cnum, 1, sizeof( cnum ), cdata );
+            for( auto& v : msgdata[i].children )
+            {
+                offset += fwrite( &v, 1, sizeof( v ), cdata );
+            }
+        }
+        fclose( cdata );
+        fclose( cmeta );
+    }
+
+    printf( "\nFound %i new threads, %i broken threads (bad references).\nSurely matched %i messages (same thread line), also %i good and %i guesses.\n", cntnew, cntrefs, cntsure, cntgood, cntbad );
 
     return 0;
 }
