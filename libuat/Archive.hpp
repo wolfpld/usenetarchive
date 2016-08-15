@@ -57,6 +57,7 @@ public:
     const char* GetRealName( const char* msgid ) const;
 
     std::vector<SearchResult> Search( const char* query ) const;
+    std::vector<SearchResult> Search( const std::vector<std::string>& terms ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 
     std::pair<const char*, uint64_t> GetShortDescription() const;

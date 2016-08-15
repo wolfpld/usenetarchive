@@ -199,10 +199,14 @@ static float PostRank( const PostData& data )
 
 std::vector<SearchResult> Archive::Search( const char* query ) const
 {
-    std::vector<SearchResult> ret;
-
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
+    return Search( terms );
+}
+
+std::vector<SearchResult> Archive::Search( const std::vector<std::string>& terms ) const
+{
+    std::vector<SearchResult> ret;
 
     std::vector<const char*> matched;
     std::vector<uint32_t> words;
