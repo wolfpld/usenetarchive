@@ -102,6 +102,7 @@ int main( int argc, char** argv )
         auto idx = hash.Search( argv[3] );
         if( idx >= 0 )
         {
+            printf( "Message idx: %i\n\n", idx );
             printf( "%s\n", mview[idx] );
             return 0;
         }
