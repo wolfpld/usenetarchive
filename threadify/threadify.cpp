@@ -169,7 +169,7 @@ int main( int argc, char** argv )
                 if( line != end && quotLevel == 1 )
                 {
                     SplitLine( line, end, wordbuf );
-                    auto res = archive->Search( wordbuf );
+                    auto res = archive->Search( wordbuf, T_Content );
                     wordbuf.clear();
                     if( !res.empty() )
                     {
