@@ -56,8 +56,8 @@ public:
     const char* GetRealName( uint32_t idx ) const;
     const char* GetRealName( const char* msgid ) const;
 
-    std::vector<SearchResult> Search( const char* query ) const;
-    std::vector<SearchResult> Search( const std::vector<std::string>& terms ) const;
+    std::vector<SearchResult> Search( const char* query, int filter = T_All ) const;
+    std::vector<SearchResult> Search( const std::vector<std::string>& terms, int filter = T_All ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 
     std::pair<const char*, uint64_t> GetShortDescription() const;

@@ -13,6 +13,8 @@ enum LexiconType
     T_Header
 };
 
+enum { T_All = 0xFF };
+
 extern const char* LexiconNames[];
 extern const float LexiconWeights[];
 

@@ -197,14 +197,14 @@ static float PostRank( const PostData& data )
     return ( float( data.children ) / LexiconChildMax ) * 0.9f + 0.1f;
 }
 
-std::vector<SearchResult> Archive::Search( const char* query ) const
+std::vector<SearchResult> Archive::Search( const char* query, int filter ) const
 {
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
-    return Search( terms );
+    return Search( terms, filter );
 }
 
-std::vector<SearchResult> Archive::Search( const std::vector<std::string>& terms ) const
+std::vector<SearchResult> Archive::Search( const std::vector<std::string>& terms, int filter ) const
 {
     std::vector<SearchResult> ret;
 
@@ -237,7 +237,21 @@ std::vector<SearchResult> Archive::Search( const std::vector<std::string>& terms
             uint8_t children = data->postid >> LexiconChildShift;
             auto hits = m_lexhit + data->hitoffset;
             auto hitnum = *hits++;
-            vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+            if( filter != T_All )
+            {
+                for( int j=0; j<hitnum; j++ )
+                {
+                    if( LexiconDecodeType( hits[j] ) == filter )
+                    {
+                        vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+            }
             data++;
         }
     }
