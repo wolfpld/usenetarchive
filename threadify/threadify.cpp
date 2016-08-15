@@ -217,14 +217,17 @@ int main( int argc, char** argv )
                 if( line != end && quotLevel == 1 )
                 {
                     SplitLine( line, end, wordbuf );
-                    auto res = archive->Search( wordbuf, T_Content );
-                    wordbuf.clear();
-                    if( !res.empty() )
+                    if( !wordbuf.empty() )
                     {
-                        for( auto r : res )
+                        auto res = archive->Search( wordbuf, T_Content );
+                        if( !res.empty() )
                         {
-                            hits[r.postid] += r.rank;
+                            for( auto r : res )
+                            {
+                                hits[r.postid] += r.rank;
+                            }
                         }
+                        wordbuf.clear();
                     }
                 }
                 if( *end == '\0' ) break;
