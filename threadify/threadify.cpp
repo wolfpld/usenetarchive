@@ -59,6 +59,49 @@ void Sort( std::vector<uint32_t>& vec, const Message* msg )
     std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
 }
 
+static const char* ReList[] = {
+    "Re:",
+    "RE:",
+    "re:",
+    "Odp:",
+    nullptr
+};
+
+const char* KillRe( const char* str )
+{
+    for(;;)
+    {
+        if( *str == '\0' ) return str;
+        while( *str == ' ' ) str++;
+        auto match = ReList;
+        bool stop = false;
+        while( !stop )
+        {
+            int idx = 0;
+            auto matchstr = *match;
+            for(;;)
+            {
+                if( matchstr[idx] == '\0' )
+                {
+                    str += idx;
+                    stop = true;
+                    break;
+                }
+                if( str[idx] != matchstr[idx] ) break;
+                idx++;
+            }
+            if( !stop )
+            {
+                match++;
+                if( !*match )
+                {
+                    return str;
+                }
+            }
+        }
+    }
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -211,7 +254,9 @@ int main( int argc, char** argv )
             }
             else
             {
-                if( archive->GetSubject( i ) == archive->GetSubject( best ) )
+                auto s1 = KillRe( archive->GetSubject( i ) );
+                auto s2 = KillRe( archive->GetSubject( best ) );
+                if( strcmp( s1, s2 ) == 0 )
                 {
                     cntsure++;
                     found.emplace_back( i, best );
