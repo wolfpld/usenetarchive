@@ -67,6 +67,12 @@ static const char* ReList[] = {
     nullptr
 };
 
+static const char* WroteList[] = {
+    "wrote",
+    u8"napisa\u0142",
+    nullptr
+};
+
 const char* KillRe( const char* str )
 {
     for(;;)
@@ -180,6 +186,7 @@ int main( int argc, char** argv )
 
         auto i = toplevel[j];
         bool headers = true;
+        bool wroteDone = false;
 
         auto post = archive->GetMessage( i );
         for(;;)
@@ -216,18 +223,37 @@ int main( int argc, char** argv )
                 }
                 if( line != end && quotLevel == 1 )
                 {
-                    SplitLine( line, end, wordbuf );
-                    if( !wordbuf.empty() )
+                    bool ok = true;
+                    if( !wroteDone )
                     {
-                        auto res = archive->Search( wordbuf, T_Content );
-                        if( !res.empty() )
+                        std::string test( line, end );
+                        auto ptr = WroteList;
+                        while( *ptr )
                         {
-                            for( auto r : res )
+                            if( test.find( *ptr ) != std::string::npos )
                             {
-                                hits[r.postid] += r.rank;
+                                wroteDone = true;
+                                ok = false;
+                                break;
                             }
+                            ptr++;
                         }
-                        wordbuf.clear();
+                    }
+                    if( ok )
+                    {
+                        SplitLine( line, end, wordbuf );
+                        if( !wordbuf.empty() )
+                        {
+                            auto res = archive->Search( wordbuf, T_Content );
+                            if( !res.empty() )
+                            {
+                                for( auto r : res )
+                                {
+                                    hits[r.postid] += r.rank;
+                                }
+                            }
+                            wordbuf.clear();
+                        }
                     }
                 }
                 if( *end == '\0' ) break;
