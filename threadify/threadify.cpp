@@ -249,7 +249,7 @@ int main( int argc, char** argv )
                             {
                                 for( auto r : res )
                                 {
-                                    hits[r.postid] += r.rank;
+                                    hits[r.postid] += r.rank * wordbuf.size() * wordbuf.size();
                                 }
                             }
                             wordbuf.clear();
