@@ -33,6 +33,7 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - merge-raw --- Merges two imported data sets into one. Does not duplicate messages.
 - utf8ize --- Converts messages to a common character encoding, UTF-8.
 - connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
+- threadify --- Some messages do not have connectivity data embedded in headers. Eg. it's a common artifact of using news-email gateways. This tool parses top-level messages, looking for quotations, then it searches other messages for these quotes and creates (not restores! it was never there!) missing connectivity between children and parents.
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
 - repack-lz4 --- Converts zstd database to LZ4 database.
 - package --- Packages all databases into a single file. Supports unpacking.
@@ -99,7 +100,8 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *lex* → **lexstats** → user interaction  
 *LZ4*, *msgid* → **query-raw** → user interaction  
 *zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction  
-*everything but LZ4* → **package** → *one file archive*
+*everything but LZ4* → **package** → *one file archive*  
+*everything but LZ4* → **threadify** → modifies: *conn*, invalidates: *lex*, *lexhash*
 
 Additional, optional information files, not created by any of the above utilities, but used in user-facing programs:
 
