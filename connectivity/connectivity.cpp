@@ -189,6 +189,7 @@ int main( int argc, char** argv )
         data[i].epoch = date;
     }
 
+    std::unordered_set<uint32_t> visited;
     printf( "\nChild count...\n" );
     fflush( stdout );
     for( uint32_t i=0; i<size; i++ )
@@ -199,12 +200,15 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
+        visited.clear();
         auto idx = i;
         for(;;)
         {
             data[idx].childTotal++;
             if( data[idx].parent == -1 ) break;
             idx = data[idx].parent;
+            if( visited.find( idx ) != visited.end() ) break;
+            visited.emplace( idx );
         }
     }
 
