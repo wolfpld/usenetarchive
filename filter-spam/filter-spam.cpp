@@ -38,18 +38,23 @@ int main( int argc, char** argv )
 
     if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s database source [destination [--ask]] | [-m msgid]\n", argv[0] );
+        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] )] | [-m msgid]\n", argv[0] );
         fprintf( stderr, "Omitting destination will start training mode.\n" );
         exit( 1 );
     }
 
     bool training = argc == 3;
+    bool quiet = false;
 
     if( argc == 5 )
     {
         if( strcmp( argv[3], "-m" ) == 0 )
         {
             training = true;
+        }
+        else if( strcmp( argv[4], "--quiet" ) == 0 )
+        {
+            quiet = true;
         }
         else if( strcmp( argv[4], "--ask" ) != 0 )
         {
@@ -150,7 +155,10 @@ int main( int argc, char** argv )
             }
         }
 
-        printf( "\n%i messages marked as spam. Killed:\n", data.size() );
+        if( !quiet )
+        {
+            printf( "\n%i messages marked as spam. Killed:\n", data.size() );
+        }
 
         uint64_t offset = 0;
         uint64_t savec = 0, saveu = 0;
@@ -162,11 +170,14 @@ int main( int argc, char** argv )
 
             if( it != data.end() && it->id == i )
             {
-                printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%.3f\033[0m\t%s\n", strings[i*3+1], strings[i*3], it->prob, msgid[i] );
-                fflush( stdout );
+                if( !quiet )
+                {
+                    printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%.3f\033[0m\t%s\n", strings[i*3+1], strings[i*3], it->prob, msgid[i] );
+                    fflush( stdout );
+                }
                 ++it;
                 bool spam = true;
-                if( argc == 5 )
+                if( argc == 5 && !quiet )
                 {
                     printf( "\033[31;1mSelect [s]pam or [v]alid.\033[0m\n" );
                     fflush( stdout );
