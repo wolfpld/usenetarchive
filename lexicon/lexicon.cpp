@@ -101,19 +101,6 @@ void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, in
     }
 }
 
-void CountChildren( MetaView<uint32_t, uint32_t>& conn, uint32_t idx, int& cnt )
-{
-    if( ++cnt == MaxChildren ) return;
-    auto data = conn[idx];
-    data += 2;
-    auto num = *data++;
-    for( int i=0; i<num; i++ )
-    {
-        CountChildren( conn, *data++, cnt );
-        if( cnt == MaxChildren ) return;
-    }
-}
-
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -146,8 +133,8 @@ int main( int argc, char** argv )
         bool signature = false;
         int basePos[5] = {};
 
-        int children = -1;
-        CountChildren( conn, i, children );
+        int children = conn[i][2] - 1;
+        children = std::min<uint32_t>( MaxChildren, children );
         children /= 8;
 
         auto post = mview[i];
