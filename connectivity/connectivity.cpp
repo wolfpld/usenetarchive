@@ -19,6 +19,7 @@ struct Message
 {
     uint32_t epoch = 0;
     int32_t parent = -1;
+    uint32_t childTotal = 0;
     std::vector<uint32_t> children;
 };
 
@@ -188,6 +189,25 @@ int main( int argc, char** argv )
         data[i].epoch = date;
     }
 
+    printf( "\nChild count...\n" );
+    fflush( stdout );
+    for( uint32_t i=0; i<size; i++ )
+    {
+        if( ( i & 0xFFF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        auto idx = i;
+        for(;;)
+        {
+            data[idx].childTotal++;
+            if( data[idx].parent == -1 ) break;
+            idx = data[idx].parent;
+        }
+    }
+
     printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i\n", toplevel.size(), missing.size(), broken, baddate );
 
     printf( "Sorting top level...\n" );
@@ -227,6 +247,7 @@ int main( int argc, char** argv )
 
         offset += fwrite( &data[i].epoch, 1, sizeof( Message::epoch ), cdata );
         offset += fwrite( &data[i].parent, 1, sizeof( Message::parent ), cdata );
+        offset += fwrite( &data[i].childTotal, 1, sizeof( Message::childTotal ), cdata );
         uint32_t cnum = data[i].children.size();
         offset += fwrite( &cnum, 1, sizeof( cnum ), cdata );
         for( auto& v : data[i].children )
