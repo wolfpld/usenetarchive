@@ -189,6 +189,7 @@ int main( int argc, char** argv )
         data[i].epoch = date;
     }
 
+    unsigned int loopcnt = 0;
     std::unordered_set<uint32_t> visited;
     printf( "\nChild count...\n" );
     fflush( stdout );
@@ -205,14 +206,23 @@ int main( int argc, char** argv )
         for(;;)
         {
             data[idx].childTotal++;
-            if( data[idx].parent == -1 ) break;
-            idx = data[idx].parent;
-            if( visited.find( idx ) != visited.end() ) break;
+            auto parent = data[idx].parent;
+            if( parent == -1 ) break;
+            if( visited.find( parent ) != visited.end() )
+            {
+                loopcnt++;
+                data[idx].parent = -1;
+                auto it = std::find( data[parent].children.begin(), data[parent].children.end(), idx );
+                assert( it != data[parent].children.end() );
+                data[parent].children.erase( it );
+                break;
+            }
+            idx = parent;
             visited.emplace( idx );
         }
     }
 
-    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i\n", toplevel.size(), missing.size(), broken, baddate );
+    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i\nReference loops: %i\n", toplevel.size(), missing.size(), broken, baddate, loopcnt );
 
     printf( "Sorting top level...\n" );
     fflush( stdout );
