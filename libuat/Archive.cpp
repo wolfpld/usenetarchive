@@ -110,7 +110,7 @@ int32_t Archive::GetParent( const char* msgid ) const
 ViewReference<uint32_t> Archive::GetChildren( uint32_t idx ) const
 {
     auto data = m_connectivity[idx];
-    data += 2;
+    data += 3;
     auto num = *data++;
     return ViewReference<uint32_t> { data, num };
 }
