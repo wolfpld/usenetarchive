@@ -64,6 +64,14 @@ static const char* ReList[] = {
     "RE:",
     "re:",
     "Odp:",
+    "Re[2]:",
+    "Re[3]:",
+    "Re[4]:",
+    "Re[5]:",
+    "Re[6]:",
+    "Re[7]:",
+    "Re[8]:",
+    "Re[9]:",
     nullptr
 };
 
