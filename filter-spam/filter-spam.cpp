@@ -142,7 +142,7 @@ int main( int argc, char** argv )
             const auto raw = mview.Raw( i );
             auto cdata = conn[i];
             auto parent = cdata[1];
-            auto children = cdata[2];
+            auto children = cdata[3];
             if( children == 0 && parent == -1 )
             {
                 auto post = mview[i];
@@ -254,7 +254,7 @@ int main( int argc, char** argv )
             {
                 auto idx = toplevel[i];
                 auto children = conn[idx];
-                children += 2;
+                children += 3;
                 if( *children != 0 ) continue;
                 std::string id( msgid[idx] );
                 if( visited.find( id ) != visited.end() ) continue;
