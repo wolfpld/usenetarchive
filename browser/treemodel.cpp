@@ -184,35 +184,53 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-static void CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data, TreeItem* parent )
-{
-    for( uint64_t i=0; i<data.size; i++ )
-    {
-        const auto idx = data.ptr[i];
-        auto item = new TreeItem( parent, idx );
-        parent->appendChild( item );
-        const auto children = arch.GetChildren( idx );
-        if( children.size > 0 )
-        {
-            CreateLevel( arch, children, item );
-        }
-        QVector<QVariant> columns;
-        columns << arch.GetSubject( idx );
-        columns << QString::number( arch.GetTotalChildrenCount( idx ) );
-        columns << arch.GetRealName( idx );
-        auto date = arch.GetDate( idx );
-        time_t t = { date };
-        char* tmp = asctime( localtime( &t ) );
-        tmp[strlen(tmp)-1] = '\0';
-        columns << tmp;
-        item->setData( std::move( columns ) );
-    }
-}
-
 void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
 {
     auto top = data.GetTopLevel();
-    CreateLevel( data, data.GetTopLevel(), parent );
+    std::vector<int32_t> items;
+    std::vector<TreeItem*> parents = { parent };
+    items.reserve( top.size * 2 );
+    for( int i = top.size-1; i >= 0; i-- )
+    {
+        items.emplace_back( top.ptr[i] );
+    }
+    while( !items.empty() )
+    {
+        auto idx = items.back();
+        items.pop_back();
+        if( idx == -1 )
+        {
+            parents.pop_back();
+        }
+        else
+        {
+            parent = parents.back();
+            auto item = new TreeItem( parent, idx );
+            parent->appendChild( item );
+
+            QVector<QVariant> columns;
+            columns << data.GetSubject( idx );
+            columns << QString::number( data.GetTotalChildrenCount( idx ) );
+            columns << data.GetRealName( idx );
+            auto date = data.GetDate( idx );
+            time_t t = { date };
+            char* tmp = asctime( localtime( &t ) );
+            tmp[strlen(tmp)-1] = '\0';
+            columns << tmp;
+            item->setData( std::move( columns ) );
+
+            const auto children = data.GetChildren( idx );
+            if( children.size > 0 )
+            {
+                parents.emplace_back( item );
+                items.emplace_back( -1 );
+                for( int i = children.size-1; i >= 0; i-- )
+                {
+                    items.emplace_back( children.ptr[i] );
+                }
+            }
+        }
+    }
 }
 
 QModelIndex TreeModel::GetIndexFor( uint32_t idx ) const
