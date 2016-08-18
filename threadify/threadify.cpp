@@ -51,6 +51,7 @@ struct Message
 {
     uint32_t epoch = 0;
     int32_t parent = -1;
+    uint32_t childTotal = 0;
     std::vector<uint32_t> children;
 };
 
@@ -168,6 +169,7 @@ int main( int argc, char** argv )
             auto ptr = conn[i];
             msgdata[i].epoch = *ptr++;
             msgdata[i].parent = *ptr++;
+            msgdata[i].childTotal = *ptr++;
             uint32_t cnum = *ptr++;
             msgdata[i].children.reserve( cnum );
             for( int j=0; j<cnum; j++ )
@@ -313,6 +315,16 @@ int main( int argc, char** argv )
         msgdata[v.first].parent = v.second;
         msgdata[v.second].children.push_back( v.first );
 
+        auto add = msgdata[v.first].childTotal;
+        auto idx = v.second;
+        for(;;)
+        {
+            msgdata[idx].childTotal += add;
+            auto parent = msgdata[idx].parent;
+            if( parent == -1 ) break;
+            idx = parent;
+        }
+
         Sort( msgdata[v.second].children, msgdata );
 
         auto it = std::find( toplevel.begin(), toplevel.end(), v.first );
@@ -346,6 +358,7 @@ int main( int argc, char** argv )
 
             offset += fwrite( &msgdata[i].epoch, 1, sizeof( Message::epoch ), cdata );
             offset += fwrite( &msgdata[i].parent, 1, sizeof( Message::parent ), cdata );
+            offset += fwrite( &msgdata[i].childTotal, 1, sizeof( Message::childTotal ), cdata );
             uint32_t cnum = msgdata[i].children.size();
             offset += fwrite( &cnum, 1, sizeof( cnum ), cdata );
             for( auto& v : msgdata[i].children )
