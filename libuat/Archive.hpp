@@ -44,6 +44,9 @@ public:
     ViewReference<uint32_t> GetChildren( uint32_t idx ) const;
     ViewReference<uint32_t> GetChildren( const char* msgid ) const;
 
+    uint32_t GetTotalChildrenCount( uint32_t idx ) const;
+    uint32_t GetTotalChildrenCount( const char* msgid ) const;
+
     uint32_t GetDate( uint32_t idx ) const;
     uint32_t GetDate( const char* msgid ) const;
 
