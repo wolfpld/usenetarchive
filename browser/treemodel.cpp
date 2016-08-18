@@ -184,23 +184,21 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-static int CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data, TreeItem* parent )
+static void CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data, TreeItem* parent )
 {
-    uint32_t totalDepth = 0;
     for( uint64_t i=0; i<data.size; i++ )
     {
-        uint32_t depth = 1;
         const auto idx = data.ptr[i];
         auto item = new TreeItem( parent, idx );
         parent->appendChild( item );
         const auto children = arch.GetChildren( idx );
         if( children.size > 0 )
         {
-            depth += CreateLevel( arch, children, item );
+            CreateLevel( arch, children, item );
         }
         QVector<QVariant> columns;
         columns << arch.GetSubject( idx );
-        columns << QString::number( depth );
+        columns << QString::number( arch.GetTotalChildrenCount( idx ) );
         columns << arch.GetRealName( idx );
         auto date = arch.GetDate( idx );
         time_t t = { date };
@@ -208,9 +206,7 @@ static int CreateLevel( const Archive& arch, const ViewReference<uint32_t>& data
         tmp[strlen(tmp)-1] = '\0';
         columns << tmp;
         item->setData( std::move( columns ) );
-        totalDepth += depth;
     }
-    return totalDepth;
 }
 
 void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
