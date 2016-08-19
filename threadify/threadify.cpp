@@ -60,7 +60,7 @@ void Sort( std::vector<uint32_t>& vec, const Message* msg )
     std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
 }
 
-static const char* ReList[] = {
+std::vector<std::string> ReList = {
     "Re:",
     "RE:",
     "re:",
@@ -72,8 +72,7 @@ static const char* ReList[] = {
     "Re[6]:",
     "Re[7]:",
     "Re[8]:",
-    "Re[9]:",
-    nullptr
+    "Re[9]:"
 };
 
 static const char* WroteList[] = {
@@ -88,12 +87,12 @@ const char* KillRe( const char* str )
     {
         if( *str == '\0' ) return str;
         while( *str == ' ' ) str++;
-        auto match = ReList;
+        auto match = ReList.begin();
         bool stop = false;
         while( !stop )
         {
             int idx = 0;
-            auto matchstr = *match;
+            const auto& matchstr = *match;
             for(;;)
             {
                 if( matchstr[idx] == '\0' )
@@ -107,8 +106,8 @@ const char* KillRe( const char* str )
             }
             if( !stop )
             {
-                match++;
-                if( !*match )
+                ++match;
+                if( match == ReList.end() )
                 {
                     return str;
                 }
