@@ -139,12 +139,18 @@ int main( int argc, char** argv )
     uint32_t limit = 0;
     uint32_t prevLen = std::numeric_limits<uint32_t>::max();
 
-    std::vector<std::string> outStrings;
+    int bufSize = 1024*1024*16;
+    char* buf = new char[bufSize];
+
+    std::vector<uint32_t> outStrings;
+    std::vector<uint32_t> outSizes;
     std::vector<OptEntry> outData( strings.size() );
 
     outStrings.reserve( strings.size() );
+    outSizes.reserve( strings.size() );
 
     unsigned int savings = 0;
+    uint32_t offset = 0;
     for( int i=0; i<strings.size(); i++ )
     {
         if( ( i & 0x1FF ) == 0 )
@@ -163,11 +169,11 @@ int main( int argc, char** argv )
         bool done = false;
         for( uint32_t j=0; j<limit; j++ )
         {
-            uint32_t offset = outStrings[j].size() - lengths[idx];
-            if( memcmp( outStrings[j].c_str() + offset, strings[idx].c_str(), lengths[idx] ) == 0 )
+            uint32_t localOffset = outSizes[j] - lengths[idx];
+            if( memcmp( buf + outStrings[j] + localOffset, strings[idx].c_str(), lengths[idx] ) == 0 )
             {
                 savings += lengths[idx];
-                outData[idx] = OptEntry{ j, offset };
+                outData[idx] = OptEntry{ j, localOffset };
                 done = true;
                 break;
             }
@@ -175,7 +181,19 @@ int main( int argc, char** argv )
         if( !done )
         {
             outData[idx] = OptEntry{ uint32_t( outStrings.size() ), 0 };
-            outStrings.emplace_back( strings[idx] );
+            outStrings.emplace_back( offset );
+            auto ss = strings[idx].size() + 1;
+            outSizes.emplace_back( ss - 1 );
+            if( offset + ss > bufSize )
+            {
+                bufSize *= 2;
+                char* newBuf = new char[bufSize];
+                memcpy( newBuf, buf, offset );
+                delete[] buf;
+                buf = newBuf;
+            }
+            memcpy( buf + offset, strings[idx].c_str(), ss );
+            offset += ss;
         }
     }
 
@@ -183,16 +201,8 @@ int main( int argc, char** argv )
     printf( "Saving...\n" );
     fflush( stdout );
 
-    std::vector<uint32_t> strOffsets;
-    strOffsets.reserve( outStrings.size() );
-
     FILE* strout = fopen( ( base + "strings" ).c_str(), "wb" );
-    uint32_t offset = 0;
-    for( auto& v : outStrings )
-    {
-        strOffsets.emplace_back( offset );
-        offset += fwrite( v.c_str(), 1, v.size()+1, strout );
-    }
+    fwrite( buf, 1, offset, strout );
     fclose( strout );
 
     printf( "Strings DB size: %iKB\n", offset / 1024 );
@@ -201,9 +211,9 @@ int main( int argc, char** argv )
     FILE* out = fopen( ( base + "strmeta" ).c_str(), "wb" );
     for( uint32_t i=0; i<size; i++ )
     {
-        uint32_t fo = strOffsets[outData[data[i].from].idx] + outData[data[i].from].offset;
-        uint32_t so = strOffsets[outData[data[i].subject].idx] + outData[data[i].subject].offset;
-        uint32_t ro = strOffsets[outData[data[i].realname].idx] + outData[data[i].realname].offset;
+        uint32_t fo = outStrings[outData[data[i].from].idx] + outData[data[i].from].offset;
+        uint32_t so = outStrings[outData[data[i].subject].idx] + outData[data[i].subject].offset;
+        uint32_t ro = outStrings[outData[data[i].realname].idx] + outData[data[i].realname].offset;
 
         fwrite( &fo, 1, sizeof( fo ), out );
         fwrite( &so, 1, sizeof( so ), out );
