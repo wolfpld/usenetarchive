@@ -130,9 +130,10 @@ void SetRootTo( uint32_t idx, uint32_t val )
 
 int main( int argc, char** argv )
 {
-    if( argc != 2 )
+    if( argc < 2 || ( argc % 2 ) == 1 )
     {
-        fprintf( stderr, "USAGE: %s raw\n", argv[0] );
+        fprintf( stderr, "USAGE: %s raw [-i ignore]*\n", argv[0] );
+        fprintf( stderr, "  -i: add string to re:-list filter\n" );
         exit( 1 );
     }
 
@@ -146,6 +147,21 @@ int main( int argc, char** argv )
         return 1;
     }
     auto size = archive->NumberOfMessages();
+
+    while( argc > 2 )
+    {
+        if( strcmp( argv[2], "-i" ) != 0 )
+        {
+            fprintf( stderr, "Bad params!\n" );
+            exit( 1 );
+        }
+        else
+        {
+            ReList.emplace_back( argv[3] );
+            argv += 2;
+            argc -= 2;
+        }
+    }
 
     printf( "Reading toplevel data...\n" );
     fflush( stdout );
