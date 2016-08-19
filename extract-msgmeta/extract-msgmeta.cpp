@@ -1,11 +1,13 @@
 #include <algorithm>
 #include <assert.h>
+#include <limits>
 #include <unordered_map>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <string.h>
+#include <vector>
 
 #include "../common/Filesystem.hpp"
 #include "../common/MessageView.hpp"
@@ -18,6 +20,12 @@ struct Offsets
     uint32_t from;
     uint32_t subject;
     uint32_t realname;
+};
+
+struct OptEntry
+{
+    uint32_t idx;
+    uint32_t offset;
 };
 
 int main( int argc, char** argv )
@@ -34,10 +42,9 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
+    std::vector<std::string> strings;
     Offsets* data = new Offsets[size];
 
-    FILE* strout = fopen( ( base + "strings" ).c_str(), "wb" );
-    uint32_t offset = 0;
     std::unordered_map<std::string, uint32_t> refs;
 
     for( uint32_t i=0; i<size; i++ )
@@ -91,38 +98,116 @@ int main( int argc, char** argv )
 
         if( refs.find( fstr ) == refs.end() )
         {
-            fwrite( fstr.c_str(), 1, fstr.size()+1, strout );
-            refs.emplace( fstr, offset );
-            offset += fstr.size()+1;
+            refs.emplace( fstr, strings.size() );
+            strings.emplace_back( fstr );
         }
         if( refs.find( sstr ) == refs.end() )
         {
-            fwrite( sstr.c_str(), 1, sstr.size()+1, strout );
-            refs.emplace( sstr, offset );
-            offset += sstr.size()+1;
+            refs.emplace( sstr, strings.size() );
+            strings.emplace_back( sstr );
         }
         if( refs.find( rstr ) == refs.end() )
         {
-            fwrite( rstr.c_str(), 1, rstr.size()+1, strout );
-            refs.emplace( rstr, offset );
-            offset += rstr.size()+1;
+            refs.emplace( rstr, strings.size() );
+            strings.emplace_back( rstr );
         }
 
         data[i].from = refs[fstr];
         data[i].subject = refs[sstr];
         data[i].realname = refs[rstr];
     }
+
+    printf( "\nOptimizing...\n" );
+    fflush( stdout );
+
+    std::vector<size_t> lengths;
+    lengths.reserve( strings.size() );
+    for( auto& v : strings )
+    {
+        lengths.emplace_back( v.size() );
+    }
+
+    std::vector<size_t> order;
+    order.reserve( strings.size() );
+    for( int i=0; i<strings.size(); i++ )
+    {
+        order.emplace_back( i );
+    }
+
+    std::sort( order.begin(), order.end(), [&lengths]( const auto& l, const auto& r ) { return lengths[l] > lengths[r]; } );
+
+    uint32_t limit = 0;
+    uint32_t prevLen = std::numeric_limits<uint32_t>::max();
+
+    std::vector<std::string> outStrings;
+    std::vector<OptEntry> outData( strings.size() );
+
+    outStrings.reserve( strings.size() );
+
+    unsigned int savings = 0;
+    for( int i=0; i<strings.size(); i++ )
+    {
+        if( ( i & 0x1FF ) == 0 )
+        {
+            printf( "%i/%i\r", i, strings.size() );
+            fflush( stdout );
+        }
+
+        auto idx = order[i];
+        if( lengths[idx] < prevLen )
+        {
+            limit = outStrings.size();
+            prevLen = lengths[idx];
+        }
+
+        bool done = false;
+        for( uint32_t j=0; j<limit; j++ )
+        {
+            uint32_t offset = outStrings[j].size() - lengths[idx];
+            if( strcmp( outStrings[j].c_str() + offset, strings[idx].c_str() ) == 0 )
+            {
+                savings += lengths[idx];
+                outData[idx] = OptEntry{ j, offset };
+                done = true;
+                break;
+            }
+        }
+        if( !done )
+        {
+            outData[idx] = OptEntry{ uint32_t( outStrings.size() ), 0 };
+            outStrings.emplace_back( strings[idx] );
+        }
+    }
+
+    printf( "\nOptimization savings: %iKB\n", savings / 1024 );
+    printf( "Saving...\n" );
+    fflush( stdout );
+
+    std::vector<uint32_t> strOffsets;
+    strOffsets.reserve( outStrings.size() );
+
+    FILE* strout = fopen( ( base + "strings" ).c_str(), "wb" );
+    uint32_t offset = 0;
+    for( auto& v : outStrings )
+    {
+        strOffsets.emplace_back( offset );
+        offset += fwrite( v.c_str(), 1, v.size()+1, strout );
+    }
     fclose( strout );
 
-    printf( "\nSaving...\n" );
+    printf( "Strings DB size: %iKB\n", offset / 1024 );
     fflush( stdout );
 
     FILE* out = fopen( ( base + "strmeta" ).c_str(), "wb" );
     for( uint32_t i=0; i<size; i++ )
     {
-        fwrite( &data[i].from, 1, sizeof( Offsets::from ), out );
-        fwrite( &data[i].subject, 1, sizeof( Offsets::subject ), out );
-        fwrite( &data[i].realname, 1, sizeof( Offsets::realname ), out );
+        uint32_t fo = strOffsets[outData[data[i].from].idx] + outData[data[i].from].offset;
+        uint32_t so = strOffsets[outData[data[i].subject].idx] + outData[data[i].subject].offset;
+        uint32_t ro = strOffsets[outData[data[i].realname].idx] + outData[data[i].realname].offset;
+
+        fwrite( &fo, 1, sizeof( fo ), out );
+        fwrite( &so, 1, sizeof( so ), out );
+        fwrite( &ro, 1, sizeof( ro ), out );
     }
     fclose( out );
 
