@@ -164,7 +164,7 @@ int main( int argc, char** argv )
         for( uint32_t j=0; j<limit; j++ )
         {
             uint32_t offset = outStrings[j].size() - lengths[idx];
-            if( strcmp( outStrings[j].c_str() + offset, strings[idx].c_str() ) == 0 )
+            if( memcmp( outStrings[j].c_str() + offset, strings[idx].c_str(), lengths[idx] ) == 0 )
             {
                 savings += lengths[idx];
                 outData[idx] = OptEntry{ j, offset };
