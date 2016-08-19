@@ -117,6 +117,18 @@ const char* KillRe( const char* str )
     }
 }
 
+uint32_t* root;
+Message* msgdata;
+
+void SetRootTo( uint32_t idx, uint32_t val )
+{
+    root[idx] = val;
+    for( auto& v : msgdata[idx].children )
+    {
+        SetRootTo( v, val );
+    }
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -156,7 +168,7 @@ int main( int argc, char** argv )
 
     printf( "\nReading connectivity data...\n" );
     fflush( stdout );
-    auto msgdata = new Message[size];
+    msgdata = new Message[size];
     {
         MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
         for( int i=0; i<size; i++ )
@@ -177,6 +189,21 @@ int main( int argc, char** argv )
                 msgdata[i].children.push_back( *ptr++ );
             }
         }
+    }
+
+    root = new uint32_t[size];
+    printf( "\nGrouping messages...\n" );
+    for( int i=0; i<size; i++ )
+    {
+        if( ( i & 0x3FF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        auto idx = i;
+        while( msgdata[idx].parent != -1 ) idx = msgdata[idx].parent;
+        root[i] = idx;
     }
 
     printf( "\nMatching messages...\n" );
@@ -287,7 +314,7 @@ int main( int argc, char** argv )
                 }
             }
             hits.clear();
-            if( i == best )
+            if( root[i] == root[best] )
             {
                 cntnew++;
             }
@@ -299,6 +326,7 @@ int main( int argc, char** argv )
                 {
                     cntsure++;
                     found.emplace_back( i, best );
+                    SetRootTo( i, best );
                 }
                 else
                 {
