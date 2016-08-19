@@ -223,6 +223,8 @@ int main( int argc, char** argv )
         offset += data[i].compressedSize;
     }
 
+    printf( "\n" );
+
     fclose( zmeta );
     fclose( zdata );
 
