@@ -209,7 +209,7 @@ int main( int argc, char** argv )
     printf( "\nMatching messages...\n" );
 
     std::vector<std::string> wordbuf;
-    int cntrefs = 0, cntnew = 0, cntsure = 0, cntgood = 0, cntbad = 0;
+    int cntnew = 0, cntsure = 0, cntgood = 0, cntbad = 0;
     std::vector<std::pair<uint32_t, uint32_t>> found;
     std::map<uint32_t, float> hits;
 
@@ -231,11 +231,6 @@ int main( int argc, char** argv )
             auto end = post;
             if( headers )
             {
-                if( strnicmpl( post, "references: ", 12 ) == 0 || strnicmpl( post, "in-reply-to: ", 13 ) == 0 )
-                {
-                    cntrefs++;
-                    break;
-                }
                 if( *end == '\n' )
                 {
                     headers = false;
@@ -398,7 +393,7 @@ int main( int argc, char** argv )
         fclose( cmeta );
     }
 
-    printf( "\nFound %i new threads, %i broken threads (bad references).\nSurely matched %i messages (same thread line), also %i good and %i guesses.\n", cntnew, cntrefs, cntsure, cntgood, cntbad );
+    printf( "\nFound %i new threads.\nSurely matched %i messages (same thread line), also %i good and %i guesses.\n", cntnew, cntsure, cntgood, cntbad );
 
     return 0;
 }
