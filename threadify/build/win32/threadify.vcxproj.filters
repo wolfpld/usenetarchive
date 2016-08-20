@@ -54,6 +54,9 @@
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
       <Filter>zstd\decompress</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\ICU.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -117,6 +120,9 @@
       <Filter>zstd\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\ZMessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\ICU.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

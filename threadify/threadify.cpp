@@ -14,38 +14,9 @@
 #  include <alloca.h>
 #endif
 
-#include <unicode/locid.h>
-#include <unicode/brkiter.h>
-#include <unicode/unistr.h>
-
 #include "../libuat/Archive.hpp"
+#include "../common/ICU.hpp"
 #include "../common/String.hpp"
-
-UErrorCode wordItErr = U_ZERO_ERROR;
-auto wordIt = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), wordItErr );
-
-void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out )
-{
-    out.clear();
-    auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
-    auto lower = us.toLower( icu::Locale::getEnglish() );
-
-    wordIt->setText( lower );
-    int32_t p0 = 0;
-    int32_t p1 = wordIt->first();
-    while( p1 != icu::BreakIterator::DONE )
-    {
-        auto part = lower.tempSubStringBetween( p0, p1 );
-        std::string str;
-        part.toUTF8String( str );
-        if( str.size() > 2 && str.size() < 14 )
-        {
-            out.emplace_back( std::move( str ) );
-        }
-        p0 = p1;
-        p1 = wordIt->next();
-    }
-}
 
 struct Message
 {
