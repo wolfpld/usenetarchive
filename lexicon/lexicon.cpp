@@ -66,10 +66,11 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
     while( p1 != icu::BreakIterator::DONE )
     {
         auto part = lower.tempSubStringBetween( p0, p1 );
-        std::string str;
-        part.toUTF8String( str );
-        if( str.size() > 2 && str.size() < 14 )
+        auto len = part.length();
+        if( len > 2 && len < 14 )
         {
+            std::string str;
+            part.toUTF8String( str );
             out.emplace_back( std::move( str ) );
         }
         p0 = p1;
