@@ -10,6 +10,13 @@
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
 
+struct Stats
+{
+    uint32_t cnt;
+    uint32_t lexdata;
+    uint32_t lexhit;
+};
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -25,7 +32,7 @@ int main( int argc, char** argv )
     FileMap<uint32_t> ldata( base + "lexdata" );
     FileMap<uint8_t> hits( base + "lexhit" );
 
-    std::vector<std::pair<const char*, uint32_t>> data;
+    std::vector<std::pair<const char*, Stats>> data;
 
     const auto size = meta.DataSize();
     uint64_t sizes[6] = {};
@@ -41,22 +48,26 @@ int main( int argc, char** argv )
         auto mp = meta + i;
         auto s = str + mp->str;
         uint32_t cnt = 0;
+        uint32_t ld = 0;
+        uint32_t lh = 0;
 
         auto dptr = ldata + ( mp->data / sizeof( uint32_t ) );
+        ld += mp->dataSize;
         for( uint32_t j=0; j<mp->dataSize; j++ )
         {
             dptr++;
             auto hptr = hits + ( *dptr++ / sizeof( uint8_t ) );
             auto hnum = *hptr++;
+            lh += hnum + 1;
+            cnt += hnum;
+            totalSize += hnum;
             for( uint8_t k=0; k<hnum; k++ )
             {
-                cnt++;
-                totalSize++;
                 sizes[LexiconDecodeType(*hptr++)]++;
             }
         }
 
-        data.emplace_back( s, cnt );
+        data.emplace_back( s, Stats { cnt, ld, lh } );
     }
 
     printf( "Total words: %" PRIu64 "\n", totalSize );
@@ -65,12 +76,18 @@ int main( int argc, char** argv )
         printf( "Lexicon category %s: %" PRIu64 " hits (%.1f%%)\n", LexiconNames[i], sizes[i], sizes[i] * 100.f / totalSize );
     }
 
-    std::sort( data.begin(), data.end(), [] ( const auto& lhs, const auto& rhs ) { return lhs.second > rhs.second; } );
+    std::sort( data.begin(), data.end(), [] ( const auto& lhs, const auto& rhs ) { return lhs.second.cnt > rhs.second.cnt; } );
 
+    uint32_t dt = 0;
+    uint32_t ht = 0;
     for( auto& v : data )
     {
-        fprintf( stderr, "%i\t%s\n", v.second, v.first );
+        dt += v.second.lexdata * sizeof( uint32_t ) * 2;
+        ht += v.second.lexhit;
+        fprintf( stderr, "%i\t%s\t(%i B data, %i B hits)\n", v.second.cnt, v.first, v.second.lexdata * sizeof( uint32_t ) * 2, v.second.lexhit );
     }
+
+    printf( "Total %iKB data, %iKB hits\n", dt / 1024, ht / 1024 );
 
     return 0;
 }
