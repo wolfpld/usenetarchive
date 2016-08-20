@@ -46,7 +46,7 @@ int main( int argc, char** argv )
         for( uint32_t j=0; j<mp->dataSize; j++ )
         {
             dptr++;
-            auto hptr = hits + ( *dptr++ / sizeof( uint16_t ) );
+            auto hptr = hits + ( *dptr++ / sizeof( uint8_t ) );
             auto hnum = *hptr++;
             for( uint8_t k=0; k<hnum; k++ )
             {
