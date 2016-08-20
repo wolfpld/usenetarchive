@@ -71,7 +71,25 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
         {
             std::string str;
             part.toUTF8String( str );
-            out.emplace_back( std::move( str ) );
+
+            auto start = str.c_str();
+            auto end = start + str.size();
+
+            while( *start == '_' )
+            {
+                start++;
+                len--;
+            }
+            while( end > start && *(end-1) == '_' )
+            {
+                end--;
+                len--;
+            }
+
+            if( len > 2 )
+            {
+                out.emplace_back( std::string( start, end-start ) );
+            }
         }
         p0 = p1;
         p1 = wordIt->next();
