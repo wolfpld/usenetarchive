@@ -17,6 +17,7 @@
 #include "../common/ICU.hpp"
 #include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
@@ -145,14 +146,7 @@ int main( int argc, char** argv )
                 }
                 else
                 {
-                    while( *line == ' ' || *line == '>' || *line == ':' || *line == '|' || *line == '\t' )
-                    {
-                        if( *line == '>' || *line == ':' || *line == '|' )
-                        {
-                            quotLevel++;
-                        }
-                        line++;
-                    }
+                    quotLevel = QuotationLevel( line, end );
                 }
                 if( line != end )
                 {

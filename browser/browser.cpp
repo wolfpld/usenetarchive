@@ -16,6 +16,7 @@
 #endif
 
 #include "../libuat/Archive.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../common/String.hpp"
 
 #include "about.h"
@@ -346,20 +347,8 @@ void Browser::SetText( const char* txt )
             }
             else
             {
-                int level = 0;
                 auto test = txt;
-                while( test != end )
-                {
-                    if( *test == '>' || *test == ':' || *test == '|' )
-                    {
-                        level++;
-                    }
-                    else if( *test != ' ' )
-                    {
-                        break;
-                    }
-                    test++;
-                }
+                int level = QuotationLevel( test, end );
                 switch( level )
                 {
                 case 0:

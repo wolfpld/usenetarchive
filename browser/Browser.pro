@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     ../common/LexiconTypes.cpp \
     about.cpp \
     groupcharter.cpp \
-    ../libuat/PackageAccess.cpp
+    ../libuat/PackageAccess.cpp \
+    ../common/MessageLogic.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -53,7 +54,8 @@ HEADERS  += browser.h \
     ../common/LexiconTypes.hpp \
     about.h \
     groupcharter.h \
-    ../libuat/PackageAccess.hpp
+    ../libuat/PackageAccess.hpp \
+    ../common/MessageLogic.hpp
 
 FORMS    += browser.ui \
     about.ui \

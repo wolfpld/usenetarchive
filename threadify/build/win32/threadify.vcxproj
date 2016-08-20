@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\common\ICU.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
+    <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
@@ -37,6 +38,7 @@
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\ICU.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
+    <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />

@@ -16,6 +16,7 @@
 
 #include "../libuat/Archive.hpp"
 #include "../common/ICU.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../common/String.hpp"
 
 struct Message
@@ -229,16 +230,8 @@ int main( int argc, char** argv )
             else
             {
                 const char* line = end;
-                int quotLevel = 0;
                 while( *end != '\n' && *end != '\0' ) end++;
-                while( *line == ' ' || *line == '>' || *line == ':' || *line == '|' || *line == '\t' )
-                {
-                    if( *line == '>' || *line == ':' || *line == '|' )
-                    {
-                        quotLevel++;
-                    }
-                    line++;
-                }
+                int quotLevel = QuotationLevel( line, end );
                 if( line != end && quotLevel == 1 )
                 {
                     bool ok = true;
