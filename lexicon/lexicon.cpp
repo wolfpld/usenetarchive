@@ -26,6 +26,20 @@ const char* AllowedHeaders[] = {
     nullptr
 };
 
+const char* IgnoredWords[] = {
+    "nie",
+    "sie",
+    u8"si\u0119",
+    "jest",
+    "jak",
+    "ale",
+    "czy",
+    "tak",
+    "http",
+    "tylko",
+    nullptr
+};
+
 bool IsHeaderAllowed( const char* hdr, const char* end )
 {
     int size = end - hdr;
@@ -46,6 +60,33 @@ bool IsHeaderAllowed( const char* hdr, const char* end )
         test++;
     }
     return false;
+}
+
+void EraseWords( std::vector<std::string>& wordbuf )
+{
+    auto it = wordbuf.begin();
+    while( it != wordbuf.end() )
+    {
+        bool skip = false;
+        auto ptr = IgnoredWords;
+        while( *ptr )
+        {
+            if( strcmp( *ptr, it->c_str() ) == 0 )
+            {
+                skip = true;
+                break;
+            }
+            ptr++;
+        }
+        if( skip )
+        {
+            it = wordbuf.erase( it );
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
 using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint8_t>>>;
@@ -126,7 +167,11 @@ int main( int argc, char** argv )
                     const char* line = end;
                     while( *end != '\n' ) end++;
                     SplitLine( line, end, wordbuf );
-                    Add( data, wordbuf, i, T_Header, 0, children );
+                    EraseWords( wordbuf );
+                    if( !wordbuf.empty() )
+                    {
+                        Add( data, wordbuf, i, T_Header, 0, children );
+                    }
                 }
                 else
                 {
@@ -180,8 +225,12 @@ int main( int argc, char** argv )
                             break;
                         }
                     }
-                    Add( data, wordbuf, i, t, basePos[t], children );
-                    basePos[t] += wordbuf.size();
+                    EraseWords( wordbuf );
+                    if( !wordbuf.empty() )
+                    {
+                        Add( data, wordbuf, i, t, basePos[t], children );
+                        basePos[t] += wordbuf.size();
+                    }
                 }
                 if( *end == '\0' ) break;
                 post = end + 1;
