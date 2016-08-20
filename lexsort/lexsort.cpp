@@ -62,10 +62,15 @@ int main( int argc, char** argv )
         for( int i=0; i<dsize; i++ )
         {
             uint8_t hnum = dptr[i].offset >> LexiconHitShift;
-            auto hptr = hits + ( dptr[i].offset & LexiconHitOffsetMask );
+            uint8_t* hptr;
             if( hnum == 0 )
             {
+                hptr = hits + ( dptr[i].offset & LexiconHitOffsetMask );
                 hnum = *hptr++;
+            }
+            else
+            {
+                hptr = (uint8_t*)&dptr[i].offset;
             }
             if( hnum > 1 )
             {

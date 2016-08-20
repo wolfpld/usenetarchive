@@ -229,16 +229,22 @@ int main( int argc, char** argv )
 
             if( num < 4 )
             {
-                uint32_t v = ohit | ( num << LexiconHitShift );
+                uint32_t numshift = num << LexiconHitShift;
+                uint32_t v = 0;
+                for( int i=0; i<num; i++ )
+                {
+                    v <<= 8;
+                    v |= d.second[i];
+                }
+                v |= numshift;
                 fwrite( &v, 1, sizeof( uint32_t ), fdata );
             }
             else
             {
                 fwrite( &ohit, 1, sizeof( uint32_t ), fdata );
                 ohit += fwrite( &num, 1, sizeof( uint8_t ), fhit );
+                ohit += fwrite( d.second.data(), 1, sizeof( uint8_t ) * num, fhit );
             }
-
-            ohit += fwrite( d.second.data(), 1, sizeof( uint8_t ) * num, fhit );
         }
         odata += sizeof( uint32_t ) * dsize * 2;
     }
