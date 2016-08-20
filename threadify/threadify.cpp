@@ -307,7 +307,7 @@ int main( int argc, char** argv )
                 {
                     cntsure++;
                     found.emplace_back( i, best );
-                    SetRootTo( i, best );
+                    SetRootTo( i, root[best] );
                 }
                 else
                 {
