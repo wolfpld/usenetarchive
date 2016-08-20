@@ -271,13 +271,22 @@ int main( int argc, char** argv )
 
         for( auto& d : v.second )
         {
-            fwrite( &d.first, 1, sizeof( uint32_t ), fdata );
-            fwrite( &ohit, 1, sizeof( uint32_t ), fdata );
-
             uint8_t num = std::min<uint8_t>( std::numeric_limits<uint8_t>::max(), d.second.size() );
-            fwrite( &num, 1, sizeof( uint8_t ), fhit );
-            fwrite( d.second.data(), 1, sizeof( uint8_t ) * num, fhit );
-            ohit += sizeof( uint8_t ) * (num+1);
+
+            fwrite( &d.first, 1, sizeof( uint32_t ), fdata );
+
+            if( num < 4 )
+            {
+                uint32_t v = ohit | ( num << LexiconHitShift );
+                fwrite( &v, 1, sizeof( uint32_t ), fdata );
+            }
+            else
+            {
+                fwrite( &ohit, 1, sizeof( uint32_t ), fdata );
+                ohit += fwrite( &num, 1, sizeof( uint8_t ), fhit );
+            }
+
+            ohit += fwrite( d.second.data(), 1, sizeof( uint8_t ) * num, fhit );
         }
         odata += sizeof( uint32_t ) * dsize * 2;
     }

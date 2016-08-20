@@ -56,9 +56,15 @@ int main( int argc, char** argv )
         for( uint32_t j=0; j<mp->dataSize; j++ )
         {
             dptr++;
-            auto hptr = hits + ( *dptr++ / sizeof( uint8_t ) );
-            auto hnum = *hptr++;
-            lh += hnum + 1;
+            auto offset = *dptr++;
+            auto hptr = hits + ( offset & LexiconHitOffsetMask );
+            uint8_t hnum = offset >> LexiconHitShift;
+            if( hnum == 0 )
+            {
+                hnum = *hptr++;
+                lh++;
+            }
+            lh += hnum;
             cnt += hnum;
             totalSize += hnum;
             for( uint8_t k=0; k<hnum; k++ )

@@ -61,8 +61,12 @@ int main( int argc, char** argv )
 
         for( int i=0; i<dsize; i++ )
         {
-            auto hptr = hits + dptr[i].offset;
-            auto hnum = *hptr++;
+            uint8_t hnum = dptr[i].offset >> LexiconHitShift;
+            auto hptr = hits + ( dptr[i].offset & LexiconHitOffsetMask );
+            if( hnum == 0 )
+            {
+                hnum = *hptr++;
+            }
             if( hnum > 1 )
             {
                 std::sort( hptr, hptr + hnum, [] ( const auto& l, const auto& r ) { return LexiconHitRank( l ) > LexiconHitRank( r ); } );

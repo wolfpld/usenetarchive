@@ -247,8 +247,12 @@ std::vector<SearchResult> Archive::Search( const std::vector<std::string>& terms
         for( uint32_t i=0; i<meta.dataSize; i++ )
         {
             uint8_t children = data->postid >> LexiconChildShift;
-            auto hits = m_lexhit + data->hitoffset;
-            auto hitnum = *hits++;
+            uint8_t hitnum = data->hitoffset >> LexiconHitShift;
+            auto hits = m_lexhit + ( data->hitoffset & LexiconHitOffsetMask );
+            if( hitnum == 0 )
+            {
+                hitnum = *hits++;
+            }
             if( filter != T_All )
             {
                 for( int j=0; j<hitnum; j++ )

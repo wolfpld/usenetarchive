@@ -22,6 +22,9 @@ enum { LexiconPostMask = 0x07FFFFFF };
 enum { LexiconChildMask = 0xF8000000 };
 enum { LexiconChildShift = 27 };
 enum { LexiconChildMax = 0x1F };
+enum { LexiconHitShift = 30 };
+enum { LexiconHitMask = 0xC0000000 };
+enum { LexiconHitOffsetMask = 0x3FFFFFFF };
 
 extern const uint8_t LexiconHitTypeEncoding[];
 extern const uint8_t LexiconHitPosMask[];
