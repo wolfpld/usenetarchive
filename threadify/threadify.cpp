@@ -267,7 +267,8 @@ int main( int argc, char** argv )
                             {
                                 for( auto r : res )
                                 {
-                                    hits[r.postid] += r.rank * wordbuf.size() * wordbuf.size();
+                                    auto matched = r.matched.size();
+                                    hits[r.postid] += r.rank * matched * matched;
                                 }
                             }
                             wordbuf.clear();
