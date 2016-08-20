@@ -76,7 +76,7 @@ These tools provide access to archive data:
 
 ![](doc/browser2.png)
 
-### Workflow
+## Workflow
 
 Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completly new database indexing schema, which invalidates rest of databases.
 
@@ -109,17 +109,17 @@ Additional, optional information files, not created by any of the above utilitie
 - desc\_short --- A short description about the purpose of the group ([per 7.6.6 in RFC 3977](https://tools.ietf.org/html/rfc3977#section-7.6.6)).
 - desc\_long --- Group charter. (*Some newsgroups regularly post a description to the group that describes its intention. These descriptions are posted by the people involved with the newsgroup creation and/or administration. If the group has such a description, it almost always includes the word "charter", so you can quickly find it by searching the newsgroup for that word. A charter is the "set of rules and guidelines" which supposedly govern the users of that group.*)
 
-### Typical Workflow
+## Typical Workflow
 
 ![](doc/pipeline.svg)
 
-### Notes
+## Notes
 
 Be advised that some utilities (repack-zstd, lexicon) do require enormous amounts of memory. Processing large groups (eg. 2 million messages, 3 GB data) will swap heavily on a 16 GB machine.
 
 UAT only works on 64 bit machines.
 
-### License
+## License
 
     Usenet Archive
     Copyright (C) 2016  Bartosz Taudul <wolf.pld@gmail.com>
