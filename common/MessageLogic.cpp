@@ -18,7 +18,17 @@ int QuotationLevel( const char*& ptr, const char* end )
             ptr++;
             break;
         default:
-            return level;
+            if( ( *ptr >= 'A' && *ptr <= 'Z' ) || ( *ptr >= 'a' && *ptr <= 'z' ) )
+            {
+                auto p = ptr + 1;
+                while( p != end && ( ( *p >= 'A' && *p <= 'Z' ) || ( *p >= 'a' && *p <= 'z' ) ) ) p++;
+                if( p == end || *p != '>' ) return level;
+                ptr = p;
+            }
+            else
+            {
+                return level;
+            }
         }
     }
     return level;
