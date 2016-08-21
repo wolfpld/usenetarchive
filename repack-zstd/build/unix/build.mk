@@ -1,5 +1,5 @@
 CFLAGS += -DZDICT_STATIC_LINKING_ONLY
-CXXFLAGS := $(CFLAGS) -std=c++11
+CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES := -I../../../contrib/zstd/common
 LIBS := -lpthread

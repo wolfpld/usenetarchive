@@ -1,5 +1,5 @@
 CFLAGS += 
-CXXFLAGS := $(CFLAGS) -std=c++11
+CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES :=
 LIBS :=

@@ -1,5 +1,5 @@
 CFLAGS += $(shell pkg-config --cflags gmime-2.6)
-CXXFLAGS := $(CFLAGS) -std=gnu++11
+CXXFLAGS := $(CFLAGS) -std=gnu++14
 DEFINES +=
 INCLUDES :=
 LIBS := $(shell pkg-config --libs gmime-2.6)
