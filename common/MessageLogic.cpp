@@ -8,11 +8,16 @@ int QuotationLevel( const char*& ptr, const char* end )
     {
         switch( *ptr )
         {
-        case '>':
         case ':':
+            if( ptr+1 != end && *(ptr+1) == ')' )
+            {
+                return level;
+            }
+            // fallthrough
+        case '>':
         case '|':
             level++;
-            //fallthrough:
+            // fallthrough
         case ' ':
         case '\t':
             ptr++;
