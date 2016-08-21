@@ -38,9 +38,13 @@ digraph
     msgmeta -> connectivity;
     connectivity -> repack;
     repack -> lexicon;
-    lexicon -> lexhash;
+    lexicon -> lexopt;
+    lexopt -> lexhash;
     lexhash -> lexsort;
-    lexsort -> dst1;
+    lexsort -> package;
+    package -> dst1;
     dst1 -> query;
     dst1 -> browser;
+    lexsort -> threadify;
+    threadify -> lexicon;
 }
