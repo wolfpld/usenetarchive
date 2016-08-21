@@ -185,7 +185,7 @@ void Browser::FillTree()
     ui->tabWidget->setCurrentIndex( 0 );
 }
 
-int Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
+static int Encode( TextBuf& buf, const char* txt, const char* end, bool special = true );
 
 static int EncodeSpecial( TextBuf& buf, const char*& txt, const char* end, char trigger, char tag )
 {
