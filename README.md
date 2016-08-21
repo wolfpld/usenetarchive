@@ -51,6 +51,7 @@ Raw data right after import is highly unfit for direct use. Messages are duplica
 Search in archive is performed with the help of a word lexicon. The following tools are used for its preparation:
 
 - lexicon --- Build a list of words and hit-tables for each word.
+- lexopt --- Optimize lexicon string database.
 - lexstats --- Display lexicon statistics.
 - lexdist --- Calculate distances between words (unused).
 - lexhash --- Prepare lexicon hash table.
