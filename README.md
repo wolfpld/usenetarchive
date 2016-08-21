@@ -104,6 +104,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4* → **repack-zstd** → adds: *zstd*  
 *zstd* → **repack-lz4** → adds: *LZ4*  
 *LZ4*, *conn* → **lexicon** → adds: *lex*  
+*lex* → **lexopt** → modifies: *lex*
 *lex* → **lexhash** → adds: *lexhash*  
 *lex* → **lexsort** → modifies: *lex*  
 *lex* → **lexdist** → adds: *lexdist* (unused)  
