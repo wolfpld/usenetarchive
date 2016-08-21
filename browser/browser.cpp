@@ -311,7 +311,7 @@ void Browser::SetText( const char* txt )
                 {
                     m_buf.Write( "<font color=\"#f6a200\">", 22 );
                 }
-                else if( strnicmpl( txt, m_rot13 ? "arjftebhcf: " : "newsgroups: ", 12 ) == 0 )
+                else if( strnicmpl( txt, m_rot13 ? "arjftebhcf: " : "newsgroups: ", 12 ) == 0 || strnicmpl( txt, m_rot13 ? "gb: " : "to: ", 4 ) == 0 )
                 {
                     m_buf.Write( "<font color=\"#0068f6\">", 22 );
                 }
