@@ -41,7 +41,9 @@
 #define CLIBRARY_H 1
 
 /* Make sure we have our configuration information. */
-#include "config.h"
+#ifdef _MSC_VER
+#  include "config.h"
+#endif
 
 /* BEGIN_DECL and __attribute__. */
 #include "inn/macros.h"

@@ -6,7 +6,9 @@
 **  generating Date headers for posted articles.
 */
 
-#include "config.h"
+#ifdef _MSC_VER
+#  include "config.h"
+#endif
 #include "clibrary.h"
 #include <ctype.h>
 #include <time.h>
