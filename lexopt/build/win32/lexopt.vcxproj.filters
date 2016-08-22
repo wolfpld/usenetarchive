@@ -7,6 +7,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{d991e927-d255-4fae-8641-a731116a9b60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xxhash">
+      <UniqueIdentifier>{396f744d-eb91-470f-8dbc-ac6b1b145cf3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lexopt.cpp">
@@ -14,6 +17,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\common\mmap.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
+      <Filter>xxhash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +43,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\CharUtil.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
+      <Filter>xxhash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

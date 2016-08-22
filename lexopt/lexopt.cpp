@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include <string>
 #include <string.h>
+#include <unordered_set>
 #include <vector>
 
+#include "../common/CharUtil.hpp"
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
 
@@ -51,48 +53,45 @@ int main( int argc, char** argv )
 
     std::sort( order, order + metasize, [&strlength]( const auto& l, const auto& r ) { return strlength[l] > strlength[r]; } );
 
-    uint32_t limit = 0;
-    uint32_t prevLen = std::numeric_limits<uint32_t>::max();
-
     char* buf = new char[strsize];
-    std::vector<uint32_t> outStrings;
+    std::unordered_set<const char*, CharUtil::Hasher, CharUtil::Comparator> avail;
 
     unsigned int savings = 0;
     uint32_t offset = 0;
     for( int i=0; i<metasize; i++ )
     {
-        if( ( i & 0x1FF ) == 0 )
+        if( ( i & 0x1FFF ) == 0 )
         {
             printf( "%i/%i\r", i, metasize );
             fflush( stdout );
         }
 
         auto idx = order[i];
-        if( strlength[idx] < prevLen )
-        {
-            limit = outStrings.size();
-            prevLen = strlength[idx];
-        }
-
-        bool done = false;
         auto strptr = strbuf + metabuf[idx].str;
-        for( int j=0; j<limit; j++ )
-        {
-            uint32_t offset = outStrings[j] - strlength[idx];
-            if( memcmp( buf + offset, strptr, strlength[idx] ) == 0 )
-            {
-                savings += strlength[idx];
-                metabuf[idx].str = offset;
-                done = true;
-                break;
-            }
-        }
-        if( !done )
+        auto it = avail.find( strptr );
+        if( it == avail.end() )
         {
             memcpy( buf + offset, strptr, strlength[idx] + 1 );
             metabuf[idx].str = offset;
-            outStrings.emplace_back( offset + strlength[idx] );
+            // don't include full word
+            for( int j=1; j<strlength[idx]; j++ )
+            {
+                if( avail.find( buf + offset + j ) == avail.end() )
+                {
+                    avail.emplace( buf + offset + j );
+                }
+                else
+                {
+                    // rest of words are already present
+                    break;
+                }
+            }
             offset += strlength[idx] + 1;
+        }
+        else
+        {
+            savings += strlength[idx];
+            metabuf[idx].str = *it - buf;
         }
     }
 
