@@ -7,8 +7,10 @@
 #include <stdlib.h>
 #include <string>
 #include <string.h>
+#include <unordered_set>
 #include <vector>
 
+#include "../common/CharUtil.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
@@ -20,12 +22,6 @@ struct Offsets
     uint32_t from;
     uint32_t subject;
     uint32_t realname;
-};
-
-struct OptEntry
-{
-    uint32_t idx;
-    uint32_t offset;
 };
 
 int main( int argc, char** argv )
@@ -136,64 +132,48 @@ int main( int argc, char** argv )
 
     std::sort( order.begin(), order.end(), [&lengths]( const auto& l, const auto& r ) { return lengths[l] > lengths[r]; } );
 
-    uint32_t limit = 0;
-    uint32_t prevLen = std::numeric_limits<uint32_t>::max();
-
-    int bufSize = 1024*1024*16;
+    const int bufSize = 1024*1024*64;
     char* buf = new char[bufSize];
 
-    std::vector<uint32_t> outStrings;
-    std::vector<uint32_t> outSizes;
-    std::vector<OptEntry> outData( strings.size() );
-
-    outStrings.reserve( strings.size() );
-    outSizes.reserve( strings.size() );
+    std::unordered_set<const char*, CharUtil::Hasher, CharUtil::Comparator> avail;
+    std::vector<uint32_t> outOffset( strings.size() );
 
     unsigned int savings = 0;
     uint32_t offset = 0;
     for( int i=0; i<strings.size(); i++ )
     {
-        if( ( i & 0x1FF ) == 0 )
+        if( ( i & 0x1FFF ) == 0 )
         {
             printf( "%i/%i\r", i, strings.size() );
             fflush( stdout );
         }
 
         auto idx = order[i];
-        if( lengths[idx] < prevLen )
+        auto strptr = strings[idx].c_str();
+        auto it = avail.find( strptr );
+        if( it == avail.end() )
         {
-            limit = outStrings.size();
-            prevLen = lengths[idx];
-        }
-
-        bool done = false;
-        for( uint32_t j=0; j<limit; j++ )
-        {
-            uint32_t localOffset = outSizes[j] - lengths[idx];
-            if( memcmp( buf + outStrings[j] + localOffset, strings[idx].c_str(), lengths[idx] ) == 0 )
-            {
-                savings += lengths[idx];
-                outData[idx] = OptEntry{ j, localOffset };
-                done = true;
-                break;
-            }
-        }
-        if( !done )
-        {
-            outData[idx] = OptEntry{ uint32_t( outStrings.size() ), 0 };
-            outStrings.emplace_back( offset );
+            outOffset[idx] = offset;
             auto ss = strings[idx].size() + 1;
-            outSizes.emplace_back( ss - 1 );
-            if( offset + ss > bufSize )
+            assert( offset + ss <= bufSize );
+            memcpy( buf + offset, strptr, ss );
+            for( int j=1; j<ss-1; j++ )
             {
-                bufSize *= 2;
-                char* newBuf = new char[bufSize];
-                memcpy( newBuf, buf, offset );
-                delete[] buf;
-                buf = newBuf;
+                if( avail.find( buf + offset + j ) == avail.end() )
+                {
+                    avail.emplace( buf + offset + j );
+                }
+                else
+                {
+                    break;
+                }
             }
-            memcpy( buf + offset, strings[idx].c_str(), ss );
             offset += ss;
+        }
+        else
+        {
+            savings += lengths[idx];
+            outOffset[idx] = *it - buf;
         }
     }
 
@@ -211,9 +191,9 @@ int main( int argc, char** argv )
     FILE* out = fopen( ( base + "strmeta" ).c_str(), "wb" );
     for( uint32_t i=0; i<size; i++ )
     {
-        uint32_t fo = outStrings[outData[data[i].from].idx] + outData[data[i].from].offset;
-        uint32_t so = outStrings[outData[data[i].subject].idx] + outData[data[i].subject].offset;
-        uint32_t ro = outStrings[outData[data[i].realname].idx] + outData[data[i].realname].offset;
+        uint32_t fo = outOffset[data[i].from];
+        uint32_t so = outOffset[data[i].subject];
+        uint32_t ro = outOffset[data[i].realname];
 
         fwrite( &fo, 1, sizeof( fo ), out );
         fwrite( &so, 1, sizeof( so ), out );
