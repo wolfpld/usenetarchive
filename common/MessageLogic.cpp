@@ -9,7 +9,7 @@ int QuotationLevel( const char*& ptr, const char* end )
         switch( *ptr )
         {
         case ':':
-            if( ptr+1 != end && *(ptr+1) == ')' )
+            if( ( ptr+1 != end && *(ptr+1) == ')' ) || ( ptr+2 != end && *(ptr+1) == '-' && *(ptr+2) == ')' ) )
             {
                 return level;
             }
