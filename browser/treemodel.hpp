@@ -54,6 +54,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <stdint.h>
 #include <vector>
 
 class TreeItem;
