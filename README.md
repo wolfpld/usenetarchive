@@ -86,6 +86,7 @@ These tools provide access to archive data:
     * Query message by database record number.
 - libuat --- Archive access library. Operates on zstd database.
 - query --- Testbed for libuat. Exposes all provided functionality.
+- export-messages --- Unpacks messages contained in a LZ4 archive into separate files.
 
 ### End-user Utilities
 
@@ -111,6 +112,7 @@ Usenet Archive Toolkit operates on a couple of distinct databases. Each utility 
 slrnpull directory → **import-source-slrnpull** → produces: *LZ4*  
 slrnpull compressed → **import-source-slrnpull-7z** → produces: *LZ4*  
 mbox file → **import-source-mbox** → produces: *LZ4*  
+*LZ4*, *msgid* → **export-messages** → produces: separate message files  
 *LZ4* → **kill-duplicates** → produces: *LZ4*  
 *LZ4* → **extract-msgid** → adds: *msgid*  
 *LZ4*, *msgid* → **connectivity** → adds: *conn*  
