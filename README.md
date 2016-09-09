@@ -48,6 +48,7 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - extract-msgid --- Extracts unique identifier of each message and builds reference table for fast access to any message through its ID.
 - extract-msgmeta --- Extracts "From" and "Subject" fields, as a quick reference for archive browsers.
 - merge-raw --- Merges two imported data sets into one. Does not duplicate messages.
+- relative-complement --- Extracts messages from the first set, which are not present in the second set.
 - utf8ize --- Converts messages to a common character encoding, UTF-8.
 - connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
 - threadify --- Some messages do not have connectivity data embedded in headers. Eg. it's a common artifact of using news-email gateways. This tool parses top-level messages, looking for quotations, then it searches other messages for these quotes and creates (not restores! it was never there!) missing connectivity between children and parents.
@@ -117,6 +118,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4*, *msgid*, *conn*, *str* → **filter-spam** → produces: *LZ4*  
 *LZ4* → **extract-msgmeta** → adds: *str*  
 (*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  
+(*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **relative-complement** → produces: *LZ4*  
 *LZ4* → **utf8ize** → produces: *LZ4*  
 *LZ4* → **repack-zstd** → adds: *zstd*  
 *zstd* → **repack-lz4** → adds: *LZ4*  
