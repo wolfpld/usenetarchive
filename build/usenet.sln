@@ -49,6 +49,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "threadify", "..\threadify\b
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexopt", "..\lexopt\build\win32\lexopt.vcxproj", "{FE89C79A-F37D-40AE-802F-C591B40CC8BE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "relative-complement", "..\relative-complement\build\win32\relative-complement.vcxproj", "{142C844D-7A76-415E-AA45-6A2CE0B77A50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -147,6 +149,10 @@ Global
 		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Debug|x64.Build.0 = Debug|x64
 		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Release|x64.ActiveCfg = Release|x64
 		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Release|x64.Build.0 = Release|x64
+		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Debug|x64.ActiveCfg = Debug|x64
+		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Debug|x64.Build.0 = Debug|x64
+		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Release|x64.ActiveCfg = Release|x64
+		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
