@@ -61,7 +61,7 @@ public:
     ~TreeItem();
 
     void appendChild(TreeItem *child);
-    void setData(QVector<QVariant>&& data);
+    void setData(QVector<QVariant>&& data, uint8_t color);
 
     TreeItem *child(int row);
     int childCount() const;
@@ -70,12 +70,14 @@ public:
     int row() const;
     TreeItem *parentItem();
     uint32_t GetIdx() const { return m_idx; }
+    uint8_t GetColor() const { return m_color; }
 
 private:
     QVector<TreeItem*> m_childItems;
     QVector<QVariant> m_itemData;
     TreeItem *m_parentItem;
     uint32_t m_idx;
+    uint8_t m_color;
 };
 
 #endif // TREEITEM_H

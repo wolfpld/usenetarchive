@@ -61,6 +61,7 @@
 TreeItem::TreeItem(TreeItem *parent, uint32_t idx)
     : m_parentItem( parent )
     , m_idx( idx )
+    , m_color( 0 )
 {
 }
 
@@ -74,9 +75,10 @@ void TreeItem::appendChild(TreeItem *item)
     m_childItems.append(item);
 }
 
-void TreeItem::setData(QVector<QVariant>&& data)
+void TreeItem::setData(QVector<QVariant>&& data, uint8_t color)
 {
     std::swap( m_itemData, data );
+    m_color = color;
 }
 
 TreeItem *TreeItem::child(int row)

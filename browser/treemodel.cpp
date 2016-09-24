@@ -55,9 +55,12 @@
     models.
 */
 
+#include <QColor>
 #include <QStringList>
 #include <time.h>
+#include <map>
 
+#include "../contrib/xxhash/xxhash.h"
 #include "../libuat/Archive.hpp"
 #include "treeitem.hpp"
 #include "treemodel.hpp"
@@ -69,7 +72,7 @@ TreeModel::TreeModel(const Archive &data, QObject *parent)
     QVector<QVariant> rootData;
     rootData << "Subject" << "Posts" << "Author" << "Date";
     rootItem = new TreeItem();
-    rootItem->setData( std::move( rootData ) );
+    rootItem->setData( std::move( rootData ), 0 );
     setupModelData(data, rootItem);
 }
 
@@ -91,12 +94,26 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
-        return QVariant();
-
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    return item->data(index.column());
+    switch( role )
+    {
+    case Qt::DisplayRole:
+        return item->data(index.column());
+    case Qt::ForegroundRole:
+        if( index.column() == 2 )
+        {
+            QColor c;
+            c.setHsv( item->GetColor(), 160, 180 );
+            return QVariant( c );
+        }
+        else
+        {
+            return QVariant();
+        }
+    default:
+        return QVariant();
+    }
 }
 
 uint32_t TreeModel::GetIdx(const QModelIndex& index) const
@@ -187,6 +204,7 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
 {
     auto top = data.GetTopLevel();
+    std::map<const char*, uint8_t> nameColor;
     std::vector<int32_t> items;
     std::vector<TreeItem*> parents = { parent };
     items.reserve( top.size * 2 );
@@ -208,6 +226,20 @@ void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
             auto item = new TreeItem( parent, idx );
             parent->appendChild( item );
 
+            uint8_t color;
+            auto fromptr = data.GetFrom( idx );
+            auto it = nameColor.find( fromptr );
+            if( it == nameColor.end() )
+            {
+                auto hash = XXH32( fromptr, strlen( fromptr ), 0 );
+                color = hash & 0xFF;
+                nameColor.emplace( fromptr, color );
+            }
+            else
+            {
+                color = it->second;
+            }
+
             QVector<QVariant> columns;
             columns << data.GetSubject( idx );
             columns << QString::number( data.GetTotalChildrenCount( idx ) );
@@ -217,7 +249,7 @@ void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
             char* tmp = asctime( localtime( &t ) );
             tmp[strlen(tmp)-1] = '\0';
             columns << tmp;
-            item->setData( std::move( columns ) );
+            item->setData( std::move( columns ), color );
 
             const auto children = data.GetChildren( idx );
             if( children.size > 0 )
