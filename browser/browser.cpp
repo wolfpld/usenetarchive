@@ -59,7 +59,9 @@ void Browser::on_actionOpen_triggered()
         QString str;
         str += "Loaded archive with ";
         str += QString::number( m_archive->NumberOfMessages() );
-        str += " messages.";
+        str += " messages. ";
+        str += QString::number( m_archive->NumberOfTopLevel() );
+        str += " threads.";
         ui->statusBar->showMessage( str, 0 );
         FillTree();
         auto idx = dir.find_last_of( '/' );
