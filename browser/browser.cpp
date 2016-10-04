@@ -622,6 +622,7 @@ void Browser::ClearSearch()
         delete v;
     }
     m_searchItems.clear();
+    ui->scrollArea->verticalScrollBar()->setValue( 0 );
 }
 
 void Browser::on_actionGroup_Charter_triggered()
