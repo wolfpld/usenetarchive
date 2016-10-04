@@ -169,6 +169,13 @@ void Browser::ShowMessage( const char* msg )
 
 void Browser::FillTree()
 {
+    QMessageBox box( this );
+    box.setStandardButtons( QMessageBox::NoButton );
+    box.setWindowTitle( "Please wait" );
+    box.setText( "Loading messages..." );
+    box.show();
+    QCoreApplication::processEvents();
+
     m_model = std::make_unique<TreeModel>( *m_archive );
     ui->treeView->setUpdatesEnabled( false );
     ui->treeView->setModel( m_model.get() );
