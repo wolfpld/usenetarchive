@@ -31,8 +31,7 @@ SOURCES += main.cpp\
     about.cpp \
     groupcharter.cpp \
     ../libuat/PackageAccess.cpp \
-    ../common/MessageLogic.cpp \
-    ../contrib/xxhash/xxhash.c
+    ../common/MessageLogic.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -56,8 +55,7 @@ HEADERS  += browser.h \
     about.h \
     groupcharter.h \
     ../libuat/PackageAccess.hpp \
-    ../common/MessageLogic.hpp \
-    ../contrib/xxhash/xxhash.h
+    ../common/MessageLogic.hpp
 
 FORMS    += browser.ui \
     about.ui \
