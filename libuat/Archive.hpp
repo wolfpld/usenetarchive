@@ -36,7 +36,7 @@ public:
     int GetMessageIndex( const char* msgid ) const;
 
     ViewReference<uint32_t> GetTopLevel() const;
-    size_t NumberOfTopLevel() const { return m_toplevel.Size(); }
+    size_t NumberOfTopLevel() const { return m_toplevel.DataSize(); }
 
     int32_t GetParent( uint32_t idx ) const;
     int32_t GetParent( const char* msgid ) const;
