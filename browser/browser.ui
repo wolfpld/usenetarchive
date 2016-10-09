@@ -175,6 +175,7 @@
    <addaction name="actionRaw_message"/>
    <addaction name="actionROT13"/>
    <addaction name="actionGo_to_message"/>
+   <addaction name="actionGo_to_date"/>
    <addaction name="actionAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -224,6 +225,14 @@
    </property>
    <property name="text">
     <string>Group Charter</string>
+   </property>
+  </action>
+  <action name="actionGo_to_date">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Go to date</string>
    </property>
   </action>
  </widget>

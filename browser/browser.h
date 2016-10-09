@@ -2,6 +2,7 @@
 #define BROWSER_H
 
 #include <memory>
+#include <stdint.h>
 #include <vector>
 #include <QMainWindow>
 
@@ -23,6 +24,8 @@ public:
     explicit Browser( QWidget *parent = 0 );
     ~Browser();
 
+    void GoToDate( uint32_t date );
+
 private slots:
     void on_actionOpen_triggered();
     void on_actionRaw_message_triggered(bool checked);
@@ -34,6 +37,8 @@ private slots:
     void on_actionGo_to_message_triggered();
     void on_actionAbout_triggered();
     void on_actionGroup_Charter_triggered();
+
+    void on_actionGo_to_date_triggered();
 
 private:
     void FillTree();

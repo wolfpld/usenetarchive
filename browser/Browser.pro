@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     about.cpp \
     groupcharter.cpp \
     ../libuat/PackageAccess.cpp \
-    ../common/MessageLogic.cpp
+    ../common/MessageLogic.cpp \
+    dateselect.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -55,11 +56,13 @@ HEADERS  += browser.h \
     about.h \
     groupcharter.h \
     ../libuat/PackageAccess.hpp \
-    ../common/MessageLogic.hpp
+    ../common/MessageLogic.hpp \
+    dateselect.h
 
 FORMS    += browser.ui \
     about.ui \
-    groupcharter.ui
+    groupcharter.ui \
+    dateselect.ui
 
 DISTFILES += \
     build/win32/x64/Debug/browser.ilk \

@@ -21,6 +21,7 @@
 
 #include "about.h"
 #include "browser.h"
+#include "dateselect.h"
 #include "ui_browser.h"
 #include "groupcharter.h"
 
@@ -102,6 +103,7 @@ void Browser::on_actionOpen_triggered()
         ui->actionRaw_message->setEnabled( true );
         ui->actionROT13->setEnabled( true );
         ui->actionGo_to_message->setEnabled( true );
+        ui->actionGo_to_date->setEnabled( true );
         ui->SearchTab->setEnabled( true );
         ui->SearchContentsScroll->setUpdatesEnabled( false );
         ClearSearch();
@@ -598,6 +600,24 @@ void Browser::SwitchToMessage( uint32_t idx )
     ui->tabWidget->setCurrentIndex( 0 );
 }
 
+void Browser::GoToDate( uint32_t date )
+{
+    const auto toplevel = m_archive->GetTopLevel();
+    auto it = std::lower_bound( toplevel.ptr, toplevel.ptr + toplevel.size, date, [this]( uint32_t id, uint32_t date ){ return m_archive->GetDate( id ) < date; } );
+    if( it == toplevel.ptr + toplevel.size )
+    {
+        if( m_archive->GetDate( *toplevel.ptr ) > date )
+        {
+            it = toplevel.ptr;
+        }
+        else
+        {
+            it = toplevel.ptr + toplevel.size - 1;
+        }
+    }
+    SwitchToMessage( *it );
+}
+
 void Browser::on_actionGo_to_message_triggered()
 {
     bool ok;
@@ -640,4 +660,9 @@ void Browser::on_actionGroup_Charter_triggered()
 
     auto dialog = new GroupCharter( s.first, s.second, l.first, l.second, n.first, n.second );
     dialog->exec();
+}
+
+void Browser::on_actionGo_to_date_triggered()
+{
+    (new DateSelect( this ))->exec();
 }
