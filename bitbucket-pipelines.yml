@@ -9,5 +9,5 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - apt-get update && apt-get install libicu-dev libgmime-2.6-dev
+          - apt-get update && apt-get install -y libicu-dev libgmime-2.6-dev
           - for i in connectivity export-messages extract-msgid extract-msgmeta filter-newsgroups filter-spam import-source-mbox import-source-slrnpull import-source-slrnpull-7z kill-duplicates lexdist lexhash lexicon lexopt lexsort lexstats merge-raw package query query-raw relative-complement repack-lz4 repack-zstd threadify utf8ize ; do make -C $i/build/unix ; done
