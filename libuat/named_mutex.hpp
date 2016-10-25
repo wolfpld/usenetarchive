@@ -76,7 +76,7 @@ public:
             if( tmp[i] == '/' ) tmp[i] = ':';
         }
 
-        m_sem = sem_open( tmp, O_CREAT, S_IRUSR | S_IWUSR, 1 );
+        m_sem = sem_open( tmp.get(), O_CREAT, S_IRUSR | S_IWUSR, 1 );
     }
 
     ~named_mutex()
