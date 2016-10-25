@@ -146,5 +146,8 @@
     <ClInclude Include="..\..\..\libuat\PackageAccess.hpp">
       <Filter>libuat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\libuat\named_mutex.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

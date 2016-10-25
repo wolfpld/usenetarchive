@@ -59,6 +59,7 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
     <ClInclude Include="..\..\..\contrib\zstd\zstd.h" />
     <ClInclude Include="..\..\..\libuat\Archive.hpp" />
+    <ClInclude Include="..\..\..\libuat\named_mutex.hpp" />
     <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
