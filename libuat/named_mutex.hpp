@@ -64,6 +64,7 @@ class named_mutex
 {
 public:
     named_mutex( const char* name )
+        : m_cnt( 0 )
     {
         assert( name && *name );
         const auto size = strlen( name );
@@ -81,22 +82,37 @@ public:
 
     ~named_mutex()
     {
+        while( m_cnt > 0 )
+        {
+            unlock();
+        }
+        while( m_cnt < 0 )
+        {
+            lock();
+        }
         sem_close( m_sem );
     }
 
     void lock()
     {
         sem_wait( m_sem );
+        m_cnt++;
     }
 
     void unlock()
     {
         sem_post( m_sem );
+        m_cnt--;
     }
 
     bool try_lock()
     {
-        if( sem_trywait( m_sem ) == 0 ) return true;
+        if( sem_trywait( m_sem ) == 0 )
+        {
+            m_cnt++;
+            return true;
+        }
+
         switch( errno )
         {
         case EINTR:
@@ -110,6 +126,7 @@ public:
 
 private:
     sem_t* m_sem;
+    int m_cnt;
 };
 
 #endif
