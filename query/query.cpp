@@ -9,6 +9,8 @@
 #include "../common/Filesystem.hpp"
 #include "../libuat/Archive.hpp"
 
+#include "../libuat/named_mutex.hpp"
+
 void PrintHelp()
 {
     printf( "child msgid   - view message's children\n" );
@@ -38,6 +40,8 @@ void Info( const Archive& archive )
 
 int main( int argc, char** argv )
 {
+    named_mutex m( "dupa/jasiu" );
+
     if( argc < 2 )
     {
         fprintf( stderr, "USAGE: %s archive\n", argv[0] );
@@ -258,6 +262,18 @@ int main( int argc, char** argv )
             {
                 printf( "No archive name.\n" );
             }
+        }
+        else if( strcmp( cmd, "lock" ) == 0 )
+        {
+            printf( "Locking...\n" );
+            fflush( stdout );
+            m.lock();
+            printf( "Locked!\n" );
+        }
+        else if( strcmp( cmd, "unlock" ) == 0 )
+        {
+            m.unlock();
+            printf( "Unlocked\n" );
         }
         else
         {
