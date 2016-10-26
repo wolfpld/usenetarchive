@@ -38,4 +38,11 @@ static inline uint64_t GetFileSize( const char* path )
     return buf.st_size;
 }
 
+static inline int64_t GetFileMTime( const char* path )
+{
+    struct stat64 buf;
+    stat64( path, &buf );
+    return (int64_t)buf.st_mtime;
+}
+
 #endif
