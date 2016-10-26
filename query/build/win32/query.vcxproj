@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\linenoise-ng\ConvertUTF.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="..\..\..\libuat\Archive.cpp" />
     <ClCompile Include="..\..\..\libuat\LockedFile.cpp" />
     <ClCompile Include="..\..\..\libuat\PackageAccess.cpp" />
+    <ClCompile Include="..\..\..\libuat\PersistentStorage.cpp" />
     <ClCompile Include="..\..\query.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +65,7 @@
     <ClInclude Include="..\..\..\libuat\LockedFile.hpp" />
     <ClInclude Include="..\..\..\libuat\named_mutex.hpp" />
     <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
+    <ClInclude Include="..\..\..\libuat\PersistentStorage.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
