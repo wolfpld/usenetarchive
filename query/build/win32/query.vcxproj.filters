@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\..\libuat\PackageAccess.cpp">
       <Filter>libuat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\libuat\LockedFile.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -147,6 +150,9 @@
       <Filter>libuat</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libuat\named_mutex.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\LockedFile.hpp">
       <Filter>libuat</Filter>
     </ClInclude>
   </ItemGroup>
