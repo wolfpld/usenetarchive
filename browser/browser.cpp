@@ -16,6 +16,7 @@
 #endif
 
 #include "../libuat/Archive.hpp"
+#include "../libuat/PersistentStorage.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/String.hpp"
 
@@ -28,16 +29,28 @@
 Browser::Browser( QWidget *parent )
     : QMainWindow( parent )
     , ui( new Ui::Browser )
+    , m_storage( std::make_unique<PersistentStorage>() )
     , m_index( -1 )
     , m_rawMessage( false )
     , m_rot13( false )
 {
     ui->setupUi( this );
+
+    const auto archive = m_storage->ReadLastOpenArchive();
+    if( !archive.empty() )
+    {
+        OpenArchive( archive );
+    }
 }
 
 Browser::~Browser()
 {
     delete ui;
+
+    if( !m_archiveFilename.empty() )
+    {
+        m_storage->WriteLastOpenArchive( m_archiveFilename.c_str() );
+    }
 }
 
 void Browser::on_actionOpen_triggered()
@@ -50,65 +63,70 @@ void Browser::on_actionOpen_triggered()
     int res = dialog.exec();
     if( res )
     {
-        std::string dir = dialog.selectedFiles()[0].toStdString();
-        m_archive.reset( Archive::Open( dir ) );
-        if( !m_archive )
-        {
-            QMessageBox::warning( this, "Error", "Cannot open archive.", QMessageBox::NoButton, QMessageBox::Ok );
-            return;
-        }
-        QString str;
-        str += "Loaded archive with ";
-        str += QString::number( m_archive->NumberOfMessages() );
-        str += " messages. ";
-        str += QString::number( m_archive->NumberOfTopLevel() );
-        str += " threads.";
-        ui->statusBar->showMessage( str, 0 );
-        FillTree();
-        auto idx = dir.find_last_of( '/' );
-        std::string tabText;
-        auto desc = m_archive->GetShortDescription();
-        if( desc.first )
-        {
-            bool shortAvailable = desc.second > 0;
-            if( shortAvailable )
-            {
-                for( int i=0; i<desc.second; i++ )
-                {
-                    if( desc.first[i] != '\n' ) tabText += desc.first[i];
-                }
+        OpenArchive( dialog.selectedFiles()[0].toStdString() );
+    }
+}
 
-                tabText += " (";
-            }
-            auto name = m_archive->GetArchiveName();
-            if( name.first && name.second != 0 )
+void Browser::OpenArchive( const std::string& fn )
+{
+    m_archive.reset( Archive::Open( fn ) );
+    if( !m_archive )
+    {
+        QMessageBox::warning( this, "Error", "Cannot open archive.", QMessageBox::NoButton, QMessageBox::Ok );
+        return;
+    }
+    m_archiveFilename = fn;
+    QString str;
+    str += "Loaded archive with ";
+    str += QString::number( m_archive->NumberOfMessages() );
+    str += " messages. ";
+    str += QString::number( m_archive->NumberOfTopLevel() );
+    str += " threads.";
+    ui->statusBar->showMessage( str, 0 );
+    FillTree();
+    auto idx = fn.find_last_of( '/' );
+    std::string tabText;
+    auto desc = m_archive->GetShortDescription();
+    if( desc.first )
+    {
+        bool shortAvailable = desc.second > 0;
+        if( shortAvailable )
+        {
+            for( int i=0; i<desc.second; i++ )
             {
-                tabText += std::string( name.first, name.first + name.second );
+                if( desc.first[i] != '\n' ) tabText += desc.first[i];
             }
-            else
-            {
-                tabText += dir.substr( idx+1 );
-            }
-            if( shortAvailable )
-            {
-                tabText += ")";
-            }
+
+            tabText += " (";
+        }
+        auto name = m_archive->GetArchiveName();
+        if( name.first && name.second != 0 )
+        {
+            tabText += std::string( name.first, name.first + name.second );
         }
         else
         {
-            tabText = dir.substr( idx+1 );
+            tabText += fn.substr( idx+1 );
         }
-        ui->tabWidget->setTabText( 0, tabText.c_str() );
-        ui->actionGroup_Charter->setEnabled( true );
-        ui->actionRaw_message->setEnabled( true );
-        ui->actionROT13->setEnabled( true );
-        ui->actionGo_to_message->setEnabled( true );
-        ui->actionGo_to_date->setEnabled( true );
-        ui->SearchTab->setEnabled( true );
-        ui->SearchContentsScroll->setUpdatesEnabled( false );
-        ClearSearch();
-        ui->SearchContentsScroll->setUpdatesEnabled( true );
+        if( shortAvailable )
+        {
+            tabText += ")";
+        }
     }
+    else
+    {
+        tabText = fn.substr( idx+1 );
+    }
+    ui->tabWidget->setTabText( 0, tabText.c_str() );
+    ui->actionGroup_Charter->setEnabled( true );
+    ui->actionRaw_message->setEnabled( true );
+    ui->actionROT13->setEnabled( true );
+    ui->actionGo_to_message->setEnabled( true );
+    ui->actionGo_to_date->setEnabled( true );
+    ui->SearchTab->setEnabled( true );
+    ui->SearchContentsScroll->setUpdatesEnabled( false );
+    ClearSearch();
+    ui->SearchContentsScroll->setUpdatesEnabled( true );
 }
 
 void Browser::on_actionRaw_message_triggered(bool checked)

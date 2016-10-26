@@ -32,7 +32,10 @@ SOURCES += main.cpp\
     groupcharter.cpp \
     ../libuat/PackageAccess.cpp \
     ../common/MessageLogic.cpp \
-    dateselect.cpp
+    dateselect.cpp \
+    ../common/Filesystem.cpp \
+    ../libuat/LockedFile.cpp \
+    ../libuat/PersistentStorage.cpp
 
 HEADERS  += browser.h \
     ../common/MetaView.hpp \
@@ -57,7 +60,10 @@ HEADERS  += browser.h \
     groupcharter.h \
     ../libuat/PackageAccess.hpp \
     ../common/MessageLogic.hpp \
-    dateselect.h
+    dateselect.h \
+    ../libuat/LockedFile.hpp \
+    ../libuat/named_mutex.hpp \
+    ../libuat/PersistentStorage.hpp
 
 FORMS    += browser.ui \
     about.ui \

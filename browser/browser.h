@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <stdint.h>
+#include <string>
 #include <vector>
 #include <QMainWindow>
 
@@ -10,6 +11,7 @@
 #include "TextBuf.hpp"
 
 class Archive;
+class PersistentStorage;
 
 namespace Ui
 {
@@ -41,6 +43,7 @@ private slots:
     void on_actionGo_to_date_triggered();
 
 private:
+    void OpenArchive( const std::string& fn );
     void FillTree();
     void RecursiveExpand(const QModelIndex& index);
     void RecursiveSetIndex(const QModelIndex& index);
@@ -50,8 +53,10 @@ private:
     void ClearSearch();
 
     Ui::Browser *ui;
+    std::string m_archiveFilename;
     std::unique_ptr<Archive> m_archive;
     std::unique_ptr<TreeModel> m_model;
+    std::unique_ptr<PersistentStorage> m_storage;
     TextBuf m_buf;
     int32_t m_index;
     bool m_rawMessage;
