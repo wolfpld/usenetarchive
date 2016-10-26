@@ -37,20 +37,21 @@ Browser::Browser( QWidget *parent )
     ui->setupUi( this );
 
     const auto archive = m_storage->ReadLastOpenArchive();
-    if( !archive.empty() )
-    {
-        OpenArchive( archive );
-    }
+    if( archive.empty() ) return;
+    OpenArchive( archive );
+    const auto article = m_storage->ReadLastArticle( archive.c_str() );
+    if( article == 0 ) return;
+    SwitchToMessage( article );
 }
 
 Browser::~Browser()
 {
     delete ui;
 
-    if( !m_archiveFilename.empty() )
-    {
-        m_storage->WriteLastOpenArchive( m_archiveFilename.c_str() );
-    }
+    if( m_archiveFilename.empty() ) return;
+    m_storage->WriteLastOpenArchive( m_archiveFilename.c_str() );
+    if( m_index == -1 ) return;
+    m_storage->WriteLastArticle( m_archiveFilename.c_str(), m_index );
 }
 
 void Browser::on_actionOpen_triggered()
