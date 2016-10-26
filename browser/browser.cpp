@@ -76,6 +76,10 @@ void Browser::OpenArchive( const std::string& fn )
         QMessageBox::warning( this, "Error", "Cannot open archive.", QMessageBox::NoButton, QMessageBox::Ok );
         return;
     }
+    if( !m_archiveFilename.empty() && m_index != -1 )
+    {
+        m_storage->WriteLastArticle( m_archiveFilename.c_str(), m_index );
+    }
     m_archiveFilename = fn;
     QString str;
     str += "Loaded archive with ";
@@ -128,6 +132,10 @@ void Browser::OpenArchive( const std::string& fn )
     ui->SearchContentsScroll->setUpdatesEnabled( false );
     ClearSearch();
     ui->SearchContentsScroll->setUpdatesEnabled( true );
+
+    const auto article = m_storage->ReadLastArticle( fn.c_str() );
+    if( article == 0 ) return;
+    SwitchToMessage( article );
 }
 
 void Browser::on_actionRaw_message_triggered(bool checked)
