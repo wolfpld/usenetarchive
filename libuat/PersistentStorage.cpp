@@ -69,7 +69,7 @@ std::string PersistentStorage::ReadLastOpenArchive()
     LockedFile guard( fn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
     FileMap<char> map( fn );
-    ret.assign( map, map + map.Size() );
+    ret.assign( (const char*)map, map + map.Size() );
     return ret;
 }
 
