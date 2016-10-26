@@ -62,6 +62,7 @@ private:
 
 #include <errno.h>
 #include <fcntl.h>
+#include <memory>
 #include <sys/stat.h>
 #include <semaphore.h>
 #include <string.h>
