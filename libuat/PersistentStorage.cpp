@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <sstream>
 #include <mutex>
 
 #include "../common/FileMap.hpp"
@@ -7,6 +8,7 @@
 #include "PersistentStorage.hpp"
 
 static const char* LastOpenArchive = "lastopen";
+static const char* LastArticle = "article-";
 
 static std::string GetSavePath()
 {
@@ -68,5 +70,59 @@ std::string PersistentStorage::ReadLastOpenArchive()
     std::lock_guard<LockedFile> lg( guard );
     FileMap<char> map( fn );
     ret.assign( map, map + map.Size() );
+    return ret;
+}
+
+std::string PersistentStorage::CreateLastArticleFilename( const char* archive )
+{
+    std::ostringstream ss;
+    ss << m_base << LastArticle;
+    const auto size = strlen( archive );
+    for( int i=0; i<size; i++ )
+    {
+        switch( archive[i] )
+        {
+        case '\\':
+        case '/':
+        case ':':
+        case '*':
+        case '?':
+        case '"':
+        case '<':
+        case '>':
+        case '|':
+            ss << '$';
+            break;
+        default:
+            ss << archive[i];
+            break;
+        }
+    }
+    return ss.str();
+}
+
+void PersistentStorage::WriteLastArticle( const char* archive, uint32_t idx )
+{
+    CreateDirStruct( m_base );
+    const auto fn = CreateLastArticleFilename( archive );
+    LockedFile guard( fn.c_str() );
+    std::lock_guard<LockedFile> lg( guard );
+    FILE* f = fopen( guard, "wb" );
+    if( !f ) return;
+    fwrite( &idx, 1, sizeof( idx ), f );
+    fclose( f );
+}
+
+uint32_t PersistentStorage::ReadLastArticle( const char* archive )
+{
+    const auto fn = CreateLastArticleFilename( archive );
+    if( !Exists( fn ) ) return 0;
+    LockedFile guard( fn.c_str() );
+    std::lock_guard<LockedFile> lg( guard );
+    FILE* f = fopen( guard, "rb" );
+    if( !f ) return 0;
+    uint32_t ret;
+    fread( &ret, 1, sizeof( ret ), f );
+    fclose( f );
     return ret;
 }
