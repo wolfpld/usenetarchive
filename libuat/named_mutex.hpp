@@ -11,8 +11,14 @@ class named_mutex
 {
 public:
     named_mutex( const char* name )
-        : m_hnd( CreateMutex( nullptr, FALSE, name ) )
     {
+#ifdef UNICODE
+        wchar_t tmp[4096];
+        MultiByteToWideChar( CP_ACP, 0, name, -1, tmp, 4096 );
+        m_hnd = CreateMutex( nullptr, FALSE, tmp );
+#else
+        m_hnd = CreateMutex( nullptr, FALSE, name );
+#endif
     }
 
     ~named_mutex()
