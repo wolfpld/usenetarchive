@@ -22,7 +22,7 @@ Archive* Archive::Open( const std::string& fn )
         auto base = fn + "/";
         if( !Exists( base + "zmeta" ) || !Exists( base + "zdata" ) || !Exists( base + "zdict" ) ||
             !Exists( base + "toplevel" ) || !Exists( base + "connmeta" ) || !Exists( base + "conndata" ) ||
-            !Exists( base + "middata" ) || !Exists( base + "midhash" ) || !Exists( base + "midhashdata" ) ||
+            !Exists( base + "middata" ) || !Exists( base + "midhash" ) || !Exists( base + "midhashdata" ) || !Exists( base + "midmeta" ) ||
             !Exists( base + "strmeta" ) || !Exists( base + "strings" ) || !Exists( base + "lexmeta" ) ||
             !Exists( base + "lexstr" ) || !Exists( base + "lexdata" ) || !Exists( base + "lexhit" ) ||
             !Exists( base + "lexstr" ) || !Exists( base + "lexhash" ) || !Exists( base + "lexhashdata" ) )
@@ -41,6 +41,7 @@ Archive::Archive( const std::string& dir )
     , m_mcnt( m_mview.Size() )
     , m_toplevel( dir + "toplevel" )
     , m_midhash( dir + "middata", dir + "midhash", dir + "midhashdata" )
+    , m_middb( dir + "midmeta", dir + "middata" )
     , m_connectivity( dir + "connmeta", dir + "conndata" )
     , m_strings( dir + "strmeta", dir + "strings" )
     , m_lexmeta( dir + "lexmeta" )
@@ -60,6 +61,7 @@ Archive::Archive( const PackageAccess* pkg )
     , m_mcnt( m_mview.Size() )
     , m_toplevel( pkg->Get( PackageFile::toplevel ) )
     , m_midhash( pkg->Get( PackageFile::middata ), pkg->Get( PackageFile::midhash ), pkg->Get( PackageFile::midhashdata ) )
+    , m_middb( pkg->Get( PackageFile::midmeta ), pkg->Get( PackageFile::middata ) )
     , m_connectivity( pkg->Get( PackageFile::connmeta ), pkg->Get( PackageFile::conndata ) )
     , m_strings( pkg->Get( PackageFile::strmeta ), pkg->Get( PackageFile::strings ) )
     , m_lexmeta( pkg->Get( PackageFile::lexmeta ) )
@@ -87,6 +89,11 @@ const char* Archive::GetMessage( const char* msgid )
 int Archive::GetMessageIndex( const char* msgid ) const
 {
     return m_midhash.Search( msgid );
+}
+
+const char* Archive::GetMessageId( uint32_t idx ) const
+{
+    return m_middb[idx];
 }
 
 ViewReference<uint32_t> Archive::GetTopLevel() const

@@ -34,6 +34,7 @@ public:
     size_t NumberOfMessages() const { return m_mcnt; }
 
     int GetMessageIndex( const char* msgid ) const;
+    const char* GetMessageId( uint32_t idx ) const;
 
     ViewReference<uint32_t> GetTopLevel() const;
     size_t NumberOfTopLevel() const { return m_toplevel.DataSize(); }
@@ -77,6 +78,7 @@ private:
     const size_t m_mcnt;
     const FileMap<uint32_t> m_toplevel;
     const HashSearch m_midhash;
+    const MetaView<uint32_t, char> m_middb;
     const MetaView<uint32_t, uint32_t> m_connectivity;
     const MetaView<uint32_t, char> m_strings;
     const FileMap<LexiconMetaPacket> m_lexmeta;
