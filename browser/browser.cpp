@@ -450,7 +450,8 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
                 break;
             }
         }
-        ui->treeView->dataChanged( start, index );
+        static const QVector<int> roles = { Qt::ForegroundRole };
+        ui->treeView->dataChanged( start, index, roles );
     }
 }
 
