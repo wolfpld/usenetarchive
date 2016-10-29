@@ -205,7 +205,7 @@ void Browser::FillTree()
     box.show();
     QCoreApplication::processEvents();
 
-    m_model = std::make_unique<TreeModel>( *m_archive );
+    m_model = std::make_unique<TreeModel>( *m_archive, *m_storage );
     ui->treeView->setUpdatesEnabled( false );
     ui->treeView->setModel( m_model.get() );
     auto rows = m_model->rowCount();
@@ -435,6 +435,23 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
     m_rawMessage = false;
 
     SetText( m_archive->GetMessage( m_index ) );
+    if( m_storage->MarkVisited( m_archive->GetMessageId( m_index ) ) )
+    {
+        auto start = index;
+        for(;;)
+        {
+            auto parent = start.parent();
+            if( parent.isValid() && parent.parent().isValid() )
+            {
+                start = parent;
+            }
+            else
+            {
+                break;
+            }
+        }
+        ui->treeView->dataChanged( start, index );
+    }
 }
 
 void Browser::onTreeSelectionChanged( const QModelIndex& index )

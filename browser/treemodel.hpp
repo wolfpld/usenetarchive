@@ -59,13 +59,14 @@
 
 class TreeItem;
 class Archive;
+class PersistentStorage;
 
 class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit TreeModel(const Archive &data, QObject *parent = 0);
+    explicit TreeModel(const Archive &data, PersistentStorage& storage, QObject *parent = 0);
     ~TreeModel();
 
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
@@ -84,10 +85,12 @@ public:
     void SetIndex( uint32_t idx, const QModelIndex& index ) { m_indices[idx] = index; }
 
 private:
-    void setupModelData(const Archive &data, TreeItem *parent);
+    void setupModelData(TreeItem *parent);
 
     TreeItem *rootItem;
     std::vector<QModelIndex> m_indices;
+    const Archive& m_archive;
+    PersistentStorage& m_storage;
 };
 
 #endif

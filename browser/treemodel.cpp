@@ -56,24 +56,29 @@
 */
 
 #include <QColor>
+#include <QFont>
 #include <QStringList>
 #include <time.h>
 #include <map>
+#include <vector>
 
 #include "../contrib/xxhash/xxhash.h"
 #include "../libuat/Archive.hpp"
+#include "../libuat/PersistentStorage.hpp"
 #include "treeitem.hpp"
 #include "treemodel.hpp"
 
-TreeModel::TreeModel(const Archive &data, QObject *parent)
+TreeModel::TreeModel(const Archive &data, PersistentStorage& storage, QObject *parent)
     : QAbstractItemModel(parent)
     , m_indices( data.NumberOfMessages() )
+    , m_archive( data )
+    , m_storage( storage )
 {
     QVector<QVariant> rootData;
     rootData << "Subject" << "Posts" << "Author" << "Date";
     rootItem = new TreeItem();
     rootItem->setData( std::move( rootData ), 0 );
-    setupModelData(data, rootItem);
+    setupModelData(rootItem);
 }
 
 TreeModel::~TreeModel()
@@ -101,14 +106,51 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         return item->data(index.column());
     case Qt::ForegroundRole:
-        if( index.column() == 2 )
+        switch( index.column() )
         {
+        case 0:
+            if( m_storage.WasVisited( m_archive.GetMessageId( item->GetIdx() ) ) )
+            {
+                bool complete = true;
+                std::vector<uint32_t> stack;
+                stack.reserve( 4 * 1024 );
+                stack.emplace_back( item->GetIdx() );
+                while( !stack.empty() )
+                {
+                    const auto idx = stack.back();
+                    if( !m_storage.WasVisited( m_archive.GetMessageId( idx ) ) )
+                    {
+                        complete = false;
+                        break;
+                    }
+                    stack.pop_back();
+                    const auto children = m_archive.GetChildren( idx );
+                    for( int i=0; i<children.size; i++ )
+                    {
+                        stack.emplace_back( children.ptr[i] );
+                    }
+                }
+
+                QColor c;
+                if( complete )
+                {
+                    c.setRgb( 96, 96, 96 );
+                }
+                else
+                {
+                    c.setRgb( 128, 128, 128 );
+                }
+                return QVariant( c );
+            }
+            break;
+        case 2:
+            {
             QColor c;
             c.setHsv( item->GetColor(), 160, 180 );
             return QVariant( c );
-        }
-        else
-        {
+            }
+            break;
+        default:
             return QVariant();
         }
     default:
@@ -201,9 +243,9 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
+void TreeModel::setupModelData(TreeItem *parent)
 {
-    auto top = data.GetTopLevel();
+    auto top = m_archive.GetTopLevel();
     std::map<const char*, uint8_t> nameColor;
     std::vector<int32_t> items;
     std::vector<TreeItem*> parents = { parent };
@@ -227,7 +269,7 @@ void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
             parent->appendChild( item );
 
             uint8_t color;
-            auto fromptr = data.GetFrom( idx );
+            auto fromptr = m_archive.GetFrom( idx );
             auto it = nameColor.find( fromptr );
             if( it == nameColor.end() )
             {
@@ -241,17 +283,17 @@ void TreeModel::setupModelData(const Archive &data, TreeItem *parent)
             }
 
             QVector<QVariant> columns;
-            columns << data.GetSubject( idx );
-            columns << QString::number( data.GetTotalChildrenCount( idx ) );
-            columns << data.GetRealName( idx );
-            auto date = data.GetDate( idx );
+            columns << m_archive.GetSubject( idx );
+            columns << QString::number( m_archive.GetTotalChildrenCount( idx ) );
+            columns << m_archive.GetRealName( idx );
+            auto date = m_archive.GetDate( idx );
             time_t t = { date };
             char* tmp = asctime( localtime( &t ) );
             tmp[strlen(tmp)-1] = '\0';
             columns << tmp;
             item->setData( std::move( columns ), color );
 
-            const auto children = data.GetChildren( idx );
+            const auto children = m_archive.GetChildren( idx );
             if( children.size > 0 )
             {
                 parents.emplace_back( item );
