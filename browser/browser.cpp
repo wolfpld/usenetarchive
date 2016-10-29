@@ -26,6 +26,8 @@
 #include "ui_browser.h"
 #include "groupcharter.h"
 
+static const QVector<int> s_dataRoles = { Qt::ForegroundRole };
+
 Browser::Browser( QWidget *parent )
     : QMainWindow( parent )
     , ui( new Ui::Browser )
@@ -35,6 +37,29 @@ Browser::Browser( QWidget *parent )
     , m_rot13( false )
 {
     ui->setupUi( this );
+
+    m_timer.setInterval( 500 );
+    m_timer.setSingleShot( true );
+    connect( &m_timer, &QTimer::timeout, [this] {
+        if( m_storage->MarkVisited( m_archive->GetMessageId( m_index ) ) )
+        {
+            auto index = m_model->GetIndexFor( m_index );
+            auto start = index;
+            for(;;)
+            {
+                auto parent = start.parent();
+                if( parent.isValid() )
+                {
+                    start = parent;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            ui->treeView->dataChanged( start, index, s_dataRoles );
+        }
+    } );
 
     const auto archive = m_storage->ReadLastOpenArchive();
     if( archive.empty() ) return;
@@ -435,24 +460,7 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
     m_rawMessage = false;
 
     SetText( m_archive->GetMessage( m_index ) );
-    if( m_storage->MarkVisited( m_archive->GetMessageId( m_index ) ) )
-    {
-        auto start = index;
-        for(;;)
-        {
-            auto parent = start.parent();
-            if( parent.isValid() && parent.parent().isValid() )
-            {
-                start = parent;
-            }
-            else
-            {
-                break;
-            }
-        }
-        static const QVector<int> roles = { Qt::ForegroundRole };
-        ui->treeView->dataChanged( start, index, roles );
-    }
+    m_timer.start();
 }
 
 void Browser::onTreeSelectionChanged( const QModelIndex& index )

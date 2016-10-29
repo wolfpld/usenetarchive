@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <QMainWindow>
+#include <QTimer>
 
 #include "treemodel.hpp"
 #include "TextBuf.hpp"
@@ -62,6 +63,7 @@ private:
     bool m_rawMessage;
     bool m_rot13;
     std::vector<QWidget*> m_searchItems;
+    QTimer m_timer;
 };
 
 #endif
