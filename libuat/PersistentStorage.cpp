@@ -140,34 +140,28 @@ uint32_t PersistentStorage::ReadLastArticle( const char* archive )
 bool PersistentStorage::WasVisited( const char* msgid )
 {
     if( m_visited.find( msgid ) != m_visited.end() ) return true;
-    const auto fn = m_base + LastOpenArchive;
+    const auto fn = m_base + Visited;
     LockedFile guard( fn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
-    if( Exists( fn ) )
-    {
-        if( GetFileMTime( fn.c_str() ) > m_visitedTimestamp )
-        {
-            // ...
-        }
-    }
+    VerifyVisitedAreValid( fn );
     return m_visited.find( msgid ) != m_visited.end();
 }
 
 bool PersistentStorage::MarkVisited( const char* msgid )
 {
     if( m_visited.find( msgid ) != m_visited.end() ) return false;
-    const auto fn = m_base + LastOpenArchive;
+    const auto fn = m_base + Visited;
     LockedFile guard( fn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
-    if( Exists( fn ) )
-    {
-        if( GetFileMTime( fn.c_str() ) > m_visitedTimestamp )
-        {
-            // ...
-        }
-    }
+    VerifyVisitedAreValid( fn );
     m_visited.emplace( StoreString( msgid ) );
-    // ...
+    CreateDirStruct( m_base );
+    FILE* f = fopen( fn.c_str(), "ab" );
+    if( f )
+    {
+        fwrite( msgid, 1, strlen( msgid ) + 1, f );
+        fclose( f );
+    }
     return true;
 }
 
@@ -185,4 +179,27 @@ const char* PersistentStorage::StoreString( const char* str )
     m_currBuf += size;
     m_bufLeft -= size;
     return ret;
+}
+
+void PersistentStorage::VerifyVisitedAreValid( const std::string& fn )
+{
+    if( Exists( fn ) )
+    {
+        if( GetFileMTime( fn.c_str() ) > m_visitedTimestamp )
+        {
+            FileMap<char> fmap( fn );
+            auto ptr = (const char*)fmap;
+            auto datasize = fmap.Size();
+            while( datasize > 0 )
+            {
+                const auto size = strlen( ptr );
+                if( m_visited.find( ptr ) == m_visited.end() )
+                {
+                    m_visited.emplace( StoreString( ptr ) );
+                }
+                ptr += size + 1;
+                datasize -= size + 1;
+            }
+        }
+    }
 }

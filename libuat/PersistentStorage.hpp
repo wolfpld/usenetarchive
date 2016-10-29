@@ -30,6 +30,7 @@ private:
 
     std::string CreateLastArticleFilename( const char* archive );
     const char* StoreString( const char* str );
+    void VerifyVisitedAreValid( const std::string& fn );
 
     std::string m_base;
     std::unordered_set<const char*, hash, equal_to> m_visited;
