@@ -7,8 +7,11 @@
 #include "LockedFile.hpp"
 #include "PersistentStorage.hpp"
 
+enum { BufSize = 1024 * 1024 };
+
 static const char* LastOpenArchive = "lastopen";
 static const char* LastArticle = "article-";
+static const char* Visited = "visited";
 
 static std::string GetSavePath()
 {
@@ -43,11 +46,18 @@ static std::string GetSavePath()
 
 PersistentStorage::PersistentStorage()
     : m_base( GetSavePath() )
+    , m_visitedTimestamp( 0 )
+    , m_currBuf( nullptr )
+    , m_bufLeft( 0 )
 {
 }
 
 PersistentStorage::~PersistentStorage()
 {
+    for( auto& buf : m_buffers )
+    {
+        delete[] buf;
+    }
 }
 
 void PersistentStorage::WriteLastOpenArchive( const char* archive )
@@ -124,5 +134,55 @@ uint32_t PersistentStorage::ReadLastArticle( const char* archive )
     uint32_t ret;
     fread( &ret, 1, sizeof( ret ), f );
     fclose( f );
+    return ret;
+}
+
+bool PersistentStorage::WasVisited( const char* msgid )
+{
+    if( m_visited.find( msgid ) != m_visited.end() ) return true;
+    const auto fn = m_base + LastOpenArchive;
+    LockedFile guard( fn.c_str() );
+    std::lock_guard<LockedFile> lg( guard );
+    if( Exists( fn ) )
+    {
+        if( GetFileMTime( fn.c_str() ) > m_visitedTimestamp )
+        {
+            // ...
+        }
+    }
+    return m_visited.find( msgid ) != m_visited.end();
+}
+
+bool PersistentStorage::MarkVisited( const char* msgid )
+{
+    if( m_visited.find( msgid ) != m_visited.end() ) return false;
+    const auto fn = m_base + LastOpenArchive;
+    LockedFile guard( fn.c_str() );
+    std::lock_guard<LockedFile> lg( guard );
+    if( Exists( fn ) )
+    {
+        if( GetFileMTime( fn.c_str() ) > m_visitedTimestamp )
+        {
+            // ...
+        }
+    }
+    m_visited.emplace( StoreString( msgid ) );
+    // ...
+    return true;
+}
+
+const char* PersistentStorage::StoreString( const char* str )
+{
+    const auto size = strlen( str ) + 1;
+    if( size > m_bufLeft )
+    {
+        m_currBuf = new char[BufSize];
+        m_bufLeft = BufSize;
+        m_buffers.emplace_back( m_currBuf );
+    }
+    memcpy( m_currBuf, str, size );
+    const auto ret = m_currBuf;
+    m_currBuf += size;
+    m_bufLeft -= size;
     return ret;
 }
