@@ -64,7 +64,8 @@ Browser::Browser( QWidget *parent )
     const auto archive = m_storage->ReadLastOpenArchive();
     if( archive.empty() ) return;
     OpenArchive( archive );
-    const auto article = m_storage->ReadLastArticle( archive.c_str() );
+    if( !m_storage->ReadArticleHistory( archive.c_str() ) ) return;
+    const auto article = m_storage->GetArticleHistory().back();
     if( article == 0 ) return;
     SwitchToMessage( article );
 }
@@ -76,7 +77,7 @@ Browser::~Browser()
     if( m_archiveFilename.empty() ) return;
     m_storage->WriteLastOpenArchive( m_archiveFilename.c_str() );
     if( m_index == -1 ) return;
-    m_storage->WriteLastArticle( m_archiveFilename.c_str(), m_index );
+    m_storage->WriteArticleHistory( m_archiveFilename.c_str() );
 }
 
 void Browser::on_actionOpen_triggered()
@@ -103,7 +104,7 @@ void Browser::OpenArchive( const std::string& fn )
     }
     if( !m_archiveFilename.empty() && m_index != -1 )
     {
-        m_storage->WriteLastArticle( m_archiveFilename.c_str(), m_index );
+        m_storage->WriteArticleHistory( m_archiveFilename.c_str() );
     }
     m_archiveFilename = fn;
     QString str;
@@ -158,7 +159,8 @@ void Browser::OpenArchive( const std::string& fn )
     ClearSearch();
     ui->SearchContentsScroll->setUpdatesEnabled( true );
 
-    const auto article = m_storage->ReadLastArticle( fn.c_str() );
+    if( !m_storage->ReadArticleHistory( fn.c_str() ) ) return;
+    const auto article = m_storage->GetArticleHistory().back();
     if( article == 0 ) return;
     SwitchToMessage( article );
 }
@@ -461,6 +463,12 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
 
     SetText( m_archive->GetMessage( m_index ) );
     m_timer.start();
+
+    auto& history = m_storage->GetArticleHistory();
+    if( history.size() == 0 || history.back() != m_index )
+    {
+        m_storage->AddToHistory( m_index );
+    }
 }
 
 void Browser::onTreeSelectionChanged( const QModelIndex& index )
