@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <chrono>
 #include <QFileDialog>
 #include <QLabel>
@@ -35,6 +36,8 @@ Browser::Browser( QWidget *parent )
     , m_index( -1 )
     , m_rawMessage( false )
     , m_rot13( false )
+    , m_historyIdx( 0 )
+    , m_historyIgnore( false )
 {
     ui->setupUi( this );
 
@@ -64,10 +67,19 @@ Browser::Browser( QWidget *parent )
     const auto archive = m_storage->ReadLastOpenArchive();
     if( archive.empty() ) return;
     OpenArchive( archive );
-    if( !m_storage->ReadArticleHistory( archive.c_str() ) ) return;
-    const auto article = m_storage->GetArticleHistory().back();
-    if( article == 0 ) return;
-    SwitchToMessage( article );
+    auto& history = m_storage->GetArticleHistory();
+    if( m_storage->ReadArticleHistory( archive.c_str() ) )
+    {
+        const auto article = history.back();
+        m_historyIgnore = true;
+        SwitchToMessage( article );
+    }
+    else
+    {
+        m_storage->AddToHistory( m_archive->GetTopLevel().ptr[0] );
+    }
+    m_historyIdx = history.size() - 1;
+    HandleHistoryArrows();
 }
 
 Browser::~Browser()
@@ -159,10 +171,19 @@ void Browser::OpenArchive( const std::string& fn )
     ClearSearch();
     ui->SearchContentsScroll->setUpdatesEnabled( true );
 
-    if( !m_storage->ReadArticleHistory( fn.c_str() ) ) return;
-    const auto article = m_storage->GetArticleHistory().back();
-    if( article == 0 ) return;
-    SwitchToMessage( article );
+    auto& history = m_storage->GetArticleHistory();
+    if( m_storage->ReadArticleHistory( fn.c_str() ) )
+    {
+        const auto article = history.back();
+        m_historyIgnore = true;
+        SwitchToMessage( article );
+    }
+    else
+    {
+        m_storage->AddToHistory( m_archive->GetTopLevel().ptr[0] );
+    }
+    m_historyIdx = history.size() - 1;
+    HandleHistoryArrows();
 }
 
 void Browser::on_actionRaw_message_triggered(bool checked)
@@ -464,10 +485,19 @@ void Browser::on_treeView_clicked(const QModelIndex &index)
     SetText( m_archive->GetMessage( m_index ) );
     m_timer.start();
 
-    auto& history = m_storage->GetArticleHistory();
-    if( history.size() == 0 || history.back() != m_index )
+    if( m_historyIgnore )
     {
-        m_storage->AddToHistory( m_index );
+        m_historyIgnore = false;
+    }
+    else
+    {
+        auto& history = m_storage->GetArticleHistory();
+        if( history.empty() || history.back() != m_index )
+        {
+            m_storage->AddToHistory( m_index );
+            m_historyIdx = history.size()-1;
+            HandleHistoryArrows();
+        }
     }
 }
 
@@ -726,4 +756,39 @@ void Browser::on_actionGroup_Charter_triggered()
 void Browser::on_actionGo_to_date_triggered()
 {
     (new DateSelect( this ))->exec();
+}
+
+void Browser::HandleHistoryArrows()
+{
+    auto& history = m_storage->GetArticleHistory();
+    if( history.empty() )
+    {
+        ui->action_back->setEnabled( false );
+        ui->action_forward->setEnabled( false );
+    }
+    else
+    {
+        ui->action_back->setEnabled( m_historyIdx > 0 );
+        ui->action_forward->setEnabled( m_historyIdx < history.size()-1 );
+    }
+}
+
+void Browser::on_action_back_triggered()
+{
+    auto& history = m_storage->GetArticleHistory();
+    assert( m_historyIdx > 0 );
+    m_historyIdx--;
+    HandleHistoryArrows();
+    m_historyIgnore = true;
+    SwitchToMessage( history[m_historyIdx] );
+}
+
+void Browser::on_action_forward_triggered()
+{
+    auto& history = m_storage->GetArticleHistory();
+    assert( m_historyIdx < history.size()-1 );
+    m_historyIdx++;
+    HandleHistoryArrows();
+    m_historyIgnore = true;
+    SwitchToMessage( history[m_historyIdx] );
 }

@@ -170,6 +170,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="action_back"/>
+   <addaction name="action_forward"/>
    <addaction name="actionOpen"/>
    <addaction name="actionGroup_Charter"/>
    <addaction name="actionRaw_message"/>
@@ -233,6 +235,22 @@
    </property>
    <property name="text">
     <string>Go to date</string>
+   </property>
+  </action>
+  <action name="action_back">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>←</string>
+   </property>
+  </action>
+  <action name="action_forward">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>→</string>
    </property>
   </action>
  </widget>

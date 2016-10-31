@@ -40,8 +40,9 @@ private slots:
     void on_actionGo_to_message_triggered();
     void on_actionAbout_triggered();
     void on_actionGroup_Charter_triggered();
-
     void on_actionGo_to_date_triggered();
+    void on_action_back_triggered();
+    void on_action_forward_triggered();
 
 private:
     void OpenArchive( const std::string& fn );
@@ -52,6 +53,7 @@ private:
     void ShowMessage( const char* msg );
     void SwitchToMessage( uint32_t idx );
     void ClearSearch();
+    void HandleHistoryArrows();
 
     Ui::Browser *ui;
     std::string m_archiveFilename;
@@ -64,6 +66,8 @@ private:
     bool m_rot13;
     std::vector<QWidget*> m_searchItems;
     QTimer m_timer;
+    int m_historyIdx;
+    bool m_historyIgnore;
 };
 
 #endif
