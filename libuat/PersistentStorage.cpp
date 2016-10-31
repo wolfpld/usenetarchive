@@ -140,7 +140,7 @@ bool PersistentStorage::ReadArticleHistory( const char* archive )
     LockedFile guard( fn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
     FILE* f = fopen( guard, "rb" );
-    if( !f ) return 0;
+    if( !f ) return false;
     uint32_t tmp;
     const auto size = GetFileSize( guard ) / sizeof( tmp );
     for( int i=0; i<size; i++ )
@@ -148,7 +148,7 @@ bool PersistentStorage::ReadArticleHistory( const char* archive )
         fread( &tmp, 1, sizeof( tmp ), f );
         m_articleHistory.push_back( tmp );
     }
-    return true;
+    return size != 0;
 }
 
 bool PersistentStorage::WasVisited( const char* msgid )
