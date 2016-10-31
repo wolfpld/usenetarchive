@@ -49,6 +49,7 @@ PersistentStorage::PersistentStorage()
     , m_visitedTimestamp( 0 )
     , m_currBuf( nullptr )
     , m_bufLeft( 0 )
+    , m_articleHistory( 256 )
 {
 }
 
@@ -83,6 +84,11 @@ std::string PersistentStorage::ReadLastOpenArchive()
     return ret;
 }
 
+void PersistentStorage::AddToHistory( uint32_t idx )
+{
+    m_articleHistory.push_back( idx );
+}
+
 std::string PersistentStorage::CreateLastArticleFilename( const char* archive )
 {
     std::ostringstream ss;
@@ -111,7 +117,7 @@ std::string PersistentStorage::CreateLastArticleFilename( const char* archive )
     return ss.str();
 }
 
-void PersistentStorage::WriteLastArticle( const char* archive, uint32_t idx )
+void PersistentStorage::WriteArticleHistory( const char* archive )
 {
     CreateDirStruct( m_base );
     const auto fn = CreateLastArticleFilename( archive );
@@ -119,22 +125,30 @@ void PersistentStorage::WriteLastArticle( const char* archive, uint32_t idx )
     std::lock_guard<LockedFile> lg( guard );
     FILE* f = fopen( guard, "wb" );
     if( !f ) return;
-    fwrite( &idx, 1, sizeof( idx ), f );
+    for( auto& v : m_articleHistory )
+    {
+        fwrite( &v, 1, sizeof( v ), f );
+    }
     fclose( f );
 }
 
-uint32_t PersistentStorage::ReadLastArticle( const char* archive )
+bool PersistentStorage::ReadArticleHistory( const char* archive )
 {
+    m_articleHistory.clear();
     const auto fn = CreateLastArticleFilename( archive );
-    if( !Exists( fn ) ) return 0;
+    if( !Exists( fn ) ) return false;
     LockedFile guard( fn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
     FILE* f = fopen( guard, "rb" );
     if( !f ) return 0;
-    uint32_t ret;
-    fread( &ret, 1, sizeof( ret ), f );
-    fclose( f );
-    return ret;
+    uint32_t tmp;
+    const auto size = GetFileSize( guard ) / sizeof( tmp );
+    for( int i=0; i<size; i++ )
+    {
+        fread( &tmp, 1, sizeof( tmp ), f );
+        m_articleHistory.push_back( tmp );
+    }
+    return true;
 }
 
 bool PersistentStorage::WasVisited( const char* msgid )

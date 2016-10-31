@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "../contrib/xxhash/xxhash.h"
+#include "../common/ring_buffer.hpp"
 
 class PersistentStorage
 {
@@ -18,8 +19,11 @@ public:
     void WriteLastOpenArchive( const char* archive );
     std::string ReadLastOpenArchive();
 
-    void WriteLastArticle( const char* archive, uint32_t idx );
-    uint32_t ReadLastArticle( const char* archive );
+    void WriteArticleHistory( const char* archive );
+    bool ReadArticleHistory( const char* archive );
+
+    void AddToHistory( uint32_t idx );
+    const ring_buffer<uint32_t>& GetArticleHistory() const { return m_articleHistory; }
 
     bool WasVisited( const char* msgid );
     bool MarkVisited( const char* msgid );
@@ -39,6 +43,8 @@ private:
     std::vector<char*> m_buffers;
     char* m_currBuf;
     size_t m_bufLeft;
+
+    ring_buffer<uint32_t> m_articleHistory;
 };
 
 #endif

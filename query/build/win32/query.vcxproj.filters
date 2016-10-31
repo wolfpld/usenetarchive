@@ -164,5 +164,8 @@
     <ClInclude Include="..\..\..\libuat\PersistentStorage.hpp">
       <Filter>libuat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\ring_buffer.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
