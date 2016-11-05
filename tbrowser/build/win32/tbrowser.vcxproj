@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EC7532E1-6191-42A4-8781-CE4D2E2F9FB9}</ProjectGuid>
+    <RootNamespace>tbrowser</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\contrib\pdcurses\addch.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\addchstr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\addstr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\attr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\beep.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\bkgd.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\border.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\clear.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\color.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\debug.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\delch.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\deleteln.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\deprec.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\getch.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\getstr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\getyx.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\inch.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\inchstr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\initscr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\inopts.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\insch.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\insstr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\instr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\kernel.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\keyname.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\mouse.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\move.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\outopts.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\overlay.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pad.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\panel.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdcclip.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdcdisp.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdcgetsc.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdckbd.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdcscrn.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdcsetsc.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\pdcutil.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\printw.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\refresh.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\scanw.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\scroll.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\scr_dump.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\slk.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\termattr.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\terminfo.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\touch.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\util.c" />
+    <ClCompile Include="..\..\..\contrib\pdcurses\window.c" />
+    <ClCompile Include="..\..\tbrowser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />
+    <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
+    <ClInclude Include="..\..\..\contrib\pdcurses\panel.h" />
+    <ClInclude Include="..\..\..\contrib\pdcurses\pdcwin.h" />
+    <ClInclude Include="..\..\..\contrib\pdcurses\term.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
