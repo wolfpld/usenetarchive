@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;..\..\..\contrib\zstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;..\..\..\contrib\zstd;..\..\..\contrib\zstd\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -104,7 +104,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;..\..\..\contrib\zstd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -121,7 +121,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\contrib\pdcurses;..\..\..\contrib\zstd;..\..\..\contrib\zstd\common</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -132,6 +132,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\common\Filesystem.cpp" />
+    <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
+    <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addchstr.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addstr.c" />
@@ -181,14 +184,43 @@
     <ClCompile Include="..\..\..\contrib\pdcurses\touch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\util.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\window.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c" />
+    <ClCompile Include="..\..\..\libuat\Archive.cpp" />
+    <ClCompile Include="..\..\..\libuat\LockedFile.cpp" />
+    <ClCompile Include="..\..\..\libuat\PackageAccess.cpp" />
+    <ClCompile Include="..\..\..\libuat\PersistentStorage.cpp" />
     <ClCompile Include="..\..\tbrowser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
+    <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\panel.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\pdcwin.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\term.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\error_public.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\fse.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\huf.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\mem.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\zbuff.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\zstd.h" />
+    <ClInclude Include="..\..\..\libuat\Archive.hpp" />
+    <ClInclude Include="..\..\..\libuat\LockedFile.hpp" />
+    <ClInclude Include="..\..\..\libuat\named_mutex.hpp" />
+    <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
+    <ClInclude Include="..\..\..\libuat\PersistentStorage.hpp" />
+    <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
