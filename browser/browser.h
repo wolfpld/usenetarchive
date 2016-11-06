@@ -28,6 +28,7 @@ public:
     ~Browser();
 
     void GoToDate( uint32_t date );
+    void RecursiveSetIndex(const QModelIndex& index);
 
 private slots:
     void on_actionOpen_triggered();
@@ -48,7 +49,6 @@ private:
     void OpenArchive( const std::string& fn );
     void FillTree();
     void RecursiveExpand(const QModelIndex& index);
-    void RecursiveSetIndex(const QModelIndex& index);
     void SetText( const char* txt );
     void ShowMessage( const char* msg );
     void SwitchToMessage( uint32_t idx );

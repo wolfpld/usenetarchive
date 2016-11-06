@@ -253,7 +253,7 @@ void Browser::FillTree()
     box.show();
     QCoreApplication::processEvents();
 
-    m_model = std::make_unique<TreeModel>( *m_archive, *m_storage );
+    m_model = std::make_unique<TreeModel>( *m_archive, *m_storage, this );
     ui->treeView->setUpdatesEnabled( false );
     ui->treeView->setModel( m_model.get() );
     auto rows = m_model->rowCount();
@@ -516,6 +516,10 @@ void Browser::on_treeView_expanded(const QModelIndex &index)
 
 void Browser::RecursiveExpand(const QModelIndex& index)
 {
+    if( m_model->canFetchMore( index ) )
+    {
+        m_model->fetchMore( index );
+    }
     auto num = m_model->rowCount(index);
     for( int i=0; i<num; i++ )
     {
@@ -687,6 +691,20 @@ void Browser::on_lineEdit_returnPressed()
 
 void Browser::SwitchToMessage( uint32_t idx )
 {
+    auto index = m_model->GetIndexFor( idx );
+    if( !index.isValid() )
+    {
+        auto root = idx;
+        for(;;)
+        {
+            auto parent = m_archive->GetParent( root );
+            if( parent == -1 ) break;
+            root = parent;
+        }
+        RecursiveExpand( m_model->GetIndexFor( root ) );
+        index = m_model->GetIndexFor( idx );
+        assert( index.isValid() );
+    }
     ui->treeView->setCurrentIndex( m_model->GetIndexFor( idx ) );
     ui->tabWidget->setCurrentIndex( 0 );
 }

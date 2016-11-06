@@ -72,6 +72,8 @@ public:
     uint32_t GetIdx() const { return m_idx; }
     uint8_t GetColor() const { return m_color; }
 
+    bool m_wasExpanded = false;
+
 private:
     QVector<TreeItem*> m_childItems;
     QVector<QVariant> m_itemData;

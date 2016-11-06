@@ -60,37 +60,40 @@
 class TreeItem;
 class Archive;
 class PersistentStorage;
+class Browser;
 
 class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit TreeModel(const Archive &data, PersistentStorage& storage, QObject *parent = 0);
+    explicit TreeModel(const Archive &data, PersistentStorage& storage, Browser* browser, QObject *parent = 0);
     ~TreeModel();
 
-    QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex &index, int role) const override;
     uint32_t GetIdx(const QModelIndex& index) const;
     bool IsRoot(const QModelIndex& index) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-    QModelIndex parent(const QModelIndex &index) const Q_DECL_OVERRIDE;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex &index) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    bool canFetchMore( const QModelIndex& parent ) const override;
+    bool hasChildren( const QModelIndex& parent ) const override;
+    void fetchMore( const QModelIndex& parent ) override;
 
     QModelIndex GetIndexFor( uint32_t idx ) const;
     void SetIndex( uint32_t idx, const QModelIndex& index ) { m_indices[idx] = index; }
 
 private:
-    void setupModelData(TreeItem *parent);
+    void setupModelData( TreeItem *parent );
 
     TreeItem *rootItem;
     std::vector<QModelIndex> m_indices;
     const Archive& m_archive;
     PersistentStorage& m_storage;
+    Browser* m_browser;
 };
 
 #endif
