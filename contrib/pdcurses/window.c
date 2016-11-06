@@ -1,6 +1,8 @@
 /* Public Domain Curses */
 
 #include <curspriv.h>
+#include <stdlib.h>
+#include <malloc.h>
 
 RCSID("$Id: window.c,v 1.62 2008/07/13 16:08:18 wmcbrine Exp $")
 
