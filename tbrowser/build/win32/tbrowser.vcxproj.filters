@@ -213,6 +213,15 @@
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\View.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\HeaderBar.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Browser.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -286,6 +295,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\View.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\HeaderBar.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Browser.hpp">
+      <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
