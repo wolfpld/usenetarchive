@@ -18,6 +18,7 @@ int main( int argc, char** argv )
     if( !archive )
     {
         fprintf( stderr, "%s is not an archive!\n", argv[1] );
+        return 1;
     }
 
     initscr();
