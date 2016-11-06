@@ -9,8 +9,14 @@ HeaderBar::HeaderBar( const char* archive, const char* desc )
     wprintw( m_win, " :: " );
     wattroff( m_win, A_BOLD );
 
+    wprintw( m_win, "%s", archive );
+
     if( desc )
     {
+        wattron( m_win, A_BOLD );
+        wprintw( m_win, " :: " );
+        wattroff( m_win, A_BOLD );
+
         while( *desc )
         {
             if( *desc != '\n' && *desc != '\r' )
@@ -19,12 +25,7 @@ HeaderBar::HeaderBar( const char* archive, const char* desc )
             }
             desc++;
         }
-
-        wattron( m_win, A_BOLD );
-        wprintw( m_win, " :: " );
-        wattroff( m_win, A_BOLD );
     }
-    wprintw( m_win, "%s", archive );
 
     wrefresh( m_win );
 }
