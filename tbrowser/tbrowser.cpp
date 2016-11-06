@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <curses.h>
+
 #include "../libuat/Archive.hpp"
 
 int main( int argc, char** argv )
@@ -17,6 +19,16 @@ int main( int argc, char** argv )
     {
         fprintf( stderr, "%s is not an archive!\n", argv[1] );
     }
+
+    initscr();
+    if( !has_colors() )
+    {
+        endwin();
+        fprintf( stderr, "Terminal doesn't support colors.\n" );
+        exit( 1 );
+    }
+
+    endwin();
 
     return 0;
 }
