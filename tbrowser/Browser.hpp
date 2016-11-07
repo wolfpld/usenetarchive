@@ -6,6 +6,7 @@
 #include "../libuat/Archive.hpp"
 
 #include "HeaderBar.hpp"
+#include "ThreadView.hpp"
 
 class Browser
 {
@@ -19,6 +20,7 @@ private:
     std::unique_ptr<Archive> m_archive;
 
     HeaderBar m_header;
+    ThreadView m_tview;
 };
 
 #endif
