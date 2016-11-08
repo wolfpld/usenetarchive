@@ -17,3 +17,8 @@ View::~View()
 {
     delwin( m_win );
 }
+
+int View::GetKey()
+{
+    return wgetch( m_win );
+}
