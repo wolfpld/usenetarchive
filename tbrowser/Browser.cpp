@@ -6,7 +6,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive )
     , m_bottom( m_archive->NumberOfTopLevel() )
     , m_tview( *m_archive )
 {
-    //m_bottom.Update( 0 );
+    m_bottom.Update( 0 );
 }
 
 Browser::~Browser()
