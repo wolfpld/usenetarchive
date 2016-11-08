@@ -15,5 +15,5 @@ Browser::~Browser()
 
 void Browser::Entry()
 {
-    for(;;);
+    while( m_tview.GetKey() );
 }
