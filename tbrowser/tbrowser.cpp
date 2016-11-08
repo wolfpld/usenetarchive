@@ -1,7 +1,8 @@
+#include <curses.h>
+#include <locale.h>
 #include <memory>
 #include <stdio.h>
 #include <stdlib.h>
-#include <curses.h>
 #include "../libuat/Archive.hpp"
 
 #include "Browser.hpp"
@@ -20,6 +21,8 @@ int main( int argc, char** argv )
         fprintf( stderr, "%s is not an archive!\n", argv[1] );
         return 1;
     }
+
+    setlocale( LC_ALL, "" );
 
     initscr();
     if( !has_colors() )

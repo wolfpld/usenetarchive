@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #include "../libuat/Archive.hpp"
 
 #include "ThreadView.hpp"
@@ -26,6 +27,8 @@ ThreadView::~ThreadView()
 
 void ThreadView::Draw()
 {
+    wchar_t buf[1024];
+
     int w, h;
     getmaxyx( m_win, h, w );
 
@@ -35,7 +38,8 @@ void ThreadView::Draw()
     for( int i=0; i<h; i++ )
     {
         assert( m_data[idx].valid == 1 );
-        wprintw( m_win, "%s\n", m_archive.GetSubject( m_data[idx].msgid ) );
+        mbstowcs( buf, m_archive.GetSubject( m_data[idx].msgid ), 1024 );
+        wprintw( m_win, "%ls\n", buf );
         if( m_data[idx].expanded )
         {
             idx++;
