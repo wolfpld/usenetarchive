@@ -7,6 +7,8 @@ class HeaderBar : public View
 {
 public:
     HeaderBar( const char* archive, const char* desc );
+
+    void Resize();
 };
 
 #endif

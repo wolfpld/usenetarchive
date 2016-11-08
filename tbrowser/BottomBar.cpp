@@ -10,6 +10,10 @@ BottomBar::BottomBar( int total )
     wrefresh( m_win );
 }
 
+void BottomBar::Resize()
+{
+}
+
 void BottomBar::Update( int index )
 {
     wclear( m_win );

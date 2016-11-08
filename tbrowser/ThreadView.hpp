@@ -23,6 +23,8 @@ public:
     ThreadView( const Archive& archive );
     ~ThreadView();
 
+    void Resize();
+
     void Draw();
 
 private:

@@ -25,6 +25,10 @@ ThreadView::~ThreadView()
 {
 }
 
+void ThreadView::Resize()
+{
+}
+
 void ThreadView::Draw()
 {
     wchar_t buf[1024];

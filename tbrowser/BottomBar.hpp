@@ -8,6 +8,8 @@ class BottomBar : public View
 public:
     BottomBar( int total );
 
+    void Resize();
+
     void Update( int index );
 
 private:

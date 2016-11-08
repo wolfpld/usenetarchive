@@ -22,6 +22,10 @@ void Browser::Entry()
         switch( key )
         {
         case KEY_RESIZE:
+            m_header.Resize();
+            m_bottom.Resize();
+            m_tview.Resize();
+            doupdate();
             break;
         case 'q':
             return;

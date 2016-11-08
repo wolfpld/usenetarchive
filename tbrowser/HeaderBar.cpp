@@ -35,3 +35,7 @@ HeaderBar::HeaderBar( const char* archive, const char* desc )
 
     wnoutrefresh( m_win );
 }
+
+void HeaderBar::Resize()
+{
+}
