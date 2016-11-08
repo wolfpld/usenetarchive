@@ -5,6 +5,7 @@
 
 #include "../libuat/Archive.hpp"
 
+#include "BottomBar.hpp"
 #include "HeaderBar.hpp"
 #include "ThreadView.hpp"
 
@@ -20,6 +21,7 @@ private:
     std::unique_ptr<Archive> m_archive;
 
     HeaderBar m_header;
+    BottomBar m_bottom;
     ThreadView m_tview;
 };
 
