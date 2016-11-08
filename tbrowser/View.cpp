@@ -2,13 +2,13 @@
 
 View::View( int x, int y, int w, int h )
 {
-    if( w == -1 )
+    if( w <= 0 )
     {
-        w = COLS - x;
+        w += COLS;
     }
-    if( h == -1 )
+    if( h <= 0 )
     {
-        h = LINES - y;
+        h += LINES;
     }
     m_win = newwin( h, w, y, x );
 }

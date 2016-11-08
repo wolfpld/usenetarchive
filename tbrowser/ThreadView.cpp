@@ -5,7 +5,7 @@
 #include "ThreadView.hpp"
 
 ThreadView::ThreadView( const Archive& archive )
-    : View( 0, 1, -1, -1 )
+    : View( 0, 1, 0, -2 )
     , m_archive( archive )
     , m_data( archive.NumberOfMessages() )
     , m_top( 0 )

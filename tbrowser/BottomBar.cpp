@@ -3,7 +3,7 @@
 #include "BottomBar.hpp"
 
 BottomBar::BottomBar( int total )
-    : View( 0, LINES-1, -1, 1 )
+    : View( 0, LINES-1, 0, 1 )
     , m_total( total )
 {
     wbkgd( m_win, COLOR_PAIR(1) );

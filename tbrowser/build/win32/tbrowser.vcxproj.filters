@@ -222,10 +222,10 @@
     <ClCompile Include="..\..\Browser.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ThreadView.cpp">
-      <Filter>libuat</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\BottomBar.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThreadView.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
   </ItemGroup>
@@ -311,10 +311,10 @@
     <ClInclude Include="..\..\Browser.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ThreadView.hpp">
-      <Filter>libuat</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\BottomBar.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThreadView.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
