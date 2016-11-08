@@ -50,7 +50,7 @@ void ThreadView::Draw()
         }
     }
 
-    wrefresh( m_win );
+    wnoutrefresh( m_win );
 }
 
 void ThreadView::Fill( int index, int msgid )

@@ -33,5 +33,5 @@ HeaderBar::HeaderBar( const char* archive, const char* desc )
         }
     }
 
-    wrefresh( m_win );
+    wnoutrefresh( m_win );
 }

@@ -14,5 +14,5 @@ void BottomBar::Update( int index )
 {
     wclear( m_win );
     wprintw( m_win, " [%i/%i]", index, m_total );
-    wrefresh( m_win );
+    wnoutrefresh( m_win );
 }

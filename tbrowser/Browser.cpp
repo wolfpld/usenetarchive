@@ -1,3 +1,4 @@
+#include <curses.h>
 #include "Browser.hpp"
 
 Browser::Browser( std::unique_ptr<Archive>&& archive )
@@ -7,6 +8,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive )
     , m_tview( *m_archive )
 {
     m_bottom.Update( 0 );
+    doupdate();
 }
 
 Browser::~Browser()
