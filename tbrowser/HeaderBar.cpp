@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "HeaderBar.hpp"
 
 HeaderBar::HeaderBar( const char* archive, const char* desc )
@@ -17,13 +19,17 @@ HeaderBar::HeaderBar( const char* archive, const char* desc )
         wprintw( m_win, " :: " );
         wattroff( m_win, A_BOLD );
 
-        while( *desc )
+        wchar_t buf[1024];
+        mbstowcs( buf, desc, 1024 );
+        auto ptr = buf;
+
+        while( *ptr )
         {
-            if( *desc != '\n' && *desc != '\r' )
+            if( *ptr != '\n' && *ptr != '\r' )
             {
-                waddch( m_win, *desc );
+                waddch( m_win, *ptr );
             }
-            desc++;
+            ptr++;
         }
     }
 
