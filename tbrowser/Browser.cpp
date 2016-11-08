@@ -17,5 +17,16 @@ Browser::~Browser()
 
 void Browser::Entry()
 {
-    while( m_tview.GetKey() );
+    while( auto key = m_tview.GetKey() )
+    {
+        switch( key )
+        {
+        case KEY_RESIZE:
+            break;
+        case 'q':
+            return;
+        default:
+            break;
+        }
+    }
 }
