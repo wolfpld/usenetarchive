@@ -23,8 +23,14 @@ public:
     ThreadView( const Archive& archive );
     ~ThreadView();
 
+    void Draw();
+
 private:
+    void Fill( int index, int msgid );
+
+    const Archive& m_archive;
     std::vector<ThreadData> m_data;
+    int m_top;
 };
 
 #endif
