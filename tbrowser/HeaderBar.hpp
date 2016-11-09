@@ -9,6 +9,12 @@ public:
     HeaderBar( const char* archive, const char* desc );
 
     void Resize();
+
+private:
+    void Redraw();
+
+    const char* m_archive;
+    const char* m_desc;
 };
 
 #endif
