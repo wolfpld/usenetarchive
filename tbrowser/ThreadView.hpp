@@ -27,7 +27,7 @@ public:
 
     void Draw();
 
-    int GetIndex() const { return m_top; }  // not index, but close enough for now
+    int GetCursor() const { return m_cursor; }
 
 private:
     void Fill( int index, int msgid );
@@ -35,6 +35,7 @@ private:
     const Archive& m_archive;
     std::vector<ThreadData> m_data;
     int m_top;
+    int m_cursor;
 };
 
 #endif

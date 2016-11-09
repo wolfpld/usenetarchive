@@ -9,6 +9,7 @@ ThreadView::ThreadView( const Archive& archive )
     , m_archive( archive )
     , m_data( archive.NumberOfMessages() )
     , m_top( 0 )
+    , m_cursor( 0 )
 {
     unsigned int idx = 0;
     const auto toplevel = archive.GetTopLevel();
