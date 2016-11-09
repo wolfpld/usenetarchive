@@ -63,18 +63,12 @@ void ThreadView::Draw()
 
 void ThreadView::Up()
 {
-    m_cursor--;
-    Draw();
-    m_bottomBar.Update( m_cursor + 1 );
-    doupdate();
+    MoveCursor( -1 );
 }
 
 void ThreadView::Down()
 {
-    m_cursor++;
-    Draw();
-    m_bottomBar.Update( m_cursor + 1 );
-    doupdate();
+    MoveCursor( 1 );
 }
 
 void ThreadView::Fill( int index, int msgid )
@@ -156,7 +150,38 @@ void ThreadView::DrawLine( int idx )
 
 void ThreadView::MoveCursor( int offset )
 {
-    m_cursor += offset;
+    auto end = m_archive.NumberOfMessages();
+
+    if( offset > 0 )
+    {
+        do
+        {
+            auto prev = m_cursor;
+            if( m_data[m_cursor].expanded )
+            {
+                m_cursor++;
+            }
+            else
+            {
+                m_cursor += m_archive.GetTotalChildrenCount( m_data[m_cursor].msgid );
+            }
+            if( m_cursor == end )
+            {
+                m_cursor = prev;
+                break;
+            }
+        }
+        while( --offset );
+    }
+    else if( offset < 0 )
+    {
+        do
+        {
+            if( m_cursor == 0 ) break;
+        }
+        while( ++offset );
+    }
+
     Draw();
     m_bottomBar.Update( m_cursor + 1 );
     doupdate();
