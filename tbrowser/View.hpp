@@ -12,6 +12,8 @@ public:
     int GetKey();
 
 protected:
+    void ResizeView( int x, int y, int w, int h );
+
     WINDOW* m_win;
 };
 
