@@ -35,8 +35,6 @@ void ThreadView::Resize()
 
 void ThreadView::Draw()
 {
-    wchar_t buf[1024];
-
     int w, h;
     getmaxyx( m_win, h, w );
 
@@ -46,8 +44,7 @@ void ThreadView::Draw()
     for( int i=0; i<h; i++ )
     {
         assert( m_data[idx].valid == 1 );
-        mbstowcs( buf, m_archive.GetSubject( m_data[idx].msgid ), 1024 );
-        wprintw( m_win, "%ls\n", buf );
+        DrawLine( idx );
         if( m_data[idx].expanded )
         {
             idx++;
@@ -66,4 +63,11 @@ void ThreadView::Fill( int index, int msgid )
     assert( m_data[index].valid == 0 );
     m_data[index].msgid = msgid;
     m_data[index].valid = 1;
+}
+
+void ThreadView::DrawLine( int idx )
+{
+    wchar_t buf[1024];
+    mbstowcs( buf, m_archive.GetSubject( m_data[idx].msgid ), 1024 );
+    wprintw( m_win, "%ls\n", buf );
 }

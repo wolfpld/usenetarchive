@@ -31,6 +31,7 @@ public:
 
 private:
     void Fill( int index, int msgid );
+    void DrawLine( int idx );
 
     const Archive& m_archive;
     std::vector<ThreadData> m_data;
