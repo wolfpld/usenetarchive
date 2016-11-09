@@ -67,7 +67,53 @@ void ThreadView::Fill( int index, int msgid )
 
 void ThreadView::DrawLine( int idx )
 {
+    const auto midx = m_data[idx].msgid;
     wchar_t buf[1024];
-    mbstowcs( buf, m_archive.GetSubject( m_data[idx].msgid ), 1024 );
+    if( m_cursor == idx )
+    {
+        wattron( m_win, COLOR_PAIR(2) | A_BOLD );
+        wprintw( m_win, "->" );
+        wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
+    }
+    else
+    {
+        wprintw( m_win, "  " );
+    }
+
+    const auto children = m_archive.GetTotalChildrenCount( midx );
+    if( children > 9999 )
+    {
+        wprintw( m_win, "++++ [" );
+    }
+    else
+    {
+        wprintw( m_win, "%4i [", children );
+    }
+
+    mbstowcs( buf, m_archive.GetRealName( midx ), 1024 );
+    wattron( m_win, COLOR_PAIR(3) | A_BOLD );
+    buf[18] = L'\0';
+    wprintw( m_win, "%ls", buf );
+    auto len = wcslen( buf );
+    for( int i=len; i<18; i++ )
+    {
+        waddch( m_win, ' ' );
+    }
+    wattroff( m_win, COLOR_PAIR(3) | A_BOLD );
+    wprintw( m_win, "] " );
+
+    if( children == 1 )
+    {
+        wprintw( m_win, "  " );
+    }
+    else
+    {
+        wattron( m_win, COLOR_PAIR(4) );
+        waddch( m_win, m_data[idx].expanded ? '-' : '+' );
+        waddch( m_win, ' ' );
+        wattroff( m_win, COLOR_PAIR(4) );
+    }
+
+    mbstowcs( buf, m_archive.GetSubject( midx ), 1024 );
     wprintw( m_win, "%ls\n", buf );
 }
