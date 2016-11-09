@@ -16,6 +16,7 @@ View::View( int x, int y, int w, int h )
 {
     AdaptWidthHeight( w, h );
     m_win = newwin( h, w, y, x );
+    keypad( m_win, TRUE );
 }
 
 View::~View()
