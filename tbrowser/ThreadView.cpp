@@ -19,7 +19,7 @@ ThreadView::ThreadView( const Archive& archive, BottomBar& bottomBar )
     const auto toplevel = archive.GetTopLevel();
     for( int i=0; i<toplevel.size; i++ )
     {
-        Fill( idx, toplevel.ptr[i] );
+        Fill( idx, toplevel.ptr[i], -1 );
         idx += archive.GetTotalChildrenCount( toplevel.ptr[i] );
     }
 
@@ -76,12 +76,13 @@ void ThreadView::Expand( int cursor, bool recursive )
     m_data[cursor].expanded = 1;
 
     auto children = m_archive.GetChildren( m_data[cursor].msgid );
+    int parent = cursor;
     cursor++;
     for( int i=0; i<children.size; i++ )
     {
         if( !m_data[cursor].valid )
         {
-            Fill( cursor, children.ptr[i] );
+            Fill( cursor, children.ptr[i], parent );
         }
         if( recursive )
         {
@@ -96,11 +97,12 @@ void ThreadView::Collapse( int cursor )
     m_data[cursor].expanded = 0;
 }
 
-void ThreadView::Fill( int index, int msgid )
+void ThreadView::Fill( int index, int msgid, int parent )
 {
     assert( m_data[index].valid == 0 );
     m_data[index].msgid = msgid;
     m_data[index].valid = 1;
+    m_data[index].parent = parent;
 }
 
 void ThreadView::DrawLine( int idx )

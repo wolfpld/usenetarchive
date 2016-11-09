@@ -14,9 +14,10 @@ struct ThreadData
     unsigned int expanded   : 1;
     unsigned int valid      : 1;
     unsigned int msgid      : 30;
+    int parent;
 };
 
-static_assert( sizeof( ThreadData ) == sizeof( uint32_t ), "Wrong size of ThreadData" );
+static_assert( sizeof( ThreadData ) == sizeof( uint32_t ) * 2, "Wrong size of ThreadData" );
 
 class ThreadView : public View
 {
@@ -37,7 +38,7 @@ public:
     int GetMessageIndex() const { return m_data[m_cursor].msgid; }
 
 private:
-    void Fill( int index, int msgid );
+    void Fill( int index, int msgid, int parent );
     void DrawLine( int idx );
     void MoveCursor( int offset );
 
