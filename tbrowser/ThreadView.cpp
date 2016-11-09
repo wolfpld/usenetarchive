@@ -37,8 +37,7 @@ void ThreadView::Resize()
 
 void ThreadView::Draw()
 {
-    int w, h;
-    getmaxyx( m_win, h, w );
+    int h = getmaxy( m_win );
 
     werase( m_win );
 
