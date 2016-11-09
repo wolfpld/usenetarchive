@@ -228,6 +228,9 @@
     <ClCompile Include="..\..\ThreadView.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UTF8.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -315,6 +318,9 @@
       <Filter>tbrowser</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ThreadView.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UTF8.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
