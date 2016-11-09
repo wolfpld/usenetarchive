@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../libuat/Archive.hpp"
 
 #include "ThreadView.hpp"
@@ -114,13 +115,24 @@ void ThreadView::DrawLine( int idx )
         wattroff( m_win, COLOR_PAIR(4) );
     }
 
+    time_t date = m_archive.GetDate( midx );
+    auto lt = localtime( &date );
+    char buf[64];
+    auto dlen = strftime( buf, 64, "%F %R", lt );
+
     auto w = getmaxx( m_win );
     auto subject = m_archive.GetSubject( midx );
-    len = w - 30;
+    len = w - 32 - dlen;
+    auto target = len;
     end = utfendl( subject, len );
     wprintw( m_win, "%.*s", end - subject, subject );
-    if( len < w-30 )
+    while( len++ < target )
     {
-        waddch( m_win, '\n' );
+        waddch( m_win, ' ' );
     }
+    waddch( m_win, '[' );
+    wattron( m_win, COLOR_PAIR(2) );
+    wprintw( m_win, "%s", buf );
+    wattroff( m_win, COLOR_PAIR(2) );
+    waddch( m_win, ']' );
 }
