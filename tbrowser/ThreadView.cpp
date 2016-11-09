@@ -3,12 +3,14 @@
 #include <time.h>
 #include "../libuat/Archive.hpp"
 
+#include "BottomBar.hpp"
 #include "ThreadView.hpp"
 #include "UTF8.hpp"
 
-ThreadView::ThreadView( const Archive& archive )
+ThreadView::ThreadView( const Archive& archive, BottomBar& bottomBar )
     : View( 0, 1, 0, -2 )
     , m_archive( archive )
+    , m_bottomBar( bottomBar )
     , m_data( archive.NumberOfMessages() )
     , m_top( 0 )
     , m_cursor( 0 )
@@ -57,6 +59,22 @@ void ThreadView::Draw()
     }
 
     wnoutrefresh( m_win );
+}
+
+void ThreadView::Up()
+{
+    m_cursor--;
+    Draw();
+    m_bottomBar.Update( m_cursor + 1 );
+    doupdate();
+}
+
+void ThreadView::Down()
+{
+    m_cursor++;
+    Draw();
+    m_bottomBar.Update( m_cursor + 1 );
+    doupdate();
 }
 
 void ThreadView::Fill( int index, int msgid )
@@ -134,4 +152,12 @@ void ThreadView::DrawLine( int idx )
     wprintw( m_win, "%s", buf );
     wattroff( m_win, COLOR_PAIR(2) );
     waddch( m_win, ']' );
+}
+
+void ThreadView::MoveCursor( int offset )
+{
+    m_cursor += offset;
+    Draw();
+    m_bottomBar.Update( m_cursor + 1 );
+    doupdate();
 }

@@ -7,6 +7,7 @@
 #include "View.hpp"
 
 class Archive;
+class BottomBar;
 
 struct ThreadData
 {
@@ -20,20 +21,23 @@ static_assert( sizeof( ThreadData ) == sizeof( uint32_t ), "Wrong size of Thread
 class ThreadView : public View
 {
 public:
-    ThreadView( const Archive& archive );
+    ThreadView( const Archive& archive, BottomBar& bottomBar );
     ~ThreadView();
 
     void Resize();
-
     void Draw();
+    void Up();
+    void Down();
 
     int GetCursor() const { return m_cursor; }
 
 private:
     void Fill( int index, int msgid );
     void DrawLine( int idx );
+    void MoveCursor( int offset );
 
     const Archive& m_archive;
+    BottomBar& m_bottomBar;
     std::vector<ThreadData> m_data;
     int m_top;
     int m_cursor;

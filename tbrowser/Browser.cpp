@@ -5,7 +5,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive )
     : m_archive( std::move( archive ) )
     , m_header( m_archive->GetArchiveName().first, m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr )
     , m_bottom( m_archive->NumberOfMessages() )
-    , m_tview( *m_archive )
+    , m_tview( *m_archive, m_bottom )
 {
     m_bottom.Update( m_tview.GetCursor() + 1 );
     doupdate();
@@ -30,6 +30,14 @@ void Browser::Entry()
             break;
         case 'q':
             return;
+        case KEY_UP:
+        case 'k':
+            m_tview.Up();
+            break;
+        case KEY_DOWN:
+        case 'j':
+            m_tview.Down();
+            break;
         default:
             break;
         }
