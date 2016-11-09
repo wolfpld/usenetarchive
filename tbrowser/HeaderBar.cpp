@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "HeaderBar.hpp"
 
@@ -37,7 +38,9 @@ void HeaderBar::Redraw()
         mbstowcs( buf, m_desc, 1024 );
         auto ptr = buf;
 
-        while( *ptr )
+        int cnt = 24 + strlen( m_archive );
+
+        while( *ptr && cnt++ <= COLS )
         {
             if( *ptr != '\n' && *ptr != '\r' )
             {
