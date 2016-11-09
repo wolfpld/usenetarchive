@@ -4,10 +4,10 @@
 
 static int codepointlen( char c )
 {
-    if( c & 0x80 == 0 ) return 1;
-    if( c & 0x20 == 0 ) return 2;
-    if( c & 0x10 == 0 ) return 3;
-    assert( c & 0x08 == 0 );
+    if( ( c & 0x80 ) == 0 ) return 1;
+    if( ( c & 0x20 ) == 0 ) return 2;
+    if( ( c & 0x10 ) == 0 ) return 3;
+    assert( ( c & 0x08 ) == 0 );
     return 4;
 }
 
