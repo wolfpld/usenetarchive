@@ -10,8 +10,11 @@ BottomBar::BottomBar( int total )
     wrefresh( m_win );
 }
 
-void BottomBar::Resize()
+void BottomBar::Resize( int index )
 {
+    ResizeView( 0, LINES-1, 0, 1 );
+    wclear( m_win );
+    Update( index );
 }
 
 void BottomBar::Update( int index )

@@ -7,7 +7,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive )
     , m_bottom( m_archive->NumberOfMessages() )
     , m_tview( *m_archive )
 {
-    m_bottom.Update( 0 );
+    m_bottom.Update( m_tview.GetIndex() );
     doupdate();
 }
 
@@ -24,7 +24,7 @@ void Browser::Entry()
         case KEY_RESIZE:
             resize_term( 0, 0 );
             m_header.Resize();
-            m_bottom.Resize();
+            m_bottom.Resize( m_tview.GetIndex() );
             m_tview.Resize();
             doupdate();
             break;

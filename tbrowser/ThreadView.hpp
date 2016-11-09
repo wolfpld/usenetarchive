@@ -27,6 +27,8 @@ public:
 
     void Draw();
 
+    int GetIndex() const { return m_top; }  // not index, but close enough for now
+
 private:
     void Fill( int index, int msgid );
 
