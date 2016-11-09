@@ -21,3 +21,15 @@ size_t utflen( const char* str )
     }
     return ret;
 }
+
+const char* utfend( const char* str, size_t& len )
+{
+    size_t l = 0;
+    while( l < len && *str != '\0' )
+    {
+        str += codepointlen( *str );
+        l++;
+    }
+    len = l;
+    return str;
+}
