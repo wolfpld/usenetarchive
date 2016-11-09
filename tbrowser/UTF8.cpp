@@ -22,14 +22,32 @@ size_t utflen( const char* str )
     return ret;
 }
 
-const char* utfend( const char* str, size_t& len )
+const char* utfend( const char* str, int len )
 {
-    size_t l = 0;
+    while( len-- > 0 && *str != '\0' )
+    {
+        str += codepointlen( *str );
+    }
+    return str;
+}
+
+const char* utfendl( const char* str, int& len )
+{
+    int l = 0;
     while( l < len && *str != '\0' )
     {
         str += codepointlen( *str );
         l++;
     }
     len = l;
+    return str;
+}
+
+const char* utfendcrlf( const char* str, int len )
+{
+    while( len-- > 0 && *str != '\0' && *str != '\n' && *str != '\r' )
+    {
+        str += codepointlen( *str );
+    }
     return str;
 }

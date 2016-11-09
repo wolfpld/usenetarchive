@@ -3,6 +3,7 @@
 #include "../libuat/Archive.hpp"
 
 #include "ThreadView.hpp"
+#include "UTF8.hpp"
 
 ThreadView::ThreadView( const Archive& archive )
     : View( 0, 1, 0, -2 )
@@ -68,7 +69,6 @@ void ThreadView::Fill( int index, int msgid )
 void ThreadView::DrawLine( int idx )
 {
     const auto midx = m_data[idx].msgid;
-    wchar_t buf[1024];
     if( m_cursor == idx )
     {
         wattron( m_win, COLOR_PAIR(2) | A_BOLD );
@@ -90,12 +90,12 @@ void ThreadView::DrawLine( int idx )
         wprintw( m_win, "%4i [", children );
     }
 
-    mbstowcs( buf, m_archive.GetRealName( midx ), 1024 );
+    auto realname = m_archive.GetRealName( midx );
     wattron( m_win, COLOR_PAIR(3) | A_BOLD );
-    buf[18] = L'\0';
-    wprintw( m_win, "%ls", buf );
-    auto len = wcslen( buf );
-    for( int i=len; i<18; i++ )
+    int len = 18;
+    auto end = utfendl( realname, len );
+    wprintw( m_win, "%.*s", end - realname, realname );
+    while( len++ < 18 )
     {
         waddch( m_win, ' ' );
     }
@@ -114,6 +114,13 @@ void ThreadView::DrawLine( int idx )
         wattroff( m_win, COLOR_PAIR(4) );
     }
 
-    mbstowcs( buf, m_archive.GetSubject( midx ), 1024 );
-    wprintw( m_win, "%ls\n", buf );
+    auto w = getmaxx( m_win );
+    auto subject = m_archive.GetSubject( midx );
+    len = w - 30;
+    end = utfendl( subject, len );
+    wprintw( m_win, "%.*s", end - subject, subject );
+    if( len < w-30 )
+    {
+        waddch( m_win, '\n' );
+    }
 }

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 size_t utflen( const char* str );
-const char* utfend( const char* str, size_t& len );
+const char* utfend( const char* str, int len );
+const char* utfendl( const char* str, int& len );
+const char* utfendcrlf( const char* str, int len );
 
 #endif

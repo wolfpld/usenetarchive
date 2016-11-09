@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "HeaderBar.hpp"
+#include "UTF8.hpp"
 
 HeaderBar::HeaderBar( const char* archive, const char* desc )
     : View( 0, 0, 0, 1 )
@@ -34,20 +35,9 @@ void HeaderBar::Redraw()
         wprintw( m_win, " :: " );
         wattroff( m_win, A_BOLD );
 
-        wchar_t buf[1024];
-        mbstowcs( buf, m_desc, 1024 );
-        auto ptr = buf;
-
-        int cnt = 24 + strlen( m_archive );
-
-        while( *ptr && cnt++ <= COLS )
-        {
-            if( *ptr != '\n' && *ptr != '\r' )
-            {
-                waddch( m_win, *ptr );
-            }
-            ptr++;
-        }
+        int w = getmaxx( m_win ) - 23 - strlen( m_archive );
+        auto end = utfendcrlf( m_desc, w );
+        wprintw( m_win, "%.*s", end - m_desc, m_desc );
     }
 
     wnoutrefresh( m_win );
