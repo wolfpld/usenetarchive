@@ -38,6 +38,21 @@ void Browser::Entry()
         case 'j':
             m_tview.Down();
             break;
+        case 'x':
+        {
+            auto cursor = m_tview.GetCursor();
+            if( m_tview.IsExpanded( cursor ) )
+            {
+                m_tview.Collapse( cursor );
+            }
+            else
+            {
+                m_tview.Expand( cursor, m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 );
+            }
+            m_tview.Draw();
+            doupdate();
+            break;
+        }
         default:
             break;
         }

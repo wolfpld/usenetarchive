@@ -26,10 +26,15 @@ public:
 
     void Resize();
     void Draw();
+
     void Up();
     void Down();
+    void Expand( int cursor, bool recursive );
+    void Collapse( int cursor );
+    bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }
 
     int GetCursor() const { return m_cursor; }
+    int GetMessageIndex() const { return m_data[m_cursor].msgid; }
 
 private:
     void Fill( int index, int msgid );

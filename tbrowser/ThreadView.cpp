@@ -71,6 +71,31 @@ void ThreadView::Down()
     MoveCursor( 1 );
 }
 
+void ThreadView::Expand( int cursor, bool recursive )
+{
+    m_data[cursor].expanded = 1;
+
+    auto children = m_archive.GetChildren( m_data[cursor].msgid );
+    cursor++;
+    for( int i=0; i<children.size; i++ )
+    {
+        if( !m_data[cursor].valid )
+        {
+            Fill( cursor, children.ptr[i] );
+        }
+        if( recursive )
+        {
+            Expand( cursor, true );
+        }
+        cursor += m_archive.GetTotalChildrenCount( children.ptr[i] );
+    }
+}
+
+void ThreadView::Collapse( int cursor )
+{
+    m_data[cursor].expanded = 0;
+}
+
 void ThreadView::Fill( int index, int msgid )
 {
     assert( m_data[index].valid == 0 );
