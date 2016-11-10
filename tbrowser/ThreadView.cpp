@@ -81,15 +81,20 @@ void ThreadView::Expand( int cursor, bool recursive )
     cursor++;
     for( int i=0; i<children.size; i++ )
     {
+        auto skip = m_archive.GetTotalChildrenCount( children.ptr[i] );
         if( !m_data[cursor].valid )
         {
             Fill( cursor, children.ptr[i], parent );
+            for( int j=0; j<skip; j++ )
+            {
+                m_tree[cursor+j].treecnt++;
+            }
         }
         if( recursive )
         {
             Expand( cursor, true );
         }
-        cursor += m_archive.GetTotalChildrenCount( children.ptr[i] );
+        cursor += skip;
     }
 }
 
@@ -161,7 +166,12 @@ void ThreadView::DrawLine( int idx )
 
     auto w = getmaxx( m_win );
     auto subject = m_archive.GetSubject( midx );
-    len = w - 32 - dlen;
+    auto treecnt = m_tree[idx].treecnt;
+    len = w - 32 - dlen - treecnt;
+    for( int i=0; i<treecnt; i++ )
+    {
+        waddch( m_win, ' ' );
+    }
     auto target = len;
     end = utfendl( subject, len );
     wprintw( m_win, "%.*s", end - subject, subject );
