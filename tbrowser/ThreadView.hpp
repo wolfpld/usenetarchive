@@ -17,7 +17,13 @@ struct ThreadData
     int parent;
 };
 
-static_assert( sizeof( ThreadData ) == sizeof( uint32_t ) * 2, "Wrong size of ThreadData" );
+struct TreeData
+{
+    uint8_t treecnt;
+    uint8_t tree[23];
+};
+
+enum { TreeBits = sizeof( TreeData::tree ) * 8 };
 
 class ThreadView : public View
 {
@@ -45,6 +51,7 @@ private:
     const Archive& m_archive;
     BottomBar& m_bottomBar;
     std::vector<ThreadData> m_data;
+    std::vector<TreeData> m_tree;
     int m_top;
     int m_cursor;
 };

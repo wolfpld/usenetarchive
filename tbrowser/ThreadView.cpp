@@ -12,6 +12,7 @@ ThreadView::ThreadView( const Archive& archive, BottomBar& bottomBar )
     , m_archive( archive )
     , m_bottomBar( bottomBar )
     , m_data( archive.NumberOfMessages() )
+    , m_tree( archive.NumberOfMessages() )
     , m_top( 0 )
     , m_cursor( 0 )
 {
