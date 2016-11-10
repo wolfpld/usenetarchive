@@ -16,7 +16,7 @@ HeaderBar::HeaderBar( const char* archive, const char* desc )
 void HeaderBar::Resize()
 {
     ResizeView( 0, 0, 0, 1 );
-    wclear( m_win );
+    werase( m_win );
     Redraw();
 }
 

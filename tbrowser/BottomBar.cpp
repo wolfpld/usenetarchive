@@ -13,13 +13,13 @@ BottomBar::BottomBar( int total )
 void BottomBar::Resize( int index )
 {
     ResizeView( 0, LINES-1, 0, 1 );
-    wclear( m_win );
+    werase( m_win );
     Update( index );
 }
 
 void BottomBar::Update( int index )
 {
-    wclear( m_win );
+    werase( m_win );
     wprintw( m_win, " [%i/%i]", index, m_total );
     wnoutrefresh( m_win );
 }

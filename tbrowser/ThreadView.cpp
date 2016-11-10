@@ -33,7 +33,7 @@ ThreadView::~ThreadView()
 void ThreadView::Resize()
 {
     ResizeView( 0, 1, 0, -2 );
-    wclear( m_win );
+    werase( m_win );
     Draw();
 }
 
