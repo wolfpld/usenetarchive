@@ -33,14 +33,14 @@ ThreadView::~ThreadView()
 {
 }
 
-void ThreadView::Resize() const
+void ThreadView::Resize()
 {
     ResizeView( 0, 1, 0, -2 );
     werase( m_win );
     Draw();
 }
 
-void ThreadView::Draw() const
+void ThreadView::Draw()
 {
     int h = getmaxy( m_win );
 
@@ -63,6 +63,7 @@ void ThreadView::Draw() const
         }
         if( idx >= m_archive.NumberOfMessages() ) break;
     }
+    m_bottom = idx;
 
     wnoutrefresh( m_win );
 }
@@ -252,6 +253,11 @@ void ThreadView::MoveCursor( int offset )
                 m_cursor = prev;
                 break;
             }
+            if( m_cursor == m_bottom )
+            {
+                m_top = GetNext( m_top );
+                m_bottom = GetNext( m_bottom );
+            }
         }
         while( --offset );
     }
@@ -260,6 +266,11 @@ void ThreadView::MoveCursor( int offset )
         do
         {
             if( m_cursor == 0 ) break;
+            if( m_cursor == m_top )
+            {
+                m_top = GetPrev( m_top );
+                m_bottom = GetPrev( m_bottom );
+            }
             m_cursor = GetPrev( m_cursor );
         }
         while( ++offset );

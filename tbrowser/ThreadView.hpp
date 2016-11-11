@@ -24,8 +24,8 @@ public:
     ThreadView( const Archive& archive, BottomBar& bottomBar );
     ~ThreadView();
 
-    void Resize() const;
-    void Draw() const;
+    void Resize();
+    void Draw();
 
     void Up();
     void Down();
@@ -48,7 +48,7 @@ private:
     BottomBar& m_bottomBar;
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;
-    int m_top;
+    int m_top, m_bottom;
     int m_cursor;
 };
 
