@@ -4,10 +4,11 @@
 #include "HeaderBar.hpp"
 #include "UTF8.hpp"
 
-HeaderBar::HeaderBar( const char* archive, const char* desc )
+HeaderBar::HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc )
     : View( 0, 0, 0, 1 )
-    , m_archive( archive )
+    , m_archive( archive.first )
     , m_desc( desc )
+    , m_archiveLen( archive.second )
 {
     wbkgd( m_win, COLOR_PAIR(1) );
     Redraw();
@@ -27,7 +28,7 @@ void HeaderBar::Redraw()
     wprintw( m_win, " :: " );
     wattroff( m_win, A_BOLD );
 
-    wprintw( m_win, "%s", m_archive );
+    wprintw( m_win, "%.*s", m_archiveLen, m_archive );
 
     if( m_desc )
     {
