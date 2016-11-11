@@ -10,14 +10,14 @@ BottomBar::BottomBar( int total )
     wrefresh( m_win );
 }
 
-void BottomBar::Resize( int index )
+void BottomBar::Resize( int index ) const
 {
     ResizeView( 0, LINES-1, 0, 1 );
     werase( m_win );
     Update( index );
 }
 
-void BottomBar::Update( int index )
+void BottomBar::Update( int index ) const
 {
     werase( m_win );
     wprintw( m_win, " [%i/%i]", index, m_total );

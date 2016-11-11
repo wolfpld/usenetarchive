@@ -11,10 +11,10 @@ class HeaderBar : public View
 public:
     HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc );
 
-    void Resize();
+    void Resize() const;
 
 private:
-    void Redraw();
+    void Redraw() const;
 
     const char* m_archive;
     const char* m_desc;

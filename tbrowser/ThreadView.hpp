@@ -24,8 +24,8 @@ public:
     ThreadView( const Archive& archive, BottomBar& bottomBar );
     ~ThreadView();
 
-    void Resize();
-    void Draw();
+    void Resize() const;
+    void Draw() const;
 
     void Up();
     void Down();
@@ -38,7 +38,7 @@ public:
 
 private:
     void Fill( int index, int msgid, int parent );
-    void DrawLine( int idx, const char*& prev );
+    void DrawLine( int idx, const char*& prev ) const;
     void MoveCursor( int offset );
 
     const Archive& m_archive;

@@ -9,10 +9,10 @@ public:
     View( int x, int y, int w, int h );
     virtual ~View();
 
-    int GetKey();
+    int GetKey() const;
 
 protected:
-    void ResizeView( int x, int y, int w, int h );
+    void ResizeView( int x, int y, int w, int h ) const;
 
     WINDOW* m_win;
 };

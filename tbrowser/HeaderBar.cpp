@@ -14,14 +14,14 @@ HeaderBar::HeaderBar( const std::pair<const char*, uint64_t>& archive, const cha
     Redraw();
 }
 
-void HeaderBar::Resize()
+void HeaderBar::Resize() const
 {
     ResizeView( 0, 0, 0, 1 );
     werase( m_win );
     Redraw();
 }
 
-void HeaderBar::Redraw()
+void HeaderBar::Redraw() const
 {
     wprintw( m_win, " Usenet Archive" );
     wattron( m_win, A_BOLD );

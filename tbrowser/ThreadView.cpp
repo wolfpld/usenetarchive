@@ -33,14 +33,14 @@ ThreadView::~ThreadView()
 {
 }
 
-void ThreadView::Resize()
+void ThreadView::Resize() const
 {
     ResizeView( 0, 1, 0, -2 );
     werase( m_win );
     Draw();
 }
 
-void ThreadView::Draw()
+void ThreadView::Draw() const
 {
     int h = getmaxy( m_win );
 
@@ -131,7 +131,7 @@ static bool SameSubject( const char* subject, const char*& prev )
     return strcmp( prev, oldprev ) == 0;
 }
 
-void ThreadView::DrawLine( int idx, const char*& prev )
+void ThreadView::DrawLine( int idx, const char*& prev ) const
 {
     const auto midx = m_data[idx].msgid;
     if( m_cursor == idx )

@@ -24,12 +24,12 @@ View::~View()
     delwin( m_win );
 }
 
-int View::GetKey()
+int View::GetKey() const
 {
     return wgetch( m_win );
 }
 
-void View::ResizeView( int x, int y, int w, int h )
+void View::ResizeView( int x, int y, int w, int h ) const
 {
     AdaptWidthHeight( w, h );
     mvwin( m_win, y, x );
