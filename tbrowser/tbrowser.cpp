@@ -25,13 +25,6 @@ int main( int argc, char** argv )
     setlocale( LC_ALL, "" );
 
     initscr();
-    if( !has_colors() )
-    {
-        endwin();
-        fprintf( stderr, "Terminal doesn't support colors.\n" );
-        exit( 1 );
-    }
-
     start_color();
     cbreak();
     noecho();
