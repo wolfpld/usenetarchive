@@ -234,6 +234,9 @@
     <ClCompile Include="..\..\BitSet.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\KillRe.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -328,6 +331,9 @@
     </ClInclude>
     <ClInclude Include="..\..\BitSet.hpp">
       <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\KillRe.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
+    <ClCompile Include="..\..\..\common\KillRe.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addch.c" />
@@ -205,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />

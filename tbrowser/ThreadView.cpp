@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
+
+#include "../common/KillRe.hpp"
 #include "../libuat/Archive.hpp"
 
 #include "BottomBar.hpp"
@@ -115,6 +117,20 @@ void ThreadView::Fill( int index, int msgid, int parent )
     m_data[index].parent = parent;
 }
 
+static bool SameSubject( const char* subject, const char*& prev )
+{
+    if( subject == prev ) return true;
+    if( prev == nullptr )
+    {
+        prev = KillRe( subject );
+        return false;
+    }
+    auto oldprev = prev;
+    prev = KillRe( subject );
+    if( prev == oldprev ) return true;
+    return strcmp( prev, oldprev ) == 0;
+}
+
 void ThreadView::DrawLine( int idx, const char*& prev )
 {
     const auto midx = m_data[idx].msgid;
@@ -200,7 +216,7 @@ void ThreadView::DrawLine( int idx, const char*& prev )
         wattroff( m_win, COLOR_PAIR(5) );
     }
     auto target = len;
-    if( subject == prev )
+    if( SameSubject( subject, prev ) )
     {
         len = 1;
         waddch( m_win, '>' );
@@ -209,7 +225,6 @@ void ThreadView::DrawLine( int idx, const char*& prev )
     {
         end = utfendl( subject, len );
         wprintw( m_win, "%.*s", end - subject, subject );
-        prev = subject;
     }
     while( len++ < target )
     {
