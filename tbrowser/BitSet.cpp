@@ -14,7 +14,7 @@ BitSet::~BitSet()
 void BitSet::Set( bool enabled )
 {
     assert( size < InPlaceBits-1 );
-    data &= enabled << size;
+    data |= enabled << size;
     size++;
 }
 
