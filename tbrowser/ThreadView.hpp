@@ -37,7 +37,7 @@ public:
 
 private:
     void Fill( int index, int msgid, int parent );
-    void DrawLine( int idx, const char*& prev ) const;
+    void DrawLine( int line, int idx, const char*& prev ) const;
 
     int GetNext( int idx ) const;
     int GetPrev( int idx ) const;

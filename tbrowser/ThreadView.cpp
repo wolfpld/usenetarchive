@@ -52,7 +52,7 @@ void ThreadView::Draw()
     {
         assert( m_data[idx].valid == 1 );
         if( m_data[idx].parent == -1 ) prev = nullptr;
-        DrawLine( idx, prev );
+        DrawLine( i, idx, prev );
         idx = GetNext( idx );
         if( idx >= m_archive.NumberOfMessages() ) break;
     }
@@ -115,8 +115,9 @@ static bool SameSubject( const char* subject, const char*& prev )
     return strcmp( prev, oldprev ) == 0;
 }
 
-void ThreadView::DrawLine( int idx, const char*& prev ) const
+void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
 {
+    wmove( m_win, line, 0 );
     const auto midx = m_data[idx].msgid;
     if( m_cursor == idx )
     {
