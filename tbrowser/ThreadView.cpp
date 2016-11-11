@@ -53,14 +53,7 @@ void ThreadView::Draw()
         assert( m_data[idx].valid == 1 );
         if( m_data[idx].parent == -1 ) prev = nullptr;
         DrawLine( idx, prev );
-        if( m_data[idx].expanded )
-        {
-            idx++;
-        }
-        else
-        {
-            idx += m_archive.GetTotalChildrenCount( m_data[idx].msgid );
-        }
+        idx = GetNext( idx );
         if( idx >= m_archive.NumberOfMessages() ) break;
     }
     m_bottom = idx;
