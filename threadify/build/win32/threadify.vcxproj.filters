@@ -60,6 +60,9 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\KillRe.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -129,6 +132,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageLogic.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\KillRe.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

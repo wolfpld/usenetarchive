@@ -16,6 +16,7 @@
 
 #include "../libuat/Archive.hpp"
 #include "../common/ICU.hpp"
+#include "../common/KillRe.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/String.hpp"
 
@@ -32,61 +33,11 @@ void Sort( std::vector<uint32_t>& vec, const Message* msg )
     std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
 }
 
-std::vector<std::string> ReList = {
-    "Re:",
-    "RE:",
-    "re:",
-    "Odp:",
-    "Re[2]:",
-    "Re[3]:",
-    "Re[4]:",
-    "Re[5]:",
-    "Re[6]:",
-    "Re[7]:",
-    "Re[8]:",
-    "Re[9]:"
-};
-
 static const char* WroteList[] = {
     "wrote",
     u8"napisa\u0142",
     nullptr
 };
-
-const char* KillRe( const char* str )
-{
-    for(;;)
-    {
-        if( *str == '\0' ) return str;
-        while( *str == ' ' ) str++;
-        auto match = ReList.begin();
-        bool stop = false;
-        while( !stop )
-        {
-            int idx = 0;
-            const auto& matchstr = *match;
-            for(;;)
-            {
-                if( matchstr[idx] == '\0' )
-                {
-                    str += idx;
-                    stop = true;
-                    break;
-                }
-                if( str[idx] != matchstr[idx] ) break;
-                idx++;
-            }
-            if( !stop )
-            {
-                ++match;
-                if( match == ReList.end() )
-                {
-                    return str;
-                }
-            }
-        }
-    }
-}
 
 uint32_t* root;
 Message* msgdata;
@@ -129,7 +80,7 @@ int main( int argc, char** argv )
         }
         else
         {
-            ReList.emplace_back( argv[3] );
+            AddToReList( argv[3] );
             argv += 2;
             argc -= 2;
         }
