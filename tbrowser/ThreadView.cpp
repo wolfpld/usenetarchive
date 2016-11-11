@@ -86,9 +86,10 @@ void ThreadView::Expand( int cursor, bool recursive )
         if( !m_data[cursor].valid )
         {
             Fill( cursor, children.ptr[i], parent );
+            bool line = i != children.size - 1;
             for( int j=0; j<skip; j++ )
             {
-                m_tree[cursor+j].treecnt++;
+                m_tree[cursor+j].Set( line );
             }
         }
         if( recursive )
@@ -167,7 +168,7 @@ void ThreadView::DrawLine( int idx )
 
     auto w = getmaxx( m_win );
     auto subject = m_archive.GetSubject( midx );
-    auto treecnt = m_tree[idx].treecnt;
+    auto treecnt = m_tree[idx].Size();
     len = w - 32 - dlen - treecnt;
     for( int i=0; i<treecnt; i++ )
     {

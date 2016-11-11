@@ -194,6 +194,7 @@
     <ClCompile Include="..\..\..\libuat\LockedFile.cpp" />
     <ClCompile Include="..\..\..\libuat\PackageAccess.cpp" />
     <ClCompile Include="..\..\..\libuat\PersistentStorage.cpp" />
+    <ClCompile Include="..\..\BitSet.cpp" />
     <ClCompile Include="..\..\BottomBar.cpp" />
     <ClCompile Include="..\..\Browser.cpp" />
     <ClCompile Include="..\..\HeaderBar.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
     <ClInclude Include="..\..\..\libuat\PersistentStorage.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
+    <ClInclude Include="..\..\BitSet.hpp" />
     <ClInclude Include="..\..\BottomBar.hpp" />
     <ClInclude Include="..\..\Browser.hpp" />
     <ClInclude Include="..\..\HeaderBar.hpp" />

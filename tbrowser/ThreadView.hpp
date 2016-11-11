@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "BitSet.hpp"
 #include "View.hpp"
 
 class Archive;
@@ -16,14 +17,6 @@ struct ThreadData
     unsigned int msgid      : 30;
     int parent;
 };
-
-struct TreeData
-{
-    uint8_t treecnt;
-    uint8_t tree[23];
-};
-
-enum { TreeBits = sizeof( TreeData::tree ) * 8 };
 
 class ThreadView : public View
 {
@@ -51,7 +44,7 @@ private:
     const Archive& m_archive;
     BottomBar& m_bottomBar;
     std::vector<ThreadData> m_data;
-    std::vector<TreeData> m_tree;
+    std::vector<BitSet> m_tree;
     int m_top;
     int m_cursor;
 };
