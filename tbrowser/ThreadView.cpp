@@ -170,7 +170,7 @@ void ThreadView::DrawLine( int idx )
     auto subject = m_archive.GetSubject( midx );
     auto& tree = m_tree[idx];
     auto treecnt = tree.Size();
-    len = w - 32 - dlen - treecnt;
+    len = w - 32 - dlen - treecnt*2;
     if( treecnt > 0 )
     {
         wattron( m_win, COLOR_PAIR(5) );
@@ -184,6 +184,7 @@ void ThreadView::DrawLine( int idx )
             {
                 waddch( m_win, ' ' );
             }
+            waddch( m_win, ' ' );
         }
         if( tree.Get( treecnt-1 ) )
         {
@@ -193,6 +194,7 @@ void ThreadView::DrawLine( int idx )
         {
             waddch( m_win, ACS_LLCORNER );
         }
+        waddch( m_win, ACS_HLINE );
         wattroff( m_win, COLOR_PAIR(5) );
     }
     auto target = len;
