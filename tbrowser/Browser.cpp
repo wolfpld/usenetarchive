@@ -53,6 +53,30 @@ void Browser::Entry()
             doupdate();
             break;
         }
+        case KEY_LEFT:
+        case 'h':
+        {
+            auto cursor = m_tview.GetCursor();
+            if( m_tview.IsExpanded( cursor ) )
+            {
+                m_tview.Collapse( cursor );
+                m_tview.Draw();
+                doupdate();
+            }
+            break;
+        }
+        case KEY_RIGHT:
+        case 'l':
+        {
+            auto cursor = m_tview.GetCursor();
+            if( !m_tview.IsExpanded( cursor ) )
+            {
+                m_tview.Expand( cursor, m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 );
+                m_tview.Draw();
+                doupdate();
+            }
+            break;
+        }
         default:
             break;
         }
