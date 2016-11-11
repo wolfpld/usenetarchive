@@ -28,6 +28,7 @@ public:
     void Draw();
 
     void MoveCursor( int offset );
+    bool CanExpand( int cursor );
     void Expand( int cursor, bool recursive );
     void Collapse( int cursor );
     bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }

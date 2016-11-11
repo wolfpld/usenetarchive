@@ -61,6 +61,12 @@ void ThreadView::Draw()
     wnoutrefresh( m_win );
 }
 
+bool ThreadView::CanExpand( int cursor )
+{
+    assert( m_data[cursor].valid );
+    return m_archive.GetTotalChildrenCount( m_data[cursor].msgid ) > 1;
+}
+
 void ThreadView::Expand( int cursor, bool recursive )
 {
     m_data[cursor].expanded = 1;
