@@ -32,11 +32,11 @@ void Browser::Entry()
             return;
         case KEY_UP:
         case 'k':
-            m_tview.Up();
+            m_tview.MoveCursor( -1 );
             break;
         case KEY_DOWN:
         case 'j':
-            m_tview.Down();
+            m_tview.MoveCursor( 1 );
             break;
         case 'x':
         {

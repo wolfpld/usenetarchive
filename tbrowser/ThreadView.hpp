@@ -27,8 +27,7 @@ public:
     void Resize();
     void Draw();
 
-    void Up();
-    void Down();
+    void MoveCursor( int offset );
     void Expand( int cursor, bool recursive );
     void Collapse( int cursor );
     bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }
@@ -39,7 +38,6 @@ public:
 private:
     void Fill( int index, int msgid, int parent );
     void DrawLine( int idx, const char*& prev ) const;
-    void MoveCursor( int offset );
 
     int GetNext( int idx ) const;
     int GetPrev( int idx ) const;

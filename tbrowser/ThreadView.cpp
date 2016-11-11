@@ -68,16 +68,6 @@ void ThreadView::Draw()
     wnoutrefresh( m_win );
 }
 
-void ThreadView::Up()
-{
-    MoveCursor( -1 );
-}
-
-void ThreadView::Down()
-{
-    MoveCursor( 1 );
-}
-
 void ThreadView::Expand( int cursor, bool recursive )
 {
     m_data[cursor].expanded = 1;
