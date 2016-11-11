@@ -63,11 +63,15 @@ void Browser::Entry()
         case 'h':
         {
             auto cursor = m_tview.GetCursor();
-            if( m_tview.IsExpanded( cursor ) )
+            if( m_tview.CanExpand( cursor ) && m_tview.IsExpanded( cursor ) )
             {
                 m_tview.Collapse( cursor );
                 m_tview.Draw();
                 doupdate();
+            }
+            else
+            {
+                m_tview.MoveCursor( -1 );
             }
             break;
         }
@@ -75,11 +79,15 @@ void Browser::Entry()
         case 'l':
         {
             auto cursor = m_tview.GetCursor();
-            if( !m_tview.IsExpanded( cursor ) )
+            if( m_tview.CanExpand( cursor ) && !m_tview.IsExpanded( cursor ) )
             {
                 m_tview.Expand( cursor, m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 );
                 m_tview.Draw();
                 doupdate();
+            }
+            else
+            {
+                m_tview.MoveCursor( 1 );
             }
             break;
         }
