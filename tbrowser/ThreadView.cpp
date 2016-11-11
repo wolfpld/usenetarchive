@@ -246,14 +246,7 @@ void ThreadView::MoveCursor( int offset )
         do
         {
             auto prev = m_cursor;
-            if( m_data[m_cursor].expanded )
-            {
-                m_cursor++;
-            }
-            else
-            {
-                m_cursor += m_archive.GetTotalChildrenCount( m_data[m_cursor].msgid );
-            }
+            m_cursor = GetNext( m_cursor );
             if( m_cursor == end )
             {
                 m_cursor = prev;
@@ -267,16 +260,7 @@ void ThreadView::MoveCursor( int offset )
         do
         {
             if( m_cursor == 0 ) break;
-            while( !m_data[--m_cursor].valid );
-            auto parent = m_data[m_cursor].parent;
-            while( parent != -1 )
-            {
-                if( !m_data[parent].expanded )
-                {
-                    m_cursor = parent;
-                }
-                parent = m_data[parent].parent;
-            }
+            m_cursor = GetPrev( m_cursor );
         }
         while( ++offset );
     }
@@ -284,4 +268,32 @@ void ThreadView::MoveCursor( int offset )
     Draw();
     m_bottomBar.Update( m_cursor + 1 );
     doupdate();
+}
+
+int ThreadView::GetNext( int idx ) const
+{
+    if( m_data[idx].expanded )
+    {
+        idx++;
+    }
+    else
+    {
+        idx += m_archive.GetTotalChildrenCount( m_data[idx].msgid );
+    }
+    return idx;
+}
+
+int ThreadView::GetPrev( int idx ) const
+{
+    while( !m_data[--idx].valid );
+    auto parent = m_data[idx].parent;
+    while( parent != -1 )
+    {
+        if( !m_data[parent].expanded )
+        {
+            idx = parent;
+        }
+        parent = m_data[parent].parent;
+    }
+    return idx;
 }

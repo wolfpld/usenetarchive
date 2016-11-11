@@ -41,6 +41,9 @@ private:
     void DrawLine( int idx, const char*& prev ) const;
     void MoveCursor( int offset );
 
+    int GetNext( int idx ) const;
+    int GetPrev( int idx ) const;
+
     const Archive& m_archive;
     BottomBar& m_bottomBar;
     std::vector<ThreadData> m_data;
