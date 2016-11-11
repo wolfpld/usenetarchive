@@ -268,10 +268,13 @@ void ThreadView::MoveCursor( int offset )
             if( m_cursor == 0 ) break;
             if( m_cursor == m_top )
             {
-                m_top = GetPrev( m_top );
+                m_cursor = m_top = GetPrev( m_top );
                 m_bottom = GetPrev( m_bottom );
             }
-            m_cursor = GetPrev( m_cursor );
+            else
+            {
+                m_cursor = GetPrev( m_cursor );
+            }
         }
         while( ++offset );
     }
