@@ -38,6 +38,12 @@ void Browser::Entry()
         case 'j':
             m_tview.MoveCursor( 1 );
             break;
+        case KEY_PPAGE:
+            m_tview.MoveCursor( -m_tview.GetHeight()+1 );
+            break;
+        case KEY_NPAGE:
+            m_tview.MoveCursor( m_tview.GetHeight()-1 );
+            break;
         case 'x':
         {
             auto cursor = m_tview.GetCursor();
