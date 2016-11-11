@@ -57,6 +57,7 @@ void ThreadView::Draw()
         {
             idx += m_archive.GetTotalChildrenCount( m_data[idx].msgid );
         }
+        if( idx >= m_archive.NumberOfMessages() ) break;
     }
 
     wnoutrefresh( m_win );
