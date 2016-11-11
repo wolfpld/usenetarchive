@@ -36,7 +36,7 @@ void HeaderBar::Redraw()
         wprintw( m_win, " :: " );
         wattroff( m_win, A_BOLD );
 
-        int w = getmaxx( m_win ) - 23 - strlen( m_archive );
+        int w = getmaxx( m_win ) - 23 - m_archiveLen;
         auto end = utfendcrlf( m_desc, w );
         wprintw( m_win, "%.*s", end - m_desc, m_desc );
     }
