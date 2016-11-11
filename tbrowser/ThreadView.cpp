@@ -272,6 +272,7 @@ void ThreadView::MoveCursor( int offset )
 
 int ThreadView::GetNext( int idx ) const
 {
+    assert( idx < m_archive.NumberOfMessages() );
     if( m_data[idx].expanded )
     {
         idx++;
@@ -285,6 +286,7 @@ int ThreadView::GetNext( int idx ) const
 
 int ThreadView::GetPrev( int idx ) const
 {
+    assert( idx > 0 );
     while( !m_data[--idx].valid );
     auto parent = m_data[idx].parent;
     while( parent != -1 )
