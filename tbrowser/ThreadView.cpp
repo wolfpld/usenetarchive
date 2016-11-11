@@ -168,11 +168,32 @@ void ThreadView::DrawLine( int idx )
 
     auto w = getmaxx( m_win );
     auto subject = m_archive.GetSubject( midx );
-    auto treecnt = m_tree[idx].Size();
+    auto& tree = m_tree[idx];
+    auto treecnt = tree.Size();
     len = w - 32 - dlen - treecnt;
-    for( int i=0; i<treecnt; i++ )
+    if( treecnt > 0 )
     {
-        waddch( m_win, ' ' );
+        wattron( m_win, COLOR_PAIR(5) );
+        for( int i=0; i<treecnt-1; i++ )
+        {
+            if( tree.Get( i ) )
+            {
+                waddch( m_win, ACS_VLINE );
+            }
+            else
+            {
+                waddch( m_win, ' ' );
+            }
+        }
+        if( tree.Get( treecnt-1 ) )
+        {
+            waddch( m_win, ACS_LTEE );
+        }
+        else
+        {
+            waddch( m_win, ACS_LLCORNER );
+        }
+        wattroff( m_win, COLOR_PAIR(5) );
     }
     auto target = len;
     end = utfendl( subject, len );
