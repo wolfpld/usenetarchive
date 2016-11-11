@@ -44,11 +44,13 @@ void ThreadView::Draw()
 
     werase( m_win );
 
+    const char* prev = nullptr;
     auto idx = m_top;
     for( int i=0; i<h; i++ )
     {
         assert( m_data[idx].valid == 1 );
-        DrawLine( idx );
+        if( m_data[idx].parent == -1 ) prev = nullptr;
+        DrawLine( idx, prev );
         if( m_data[idx].expanded )
         {
             idx++;
@@ -113,7 +115,7 @@ void ThreadView::Fill( int index, int msgid, int parent )
     m_data[index].parent = parent;
 }
 
-void ThreadView::DrawLine( int idx )
+void ThreadView::DrawLine( int idx, const char*& prev )
 {
     const auto midx = m_data[idx].msgid;
     if( m_cursor == idx )
@@ -198,8 +200,17 @@ void ThreadView::DrawLine( int idx )
         wattroff( m_win, COLOR_PAIR(5) );
     }
     auto target = len;
-    end = utfendl( subject, len );
-    wprintw( m_win, "%.*s", end - subject, subject );
+    if( subject == prev )
+    {
+        len = 1;
+        waddch( m_win, '>' );
+    }
+    else
+    {
+        end = utfendl( subject, len );
+        wprintw( m_win, "%.*s", end - subject, subject );
+        prev = subject;
+    }
     while( len++ < target )
     {
         waddch( m_win, ' ' );

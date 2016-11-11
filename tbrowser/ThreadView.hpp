@@ -38,7 +38,7 @@ public:
 
 private:
     void Fill( int index, int msgid, int parent );
-    void DrawLine( int idx );
+    void DrawLine( int idx, const char*& prev );
     void MoveCursor( int offset );
 
     const Archive& m_archive;
