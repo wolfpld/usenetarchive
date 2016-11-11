@@ -216,22 +216,15 @@ void ThreadView::MoveCursor( int offset )
         do
         {
             if( m_cursor == 0 ) break;
-            for(;;)
+            while( !m_data[--m_cursor].valid );
+            auto parent = m_data[m_cursor].parent;
+            while( parent != -1 )
             {
-                while( !m_data[--m_cursor].valid );
-                bool ok = true;
-                auto parent = m_data[m_cursor].parent;
-                while( parent != -1 )
+                if( !m_data[parent].expanded )
                 {
-                    if( !m_data[parent].expanded )
-                    {
-                        ok = false;
-                        m_cursor = parent;
-                        break;
-                    }
-                    parent = m_data[parent].parent;
+                    m_cursor = parent;
                 }
-                if( ok ) break;
+                parent = m_data[parent].parent;
             }
         }
         while( ++offset );
