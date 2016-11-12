@@ -28,6 +28,7 @@ void PrintHelp()
     printf( "toplevel      - list toplevel messages\n" );
     printf( "view msgid    - view message with given message id\n" );
     printf( "viewi idx     - view message of given idx\n" );
+    printf( "idx msgid     - get index of given msgid\n" );
 }
 
 void Info( const Archive& archive )
@@ -197,6 +198,10 @@ int main( int argc, char** argv )
             {
                 printf( "Invalid message id.\n" );
             }
+        }
+        else if( strncmp( cmd, "idx ", 4 ) == 0 )
+        {
+            printf( "Message index: %i\n", archive->GetMessageIndex( cmd+4 ) );
         }
         else if( strncmp( cmd, "search ", 7 ) == 0 )
         {
