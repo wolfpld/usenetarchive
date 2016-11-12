@@ -87,6 +87,7 @@ These tools provide access to archive data:
 - libuat --- Archive access library. Operates on zstd database.
 - query --- Testbed for libuat. Exposes all provided functionality.
 - export-messages --- Unpacks messages contained in a LZ4 archive into separate files.
+- verify --- Check archive for known issues.
 
 ### End-user Utilities
 
