@@ -15,12 +15,12 @@ People went away to various forums, facebooks and twitters and seem fine there. 
 Why use UAT? Why not use existing solutions, like google groups, archives from archive.org or NNTP servers with long history?
 
 - UAT is designed for offline work. You don't need network connection to access data in "the cloud". You don't need to wait for a reply to your query, or, god forbid, endure "web 2.0" interfaces.
-- UAT archives won't suddenly disappear. You have them on your disk. Google groups are deteriorating with each new iteration of the interface. Also, google is known for shutting down services they no longer feel viable. Google reader, google code search, google code, etc. Other, smaller services are one disk crash away from completly disappearing from the network.
+- UAT archives won't suddenly disappear. You have them on your disk. Google groups are deteriorating with each new iteration of the interface. Also, google is known for shutting down services they no longer feel viable. Google reader, google code search, google code, etc. Other, smaller services are one disk crash away from completely disappearing from the network.
 - UAT archive format is designed for fast access and efficient search. Each message is individually compressed, to facilitate instant access, but uses whole-archive dictionary for better compression. Search is achieved through a database similar in design to google's original paper. Total archive size is smaller than uncompressed collection of messages.
 - Multiple message sources may be merged into a single UAT archive, without message duplication. This way you can fill blanks in source A (eg. NNTP archive server) with messages from source B (eg. much smaller archive.org dump). Archives created in such way are *the* most complete collection of messages available.
 - UAT archives do not contain duplicate messages (which is common even on NNTP servers), nor stray messages from other groups (archive.org collections contain many bogus messages).
 - Other usenet archives are littered with spam messages. UAT can filter out spam, making previously unreadable newsgroups a breeze to read. Properly trained spam database has very low false positive and false negative percentage.
-- All messages are transcoded to UTF-8, so that dumb clients may be used for display. UAT tries very hard to properly decode broken and/or completly invalid headers, messages without specified encoding or with bad encoding. HTML parts of message are removed. You also don't need to worry about parsing quoted-printable content (most likely malformed). And don't forget about search. Have fun grepping that base64 encoded message without UAT.
+- All messages are transcoded to UTF-8, so that dumb clients may be used for display. UAT tries very hard to properly decode broken and/or completely invalid headers, messages without specified encoding or with bad encoding. HTML parts of message are removed. You also don't need to worry about parsing quoted-printable content (most likely malformed). And don't forget about search. Have fun grepping that base64 encoded message without UAT.
 - UAT archives contain precalculated message connectivity graph, which removes the need to parse "references" headers (often broken), sort messages by date, etc. UAT can also "restore" missing connectivity that is not indicated in message headers, through search for quoted text in other messages.
 - Access to archives is available through a trivial [libuat interface](libuat/Archive.hpp).
 - UAT archives are mapped to memory and 100% disk backed. In high memory pressure situations archive pages may just be purged away and later reloaded on demand. No memory allocations are required during normal libuat operation, other than:
@@ -107,7 +107,7 @@ Here are some viable ideas that I'm not really planning to do any time soon, but
 
 ## Workflow
 
-Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completly new database indexing schema, which invalidates rest of databases.
+Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completely new database indexing schema, which invalidates rest of databases.
 
 slrnpull directory → **import-source-slrnpull** → produces: *LZ4*  
 slrnpull compressed → **import-source-slrnpull-7z** → produces: *LZ4*  
