@@ -46,7 +46,7 @@ private slots:
     void on_action_forward_triggered();
 
 private:
-    void OpenArchive( const std::string& fn );
+    bool OpenArchive( const std::string& fn );
     void FillTree();
     void RecursiveExpand(const QModelIndex& index);
     void SetText( const char* txt );

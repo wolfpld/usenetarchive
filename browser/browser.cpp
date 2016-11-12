@@ -66,7 +66,7 @@ Browser::Browser( QWidget *parent )
 
     const auto archive = m_storage->ReadLastOpenArchive();
     if( archive.empty() ) return;
-    OpenArchive( archive );
+    if( !OpenArchive( archive ) ) return;
     auto& history = m_storage->GetArticleHistory();
     if( m_storage->ReadArticleHistory( archive.c_str() ) )
     {
@@ -106,13 +106,13 @@ void Browser::on_actionOpen_triggered()
     }
 }
 
-void Browser::OpenArchive( const std::string& fn )
+bool Browser::OpenArchive( const std::string& fn )
 {
     m_archive.reset( Archive::Open( fn ) );
     if( !m_archive )
     {
         QMessageBox::warning( this, "Error", "Cannot open archive.", QMessageBox::NoButton, QMessageBox::Ok );
-        return;
+        return false;
     }
     if( !m_archiveFilename.empty() && m_index != -1 )
     {
@@ -184,6 +184,7 @@ void Browser::OpenArchive( const std::string& fn )
     }
     m_historyIdx = history.size() - 1;
     HandleHistoryArrows();
+    return true;
 }
 
 void Browser::on_actionRaw_message_triggered(bool checked)
