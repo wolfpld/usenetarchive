@@ -1,7 +1,7 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++14
-DEFINES +=
-INCLUDES :=
+DEFINES += -D_GNU_SOURCE
+INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS :=
 IMAGE := verify
 
