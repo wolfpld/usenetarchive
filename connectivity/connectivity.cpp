@@ -152,6 +152,10 @@ int main( int argc, char** argv )
                 if( *buf == '>' ) buf--;
             }
         }
+        else
+        {
+            toplevel.push_back( i );
+        }
     }
 
     printf( "\nRetrieving timestamps...\n" );
