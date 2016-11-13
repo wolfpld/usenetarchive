@@ -26,7 +26,7 @@ void MessageView::Resize()
     m_vertical = sw > 160;
     if( m_vertical )
     {
-        ResizeView( sw / 2, 1, (sw+1) / 2, -2 );
+        ResizeView( sw / 2, 1, sw - (sw / 2), -2 );
     }
     else
     {
