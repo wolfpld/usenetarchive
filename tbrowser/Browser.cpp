@@ -38,10 +38,10 @@ void Browser::Entry()
             m_tview.MoveCursor( 1 );
             break;
         case KEY_PPAGE:
-            m_tview.MoveCursor( -m_tview.GetHeight()+1 );
+            m_tview.MoveCursor( -m_tview.GetHeight()+2 );
             break;
         case KEY_NPAGE:
-            m_tview.MoveCursor( m_tview.GetHeight()-1 );
+            m_tview.MoveCursor( m_tview.GetHeight()-2 );
             break;
         case 'x':
         {
