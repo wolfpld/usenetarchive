@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <ctype.h>
 #include <limits>
-#include <unordered_map>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
@@ -21,6 +20,8 @@
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
+
+#include "../contrib/sparsepp/sparsepp.h"
 
 const char* AllowedHeaders[] = {
     "from",
@@ -50,7 +51,7 @@ bool IsHeaderAllowed( const char* hdr, const char* end )
     return false;
 }
 
-using HitData = std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint8_t>>>;
+using HitData = spp::sparse_hash_map<std::string, spp::sparse_hash_map<uint32_t, std::vector<uint8_t>>>;
 
 enum { MaxChildren = 0xF8 };
 
