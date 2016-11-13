@@ -23,6 +23,7 @@ void Browser::Entry()
         case KEY_RESIZE:
             resize_term( 0, 0 );
             m_header.Resize();
+            m_mview.Resize();
             m_tview.Resize();
             m_bottom.Resize();
             doupdate();

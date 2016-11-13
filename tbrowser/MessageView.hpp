@@ -16,6 +16,7 @@ public:
 
 private:
     bool m_active;
+    bool m_vertical;
 };
 
 #endif

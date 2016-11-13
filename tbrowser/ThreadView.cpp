@@ -5,7 +5,7 @@
 #include "../common/KillRe.hpp"
 #include "../libuat/Archive.hpp"
 
-#include "BottomBar.hpp"
+#include "MessageView.hpp"
 #include "ThreadView.hpp"
 #include "UTF8.hpp"
 
@@ -35,7 +35,23 @@ ThreadView::~ThreadView()
 
 void ThreadView::Resize()
 {
-    ResizeView( 0, 1, 0, -2 );
+    if( m_mview.IsActive() )
+    {
+        int sw = getmaxx( stdscr );
+        if( sw > 160 )
+        {
+            ResizeView( 0, 1, sw / 2, -2 );
+        }
+        else
+        {
+            int sh = getmaxy( stdscr ) - 2;
+            ResizeView( 0, 1, 0, sh * 20 / 100 );
+        }
+    }
+    else
+    {
+        ResizeView( 0, 1, 0, -2 );
+    }
     werase( m_win );
     Draw();
     if( m_cursor >= m_bottom )
