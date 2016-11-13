@@ -4,10 +4,9 @@
 Browser::Browser( std::unique_ptr<Archive>&& archive )
     : m_archive( std::move( archive ) )
     , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr )
-    , m_bottom( m_archive->NumberOfMessages() )
-    , m_tview( *m_archive, m_bottom )
+    , m_bottom()
+    , m_tview( *m_archive )
 {
-    m_bottom.Update( m_tview.GetCursor() + 1 );
     doupdate();
 }
 
@@ -24,8 +23,8 @@ void Browser::Entry()
         case KEY_RESIZE:
             resize_term( 0, 0 );
             m_header.Resize();
-            m_bottom.Resize( m_tview.GetCursor() + 1 );
             m_tview.Resize();
+            m_bottom.Resize();
             doupdate();
             break;
         case 'q':

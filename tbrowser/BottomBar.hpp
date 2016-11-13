@@ -6,13 +6,12 @@
 class BottomBar : public View
 {
 public:
-    BottomBar( int total );
+    BottomBar();
 
-    void Resize( int index ) const;
-    void Update( int index ) const;
+    void Resize() const;
 
 private:
-    int m_total;
+    void PrintHelp() const;
 };
 
 #endif

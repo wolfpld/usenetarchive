@@ -21,7 +21,7 @@ struct ThreadData
 class ThreadView : public View
 {
 public:
-    ThreadView( const Archive& archive, BottomBar& bottomBar );
+    ThreadView( const Archive& archive );
     ~ThreadView();
 
     void Resize();
@@ -44,7 +44,6 @@ private:
     int GetPrev( int idx ) const;
 
     const Archive& m_archive;
-    BottomBar& m_bottomBar;
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;
     int m_top, m_bottom;

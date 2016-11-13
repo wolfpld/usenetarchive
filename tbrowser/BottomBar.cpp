@@ -2,24 +2,29 @@
 
 #include "BottomBar.hpp"
 
-BottomBar::BottomBar( int total )
+BottomBar::BottomBar()
     : View( 0, LINES-1, 0, 1 )
-    , m_total( total )
 {
-    wbkgd( m_win, COLOR_PAIR(1) );
-    wrefresh( m_win );
+    PrintHelp();
+    wnoutrefresh( m_win );
 }
 
-void BottomBar::Resize( int index ) const
+void BottomBar::Resize() const
 {
     ResizeView( 0, LINES-1, 0, 1 );
     werase( m_win );
-    Update( index );
+    PrintHelp();
+    wnoutrefresh( m_win );
 }
 
-void BottomBar::Update( int index ) const
+void BottomBar::PrintHelp() const
 {
-    werase( m_win );
-    wprintw( m_win, " [%i/%i]", index, m_total );
-    wnoutrefresh( m_win );
+    waddch( m_win, ACS_DARROW );
+    waddch( m_win, ACS_UARROW );
+    wprintw( m_win, ":Move  " );
+    waddch( m_win, ACS_RARROW );
+    wprintw( m_win, ":Exp  " );
+    waddch( m_win, ACS_LARROW );
+    wprintw( m_win, ":Coll  " );
+    wprintw( m_win, "x:Co/Ex  q:Quit" );
 }

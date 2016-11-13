@@ -9,10 +9,9 @@
 #include "ThreadView.hpp"
 #include "UTF8.hpp"
 
-ThreadView::ThreadView( const Archive& archive, BottomBar& bottomBar )
+ThreadView::ThreadView( const Archive& archive )
     : View( 0, 1, 0, -2 )
     , m_archive( archive )
-    , m_bottomBar( bottomBar )
     , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )
     , m_top( 0 )
@@ -52,13 +51,14 @@ void ThreadView::Resize()
 
 void ThreadView::Draw()
 {
-    int h = getmaxy( m_win );
+    int w, h;
+    getmaxyx( m_win, h, w );
 
     werase( m_win );
 
     const char* prev = nullptr;
     auto idx = m_top;
-    for( int i=0; i<h; i++ )
+    for( int i=0; i<h-1; i++ )
     {
         assert( m_data[idx].valid == 1 );
         if( m_data[idx].parent == -1 ) prev = nullptr;
@@ -67,6 +67,15 @@ void ThreadView::Draw()
         if( idx >= m_archive.NumberOfMessages() ) break;
     }
     m_bottom = idx;
+
+    wattron( m_win, COLOR_PAIR( 1 ) );
+    for( int i=0; i<w; i++ )
+    {
+        waddch( m_win, ' ' );
+    }
+    wmove( m_win, h-1, 0 );
+    wprintw( m_win, " [%i/%i]", m_cursor+1, m_archive.NumberOfMessages() );
+    wattroff( m_win, COLOR_PAIR( 1 ) );
 
     wnoutrefresh( m_win );
 }
@@ -280,7 +289,6 @@ void ThreadView::MoveCursor( int offset )
     }
 
     Draw();
-    m_bottomBar.Update( m_cursor + 1 );
     doupdate();
 }
 
