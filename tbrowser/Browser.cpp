@@ -90,6 +90,12 @@ void Browser::Entry()
             }
             break;
         }
+        case KEY_ENTER:
+            m_mview.SetActive( !m_mview.IsActive() );
+            m_tview.Resize();
+            m_mview.Resize();
+            doupdate();
+            break;
         default:
             break;
         }
