@@ -91,6 +91,7 @@ void Browser::Entry()
             break;
         }
         case KEY_ENTER:
+        case '\n':
             m_mview.SetActive( !m_mview.IsActive() );
             m_tview.Resize();
             m_mview.Resize();
