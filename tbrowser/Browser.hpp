@@ -23,8 +23,6 @@ private:
     HeaderBar m_header;
     BottomBar m_bottom;
     ThreadView m_tview;
-
-    uint32_t m_index;
 };
 
 #endif
