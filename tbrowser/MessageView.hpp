@@ -9,7 +9,11 @@ public:
     MessageView();
     ~MessageView();
 
+    bool IsActive() const { return m_active; }
+    void SetActive( bool active );
+
 private:
+    bool m_active;
 };
 
 #endif
