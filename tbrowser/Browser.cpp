@@ -31,14 +31,23 @@ void Browser::Entry()
             break;
         case 'q':
             if( !m_mview.IsActive() ) return;
-            // fallthrough
-        case KEY_ENTER:
-        case '\n':
-            m_mview.SetActive( !m_mview.IsActive() );
+            m_mview.Close();
             m_tview.Resize();
-            m_mview.Resize();
             doupdate();
             break;
+        case KEY_ENTER:
+        case '\n':
+        {
+            auto resizeNeeded = !m_mview.IsActive();
+            m_mview.Display( m_tview.GetMessageIndex() );
+            if( resizeNeeded )
+            {
+                m_tview.Resize();
+                m_mview.Resize();
+            }
+            doupdate();
+            break;
+        }
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );

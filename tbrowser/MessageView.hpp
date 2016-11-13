@@ -12,13 +12,17 @@ public:
     ~MessageView();
 
     void Resize();
+    void Display( uint32_t idx );
+    void Close();
 
     bool IsActive() const { return m_active; }
-    void SetActive( bool active );
+    uint32_t DisplayedMessage() const { return m_idx; }
 
 private:
-    const Archive& m_archive;
+    void Draw();
 
+    const Archive& m_archive;
+    int32_t m_idx;
     bool m_active;
     bool m_vertical;
 };
