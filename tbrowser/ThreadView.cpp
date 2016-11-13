@@ -38,6 +38,16 @@ void ThreadView::Resize()
     ResizeView( 0, 1, 0, -2 );
     werase( m_win );
     Draw();
+    if( m_cursor >= m_bottom )
+    {
+        do
+        {
+            m_top = GetNext( m_top );
+            m_bottom = GetNext( m_bottom );
+        }
+        while( m_cursor >= m_bottom );
+        Draw();
+    }
 }
 
 void ThreadView::Draw()
