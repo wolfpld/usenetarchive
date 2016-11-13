@@ -66,12 +66,68 @@ void MessageView::Draw()
     {
         auto start = m_text + m_lines[i].offset;
         auto end = utfendcrlf( start, 79 );
-        wprintw( m_win, "%.*s\n", end - start, start );
+        if( m_lines[i].flags == L_Header )
+        {
+            auto hend = start;
+            while( *hend != ' ' ) hend++;
+            wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+            wprintw( m_win, "%.*s", hend - start, start );
+            wattroff( m_win, COLOR_PAIR( 2 ) );
+            wattron( m_win, COLOR_PAIR( 7 ) );
+            wprintw( m_win, "%.*s\n", end - hend, hend );
+            wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+        }
+        else
+        {
+            switch( m_lines[i].flags )
+            {
+            case L_Signature:
+                wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+                break;
+            case L_Quote1:
+                wattron( m_win, COLOR_PAIR( 5 ) );
+                break;
+            case L_Quote2:
+                wattron( m_win, COLOR_PAIR( 3 ) );
+                break;
+            case L_Quote3:
+                wattron( m_win, COLOR_PAIR( 6 ) | A_BOLD );
+                break;
+            case L_Quote4:
+                wattron( m_win, COLOR_PAIR( 2 ) );
+                break;
+            default:
+                break;
+            }
+            wprintw( m_win, "%.*s\n", end - start, start );
+            switch( m_lines[i].flags )
+            {
+            case L_Signature:
+                wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+                break;
+            case L_Quote1:
+                wattroff( m_win, COLOR_PAIR( 5 ) );
+                break;
+            case L_Quote2:
+                wattroff( m_win, COLOR_PAIR( 3 ) );
+                break;
+            case L_Quote3:
+                wattroff( m_win, COLOR_PAIR( 6 ) | A_BOLD );
+                break;
+            case L_Quote4:
+                wattroff( m_win, COLOR_PAIR( 2 ) );
+                break;
+            default:
+                break;
+            }
+        }
     }
+    wattron( m_win, COLOR_PAIR( 6 ) );
     for( int i=limit; i<h; i++ )
     {
         wprintw( m_win, "~\n" );
     }
+    wattroff( m_win, COLOR_PAIR( 6 ) );
     wnoutrefresh( m_win );
 }
 
