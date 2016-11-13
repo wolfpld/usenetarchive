@@ -1,7 +1,10 @@
+#include "../libuat/Archive.hpp"
+
 #include "MessageView.hpp"
 
-MessageView::MessageView()
+MessageView::MessageView( const Archive& archive )
     : View( 0, 0, 1, 1 )
+    , m_archive( archive )
     , m_active( false )
 {
 }

@@ -3,10 +3,12 @@
 
 #include "View.hpp"
 
+class Archive;
+
 class MessageView : public View
 {
 public:
-    MessageView();
+    MessageView( const Archive& archive );
     ~MessageView();
 
     void Resize();
@@ -15,6 +17,8 @@ public:
     void SetActive( bool active );
 
 private:
+    const Archive& m_archive;
+
     bool m_active;
     bool m_vertical;
 };
