@@ -135,6 +135,7 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\KillRe.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
+    <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addchstr.c" />
@@ -209,7 +210,9 @@
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
+    <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
+    <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\panel.h" />

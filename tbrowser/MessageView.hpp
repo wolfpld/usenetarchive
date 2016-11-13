@@ -1,6 +1,8 @@
 #ifndef __MESSAGEVIEW_HPP__
 #define __MESSAGEVIEW_HPP__
 
+#include <vector>
+
 #include "View.hpp"
 
 class Archive;
@@ -19,11 +21,28 @@ public:
     uint32_t DisplayedMessage() const { return m_idx; }
 
 private:
-    void Draw();
+    enum
+    {
+        L_Header = 0,
+        L_Quote0 = 1,
+        L_Quote1 = 2,
+        L_Quote2 = 3,
+        L_Quote3 = 4,
+        L_Quote4 = 5,
+        L_Signature = 6
+    };
+    struct Line
+    {
+        uint32_t offset : 24;
+        uint32_t flags  : 8;
+    };
 
+    void Draw();
+    void PrepareLines();
+
+    std::vector<Line> m_lines;
     Archive& m_archive;
     const char* m_text;
-    const char* m_top;
     int32_t m_idx;
     bool m_active;
     bool m_vertical;

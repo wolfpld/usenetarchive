@@ -240,6 +240,9 @@
     <ClCompile Include="..\..\MessageView.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\MessageLogic.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -340,6 +343,12 @@
     </ClInclude>
     <ClInclude Include="..\..\MessageView.hpp">
       <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MessageLogic.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\String.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
