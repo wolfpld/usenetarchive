@@ -29,7 +29,15 @@ void Browser::Entry()
             doupdate();
             break;
         case 'q':
-            return;
+            if( !m_mview.IsActive() ) return;
+            // fallthrough
+        case KEY_ENTER:
+        case '\n':
+            m_mview.SetActive( !m_mview.IsActive() );
+            m_tview.Resize();
+            m_mview.Resize();
+            doupdate();
+            break;
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );
@@ -91,13 +99,6 @@ void Browser::Entry()
             }
             break;
         }
-        case KEY_ENTER:
-        case '\n':
-            m_mview.SetActive( !m_mview.IsActive() );
-            m_tview.Resize();
-            m_mview.Resize();
-            doupdate();
-            break;
         default:
             break;
         }
