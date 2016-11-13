@@ -8,7 +8,7 @@ class Archive;
 class MessageView : public View
 {
 public:
-    MessageView( const Archive& archive );
+    MessageView( Archive& archive );
     ~MessageView();
 
     void Resize();
@@ -21,7 +21,9 @@ public:
 private:
     void Draw();
 
-    const Archive& m_archive;
+    Archive& m_archive;
+    const char* m_text;
+    const char* m_top;
     int32_t m_idx;
     bool m_active;
     bool m_vertical;

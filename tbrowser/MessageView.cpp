@@ -2,7 +2,7 @@
 
 #include "MessageView.hpp"
 
-MessageView::MessageView( const Archive& archive )
+MessageView::MessageView( Archive& archive )
     : View( 0, 0, 1, 1 )
     , m_archive( archive )
     , m_idx( -1 )
@@ -33,7 +33,11 @@ void MessageView::Resize()
 
 void MessageView::Display( uint32_t idx )
 {
-    m_idx = idx;
+    if( idx != m_idx )
+    {
+        m_idx = idx;
+        m_top = m_text = m_archive.GetMessage( idx );
+    }
     // If view is not active, drawing will be performed during resize.
     if( m_active )
     {
