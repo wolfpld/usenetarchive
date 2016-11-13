@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
+#include <unordered_map>
 #include <vector>
 
 #ifdef _WIN32
@@ -51,7 +52,7 @@ bool IsHeaderAllowed( const char* hdr, const char* end )
     return false;
 }
 
-using HitData = spp::sparse_hash_map<std::string, spp::sparse_hash_map<uint32_t, std::vector<uint8_t>>>;
+using HitData = std::unordered_map<std::string, spp::sparse_hash_map<uint32_t, std::vector<uint8_t>>>;
 
 enum { MaxChildren = 0xF8 };
 
