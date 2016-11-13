@@ -30,9 +30,5 @@ void MessageView::Resize()
 
 void MessageView::SetActive( bool active )
 {
-    if( m_active != active )
-    {
-
-    }
     m_active = active;
 }
