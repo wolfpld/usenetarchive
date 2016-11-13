@@ -1,15 +1,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <string.h>
 #include <unordered_set>
 
 #include "../libuat/Archive.hpp"
 
-void RecursiveRemove( int idx, std::unordered_set<std::string>& data, const Archive& archive )
+void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
 {
-    data.erase( data.find( archive.GetMessageId( idx ) ) );
+    data.erase( data.find( idx ) );
     const auto children = archive.GetChildren( idx );
     for( int i=0; i<children.size; i++ )
     {
@@ -34,11 +33,11 @@ int main( int argc, char** argv )
 
     printf( "Verifying message reachibility...\n" );
     fflush( stdout );
-    std::unordered_set<std::string> messages;
+    std::unordered_set<uint32_t> messages;
     const auto size = archive->NumberOfMessages();
     for( int i=0; i<size; i++ )
     {
-        messages.emplace( archive->GetMessageId( i ) );
+        messages.emplace( i );
     }
     const auto top = archive->GetTopLevel();
     for( int i=0; i<top.size; i++ )
@@ -54,7 +53,7 @@ int main( int argc, char** argv )
         printf( "%i messages unreachable:\n", messages.size() );
         for( auto& v : messages )
         {
-            printf( "%s\n", v.c_str() );
+            printf( "%s\n", archive->GetMessageId( v ) );
         }
     }
 
