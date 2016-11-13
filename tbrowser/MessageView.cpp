@@ -22,6 +22,7 @@ MessageView::~MessageView()
 void MessageView::Resize()
 {
     if( !m_active ) return;
+    ResizeView( 0, 0, 1, 1 );   // fucking stupid screen size is wrong without doing this shit first
     int sw = getmaxx( stdscr );
     m_vertical = sw > 160;
     if( m_vertical )
