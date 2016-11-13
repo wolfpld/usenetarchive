@@ -60,9 +60,10 @@ void MessageView::Close()
 
 void MessageView::Draw()
 {
-    int h = getmaxy( m_win );
+    int w, h;
+    getmaxyx( m_win, h, w );
     werase( m_win );
-    int limit = std::min<int>( h, m_lines.size() );
+    int limit = std::min<int>( h-1, m_lines.size() );
     for( int i=0; i<limit; i++ )
     {
         auto start = m_text + m_lines[i].offset;
@@ -124,11 +125,34 @@ void MessageView::Draw()
         }
     }
     wattron( m_win, COLOR_PAIR( 6 ) );
-    for( int i=limit; i<h; i++ )
+    for( int i=limit; i<h-1; i++ )
     {
         wprintw( m_win, "~\n" );
     }
     wattroff( m_win, COLOR_PAIR( 6 ) );
+
+    wattron( m_win, COLOR_PAIR( 1 ) );
+    for( int i=0; i<w; i++ )
+    {
+        waddch( m_win, ' ' );
+    }
+    wmove( m_win, h-1, 1 );
+    w--;
+    int len = w;
+    auto text = m_archive.GetSubject( m_idx );
+    auto end = utfendl( text, len );
+    utfprint( m_win, text, end );
+    if( w - len > 5 )
+    {
+        wattron( m_win, A_BOLD );
+        wprintw( m_win, " :: " );
+        wattroff( m_win, A_BOLD );
+        text = m_archive.GetRealName( m_idx );
+        end = utfend( text, w - len - 4 );
+        utfprint( m_win, text, end );
+    }
+    wattroff( m_win, COLOR_PAIR( 1 ) );
+
     wnoutrefresh( m_win );
 }
 
