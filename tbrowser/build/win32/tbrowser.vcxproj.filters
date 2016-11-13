@@ -237,6 +237,9 @@
     <ClCompile Include="..\..\..\common\KillRe.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\MessageView.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -334,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\KillRe.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MessageView.hpp">
+      <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
