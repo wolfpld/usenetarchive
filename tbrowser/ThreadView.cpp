@@ -9,9 +9,10 @@
 #include "ThreadView.hpp"
 #include "UTF8.hpp"
 
-ThreadView::ThreadView( const Archive& archive )
+ThreadView::ThreadView( const Archive& archive, const MessageView& mview )
     : View( 0, 1, 0, -2 )
     , m_archive( archive )
+    , m_mview( mview )
     , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )
     , m_top( 0 )

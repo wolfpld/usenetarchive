@@ -8,7 +8,7 @@
 #include "View.hpp"
 
 class Archive;
-class BottomBar;
+class MessageView;
 
 struct ThreadData
 {
@@ -21,7 +21,7 @@ struct ThreadData
 class ThreadView : public View
 {
 public:
-    ThreadView( const Archive& archive );
+    ThreadView( const Archive& archive, const MessageView& mview );
     ~ThreadView();
 
     void Resize();
@@ -44,6 +44,7 @@ private:
     int GetPrev( int idx ) const;
 
     const Archive& m_archive;
+    const MessageView& m_mview;
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;
     int m_top, m_bottom;
