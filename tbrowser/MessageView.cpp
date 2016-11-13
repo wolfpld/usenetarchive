@@ -1,8 +1,11 @@
+#include <algorithm>
+
 #include "../common/String.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
 
 #include "MessageView.hpp"
+#include "UTF8.hpp"
 
 MessageView::MessageView( Archive& archive )
     : View( 0, 0, 1, 1 )
@@ -56,8 +59,19 @@ void MessageView::Close()
 
 void MessageView::Draw()
 {
+    int h = getmaxy( m_win );
     werase( m_win );
-    wprintw( m_win, "%i\n", m_idx );
+    int limit = std::min<int>( h, m_lines.size() );
+    for( int i=0; i<limit; i++ )
+    {
+        auto start = m_text + m_lines[i].offset;
+        auto end = utfendcrlf( start, 79 );
+        wprintw( m_win, "%.*s\n", end - start, start );
+    }
+    for( int i=limit; i<h; i++ )
+    {
+        wprintw( m_win, "~\n" );
+    }
     wnoutrefresh( m_win );
 }
 
