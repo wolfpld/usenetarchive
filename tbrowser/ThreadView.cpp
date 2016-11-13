@@ -150,7 +150,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
     wattron( m_win, COLOR_PAIR(3) | A_BOLD );
     int len = 18;
     auto end = utfendl( realname, len );
-    wprintw( m_win, "%.*s", end - realname, realname );
+    utfprint( m_win, realname, end );
     while( len++ < 18 )
     {
         waddch( m_win, ' ' );
@@ -215,7 +215,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
     else
     {
         end = utfendl( subject, len );
-        wprintw( m_win, "%.*s", end - subject, subject );
+        utfprint( m_win, subject, end );
     }
     while( len++ < target )
     {
