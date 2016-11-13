@@ -148,8 +148,6 @@ Additional, optional information files, not created by any of the above utilitie
 
 ## Notes
 
-Be advised that some utilities (repack-zstd, lexicon) do require enormous amounts of memory. Processing large groups (eg. 2 million messages, 3 GB data) will swap heavily on a 16 GB machine.
-
 utf8ize doesn't compile on MSVC. Either compile it on cygwin, or have fun banging glib and gmime into submission. Your choice.
 
 UAT only works on 64 bit machines.
