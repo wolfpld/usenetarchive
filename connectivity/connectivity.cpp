@@ -219,6 +219,7 @@ int main( int argc, char** argv )
                 auto it = std::find( data[parent].children.begin(), data[parent].children.end(), idx );
                 assert( it != data[parent].children.end() );
                 data[parent].children.erase( it );
+                toplevel.push_back( idx );
                 break;
             }
             idx = parent;
