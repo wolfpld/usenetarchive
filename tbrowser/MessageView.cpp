@@ -10,6 +10,11 @@ MessageView::~MessageView()
 {
 }
 
+void MessageView::Resize()
+{
+    if( !m_active ) return;
+}
+
 void MessageView::SetActive( bool active )
 {
     if( m_active != active )

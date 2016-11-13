@@ -9,6 +9,8 @@ public:
     MessageView();
     ~MessageView();
 
+    void Resize();
+
     bool IsActive() const { return m_active; }
     void SetActive( bool active );
 
