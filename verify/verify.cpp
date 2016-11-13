@@ -35,6 +35,7 @@ int main( int argc, char** argv )
     fflush( stdout );
     std::unordered_set<uint32_t> messages;
     const auto size = archive->NumberOfMessages();
+    messages.reserve( size );
     for( int i=0; i<size; i++ )
     {
         messages.emplace( i );
