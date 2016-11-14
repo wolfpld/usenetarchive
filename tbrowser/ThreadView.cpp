@@ -189,7 +189,40 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
     }
     else
     {
-        wprintw( m_win, "  " );
+        if( wasVisited )
+        {
+            bool complete = true;
+            std::vector<uint32_t> stack;
+            stack.reserve( 4 * 1024 );
+            stack.emplace_back( m_data[idx].msgid );
+            while( !stack.empty() )
+            {
+                const auto id = stack.back();
+                if( !m_storage.WasVisited( m_archive.GetMessageId( id ) ) )
+                {
+                    complete = false;
+                    break;
+                }
+                stack.pop_back();
+                const auto children = m_archive.GetChildren( id );
+                for( int i=0; i<children.size; i++ )
+                {
+                    stack.emplace_back( children.ptr[i] );
+                }
+            }
+            if( complete )
+            {
+                wprintw( m_win, " R" );
+            }
+            else
+            {
+                wprintw( m_win, " r" );
+            }
+        }
+        else
+        {
+            wprintw( m_win, "  " );
+        }
     }
 
     const auto children = m_archive.GetTotalChildrenCount( midx );
