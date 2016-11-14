@@ -26,16 +26,14 @@ bool Browser::MoveOrEnterAction( int move )
         m_mview.Resize();
     }
     auto cursor = m_tview.GetCursor();
-    if( newMessage &&
-        m_tview.CanExpand( cursor ) &&
-        !m_tview.IsExpanded( cursor ) &&
-        m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 )
+    if( newMessage )
     {
-        m_tview.Expand( cursor, true );
-        m_tview.Draw();
-    }
-    else if( newMessage )
-    {
+        if( m_tview.CanExpand( cursor ) &&
+            !m_tview.IsExpanded( cursor ) &&
+            m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 )
+        {
+            m_tview.Expand( cursor, true );
+        }
         m_tview.Draw();
     }
 
