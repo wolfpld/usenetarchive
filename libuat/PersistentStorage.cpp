@@ -46,6 +46,7 @@ static std::string GetSavePath()
 
 PersistentStorage::PersistentStorage()
     : m_base( GetSavePath() )
+    , m_visitedFn( m_base + Visited )
     , m_visitedTimestamp( 0 )
     , m_currBuf( nullptr )
     , m_bufLeft( 0 )
@@ -154,23 +155,21 @@ bool PersistentStorage::ReadArticleHistory( const char* archive )
 bool PersistentStorage::WasVisited( const char* msgid )
 {
     if( m_visited.find( msgid ) != m_visited.end() ) return true;
-    const auto fn = m_base + Visited;
-    LockedFile guard( fn.c_str() );
+    LockedFile guard( m_visitedFn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
-    VerifyVisitedAreValid( fn );
+    VerifyVisitedAreValid( m_visitedFn );
     return m_visited.find( msgid ) != m_visited.end();
 }
 
 bool PersistentStorage::MarkVisited( const char* msgid )
 {
     if( m_visited.find( msgid ) != m_visited.end() ) return false;
-    const auto fn = m_base + Visited;
-    LockedFile guard( fn.c_str() );
+    LockedFile guard( m_visitedFn.c_str() );
     std::lock_guard<LockedFile> lg( guard );
-    VerifyVisitedAreValid( fn );
+    VerifyVisitedAreValid( m_visitedFn );
     m_visited.emplace( StoreString( msgid ) );
     CreateDirStruct( m_base );
-    FILE* f = fopen( fn.c_str(), "ab" );
+    FILE* f = fopen( m_visitedFn.c_str(), "ab" );
     if( f )
     {
         fwrite( msgid, 1, strlen( msgid ) + 1, f );
