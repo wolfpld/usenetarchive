@@ -67,7 +67,11 @@ void Browser::Entry()
             MoveOrEnterAction( -1 );
             break;
         case ' ':
-            MoveOrEnterAction( m_mview.GetHeight() - 2 );
+            if( MoveOrEnterAction( m_mview.GetHeight() - 2 ) )
+            {
+                m_tview.MoveCursor( 1 );
+                MoveOrEnterAction( 0 );
+            }
             break;
         case KEY_UP:
         case 'k':
