@@ -15,6 +15,19 @@ Browser::~Browser()
 {
 }
 
+bool Browser::MoveOrEnterAction( int move )
+{
+    auto resizeNeeded = !m_mview.IsActive();
+    bool ret = m_mview.Display( m_tview.GetMessageIndex(), move );
+    if( resizeNeeded )
+    {
+        m_tview.Resize();
+        m_mview.Resize();
+    }
+    doupdate();
+    return ret;
+}
+
 void Browser::Entry()
 {
     while( auto key = m_tview.GetKey() )
@@ -37,42 +50,15 @@ void Browser::Entry()
             break;
         case KEY_ENTER:
         case '\n':
-        {
-            auto resizeNeeded = !m_mview.IsActive();
-            m_mview.Display( m_tview.GetMessageIndex(), 1 );
-            if( resizeNeeded )
-            {
-                m_tview.Resize();
-                m_mview.Resize();
-            }
-            doupdate();
+            MoveOrEnterAction( 1 );
             break;
-        }
         case KEY_BACKSPACE:
         case '\b':
-        {
-            auto resizeNeeded = !m_mview.IsActive();
-            m_mview.Display( m_tview.GetMessageIndex(), -1 );
-            if( resizeNeeded )
-            {
-                m_tview.Resize();
-                m_mview.Resize();
-            }
-            doupdate();
+            MoveOrEnterAction( -1 );
             break;
-        }
         case ' ':
-        {
-            auto resizeNeeded = !m_mview.IsActive();
-            m_mview.Display( m_tview.GetMessageIndex(), m_mview.GetHeight() - 2 );
-            if( resizeNeeded )
-            {
-                m_tview.Resize();
-                m_mview.Resize();
-            }
-            doupdate();
+            MoveOrEnterAction( m_mview.GetHeight() - 2 );
             break;
-        }
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );

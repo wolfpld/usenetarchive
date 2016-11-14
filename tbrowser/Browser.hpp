@@ -19,6 +19,8 @@ public:
     void Entry();
 
 private:
+    bool MoveOrEnterAction( int move );
+
     std::unique_ptr<Archive> m_archive;
 
     HeaderBar m_header;
