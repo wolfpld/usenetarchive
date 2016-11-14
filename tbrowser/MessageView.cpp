@@ -66,8 +66,9 @@ void MessageView::Draw()
     int limit = std::min<int>( h-1, m_lines.size() );
     for( int i=0; i<limit; i++ )
     {
+        wmove( m_win, i, 0 );
         auto start = m_text + m_lines[i].offset;
-        auto end = utfendcrlf( start, 79 );
+        auto end = utfendcrlf( start, w );
         if( m_lines[i].flags == L_Header )
         {
             auto hend = start;
@@ -76,7 +77,7 @@ void MessageView::Draw()
             wprintw( m_win, "%.*s", hend - start, start );
             wattroff( m_win, COLOR_PAIR( 2 ) );
             wattron( m_win, COLOR_PAIR( 7 ) );
-            wprintw( m_win, "%.*s\n", end - hend, hend );
+            wprintw( m_win, "%.*s", end - hend, hend );
             wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
         }
         else
@@ -101,7 +102,7 @@ void MessageView::Draw()
             default:
                 break;
             }
-            wprintw( m_win, "%.*s\n", end - start, start );
+            wprintw( m_win, "%.*s", end - start, start );
             switch( m_lines[i].flags )
             {
             case L_Signature:
@@ -127,10 +128,12 @@ void MessageView::Draw()
     wattron( m_win, COLOR_PAIR( 6 ) );
     for( int i=limit; i<h-1; i++ )
     {
+        wmove( m_win, i, 0 );
         wprintw( m_win, "~\n" );
     }
     wattroff( m_win, COLOR_PAIR( 6 ) );
 
+    wmove( m_win, h-1, 0 );
     wattron( m_win, COLOR_PAIR( 1 ) );
     for( int i=0; i<w; i++ )
     {
