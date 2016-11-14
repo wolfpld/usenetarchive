@@ -48,6 +48,19 @@ void Browser::Entry()
             doupdate();
             break;
         }
+        case KEY_BACKSPACE:
+        case '\b':
+        {
+            auto resizeNeeded = !m_mview.IsActive();
+            m_mview.Display( m_tview.GetMessageIndex(), -1 );
+            if( resizeNeeded )
+            {
+                m_tview.Resize();
+                m_mview.Resize();
+            }
+            doupdate();
+            break;
+        }
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );

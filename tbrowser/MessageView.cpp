@@ -53,7 +53,14 @@ bool MessageView::Display( uint32_t idx, int move )
     }
     else if( m_active )
     {
-        m_top += move;
+        if( move > 0 )
+        {
+            m_top += move;
+        }
+        else
+        {
+            m_top = std::max( 0, m_top + move );
+        }
         Draw();
     }
     m_active = true;
