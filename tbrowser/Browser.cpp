@@ -34,6 +34,11 @@ bool Browser::MoveOrEnterAction( int move )
         m_tview.Expand( cursor, true );
         m_tview.Draw();
     }
+    else if( newMessage )
+    {
+        m_tview.Draw();
+    }
+
     doupdate();
     return ret;
 }
