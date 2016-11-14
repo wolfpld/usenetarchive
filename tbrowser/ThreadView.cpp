@@ -4,6 +4,7 @@
 
 #include "../common/KillRe.hpp"
 #include "../libuat/Archive.hpp"
+#include "../libuat/PersistentStorage.hpp"
 
 #include "MessageView.hpp"
 #include "ThreadView.hpp"
@@ -175,6 +176,7 @@ static bool SameSubject( const char* subject, const char*& prev )
 void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == m_data[idx].msgid;
+    bool wasVisited = m_storage.WasVisited( m_archive.GetMessageId( m_data[idx].msgid ) );
 
     wmove( m_win, line, 0 );
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
@@ -261,6 +263,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
         if( !hilite ) wattroff( m_win, COLOR_PAIR(5) );
     }
     auto target = len;
+    if( !hilite && wasVisited ) wattron( m_win, COLOR_PAIR(8) | A_BOLD );
     if( SameSubject( subject, prev ) )
     {
         len = 1;
@@ -271,6 +274,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
         end = utfendl( subject, len );
         utfprint( m_win, subject, end );
     }
+    if( !hilite && wasVisited ) wattroff( m_win, COLOR_PAIR(8) | A_BOLD );
     while( len++ < target )
     {
         waddch( m_win, ' ' );
