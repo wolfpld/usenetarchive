@@ -17,6 +17,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_mview( mview )
     , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )
+    , m_revLookup( archive.NumberOfMessages() )
     , m_top( 0 )
     , m_cursor( 0 )
 {
@@ -157,6 +158,7 @@ void ThreadView::Fill( int index, int msgid, int parent )
     m_data[index].msgid = msgid;
     m_data[index].valid = 1;
     m_data[index].parent = parent;
+    m_revLookup[msgid] = index;
 }
 
 static bool SameSubject( const char* subject, const char*& prev )
