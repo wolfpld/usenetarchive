@@ -4,18 +4,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../libuat/Archive.hpp"
+#include "../libuat/PersistentStorage.hpp"
 
 #include "Browser.hpp"
 
 int main( int argc, char** argv )
 {
+    std::unique_ptr<Archive> archive;
+    PersistentStorage storage;
+
+    auto lastOpen = storage.ReadLastOpenArchive();
+
     if( argc != 2 )
     {
-        fprintf( stderr, "Usage: %s archive-name.usenet\n", argv[0] );
-        return 1;
+        if( lastOpen.empty() )
+        {
+            fprintf( stderr, "Usage: %s archive-name.usenet\n", argv[0] );
+            return 1;
+        }
+    }
+    else
+    {
+        lastOpen = argv[1];
     }
 
-    std::unique_ptr<Archive> archive( Archive::Open( argv[1] ) );
+    archive.reset( Archive::Open( lastOpen ) );
+
     if( !archive )
     {
         fprintf( stderr, "%s is not an archive!\n", argv[1] );
@@ -44,6 +58,8 @@ int main( int argc, char** argv )
     browser.Entry();
 
     endwin();
+
+    storage.WriteLastOpenArchive( lastOpen.c_str() );
 
     return 0;
 }
