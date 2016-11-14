@@ -16,6 +16,7 @@ public:
     void Resize();
     bool Display( uint32_t idx, int move );
     void Close();
+    void SwitchHeaders();
 
     bool IsActive() const { return m_active; }
     uint32_t DisplayedMessage() const { return m_idx; }
@@ -47,6 +48,7 @@ private:
     int m_top;
     bool m_active;
     bool m_vertical;
+    bool m_allHeaders;
 };
 
 #endif

@@ -12,6 +12,7 @@ MessageView::MessageView( Archive& archive )
     , m_archive( archive )
     , m_idx( -1 )
     , m_active( false )
+    , m_allHeaders( false )
 {
 }
 
@@ -71,6 +72,17 @@ bool MessageView::Display( uint32_t idx, int move )
 void MessageView::Close()
 {
     m_active = false;
+}
+
+void MessageView::SwitchHeaders()
+{
+    m_allHeaders = !m_allHeaders;
+    PrepareLines();
+    m_top = 0;
+    if( m_active )
+    {
+        Draw();
+    }
 }
 
 void MessageView::Draw()
@@ -219,7 +231,8 @@ void MessageView::PrepareLines()
             }
             else
             {
-                if( strnicmpl( txt, "from: ", 6 ) == 0 ||
+                if( m_allHeaders ||
+                    strnicmpl( txt, "from: ", 6 ) == 0 ||
                     strnicmpl( txt, "newsgroups: ", 12 ) == 0 ||
                     strnicmpl( txt, "subject: ", 9 ) == 0 ||
                     strnicmpl( txt, "date: ", 6 ) == 0 )

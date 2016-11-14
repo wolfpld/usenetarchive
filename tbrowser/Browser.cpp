@@ -149,6 +149,13 @@ void Browser::Entry()
             }
             break;
         }
+        case 't':
+            m_mview.SwitchHeaders();
+            if( m_mview.IsActive() )
+            {
+                doupdate();
+            }
+            break;
         default:
             break;
         }
