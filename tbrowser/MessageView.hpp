@@ -6,11 +6,12 @@
 #include "View.hpp"
 
 class Archive;
+class PersistentStorage;
 
 class MessageView : public View
 {
 public:
-    MessageView( Archive& archive );
+    MessageView( Archive& archive, PersistentStorage& storage );
     ~MessageView();
 
     void Resize();
@@ -43,6 +44,7 @@ private:
 
     std::vector<Line> m_lines;
     Archive& m_archive;
+    PersistentStorage& m_storage;
     const char* m_text;
     int32_t m_idx;
     int m_top;

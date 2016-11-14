@@ -3,13 +3,15 @@
 #include "../common/String.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
+#include "../libuat/PersistentStorage.hpp"
 
 #include "MessageView.hpp"
 #include "UTF8.hpp"
 
-MessageView::MessageView( Archive& archive )
+MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     : View( 0, 0, 1, 1 )
     , m_archive( archive )
+    , m_storage( storage )
     , m_idx( -1 )
     , m_active( false )
     , m_allHeaders( false )
@@ -51,6 +53,7 @@ bool MessageView::Display( uint32_t idx, int move )
         {
             Draw();
         }
+        m_storage.MarkVisited( m_archive.GetMessageId( idx ) );
     }
     else if( m_active )
     {
