@@ -173,10 +173,10 @@ static bool SameSubject( const char* subject, const char*& prev )
     return strcmp( prev, oldprev ) == 0;
 }
 
-void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
+void ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == m_data[idx].msgid;
-    bool wasVisited = m_storage.WasVisited( m_archive.GetMessageId( m_data[idx].msgid ) );
+    bool wasVisited = CheckVisited( idx );
 
     wmove( m_win, line, 0 );
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
@@ -194,7 +194,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev ) const
             bool complete = true;
             std::vector<uint32_t> stack;
             stack.reserve( 4 * 1024 );
-            stack.emplace_back( m_data[idx].msgid );
+            stack.push_back( m_data[idx].msgid );
             while( !stack.empty() )
             {
                 const auto id = stack.back();
@@ -393,4 +393,12 @@ int ThreadView::GetPrev( int idx ) const
         parent = m_data[parent].parent;
     }
     return idx;
+}
+
+bool ThreadView::CheckVisited( int idx )
+{
+    if( m_data[idx].visited ) return true;
+    auto ret = m_storage.WasVisited( m_archive.GetMessageId( m_data[idx].msgid ) );
+    if( ret ) m_data[idx].visited = true;
+    return ret;
 }
