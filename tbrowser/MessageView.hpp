@@ -14,7 +14,7 @@ public:
     ~MessageView();
 
     void Resize();
-    void Display( uint32_t idx );
+    bool Display( uint32_t idx, int move );
     void Close();
 
     bool IsActive() const { return m_active; }
@@ -44,6 +44,7 @@ private:
     Archive& m_archive;
     const char* m_text;
     int32_t m_idx;
+    int m_top;
     bool m_active;
     bool m_vertical;
 };

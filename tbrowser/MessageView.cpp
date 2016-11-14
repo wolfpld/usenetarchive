@@ -37,20 +37,27 @@ void MessageView::Resize()
     Draw();
 }
 
-void MessageView::Display( uint32_t idx )
+bool MessageView::Display( uint32_t idx, int move )
 {
     if( idx != m_idx )
     {
         m_idx = idx;
         m_text = m_archive.GetMessage( idx );
         PrepareLines();
+        m_top = 0;
+        // If view is not active, drawing will be performed during resize.
+        if( m_active )
+        {
+            Draw();
+        }
     }
-    // If view is not active, drawing will be performed during resize.
-    if( m_active )
+    else if( m_active )
     {
+        m_top += move;
         Draw();
     }
     m_active = true;
+    return false;
 }
 
 void MessageView::Close()

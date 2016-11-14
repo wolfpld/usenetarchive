@@ -39,7 +39,7 @@ void Browser::Entry()
         case '\n':
         {
             auto resizeNeeded = !m_mview.IsActive();
-            m_mview.Display( m_tview.GetMessageIndex() );
+            m_mview.Display( m_tview.GetMessageIndex(), 1 );
             if( resizeNeeded )
             {
                 m_tview.Resize();
