@@ -61,6 +61,18 @@ void Browser::Entry()
             doupdate();
             break;
         }
+        case ' ':
+        {
+            auto resizeNeeded = !m_mview.IsActive();
+            m_mview.Display( m_tview.GetMessageIndex(), m_mview.GetHeight() - 2 );
+            if( resizeNeeded )
+            {
+                m_tview.Resize();
+                m_mview.Resize();
+            }
+            doupdate();
+            break;
+        }
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );
