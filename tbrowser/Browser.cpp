@@ -64,6 +64,7 @@ void Browser::Entry()
             break;
         case KEY_BACKSPACE:
         case '\b':
+        case 127:
             MoveOrEnterAction( -1 );
             break;
         case ' ':
