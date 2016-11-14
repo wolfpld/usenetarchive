@@ -18,11 +18,21 @@ Browser::~Browser()
 bool Browser::MoveOrEnterAction( int move )
 {
     auto resizeNeeded = !m_mview.IsActive();
+    bool newMessage = m_mview.DisplayedMessage() != m_tview.GetMessageIndex();
     bool ret = m_mview.Display( m_tview.GetMessageIndex(), move );
     if( resizeNeeded )
     {
         m_tview.Resize();
         m_mview.Resize();
+    }
+    auto cursor = m_tview.GetCursor();
+    if( newMessage &&
+        m_tview.CanExpand( cursor ) &&
+        !m_tview.IsExpanded( cursor ) &&
+        m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 )
+    {
+        m_tview.Expand( cursor, true );
+        m_tview.Draw();
     }
     doupdate();
     return ret;
