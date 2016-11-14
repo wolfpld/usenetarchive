@@ -58,7 +58,7 @@ bool MessageView::Display( uint32_t idx, int move )
             if( m_top + move >= m_lines.size() ) return true;
             m_top += move;
         }
-        else
+        else if( move < 0 )
         {
             m_top = std::max( 0, m_top + move );
         }
