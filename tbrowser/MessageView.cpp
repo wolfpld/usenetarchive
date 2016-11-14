@@ -77,8 +77,11 @@ void MessageView::Close()
 void MessageView::SwitchHeaders()
 {
     m_allHeaders = !m_allHeaders;
-    PrepareLines();
     m_top = 0;
+    if( m_idx != -1 )
+    {
+        PrepareLines();
+    }
     if( m_active )
     {
         Draw();
