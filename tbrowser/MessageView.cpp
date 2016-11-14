@@ -62,13 +62,21 @@ void MessageView::Draw()
 {
     int w, h;
     getmaxyx( m_win, h, w );
+    int tw = w;
+    if( m_vertical ) tw--;
     werase( m_win );
     int limit = std::min<int>( h-1, m_lines.size() );
     for( int i=0; i<limit; i++ )
     {
         wmove( m_win, i, 0 );
+        if( m_vertical )
+        {
+            wattron( m_win, COLOR_PAIR( 7 ) );
+            waddch( m_win, ACS_VLINE );
+            wattroff( m_win, COLOR_PAIR( 7 ) );
+        }
         auto start = m_text + m_lines[i].offset;
-        auto end = utfendcrlf( start, w );
+        auto end = utfendcrlf( start, tw );
         if( m_lines[i].flags == L_Header )
         {
             auto hend = start;
@@ -125,10 +133,16 @@ void MessageView::Draw()
             }
         }
     }
-    wattron( m_win, COLOR_PAIR( 6 ) );
     for( int i=limit; i<h-1; i++ )
     {
         wmove( m_win, i, 0 );
+        if( m_vertical )
+        {
+            wattron( m_win, COLOR_PAIR( 7 ) );
+            waddch( m_win, ACS_VLINE );
+            wattroff( m_win, COLOR_PAIR( 7 ) );
+        }
+        wattron( m_win, COLOR_PAIR( 6 ) );
         wprintw( m_win, "~\n" );
     }
     wattroff( m_win, COLOR_PAIR( 6 ) );
@@ -139,13 +153,20 @@ void MessageView::Draw()
     {
         waddch( m_win, ' ' );
     }
-    wmove( m_win, h-1, 1 );
-    w--;
-    int len = w;
+    wmove( m_win, h-1, 0 );
+    if( m_vertical )
+    {
+        wattron( m_win, COLOR_PAIR( 9 ) );
+        waddch( m_win, ACS_VLINE );
+        wattron( m_win, COLOR_PAIR( 1 ) );
+    }
+    waddch( m_win, ' ' );
+    tw--;
+    int len = tw;
     auto text = m_archive.GetSubject( m_idx );
     auto end = utfendl( text, len );
     utfprint( m_win, text, end );
-    if( w - len > 5 )
+    if( tw - len > 5 )
     {
         wattron( m_win, A_BOLD );
         wprintw( m_win, " :: " );
