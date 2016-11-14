@@ -72,9 +72,12 @@ void MessageView::Draw()
     int tw = w;
     if( m_vertical ) tw--;
     werase( m_win );
-    int limit = std::min<int>( h-1, m_lines.size() );
-    for( int i=0; i<limit; i++ )
+    int i;
+    for( i=0; i<h-1; i++ )
     {
+        int line = m_top + i;
+        if( line >= m_lines.size() ) break;
+
         wmove( m_win, i, 0 );
         if( m_vertical )
         {
@@ -82,9 +85,9 @@ void MessageView::Draw()
             waddch( m_win, ACS_VLINE );
             wattroff( m_win, COLOR_PAIR( 7 ) );
         }
-        auto start = m_text + m_lines[i].offset;
+        auto start = m_text + m_lines[line].offset;
         auto end = utfendcrlf( start, tw );
-        if( m_lines[i].flags == L_Header )
+        if( m_lines[line].flags == L_Header )
         {
             auto hend = start;
             while( *hend != ' ' ) hend++;
@@ -97,7 +100,7 @@ void MessageView::Draw()
         }
         else
         {
-            switch( m_lines[i].flags )
+            switch( m_lines[line].flags )
             {
             case L_Signature:
                 wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
@@ -118,7 +121,7 @@ void MessageView::Draw()
                 break;
             }
             wprintw( m_win, "%.*s", end - start, start );
-            switch( m_lines[i].flags )
+            switch( m_lines[line].flags )
             {
             case L_Signature:
                 wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
@@ -140,7 +143,7 @@ void MessageView::Draw()
             }
         }
     }
-    for( int i=limit; i<h-1; i++ )
+    for( ; i<h-1; i++ )
     {
         wmove( m_win, i, 0 );
         if( m_vertical )
