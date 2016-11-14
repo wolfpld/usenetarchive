@@ -55,6 +55,7 @@ bool MessageView::Display( uint32_t idx, int move )
     {
         if( move > 0 )
         {
+            if( m_top + move >= m_lines.size() ) return true;
             m_top += move;
         }
         else
