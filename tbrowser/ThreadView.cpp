@@ -136,6 +136,19 @@ void ThreadView::Collapse( int cursor )
     m_data[cursor].expanded = 0;
 }
 
+void ThreadView::ScrollTo( int cursor )
+{
+    assert( cursor >= m_top );
+    auto next = GetNext( m_top );
+    const auto limit = m_archive.NumberOfMessages();
+    while( next < cursor && m_bottom < limit )
+    {
+        m_top = next;
+        next = GetNext( m_top );
+        m_bottom = GetNext( m_bottom );
+    }
+}
+
 void ThreadView::Fill( int index, int msgid, int parent )
 {
     assert( m_data[index].valid == 0 );
