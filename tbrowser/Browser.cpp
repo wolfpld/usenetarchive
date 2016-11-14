@@ -52,6 +52,14 @@ void Browser::Entry()
             m_bottom.Resize();
             doupdate();
             break;
+        case 'x':
+            if( m_mview.IsActive() )
+            {
+                m_mview.Close();
+                m_tview.Resize();
+                doupdate();
+            }
+            break;
         case 'q':
             if( !m_mview.IsActive() ) return;
             m_mview.Close();
@@ -88,7 +96,7 @@ void Browser::Entry()
         case KEY_NPAGE:
             m_tview.MoveCursor( m_tview.GetHeight()-2 );
             break;
-        case 'x':
+        case 'e':
         {
             auto cursor = m_tview.GetCursor();
             if( m_tview.IsExpanded( cursor ) )
