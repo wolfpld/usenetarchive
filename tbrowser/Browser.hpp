@@ -3,17 +3,18 @@
 
 #include <memory>
 
-#include "../libuat/Archive.hpp"
-
 #include "BottomBar.hpp"
 #include "HeaderBar.hpp"
 #include "MessageView.hpp"
 #include "ThreadView.hpp"
 
+class Archive;
+class PersistentStorage;
+
 class Browser
 {
 public:
-    Browser( std::unique_ptr<Archive>&& archive );
+    Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage );
     ~Browser();
 
     void Entry();
@@ -22,6 +23,7 @@ private:
     bool MoveOrEnterAction( int move );
 
     std::unique_ptr<Archive> m_archive;
+    PersistentStorage& m_storage;
 
     HeaderBar m_header;
     BottomBar m_bottom;

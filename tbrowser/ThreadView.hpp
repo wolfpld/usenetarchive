@@ -9,6 +9,7 @@
 
 class Archive;
 class MessageView;
+class PersistentStorage;
 
 struct ThreadData
 {
@@ -21,7 +22,7 @@ struct ThreadData
 class ThreadView : public View
 {
 public:
-    ThreadView( const Archive& archive, const MessageView& mview );
+    ThreadView( const Archive& archive, PersistentStorage& storage, const MessageView& mview );
     ~ThreadView();
 
     void Resize();
@@ -45,6 +46,8 @@ private:
     int GetPrev( int idx ) const;
 
     const Archive& m_archive;
+    PersistentStorage& m_storage;
+
     const MessageView& m_mview;
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;

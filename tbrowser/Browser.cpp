@@ -1,12 +1,15 @@
 #include <curses.h>
+#include "../libuat/Archive.hpp"
+#include "../libuat/PersistentStorage.hpp"
 #include "Browser.hpp"
 
-Browser::Browser( std::unique_ptr<Archive>&& archive )
+Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage )
     : m_archive( std::move( archive ) )
+    , m_storage( storage )
     , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr )
     , m_bottom()
     , m_mview( *m_archive )
-    , m_tview( *m_archive, m_mview )
+    , m_tview( *m_archive, m_storage, m_mview )
 {
     doupdate();
 }

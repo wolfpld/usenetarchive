@@ -54,7 +54,7 @@ int main( int argc, char** argv )
     init_pair( 8, COLOR_BLACK, COLOR_BLACK );
     init_pair( 9, COLOR_CYAN, COLOR_BLUE );
 
-    Browser browser( std::move( archive ) );
+    Browser browser( std::move( archive ), storage );
     browser.Entry();
 
     endwin();
