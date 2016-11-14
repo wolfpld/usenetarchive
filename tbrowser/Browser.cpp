@@ -68,6 +68,7 @@ void Browser::Entry()
             break;
         case KEY_ENTER:
         case '\n':
+        case 459:   // numpad enter
             MoveOrEnterAction( 1 );
             break;
         case KEY_BACKSPACE:
