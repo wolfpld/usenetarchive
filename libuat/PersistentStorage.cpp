@@ -174,6 +174,7 @@ bool PersistentStorage::MarkVisited( const char* msgid )
     {
         fwrite( msgid, 1, strlen( msgid ) + 1, f );
         fclose( f );
+        m_visitedTimestamp = GetFileMTime( m_visitedFn.c_str() );
     }
     return true;
 }
@@ -198,8 +199,10 @@ void PersistentStorage::VerifyVisitedAreValid( const std::string& fn )
 {
     if( Exists( fn ) )
     {
-        if( GetFileMTime( fn.c_str() ) > m_visitedTimestamp )
+        const auto timestamp = GetFileMTime( fn.c_str() );
+        if( timestamp > m_visitedTimestamp )
         {
+            m_visitedTimestamp = timestamp;
             FileMap<char> fmap( fn );
             auto ptr = (const char*)fmap;
             auto datasize = fmap.Size();
