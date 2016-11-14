@@ -85,6 +85,7 @@ void ThreadView::Draw()
     }
     m_bottom = idx;
 
+    wmove( m_win, h-1, 0 );
     wattron( m_win, COLOR_PAIR( 1 ) );
     for( int i=0; i<w; i++ )
     {
