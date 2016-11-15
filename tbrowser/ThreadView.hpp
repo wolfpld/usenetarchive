@@ -16,7 +16,8 @@ struct ThreadData
     uint32_t expanded   : 1;
     uint32_t valid      : 1;
     uint32_t visited    : 1;
-    uint32_t msgid      : 29;
+    uint32_t visall     : 1;
+    uint32_t msgid      : 28;
     int32_t parent;
 };
 

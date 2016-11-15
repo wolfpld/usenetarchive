@@ -214,26 +214,34 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     {
         if( wasVisited )
         {
-            ExpandFill( idx );
-            bool complete = true;
-            std::vector<uint32_t> stack;
-            stack.reserve( 4 * 1024 );
-            stack.push_back( m_data[idx].msgid );
-            while( !stack.empty() )
+            bool complete = m_data[idx].visall;
+            if( !complete )
             {
-                const auto id = stack.back();
-                auto didx = m_revLookup[id];
-                assert( m_data[didx].valid );
-                if( !CheckVisited( didx ) )
+                ExpandFill( idx );
+                complete = true;
+                std::vector<uint32_t> stack;
+                stack.reserve( 4 * 1024 );
+                stack.push_back( m_data[idx].msgid );
+                while( !stack.empty() )
                 {
-                    complete = false;
-                    break;
+                    const auto id = stack.back();
+                    auto didx = m_revLookup[id];
+                    assert( m_data[didx].valid );
+                    if( !CheckVisited( didx ) )
+                    {
+                        complete = false;
+                        break;
+                    }
+                    stack.pop_back();
+                    const auto children = m_archive.GetChildren( id );
+                    for( int i=0; i<children.size; i++ )
+                    {
+                        stack.emplace_back( children.ptr[i] );
+                    }
                 }
-                stack.pop_back();
-                const auto children = m_archive.GetChildren( id );
-                for( int i=0; i<children.size; i++ )
+                if( complete )
                 {
-                    stack.emplace_back( children.ptr[i] );
+                    m_data[idx].visall = true;
                 }
             }
             if( complete )
