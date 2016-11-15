@@ -236,7 +236,10 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
                     const auto children = m_archive.GetChildren( id );
                     for( int i=0; i<children.size; i++ )
                     {
-                        stack.emplace_back( children.ptr[i] );
+                        if( !m_data[m_revLookup[children.ptr[i]]].visall )
+                        {
+                            stack.emplace_back( children.ptr[i] );
+                        }
                     }
                 }
                 if( complete )
