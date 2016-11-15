@@ -214,6 +214,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     {
         if( wasVisited )
         {
+            ExpandFill( idx );
             bool complete = true;
             std::vector<uint32_t> stack;
             stack.reserve( 4 * 1024 );
@@ -221,7 +222,9 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
             while( !stack.empty() )
             {
                 const auto id = stack.back();
-                if( !m_storage.WasVisited( m_archive.GetMessageId( id ) ) )
+                auto didx = m_revLookup[id];
+                assert( m_data[didx].valid );
+                if( !CheckVisited( didx ) )
                 {
                     complete = false;
                     break;
