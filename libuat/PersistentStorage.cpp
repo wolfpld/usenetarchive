@@ -15,7 +15,7 @@ static const char* Visited = "visited";
 
 static std::string GetSavePath()
 {
-#ifdef _WIN32
+#if defined _MSC_VER || defined __CYGWIN__
     std::string path( getenv( "APPDATA" ) );
     for( unsigned int i=0; i<path.size(); i++ )
     {
