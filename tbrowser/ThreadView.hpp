@@ -42,6 +42,7 @@ public:
     int GetMessageIndex() const { return m_data[m_cursor].msgid; }
 
 private:
+    void ExpandFill( int cursor );
     void Fill( int index, int msgid, int parent );
     void DrawLine( int line, int idx, const char*& prev );
 

@@ -134,6 +134,27 @@ void ThreadView::Expand( int cursor, bool recursive )
     }
 }
 
+void ThreadView::ExpandFill( int cursor )
+{
+    if( cursor == m_archive.NumberOfMessages()-1 || m_data[cursor+1].valid ) return;
+    auto children = m_archive.GetChildren( m_data[cursor].msgid );
+    int parent = cursor;
+    cursor++;
+    for( int i=0; i<children.size; i++ )
+    {
+        auto skip = m_archive.GetTotalChildrenCount( children.ptr[i] );
+        assert( !m_data[cursor].valid );
+        Fill( cursor, children.ptr[i], parent );
+        bool line = i != children.size - 1;
+        for( int j=0; j<skip; j++ )
+        {
+            m_tree[cursor+j].Set( line );
+        }
+        ExpandFill( cursor );
+        cursor += skip;
+    }
+}
+
 void ThreadView::Collapse( int cursor )
 {
     m_data[cursor].expanded = 0;
