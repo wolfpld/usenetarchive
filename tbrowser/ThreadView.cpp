@@ -399,7 +399,6 @@ void ThreadView::MoveCursor( int offset )
     }
 
     Draw();
-    doupdate();
 }
 
 int ThreadView::GetNext( int idx ) const

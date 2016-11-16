@@ -90,20 +90,25 @@ void Browser::Entry()
                 m_tview.MoveCursor( 1 );
                 MoveOrEnterAction( 0 );
             }
+            doupdate();
             break;
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );
+            doupdate();
             break;
         case KEY_DOWN:
         case 'j':
             m_tview.MoveCursor( 1 );
+            doupdate();
             break;
         case KEY_PPAGE:
             m_tview.MoveCursor( -m_tview.GetHeight()+2 );
+            doupdate();
             break;
         case KEY_NPAGE:
             m_tview.MoveCursor( m_tview.GetHeight()-2 );
+            doupdate();
             break;
         case 'e':
         {
@@ -133,6 +138,7 @@ void Browser::Entry()
             else
             {
                 m_tview.MoveCursor( -1 );
+                doupdate();
             }
             break;
         }
@@ -149,6 +155,7 @@ void Browser::Entry()
             else
             {
                 m_tview.MoveCursor( 1 );
+                doupdate();
             }
             break;
         }
