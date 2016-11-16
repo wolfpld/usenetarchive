@@ -10,6 +10,8 @@
 #include "../contrib/xxhash/xxhash.h"
 #include "../common/ring_buffer.hpp"
 
+#include "LockedFile.hpp"
+
 class PersistentStorage
 {
 public:
@@ -36,9 +38,10 @@ private:
     const char* StoreString( const char* str );
     void VerifyVisitedAreValid( const std::string& fn );
 
-    std::string m_base, m_visitedFn;
+    std::string m_base;
     std::unordered_set<const char*, hash, equal_to> m_visited;
     uint64_t m_visitedTimestamp;
+    LockedFile m_visitedGuard;
 
     std::vector<char*> m_buffers;
     char* m_currBuf;

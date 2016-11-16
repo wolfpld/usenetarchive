@@ -4,7 +4,6 @@
 
 #include "../common/FileMap.hpp"
 #include "../common/Filesystem.hpp"
-#include "LockedFile.hpp"
 #include "PersistentStorage.hpp"
 
 enum { BufSize = 1024 * 1024 };
@@ -46,8 +45,8 @@ static std::string GetSavePath()
 
 PersistentStorage::PersistentStorage()
     : m_base( GetSavePath() )
-    , m_visitedFn( m_base + Visited )
     , m_visitedTimestamp( 0 )
+    , m_visitedGuard( ( m_base + Visited ).c_str() )
     , m_currBuf( nullptr )
     , m_bufLeft( 0 )
     , m_articleHistory( 256 )
@@ -155,26 +154,24 @@ bool PersistentStorage::ReadArticleHistory( const char* archive )
 bool PersistentStorage::WasVisited( const char* msgid )
 {
     if( m_visited.find( msgid ) != m_visited.end() ) return true;
-    LockedFile guard( m_visitedFn.c_str() );
-    std::lock_guard<LockedFile> lg( guard );
-    VerifyVisitedAreValid( m_visitedFn );
+    std::lock_guard<LockedFile> lg( m_visitedGuard );
+    VerifyVisitedAreValid( m_visitedGuard );
     return m_visited.find( msgid ) != m_visited.end();
 }
 
 bool PersistentStorage::MarkVisited( const char* msgid )
 {
     if( m_visited.find( msgid ) != m_visited.end() ) return false;
-    LockedFile guard( m_visitedFn.c_str() );
-    std::lock_guard<LockedFile> lg( guard );
-    VerifyVisitedAreValid( m_visitedFn );
+    std::lock_guard<LockedFile> lg( m_visitedGuard );
+    VerifyVisitedAreValid( m_visitedGuard );
     m_visited.emplace( StoreString( msgid ) );
     CreateDirStruct( m_base );
-    FILE* f = fopen( m_visitedFn.c_str(), "ab" );
+    FILE* f = fopen( m_visitedGuard, "ab" );
     if( f )
     {
         fwrite( msgid, 1, strlen( msgid ) + 1, f );
         fclose( f );
-        m_visitedTimestamp = GetFileMTime( m_visitedFn.c_str() );
+        m_visitedTimestamp = GetFileMTime( m_visitedGuard );
     }
     return true;
 }
