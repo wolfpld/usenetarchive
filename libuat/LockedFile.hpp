@@ -14,7 +14,8 @@ public:
     void lock() { m_lock.lock(); }
     void unlock() { m_lock.unlock(); }
 
-    operator const char*() { return m_fn.c_str(); }
+    operator const char*() const { return m_fn.c_str(); }
+    operator const std::string&() const { return m_fn; }
 
 private:
     const std::string m_fn;
