@@ -165,11 +165,16 @@ void ThreadView::ScrollTo( int cursor )
     assert( cursor >= m_top );
     auto next = GetNext( m_top );
     const auto limit = m_archive.NumberOfMessages();
-    while( next < cursor && m_bottom < limit )
+    if( next < cursor && m_bottom < limit )
     {
-        m_top = next;
-        next = GetNext( m_top );
-        m_bottom = GetNext( m_bottom );
+        do
+        {
+            m_top = next;
+            next = GetNext( m_top );
+            m_bottom = GetNext( m_bottom );
+        }
+        while( next < cursor && m_bottom < limit );
+        Draw();
     }
 }
 
