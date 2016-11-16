@@ -263,7 +263,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
         }
         else
         {
-            wprintw( m_win, "  " );
+            wprintw( m_win, " -" );
         }
     }
 
