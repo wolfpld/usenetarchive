@@ -16,30 +16,13 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     if( m_storage.ReadArticleHistory( m_fn ) )
     {
         const auto article = history.back();
-        auto cursor = m_tview.ReverseLookup( article );
-        if( cursor != 0 )
-        {
-            if( cursor == -1 )
-            {
-                auto root = article;
-                for(;;)
-                {
-                    auto parent = m_archive->GetParent( root );
-                    if( parent == -1 ) break;
-                    root = parent;
-                }
-                m_tview.Expand( m_tview.ReverseLookup( root ), true );
-                cursor = m_tview.ReverseLookup( article );
-                assert( cursor != -1 );
-            }
-            m_tview.SetCursor( cursor );
-            m_tview.FocusOn( cursor );
-        }
+        SwitchToMessage( history.back() );
     }
     else
     {
         m_storage.AddToHistory( m_archive->GetTopLevel().ptr[0] );
     }
+    m_historyIdx = history.size() - 1;
 
     doupdate();
 }
@@ -215,8 +198,60 @@ void Browser::Entry()
                 doupdate();
             }
             break;
+        case ',':
+        {
+            auto& history = m_storage.GetArticleHistory();
+            if( !history.empty() && m_historyIdx > 0 )
+            {
+                m_historyIdx--;
+                SwitchToMessage( history[m_historyIdx] );
+                doupdate();
+            }
+            break;
+        }
+        case '.':
+        {
+            auto& history = m_storage.GetArticleHistory();
+            if( !history.empty() && m_historyIdx < history.size() - 1 )
+            {
+                m_historyIdx++;
+                SwitchToMessage( history[m_historyIdx] );
+                doupdate();
+            }
+            break;
+        }
         default:
             break;
         }
     }
+}
+
+void Browser::SwitchToMessage( int msgidx )
+{
+    auto cursor = m_tview.ReverseLookup( msgidx );
+    if( cursor == -1 )
+    {
+        auto root = msgidx;
+        for(;;)
+        {
+            auto parent = m_archive->GetParent( root );
+            if( parent == -1 ) break;
+            root = parent;
+        }
+        m_tview.Expand( m_tview.ReverseLookup( root ), true );
+        m_tview.Draw();
+        cursor = m_tview.ReverseLookup( msgidx );
+        assert( cursor != -1 );
+    }
+    else
+    {
+        auto root = m_tview.GetRoot( cursor );
+        if( m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
+        {
+            m_tview.Expand( root, true );
+            m_tview.Draw();
+        }
+    }
+    m_tview.SetCursor( cursor );
+    m_tview.FocusOn( cursor );
 }

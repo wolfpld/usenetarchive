@@ -21,6 +21,7 @@ public:
 
 private:
     bool MoveOrEnterAction( int move );
+    void SwitchToMessage( int msgidx );
 
     std::unique_ptr<Archive> m_archive;
     PersistentStorage& m_storage;
@@ -31,6 +32,7 @@ private:
     ThreadView m_tview;
 
     const char* m_fn;
+    int m_historyIdx;
 };
 
 #endif
