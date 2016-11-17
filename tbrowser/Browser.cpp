@@ -18,10 +18,6 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
         const auto article = history.back();
         SwitchToMessage( history.back() );
     }
-    else
-    {
-        m_storage.AddToHistory( m_archive->GetTopLevel().ptr[0] );
-    }
     m_historyIdx = history.size() - 1;
 
     doupdate();
