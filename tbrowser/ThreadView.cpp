@@ -328,11 +328,12 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     auto subject = m_archive.GetSubject( midx );
     auto& tree = m_tree[idx];
     auto treecnt = tree.Size();
-    len = w - 33 - dlen - treecnt*2;
+    len = w - 33 - dlen;
     if( treecnt > 0 )
     {
+        len -= 2;
         if( !hilite ) wattron( m_win, COLOR_PAIR(5) );
-        for( int i=0; i<treecnt-1; i++ )
+        for( int i=0; i<treecnt-1 && len > 1; i++ )
         {
             if( tree.Get( i ) )
             {
@@ -343,6 +344,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
                 waddch( m_win, ' ' );
             }
             waddch( m_win, ' ' );
+            len -= 2;
         }
         if( tree.Get( treecnt-1 ) )
         {
@@ -355,22 +357,25 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
         waddch( m_win, ACS_HLINE );
         if( !hilite ) wattroff( m_win, COLOR_PAIR(5) );
     }
-    auto target = len;
-    if( !hilite && wasVisited ) wattron( m_win, COLOR_PAIR(8) | A_BOLD );
-    if( SameSubject( subject, prev ) )
+    if( len > 0 )
     {
-        len = 1;
-        waddch( m_win, '>' );
-    }
-    else
-    {
-        end = utfendl( subject, len );
-        utfprint( m_win, subject, end );
-    }
-    if( !hilite && wasVisited ) wattroff( m_win, COLOR_PAIR(8) | A_BOLD );
-    while( len++ < target )
-    {
-        waddch( m_win, ' ' );
+        auto target = len;
+        if( !hilite && wasVisited ) wattron( m_win, COLOR_PAIR(8) | A_BOLD );
+        if( SameSubject( subject, prev ) )
+        {
+            len = 1;
+            waddch( m_win, '>' );
+        }
+        else
+        {
+            end = utfendl( subject, len );
+            utfprint( m_win, subject, end );
+        }
+        if( !hilite && wasVisited ) wattroff( m_win, COLOR_PAIR(8) | A_BOLD );
+        while( len++ < target )
+        {
+            waddch( m_win, ' ' );
+        }
     }
     waddch( m_win, '[' );
     if( !hilite ) wattron( m_win, COLOR_PAIR(2) );
