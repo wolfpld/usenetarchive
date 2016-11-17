@@ -21,10 +21,10 @@ void BottomBar::PrintHelp() const
 {
     waddch( m_win, ACS_DARROW );
     waddch( m_win, ACS_UARROW );
-    wprintw( m_win, ":Move  " );
+    wprintw( m_win, ":Move " );
     waddch( m_win, ACS_RARROW );
-    wprintw( m_win, ":Exp  " );
+    wprintw( m_win, ":Exp " );
     waddch( m_win, ACS_LARROW );
-    wprintw( m_win, ":Coll  " );
-    wprintw( m_win, "e:Co/Ex  q:Quit  RET:+Line  BCK:-Line  SPC:+Page  t:Hdrs" );
+    wprintw( m_win, ":Coll " );
+    wprintw( m_win, "e:Co/Ex q:Quit RET:+Ln BCK:-Ln SPC:+Pg t:Hdrs d:MrkRd" );
 }
