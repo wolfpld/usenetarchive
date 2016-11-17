@@ -40,8 +40,6 @@ bool Browser::MoveOrEnterAction( int move )
         m_tview.Draw();
         m_tview.ScrollTo( cursor );
     }
-
-    doupdate();
     return ret;
 }
 
@@ -77,11 +75,13 @@ void Browser::Entry()
         case '\n':
         case 459:   // numpad enter
             MoveOrEnterAction( 1 );
+            doupdate();
             break;
         case KEY_BACKSPACE:
         case '\b':
         case 127:
             MoveOrEnterAction( -1 );
+            doupdate();
             break;
         case ' ':
             if( MoveOrEnterAction( m_mview.GetHeight() - 2 ) )
