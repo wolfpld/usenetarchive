@@ -40,6 +40,7 @@ public:
     void FocusOn( int cursor );
 
     int GetCursor() const { return m_cursor; }
+    void SetCursor( int cursor ) { m_cursor = cursor; }
     int GetMessageIndex() const { return m_data[m_cursor].msgid; }
     int GetRoot( int cursor ) const;
 
