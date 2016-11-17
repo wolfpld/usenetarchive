@@ -134,6 +134,13 @@ void ThreadView::Expand( int cursor, bool recursive )
     }
 }
 
+int ThreadView::GetRoot( int cursor ) const
+{
+    assert( m_data[cursor].valid );
+    while( m_data[cursor].parent != -1 ) cursor = m_data[cursor].parent;
+    return cursor;
+}
+
 void ThreadView::ExpandFill( int cursor )
 {
     if( cursor == m_archive.NumberOfMessages()-1 || m_data[cursor+1].valid ) return;

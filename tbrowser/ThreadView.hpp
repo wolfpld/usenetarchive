@@ -41,6 +41,7 @@ public:
 
     int GetCursor() const { return m_cursor; }
     int GetMessageIndex() const { return m_data[m_cursor].msgid; }
+    int GetRoot( int cursor ) const;
 
 private:
     void ExpandFill( int cursor );
