@@ -59,7 +59,7 @@ private:
 
     const MessageView& m_mview;
     std::vector<ThreadData> m_data;
-    std::vector<uint32_t> m_revLookup;
+    std::vector<int32_t> m_revLookup;
     std::vector<BitSet> m_tree;
     int m_top, m_bottom;
     int m_cursor;

@@ -17,7 +17,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_mview( mview )
     , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )
-    , m_revLookup( archive.NumberOfMessages() )
+    , m_revLookup( archive.NumberOfMessages(), -1 )
     , m_top( 0 )
     , m_cursor( 0 )
 {
@@ -239,6 +239,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
                 {
                     const auto id = stack.back();
                     auto didx = m_revLookup[id];
+                    assert( didx != -1 );
                     assert( m_data[didx].valid );
                     if( !CheckVisited( didx ) )
                     {
@@ -249,6 +250,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
                     const auto children = m_archive.GetChildren( id );
                     for( int i=0; i<children.size; i++ )
                     {
+                        assert( m_revLookup[children.ptr[i]] != -1 );
                         if( !m_data[m_revLookup[children.ptr[i]]].visall )
                         {
                             stack.emplace_back( children.ptr[i] );
