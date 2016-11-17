@@ -91,6 +91,11 @@ void Browser::Entry()
             }
             doupdate();
             break;
+        case KEY_DC:
+        case 'b':
+            MoveOrEnterAction( -m_mview.GetHeight() - 2 );
+            doupdate();
+            break;
         case 'd':
             m_storage.MarkVisited( m_archive->GetMessageId( m_tview.GetMessageIndex() ) );
             m_tview.MoveCursor( 1 );
