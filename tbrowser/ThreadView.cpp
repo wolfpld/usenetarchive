@@ -109,6 +109,7 @@ bool ThreadView::CanExpand( int cursor )
 
 void ThreadView::Expand( int cursor, bool recursive )
 {
+    assert( m_data[cursor].valid );
     m_data[cursor].expanded = 1;
 
     auto children = m_archive.GetChildren( m_data[cursor].msgid );

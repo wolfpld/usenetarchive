@@ -17,8 +17,21 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     {
         const auto article = history.back();
         auto cursor = m_tview.ReverseLookup( article );
-        if( cursor != -1 )
+        if( cursor != 0 )
         {
+            if( cursor == -1 )
+            {
+                auto root = article;
+                for(;;)
+                {
+                    auto parent = m_archive->GetParent( root );
+                    if( parent == -1 ) break;
+                    root = parent;
+                }
+                m_tview.Expand( m_tview.ReverseLookup( root ), true );
+                cursor = m_tview.ReverseLookup( article );
+                assert( cursor != -1 );
+            }
             m_tview.SetCursor( cursor );
             m_tview.FocusOn( cursor );
         }
