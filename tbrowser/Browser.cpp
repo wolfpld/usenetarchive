@@ -12,6 +12,22 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     , m_tview( *m_archive, m_storage, m_mview )
     , m_fn( fn )
 {
+    auto& history = m_storage.GetArticleHistory();
+    if( m_storage.ReadArticleHistory( m_fn ) )
+    {
+        const auto article = history.back();
+        auto cursor = m_tview.ReverseLookup( article );
+        if( cursor != -1 )
+        {
+            m_tview.SetCursor( cursor );
+            m_tview.FocusOn( cursor );
+        }
+    }
+    else
+    {
+        m_storage.AddToHistory( m_archive->GetTopLevel().ptr[0] );
+    }
+
     doupdate();
 }
 
