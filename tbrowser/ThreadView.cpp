@@ -381,7 +381,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     if( !hilite ) wattron( m_win, COLOR_PAIR(2) );
     wprintw( m_win, "%s", buf );
     if( !hilite ) wattroff( m_win, COLOR_PAIR(2) );
-    waddch( m_win, ']' );
+    waddch( m_win, (m_cursor == idx) ? '<' : ']' );
     if( hilite ) wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
 }
 
