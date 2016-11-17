@@ -14,7 +14,7 @@ class PersistentStorage;
 class Browser
 {
 public:
-    Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage );
+    Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const char* fn );
     ~Browser();
 
     void Entry();
@@ -29,6 +29,8 @@ private:
     BottomBar m_bottom;
     MessageView m_mview;
     ThreadView m_tview;
+
+    const char* m_fn;
 };
 
 #endif
