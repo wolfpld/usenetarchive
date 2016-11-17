@@ -160,7 +160,7 @@ void ThreadView::Collapse( int cursor )
     m_data[cursor].expanded = 0;
 }
 
-void ThreadView::ScrollTo( int cursor )
+void ThreadView::FocusOn( int cursor )
 {
     assert( cursor >= m_top );
     auto next = GetNext( m_top );

@@ -38,7 +38,7 @@ bool Browser::MoveOrEnterAction( int move )
             m_tview.Expand( cursor, true );
         }
         m_tview.Draw();
-        m_tview.ScrollTo( cursor );
+        m_tview.FocusOn( cursor );
     }
     return ret;
 }

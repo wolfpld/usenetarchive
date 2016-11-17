@@ -37,7 +37,7 @@ public:
     void Expand( int cursor, bool recursive );
     void Collapse( int cursor );
     bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }
-    void ScrollTo( int cursor );
+    void FocusOn( int cursor );
 
     int GetCursor() const { return m_cursor; }
     int GetMessageIndex() const { return m_data[m_cursor].msgid; }
