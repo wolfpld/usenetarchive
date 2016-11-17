@@ -162,7 +162,11 @@ void ThreadView::Collapse( int cursor )
 
 void ThreadView::FocusOn( int cursor )
 {
-    assert( cursor >= m_top );
+    while( cursor < m_top )
+    {
+        m_top = GetPrev( m_top );
+        m_bottom = GetPrev( m_bottom );
+    }
     auto next = GetNext( m_top );
     const auto limit = m_archive.NumberOfMessages();
     if( next < cursor && m_bottom < limit )
