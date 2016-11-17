@@ -231,56 +231,58 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     }
     else
     {
-        if( wasVisited )
+        wprintw( m_win, "  " );
+    }
+
+    if( wasVisited )
+    {
+        bool complete = m_data[idx].visall;
+        if( !complete )
         {
-            bool complete = m_data[idx].visall;
-            if( !complete )
+            ExpandFill( idx );
+            complete = true;
+            std::vector<uint32_t> stack;
+            stack.reserve( 4 * 1024 );
+            stack.push_back( m_data[idx].msgid );
+            while( !stack.empty() )
             {
-                ExpandFill( idx );
-                complete = true;
-                std::vector<uint32_t> stack;
-                stack.reserve( 4 * 1024 );
-                stack.push_back( m_data[idx].msgid );
-                while( !stack.empty() )
+                const auto id = stack.back();
+                auto didx = m_revLookup[id];
+                assert( didx != -1 );
+                assert( m_data[didx].valid );
+                if( !CheckVisited( didx ) )
                 {
-                    const auto id = stack.back();
-                    auto didx = m_revLookup[id];
-                    assert( didx != -1 );
-                    assert( m_data[didx].valid );
-                    if( !CheckVisited( didx ) )
-                    {
-                        complete = false;
-                        break;
-                    }
-                    stack.pop_back();
-                    const auto children = m_archive.GetChildren( id );
-                    for( int i=0; i<children.size; i++ )
-                    {
-                        assert( m_revLookup[children.ptr[i]] != -1 );
-                        if( !m_data[m_revLookup[children.ptr[i]]].visall )
-                        {
-                            stack.emplace_back( children.ptr[i] );
-                        }
-                    }
+                    complete = false;
+                    break;
                 }
-                if( complete )
+                stack.pop_back();
+                const auto children = m_archive.GetChildren( id );
+                for( int i=0; i<children.size; i++ )
                 {
-                    m_data[idx].visall = true;
+                    assert( m_revLookup[children.ptr[i]] != -1 );
+                    if( !m_data[m_revLookup[children.ptr[i]]].visall )
+                    {
+                        stack.emplace_back( children.ptr[i] );
+                    }
                 }
             }
             if( complete )
             {
-                wprintw( m_win, " R" );
+                m_data[idx].visall = true;
             }
-            else
-            {
-                wprintw( m_win, " r" );
-            }
+        }
+        if( complete )
+        {
+            waddch( m_win, 'R' );
         }
         else
         {
-            wprintw( m_win, " -" );
+            waddch( m_win, 'r' );
         }
+    }
+    else
+    {
+        waddch( m_win, '-' );
     }
 
     const auto children = m_archive.GetTotalChildrenCount( midx );
@@ -326,7 +328,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     auto subject = m_archive.GetSubject( midx );
     auto& tree = m_tree[idx];
     auto treecnt = tree.Size();
-    len = w - 32 - dlen - treecnt*2;
+    len = w - 33 - dlen - treecnt*2;
     if( treecnt > 0 )
     {
         if( !hilite ) wattron( m_win, COLOR_PAIR(5) );
