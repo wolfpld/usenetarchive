@@ -58,13 +58,19 @@ void Browser::Entry()
             doupdate();
             break;
         case 'x':
+        {
             if( m_mview.IsActive() )
             {
                 m_mview.Close();
                 m_tview.Resize();
-                doupdate();
             }
+            auto idx = m_tview.GetRoot( m_tview.GetCursor() );
+            m_tview.SetCursor( idx );
+            m_tview.Collapse( idx );
+            m_tview.FocusOn( idx );
+            doupdate();
             break;
+        }
         case 'q':
             if( !m_mview.IsActive() ) return;
             m_mview.Close();
