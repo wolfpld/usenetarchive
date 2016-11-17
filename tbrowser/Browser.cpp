@@ -52,6 +52,14 @@ bool Browser::MoveOrEnterAction( int move )
         }
         m_tview.Draw();
         m_tview.FocusOn( cursor );
+
+        auto& history = m_storage.GetArticleHistory();
+        auto idx = m_tview.GetMessageIndex();
+        if( history.empty() || history.back() != idx )
+        {
+            m_storage.AddToHistory( idx );
+            m_historyIdx = history.size()-1;
+        }
     }
     return ret;
 }
