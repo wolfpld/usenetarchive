@@ -97,6 +97,8 @@ These tools provide access to archive data:
 
 ![](doc/browser2.png)
 
+- tbrowser --- Curses-based text mode browser of archives.
+
 ## Future work ideas
 
 Here are some viable ideas that I'm not really planning to do any time soon, but which would be nice to have:
