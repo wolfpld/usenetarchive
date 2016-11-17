@@ -2,6 +2,7 @@
 #define __BITSET_HPP__
 
 #include <stdint.h>
+#include <vector>
 
 class BitSet
 {
@@ -24,11 +25,12 @@ private:
             uint64_t data : InPlaceBits;
             uint64_t size : 8;
         };
-        void* ptr;
+        std::vector<bool>* ptr;
         uint64_t asNumber;
     };
 };
 
 static_assert( sizeof( BitSet ) == sizeof( uint64_t ), "BitSet size is greater than 8 bytes." );
+static_assert( alignof( std::vector<bool> ) > 1, "Vector pointers are aligned to 1." );
 
 #endif
