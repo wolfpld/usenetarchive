@@ -254,7 +254,7 @@ void Browser::SwitchToMessage( int msgidx )
     else
     {
         auto root = m_tview.GetRoot( cursor );
-        if( m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
+        if( cursor != root && m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
         {
             m_tview.Expand( root, true );
             m_tview.Draw();
