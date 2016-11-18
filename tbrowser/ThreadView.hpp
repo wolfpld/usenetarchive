@@ -45,6 +45,9 @@ public:
     int GetRoot( int cursor ) const;
     int32_t ReverseLookup( int msgidx ) const { return m_revLookup[msgidx]; }
 
+    void PageForward();
+    void PageBackward();
+
 private:
     void ExpandFill( int cursor );
     void Fill( int index, int msgid, int parent );

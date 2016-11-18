@@ -139,11 +139,13 @@ void Browser::Entry()
             doupdate();
             break;
         case KEY_PPAGE:
-            m_tview.MoveCursor( -m_tview.GetHeight()+2 );
+            m_tview.PageBackward();
+            m_tview.Draw();
             doupdate();
             break;
         case KEY_NPAGE:
-            m_tview.MoveCursor( m_tview.GetHeight()-2 );
+            m_tview.PageForward();
+            m_tview.Draw();
             doupdate();
             break;
         case 'e':

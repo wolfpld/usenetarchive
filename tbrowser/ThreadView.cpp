@@ -142,6 +142,28 @@ int ThreadView::GetRoot( int cursor ) const
     return cursor;
 }
 
+void ThreadView::PageForward()
+{
+    auto cnt = getmaxy( m_win ) - 2;
+    while( cnt-- > 0 && m_bottom < m_archive.NumberOfMessages() )
+    {
+        m_top = GetNext( m_top );
+        m_cursor = GetNext( m_cursor );
+        m_bottom = GetNext( m_bottom );
+    }
+}
+
+void ThreadView::PageBackward()
+{
+    auto cnt = getmaxy( m_win ) - 2;
+    while( cnt-- > 0 && m_top > 0 )
+    {
+        m_top = GetPrev( m_top );
+        m_cursor = GetPrev( m_cursor );
+        m_bottom = GetPrev( m_bottom );
+    }
+}
+
 void ThreadView::ExpandFill( int cursor )
 {
     if( cursor == m_archive.NumberOfMessages()-1 || m_data[cursor+1].valid ) return;
