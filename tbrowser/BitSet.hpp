@@ -15,7 +15,8 @@ public:
     int Size() const;
 
 private:
-    enum { InPlaceBits = 55 };
+    enum { SizeBits = 6 };
+    enum { InPlaceBits = 64 - 1 - SizeBits };
 
     union
     {
@@ -23,11 +24,13 @@ private:
         {
             uint64_t inplace : 1;
             uint64_t data : InPlaceBits;
-            uint64_t size : 8;
+            uint64_t size : SizeBits;
         };
         std::vector<bool>* ptr;
         uint64_t asNumber;
     };
+
+    static_assert( ( 1 << SizeBits ) > InPlaceBits, "Not enough data bits for given size." );
 };
 
 static_assert( sizeof( BitSet ) == sizeof( uint64_t ), "BitSet size is greater than 8 bytes." );
