@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "../common/Alloc.hpp"
 #include "../common/KillRe.hpp"
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
@@ -88,12 +89,12 @@ void ThreadView::Draw()
     }
     m_bottom = idx;
 
+    char* tmp = (char*)alloca( w+1 );
+    memset( tmp, ' ', w );
+    tmp[w] = '\0';
     wmove( m_win, h-1, 0 );
     wattron( m_win, COLOR_PAIR( 1 ) );
-    for( int i=0; i<w; i++ )
-    {
-        waddch( m_win, ' ' );
-    }
+    wprintw( m_win, tmp );
     wmove( m_win, h-1, 0 );
     wprintw( m_win, " [%i/%i]", m_cursor+1, m_archive.NumberOfMessages() );
     wattroff( m_win, COLOR_PAIR( 1 ) );

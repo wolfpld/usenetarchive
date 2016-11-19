@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "../common/Alloc.hpp"
 #include "../common/String.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
@@ -183,12 +184,12 @@ void MessageView::Draw()
     }
     wattroff( m_win, COLOR_PAIR( 6 ) );
 
+    char* tmp = (char*)alloca( w+1 );
+    memset( tmp, ' ', w );
+    tmp[w] = '\0';
     wmove( m_win, h-1, 0 );
     wattron( m_win, COLOR_PAIR( 1 ) );
-    for( int i=0; i<w; i++ )
-    {
-        waddch( m_win, ' ' );
-    }
+    wprintw( m_win, tmp );
     wmove( m_win, h-1, 0 );
     if( m_vertical )
     {

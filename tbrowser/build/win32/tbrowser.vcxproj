@@ -207,6 +207,7 @@
     <ClCompile Include="..\..\View.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\common\Alloc.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
