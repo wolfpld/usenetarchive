@@ -153,6 +153,10 @@ bool PersistentStorage::ReadArticleHistory( const char* archive )
 
 bool PersistentStorage::WasVisited( const char* msgid )
 {
+    if( std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::steady_clock::now() - m_visitedLastVerify ).count() < 500 )
+    {
+        return m_visited.find( msgid ) != m_visited.end();
+    }
     if( m_visited.find( msgid ) != m_visited.end() ) return true;
     std::lock_guard<LockedFile> lg( m_visitedGuard );
     VerifyVisitedAreValid( m_visitedGuard );
@@ -214,5 +218,6 @@ void PersistentStorage::VerifyVisitedAreValid( const std::string& fn )
                 datasize -= size + 1;
             }
         }
+        m_visitedLastVerify = std::chrono::steady_clock::now();
     }
 }

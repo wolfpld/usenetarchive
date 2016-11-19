@@ -1,6 +1,7 @@
 #ifndef __PERSISTENTSTORAGE_HPP__
 #define __PERSISTENTSTORAGE_HPP__
 
+#include <chrono>
 #include <stdint.h>
 #include <string>
 #include <string.h>
@@ -42,6 +43,7 @@ private:
     std::unordered_set<const char*, hash, equal_to> m_visited;
     uint64_t m_visitedTimestamp;
     LockedFile m_visitedGuard;
+    std::chrono::steady_clock::time_point m_visitedLastVerify;
 
     std::vector<char*> m_buffers;
     char* m_currBuf;
