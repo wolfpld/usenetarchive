@@ -8,12 +8,6 @@
 #include <string>
 #include <vector>
 
-#ifdef _WIN32
-#  include <malloc.h>
-#else
-#  include <alloca.h>
-#endif
-
 #include "../libuat/Archive.hpp"
 #include "../common/ICU.hpp"
 #include "../common/KillRe.hpp"

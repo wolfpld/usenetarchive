@@ -10,14 +10,9 @@
 #include <memory>
 #include <time.h>
 
-#ifdef _WIN32
-#  include <malloc.h>
-#else
-#  include <alloca.h>
-#endif
-
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
+#include "../common/Alloc.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/String.hpp"
 

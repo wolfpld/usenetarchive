@@ -9,12 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#ifdef _WIN32
-#  include <malloc.h>
-#else
-#  include <alloca.h>
-#endif
-
+#include "../common/Alloc.hpp"
 #include "../common/ICU.hpp"
 #include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
