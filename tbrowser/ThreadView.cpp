@@ -243,18 +243,18 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == m_data[idx].msgid;
     bool wasVisited = CheckVisited( idx );
 
-    wmove( m_win, line, 0 );
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     const auto midx = m_data[idx].msgid;
     if( m_cursor == idx )
     {
         if( !hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
+        wmove( m_win, line, 0 );
         wprintw( m_win, "->" );
         if( !hilite ) wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
     }
     else
     {
-        wprintw( m_win, "  " );
+        wmove( m_win, line, 2 );
     }
 
     if( wasVisited )
@@ -323,22 +323,18 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     int len = 18;
     auto end = utfendl( realname, len );
     utfprint( m_win, realname, end );
-    while( len++ < 18 )
+    if( len < 18 )
     {
-        waddch( m_win, ' ' );
+        wmove( m_win, line, 27 );
     }
     if( !hilite ) wattroff( m_win, COLOR_PAIR(3) | A_BOLD );
-    wprintw( m_win, "] " );
+    waddch( m_win, ']' );
 
-    if( children == 1 )
-    {
-        wprintw( m_win, "  " );
-    }
-    else
+    if( children > 1 )
     {
         if( !hilite ) wattron( m_win, COLOR_PAIR(4) );
+        wmove( m_win, line, 29 );
         waddch( m_win, m_data[idx].expanded ? '-' : '+' );
-        waddch( m_win, ' ' );
         if( !hilite ) wattroff( m_win, COLOR_PAIR(4) );
     }
 
@@ -347,6 +343,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     char buf[64];
     auto dlen = strftime( buf, 64, "%F %R", lt );
 
+    wmove( m_win, line, 31 );
     auto w = getmaxx( m_win );
     auto subject = m_archive.GetSubject( midx );
     auto& tree = m_tree[idx];
@@ -356,19 +353,17 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     {
         len -= 2;
         if( !hilite ) wattron( m_win, COLOR_PAIR(5) );
-        for( int i=0; i<treecnt-1 && len > 1; i++ )
+        int i;
+        for( i=0; i<treecnt-1 && len > 1; i++ )
         {
             if( tree.Get( i ) )
             {
+                wmove( m_win, line, 31 + i*2 );
                 waddch( m_win, ACS_VLINE );
             }
-            else
-            {
-                waddch( m_win, ' ' );
-            }
-            waddch( m_win, ' ' );
             len -= 2;
         }
+        wmove( m_win, line, 31 + i*2 );
         if( tree.Get( treecnt-1 ) )
         {
             waddch( m_win, ACS_LTEE );
@@ -395,11 +390,8 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
             utfprint( m_win, subject, end );
         }
         if( !hilite && wasVisited ) wattroff( m_win, COLOR_PAIR(8) | A_BOLD );
-        while( len++ < target )
-        {
-            waddch( m_win, ' ' );
-        }
     }
+    wmove( m_win, line, w-dlen-2 );
     waddch( m_win, '[' );
     if( !hilite ) wattron( m_win, COLOR_PAIR(2) );
     wprintw( m_win, "%s", buf );
