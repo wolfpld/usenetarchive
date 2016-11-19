@@ -444,6 +444,21 @@ void ThreadView::MoveCursor( int offset )
     Draw();
 }
 
+void ThreadView::GoNextUnread()
+{
+    do
+    {
+        m_cursor = GetNext( m_cursor );
+    }
+    while( m_cursor != m_archive.NumberOfMessages() && CheckVisited( m_cursor ) );
+    if( m_cursor == m_archive.NumberOfMessages() )
+    {
+        m_cursor = GetPrev( m_cursor );
+    }
+    FocusOn( m_cursor );
+    Draw();
+}
+
 int ThreadView::GetNext( int idx ) const
 {
     assert( idx < m_archive.NumberOfMessages() );

@@ -33,6 +33,7 @@ public:
     void Draw();
 
     void MoveCursor( int offset );
+    void GoNextUnread();
     bool CanExpand( int cursor );
     void Expand( int cursor, bool recursive );
     void Collapse( int cursor );
