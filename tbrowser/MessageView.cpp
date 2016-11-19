@@ -16,6 +16,7 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_idx( -1 )
     , m_active( false )
     , m_allHeaders( false )
+    , m_rot13( false )
 {
 }
 
@@ -92,6 +93,19 @@ void MessageView::SwitchHeaders()
     }
 }
 
+void MessageView::SwitchROT13()
+{
+    m_rot13 = !m_rot13;
+    if( m_idx != -1 )
+    {
+        PrepareLines();
+    }
+    if( m_active )
+    {
+        Draw();
+    }
+}
+
 void MessageView::Draw()
 {
     int w, h;
@@ -122,7 +136,14 @@ void MessageView::Draw()
             wprintw( m_win, "%.*s", hend - start, start );
             wattroff( m_win, COLOR_PAIR( 2 ) );
             wattron( m_win, COLOR_PAIR( 7 ) );
-            wprintw( m_win, "%.*s", end - hend, hend );
+            if( m_rot13 )
+            {
+                PrintRot13( hend, end );
+            }
+            else
+            {
+                wprintw( m_win, "%.*s", end - hend, hend );
+            }
             wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
         }
         else
@@ -147,7 +168,14 @@ void MessageView::Draw()
             default:
                 break;
             }
-            wprintw( m_win, "%.*s", end - start, start );
+            if( m_rot13 )
+            {
+                PrintRot13( start, end );
+            }
+            else
+            {
+                wprintw( m_win, "%.*s", end - start, start );
+            }
             switch( m_lines[line].flags )
             {
             case L_Signature:
@@ -285,4 +313,41 @@ void MessageView::PrepareLines()
         if( *end == '\0' ) break;
         txt = end + 1;
     }
+}
+
+void MessageView::PrintRot13( const char* start, const char* end )
+{
+    assert( start <= end );
+    char* tmp = (char*)alloca( end - start );
+    auto src = start;
+    auto dst = tmp;
+    while( src != end )
+    {
+        const auto c = *src;
+        const auto cpl = codepointlen( c );
+        if( cpl == 1 )
+        {
+            if( c >= 'a' && c <= 'z' )
+            {
+                *dst = ( ( c - 'a' + 13 ) % 26 ) + 'a';
+            }
+            else if( c >= 'A' && c <= 'Z' )
+            {
+                *dst = ( ( c - 'A' + 13 ) % 26 ) + 'A';
+            }
+            else
+            {
+                *dst = c;
+            }
+            src++;
+            dst++;
+        }
+        else
+        {
+            memcpy( dst, src, cpl );
+            src += cpl;
+            dst += cpl;
+        }
+    }
+    wprintw( m_win, "%.*s", end - start, tmp );
 }

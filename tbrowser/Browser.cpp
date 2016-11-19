@@ -204,6 +204,13 @@ void Browser::Entry()
                 doupdate();
             }
             break;
+        case 'r':
+            m_mview.SwitchROT13();
+            if( m_mview.IsActive() )
+            {
+                doupdate();
+            }
+            break;
         case ',':
         {
             auto& history = m_storage.GetArticleHistory();

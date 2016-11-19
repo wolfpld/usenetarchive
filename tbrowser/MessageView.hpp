@@ -18,6 +18,7 @@ public:
     bool Display( uint32_t idx, int move );
     void Close();
     void SwitchHeaders();
+    void SwitchROT13();
 
     bool IsActive() const { return m_active; }
     uint32_t DisplayedMessage() const { return m_idx; }
@@ -41,6 +42,7 @@ private:
 
     void Draw();
     void PrepareLines();
+    void PrintRot13( const char* start, const char* end );
 
     std::vector<Line> m_lines;
     Archive& m_archive;
@@ -51,6 +53,7 @@ private:
     bool m_active;
     bool m_vertical;
     bool m_allHeaders;
+    bool m_rot13;
 };
 
 #endif
