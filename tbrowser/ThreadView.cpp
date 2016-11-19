@@ -143,6 +143,12 @@ int ThreadView::GetRoot( int cursor ) const
     return cursor;
 }
 
+int ThreadView::GetParent( int cursor ) const
+{
+    assert( m_data[cursor].valid );
+    return m_data[cursor].parent;
+}
+
 void ThreadView::PageForward()
 {
     auto cnt = getmaxy( m_win ) - 2;

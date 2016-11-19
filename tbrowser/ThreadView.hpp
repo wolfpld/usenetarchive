@@ -44,6 +44,7 @@ public:
     void SetCursor( int cursor ) { m_cursor = cursor; }
     int GetMessageIndex() const { return m_data[m_cursor].msgid; }
     int GetRoot( int cursor ) const;
+    int GetParent( int cursor ) const;
     int32_t ReverseLookup( int msgidx ) const { return m_revLookup[msgidx]; }
 
     void PageForward();

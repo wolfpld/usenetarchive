@@ -175,8 +175,13 @@ void Browser::Entry()
             }
             else
             {
-                m_tview.MoveCursor( -1 );
-                doupdate();
+                auto parent = m_tview.GetParent( cursor );
+                if( parent != -1 )
+                {
+                    m_tview.SetCursor( parent );
+                    m_tview.FocusOn( parent );
+                    doupdate();
+                }
             }
             break;
         }
