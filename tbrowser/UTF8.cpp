@@ -2,7 +2,7 @@
 
 #include "UTF8.hpp"
 
-static int codepointlen( char c )
+int codepointlen( char c )
 {
     if( ( c & 0x80 ) == 0 ) return 1;
     if( ( c & 0x20 ) == 0 ) return 2;
