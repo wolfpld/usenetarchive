@@ -66,6 +66,9 @@ void Browser::Entry()
     {
         switch( key )
         {
+        case 12:    // ^L
+            refresh();
+            // fallthrough
         case KEY_RESIZE:
             resize_term( 0, 0 );
             m_header.Resize();
