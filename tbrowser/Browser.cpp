@@ -126,10 +126,6 @@ void Browser::Entry()
         case 'd':
             m_storage.MarkVisited( m_archive->GetMessageId( m_tview.GetMessageIndex() ) );
             m_tview.MoveCursor( 1 );
-            if( m_mview.IsActive() )
-            {
-                MoveOrEnterAction( 0 );
-            }
             doupdate();
             break;
         case KEY_UP:
