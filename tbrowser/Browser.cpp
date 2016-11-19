@@ -78,7 +78,7 @@ void Browser::Entry()
             m_bottom.Resize();
             doupdate();
             break;
-        case 'x':
+        case 'e':
         {
             if( m_mview.IsActive() )
             {
@@ -148,7 +148,7 @@ void Browser::Entry()
             m_tview.Draw();
             doupdate();
             break;
-        case 'e':
+        case 'x':
         {
             auto cursor = m_tview.GetCursor();
             if( m_tview.IsExpanded( cursor ) )

@@ -26,5 +26,5 @@ void BottomBar::PrintHelp() const
     wprintw( m_win, ":Exp " );
     waddch( m_win, ACS_LARROW );
     wprintw( m_win, ":Coll " );
-    wprintw( m_win, "e:Co/Ex q:Quit RET:+Ln BCK:-Ln SPC:+Pg d:MrkRd ,:Bck .:Fwd t:Hdrs r:R13" );
+    wprintw( m_win, "x:Co/Ex e:CoAll q:Quit RET:+Ln BCK:-Ln SPC:+Pg d:MrkRd ,:Bck .:Fwd t:Hdrs r:R13" );
 }
