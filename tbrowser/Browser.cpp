@@ -67,7 +67,8 @@ void Browser::Entry()
         switch( key )
         {
         case 12:    // ^L
-            refresh();
+            endwin();
+            initscr();
             // fallthrough
         case KEY_RESIZE:
             resize_term( 0, 0 );
