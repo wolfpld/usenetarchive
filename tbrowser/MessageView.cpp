@@ -313,6 +313,7 @@ void MessageView::PrepareLines()
         if( *end == '\0' ) break;
         txt = end + 1;
     }
+    if( m_lines.back().len == 0 ) m_lines.pop_back();
 }
 
 void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
