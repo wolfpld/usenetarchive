@@ -237,6 +237,8 @@ void Browser::Entry()
         default:
             break;
         }
+
+        m_bottom.Update();
     }
 }
 

@@ -8,10 +8,13 @@ class BottomBar : public View
 public:
     BottomBar();
 
+    void Update();
     void Resize() const;
 
 private:
     void PrintHelp() const;
+
+    int m_reset;
 };
 
 #endif

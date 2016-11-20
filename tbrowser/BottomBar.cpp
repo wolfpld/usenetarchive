@@ -4,9 +4,22 @@
 
 BottomBar::BottomBar()
     : View( 0, LINES-1, 0, 1 )
+    , m_reset( 0 )
 {
     PrintHelp();
     wnoutrefresh( m_win );
+}
+
+void BottomBar::Update()
+{
+    if( m_reset > 0 )
+    {
+        if( --m_reset == 0 )
+        {
+            PrintHelp();
+            wrefresh( m_win );
+        }
+    }
 }
 
 void BottomBar::Resize() const
@@ -19,6 +32,7 @@ void BottomBar::Resize() const
 
 void BottomBar::PrintHelp() const
 {
+    werase( m_win );
     waddch( m_win, ACS_DARROW );
     waddch( m_win, ACS_UARROW );
     wprintw( m_win, ":Move " );
