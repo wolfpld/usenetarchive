@@ -256,7 +256,7 @@ void Browser::SwitchToMessage( int msgidx )
             if( parent == -1 ) break;
             root = parent;
         }
-        m_tview.Expand( m_tview.ReverseLookup( root ), true );
+        m_tview.Expand( m_tview.ReverseLookupRoot( root ), true );
         m_tview.Draw();
         cursor = m_tview.ReverseLookup( msgidx );
         assert( cursor != -1 );

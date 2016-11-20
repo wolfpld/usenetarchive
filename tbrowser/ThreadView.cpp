@@ -21,15 +21,9 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_revLookup( archive.NumberOfMessages(), -1 )
     , m_top( 0 )
     , m_cursor( 0 )
+    , m_fillPos( 0 )
+    , m_topLevelPos( 0 )
 {
-    unsigned int idx = 0;
-    const auto toplevel = archive.GetTopLevel();
-    for( int i=0; i<toplevel.size; i++ )
-    {
-        Fill( idx, toplevel.ptr[i], -1 );
-        idx += archive.GetTotalChildrenCount( toplevel.ptr[i] );
-    }
-
     Draw();
 }
 
@@ -81,6 +75,7 @@ void ThreadView::Draw()
     auto idx = m_top;
     for( int i=0; i<h-1; i++ )
     {
+        if( !m_data[idx].valid ) FillTo( idx );
         assert( m_data[idx].valid == 1 );
         if( m_data[idx].parent == -1 ) prev = nullptr;
         DrawLine( i, idx, prev );
@@ -110,6 +105,7 @@ bool ThreadView::CanExpand( int cursor )
 
 void ThreadView::Expand( int cursor, bool recursive )
 {
+    if( !m_data[cursor].valid ) FillTo( cursor );
     assert( m_data[cursor].valid );
     m_data[cursor].expanded = 1;
 
@@ -147,6 +143,14 @@ int ThreadView::GetParent( int cursor ) const
 {
     assert( m_data[cursor].valid );
     return m_data[cursor].parent;
+}
+
+int32_t ThreadView::ReverseLookupRoot( int msgidx )
+{
+    if( m_revLookup[msgidx] == -1 ) FillToMsgIdx( msgidx );
+    assert( m_revLookup[msgidx] != -1 );
+    assert( m_data[m_revLookup[msgidx]].parent == -1 );
+    return m_revLookup[msgidx];
 }
 
 void ThreadView::PageForward()
@@ -465,8 +469,10 @@ void ThreadView::GoNextUnread()
     Draw();
 }
 
-int ThreadView::GetNext( int idx ) const
+int ThreadView::GetNext( int idx )
 {
+    if( !m_data[idx].valid ) FillTo( idx );
+    assert( m_data[idx].valid );
     assert( idx < m_archive.NumberOfMessages() );
     if( m_data[idx].expanded )
     {
@@ -497,8 +503,31 @@ int ThreadView::GetPrev( int idx ) const
 
 bool ThreadView::CheckVisited( int idx )
 {
+    assert( m_data[idx].valid );
     if( m_data[idx].visited ) return true;
     auto ret = m_storage.WasVisited( m_archive.GetMessageId( m_data[idx].msgid ) );
     if( ret ) m_data[idx].visited = true;
     return ret;
+}
+
+void ThreadView::FillTo( int index )
+{
+    const auto toplevel = m_archive.GetTopLevel();
+    while( m_fillPos <= index )
+    {
+        Fill( m_fillPos, toplevel.ptr[m_topLevelPos], -1 );
+        m_fillPos += m_archive.GetTotalChildrenCount( toplevel.ptr[m_topLevelPos++] );
+    }
+}
+
+void ThreadView::FillToMsgIdx( int msgidx )
+{
+    assert( m_revLookup[msgidx] == -1 );
+    const auto toplevel = m_archive.GetTopLevel();
+    do
+    {
+        Fill( m_fillPos, toplevel.ptr[m_topLevelPos], -1 );
+        m_fillPos += m_archive.GetTotalChildrenCount( toplevel.ptr[m_topLevelPos++] );
+    }
+    while( m_revLookup[msgidx] == -1 );
 }

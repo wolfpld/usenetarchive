@@ -46,6 +46,7 @@ public:
     int GetRoot( int cursor ) const;
     int GetParent( int cursor ) const;
     int32_t ReverseLookup( int msgidx ) const { return m_revLookup[msgidx]; }
+    int32_t ReverseLookupRoot( int msgidx );
 
     void PageForward();
     void PageBackward();
@@ -54,8 +55,10 @@ private:
     void ExpandFill( int cursor );
     void Fill( int index, int msgid, int parent );
     void DrawLine( int line, int idx, const char*& prev );
+    void FillTo( int index );
+    void FillToMsgIdx( int msgidx );
 
-    int GetNext( int idx ) const;
+    int GetNext( int idx );
     int GetPrev( int idx ) const;
 
     bool CheckVisited( int idx );
@@ -69,6 +72,7 @@ private:
     std::vector<BitSet> m_tree;
     int m_top, m_bottom;
     int m_cursor;
+    int m_fillPos, m_topLevelPos;
 };
 
 #endif
