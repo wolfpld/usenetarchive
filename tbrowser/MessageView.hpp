@@ -25,22 +25,30 @@ public:
 private:
     enum
     {
-        L_Header = 0,
-        L_Quote0 = 1,
-        L_Quote1 = 2,
-        L_Quote2 = 3,
-        L_Quote3 = 4,
-        L_Quote4 = 5,
-        L_Signature = 6
+        L_Header,
+        L_Quote0,
+        L_Quote1,
+        L_Quote2,
+        L_Quote3,
+        L_Quote4,
+        L_Signature,
+        L_LAST
     };
+
+    enum { OffsetBits = 18 };
+    enum { LenBits = 10 };
+    enum { FlagsBits = 3 };
     struct Line
     {
-        uint32_t offset : 24;
-        uint32_t flags  : 8;
+        uint32_t offset     : OffsetBits;
+        uint32_t len        : LenBits;
+        uint32_t flags      : FlagsBits;
+        uint32_t linebreak  : 1;
     };
 
     void Draw();
     void PrepareLines();
+    void BreakLine( uint32_t offset, uint32_t len, uint32_t flags );
     void PrintRot13( const char* start, const char* end );
 
     std::vector<Line> m_lines;
@@ -53,6 +61,9 @@ private:
     bool m_vertical;
     bool m_allHeaders;
     bool m_rot13;
+
+    static_assert( sizeof( Line ) == sizeof( uint32_t ), "Size of Line greater than 4 bytes." );
+    static_assert( ( 1 << FlagsBits ) >= L_LAST, "Not enough bits for all flags." );
 };
 
 #endif

@@ -123,7 +123,7 @@ void MessageView::Draw()
             wattroff( m_win, COLOR_PAIR( 7 ) );
         }
         auto start = m_text + m_lines[line].offset;
-        auto end = utfendcrlf( start, tw );
+        auto end = start + m_lines[line].len;
         if( m_lines[line].flags == L_Header )
         {
             auto hend = start;
@@ -251,11 +251,14 @@ void MessageView::PrepareLines()
     {
         auto end = txt;
         while( *end != '\n' && *end != '\0' ) end++;
+        const auto len = std::min<uint32_t>( end - txt, ( 1 << LenBits ) - 1 );
+        const auto offset = uint32_t( txt - m_text );
+        if( offset >= ( 1 << OffsetBits ) ) return;
         if( headers )
         {
-            if( end-txt == 0 )
+            if( len == 0 )
             {
-                m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Quote0 } );
+                BreakLine( offset, len, L_Quote0 );
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
@@ -268,7 +271,7 @@ void MessageView::PrepareLines()
                     strnicmpl( txt, "subject: ", 9 ) == 0 ||
                     strnicmpl( txt, "date: ", 6 ) == 0 )
                 {
-                    m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Header } );
+                    BreakLine( offset, len, L_Header );
                 }
             }
         }
@@ -280,7 +283,7 @@ void MessageView::PrepareLines()
             }
             if( sig )
             {
-                m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Signature } );
+                BreakLine( offset, len, L_Signature );
             }
             else
             {
@@ -289,19 +292,19 @@ void MessageView::PrepareLines()
                 switch( level )
                 {
                 case 0:
-                    m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Quote0 } );
+                    BreakLine( offset, len, L_Quote0 );
                     break;
                 case 1:
-                    m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Quote1 } );
+                    BreakLine( offset, len, L_Quote1 );
                     break;
                 case 2:
-                    m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Quote2 } );
+                    BreakLine( offset, len, L_Quote2 );
                     break;
                 case 3:
-                    m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Quote3 } );
+                    BreakLine( offset, len, L_Quote3 );
                     break;
                 default:
-                    m_lines.emplace_back( Line { uint32_t( txt - m_text ), L_Quote4 } );
+                    BreakLine( offset, len, L_Quote4 );
                     break;
                 }
             }
@@ -309,6 +312,11 @@ void MessageView::PrepareLines()
         if( *end == '\0' ) break;
         txt = end + 1;
     }
+}
+
+void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
+{
+    m_lines.emplace_back( Line { offset, len, flags, false } );
 }
 
 void MessageView::PrintRot13( const char* start, const char* end )
