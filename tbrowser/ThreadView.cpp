@@ -27,10 +27,6 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     Draw();
 }
 
-ThreadView::~ThreadView()
-{
-}
-
 void ThreadView::Resize()
 {
     if( m_mview.IsActive() )

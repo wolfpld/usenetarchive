@@ -15,7 +15,6 @@ class Browser
 {
 public:
     Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const char* fn );
-    ~Browser();
 
     void Entry();
 

@@ -27,7 +27,6 @@ class ThreadView : public View
 {
 public:
     ThreadView( const Archive& archive, PersistentStorage& storage, const MessageView& mview );
-    ~ThreadView();
 
     void Resize();
     void Draw();

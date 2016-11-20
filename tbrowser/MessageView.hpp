@@ -12,7 +12,6 @@ class MessageView : public View
 {
 public:
     MessageView( Archive& archive, PersistentStorage& storage );
-    ~MessageView();
 
     void Resize();
     bool Display( uint32_t idx, int move );

@@ -20,10 +20,6 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
 {
 }
 
-MessageView::~MessageView()
-{
-}
-
 void MessageView::Resize()
 {
     if( !m_active ) return;

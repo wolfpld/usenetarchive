@@ -23,10 +23,6 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     doupdate();
 }
 
-Browser::~Browser()
-{
-}
-
 bool Browser::MoveOrEnterAction( int move )
 {
     auto resizeNeeded = !m_mview.IsActive();
