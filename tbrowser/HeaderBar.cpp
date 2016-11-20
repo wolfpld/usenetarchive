@@ -23,18 +23,19 @@ void HeaderBar::Resize() const
 
 void HeaderBar::Redraw() const
 {
+    wattron( m_win, COLOR_PAIR(11) | A_BOLD );
     wprintw( m_win, " Usenet Archive" );
-    wattron( m_win, A_BOLD );
+    wattron( m_win, COLOR_PAIR(1) );
     wprintw( m_win, " :: " );
-    wattroff( m_win, A_BOLD );
+    wattron( m_win, COLOR_PAIR(11) );
 
     wprintw( m_win, "%.*s", m_archiveLen, m_archive );
 
     if( m_desc )
     {
-        wattron( m_win, A_BOLD );
+        wattron( m_win, COLOR_PAIR(1) );
         wprintw( m_win, " :: " );
-        wattroff( m_win, A_BOLD );
+        wattron( m_win, COLOR_PAIR(11) );
 
         int w = getmaxx( m_win ) - 23 - m_archiveLen;
         auto end = utfendcrlf( m_desc, w );

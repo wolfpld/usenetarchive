@@ -237,8 +237,8 @@ void MessageView::Draw()
     {
         wattron( m_win, COLOR_PAIR( 9 ) );
         waddch( m_win, ACS_VLINE );
-        wattron( m_win, COLOR_PAIR( 1 ) );
     }
+    wattron( m_win, COLOR_PAIR( 11 ) | A_BOLD );
     waddch( m_win, ' ' );
     tw--;
     int len = tw;
@@ -247,14 +247,14 @@ void MessageView::Draw()
     utfprint( m_win, text, end );
     if( tw - len > 5 )
     {
-        wattron( m_win, A_BOLD );
+        wattron( m_win, COLOR_PAIR( 1 ) );
         wprintw( m_win, " :: " );
-        wattroff( m_win, A_BOLD );
+        wattron( m_win, COLOR_PAIR( 11 ) );
         text = m_archive.GetRealName( m_idx );
         end = utfend( text, w - len - 4 );
         utfprint( m_win, text, end );
     }
-    wattroff( m_win, COLOR_PAIR( 1 ) );
+    wattroff( m_win, COLOR_PAIR( 11 ) | A_BOLD );
 
     wnoutrefresh( m_win );
 }

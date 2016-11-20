@@ -85,11 +85,11 @@ void ThreadView::Draw()
     memset( tmp, ' ', w );
     tmp[w] = '\0';
     wmove( m_win, h-1, 0 );
-    wattron( m_win, COLOR_PAIR( 1 ) );
+    wattron( m_win, COLOR_PAIR( 11 ) | A_BOLD );
     wprintw( m_win, tmp );
     wmove( m_win, h-1, 0 );
     wprintw( m_win, " [%i/%i]", m_cursor+1, m_archive.NumberOfMessages() );
-    wattroff( m_win, COLOR_PAIR( 1 ) );
+    wattroff( m_win, COLOR_PAIR( 11 ) | A_BOLD );
 
     wnoutrefresh( m_win );
 }
