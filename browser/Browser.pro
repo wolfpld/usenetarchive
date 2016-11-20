@@ -34,7 +34,6 @@ SOURCES += main.cpp\
     ../common/MessageLogic.cpp \
     dateselect.cpp \
     ../common/Filesystem.cpp \
-    ../libuat/LockedFile.cpp \
     ../libuat/PersistentStorage.cpp
 
 HEADERS  += browser.h \

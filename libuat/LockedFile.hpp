@@ -8,8 +8,7 @@
 class LockedFile
 {
 public:
-    LockedFile( const char* fn );
-    ~LockedFile();
+    LockedFile( const char* fn ) : m_fn( fn ), m_lock( fn ) {}
 
     void lock() { m_lock.lock(); }
     void unlock() { m_lock.unlock(); }

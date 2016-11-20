@@ -177,9 +177,6 @@
     <ClCompile Include="..\..\..\libuat\Archive.cpp">
       <Filter>libuat</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libuat\LockedFile.cpp">
-      <Filter>libuat</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\libuat\PackageAccess.cpp">
       <Filter>libuat</Filter>
     </ClCompile>
