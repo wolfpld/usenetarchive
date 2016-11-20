@@ -18,6 +18,7 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_allHeaders( false )
     , m_rot13( false )
 {
+    m_lines.reserve( 512 );
 }
 
 void MessageView::Resize()
