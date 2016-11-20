@@ -22,6 +22,18 @@ size_t utflen( const char* str )
     return ret;
 }
 
+size_t utflen( const char* str, const char* end )
+{
+    size_t ret = 0;
+    while( *str != '\0' && str < end )
+    {
+        str += codepointlen( *str );
+        ret++;
+    }
+    assert( *str == '\0' || str == end );
+    return ret;
+}
+
 const char* utfend( const char* str, int len )
 {
     while( len-- > 0 && *str != '\0' )
