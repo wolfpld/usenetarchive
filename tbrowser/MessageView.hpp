@@ -57,6 +57,7 @@ private:
     const char* m_text;
     int32_t m_idx;
     int m_top;
+    int m_linesWidth;
     bool m_active;
     bool m_vertical;
     bool m_allHeaders;

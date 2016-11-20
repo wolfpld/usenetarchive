@@ -14,6 +14,7 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_archive( archive )
     , m_storage( storage )
     , m_idx( -1 )
+    , m_linesWidth( -1 )
     , m_active( false )
     , m_allHeaders( false )
     , m_rot13( false )
@@ -35,6 +36,10 @@ void MessageView::Resize()
     {
         int sh = getmaxy( stdscr ) - 2;
         ResizeView( 0, 1 + sh * 20 / 100, 0, sh - ( sh * 20 / 100 ) );
+    }
+    if( sw != m_linesWidth )
+    {
+        PrepareLines();
     }
     Draw();
 }
@@ -125,7 +130,7 @@ void MessageView::Draw()
         }
         auto start = m_text + m_lines[line].offset;
         auto end = start + m_lines[line].len;
-        if( m_lines[line].flags == L_Header )
+        if( m_lines[line].flags == L_Header && !m_lines[line].linebreak )
         {
             auto hend = start;
             while( *hend != ' ' ) hend++;
@@ -145,8 +150,17 @@ void MessageView::Draw()
         }
         else
         {
+            if( m_lines[line].linebreak )
+            {
+                wattron( m_win, COLOR_PAIR( 10 ) );
+                waddch( m_win, '+' );
+                wattroff( m_win, COLOR_PAIR( 10 ) );
+            }
             switch( m_lines[line].flags )
             {
+            case L_Header:
+                wattron( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                break;
             case L_Signature:
                 wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
                 break;
@@ -175,6 +189,9 @@ void MessageView::Draw()
             }
             switch( m_lines[line].flags )
             {
+            case L_Header:
+                wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                break;
             case L_Signature:
                 wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
                 break;
@@ -244,7 +261,14 @@ void MessageView::Draw()
 
 void MessageView::PrepareLines()
 {
+    // window width may be invalid here
+    m_linesWidth = getmaxx( stdscr );
+    if( m_linesWidth > 160 )
+    {
+        m_linesWidth = m_linesWidth - (m_linesWidth/2) - 1;
+    }
     m_lines.clear();
+    if( m_linesWidth < 2 ) return;
     auto txt = m_text;
     bool headers = true;
     bool sig = false;
@@ -318,7 +342,29 @@ void MessageView::PrepareLines()
 
 void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
 {
-    m_lines.emplace_back( Line { offset, len, flags, false } );
+    auto ul = utflen( m_text + offset, m_text + offset + len );
+    if( ul <= m_linesWidth )
+    {
+        m_lines.emplace_back( Line { offset, len, flags, false } );
+    }
+    else
+    {
+        bool br = false;
+        auto ptr = m_text + offset;
+        auto end = ptr + len;
+        auto w = m_linesWidth;
+        while( ptr != end )
+        {
+            auto e = utfendcrlf( ptr, w );
+            m_lines.emplace_back( Line { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
+            ptr = e;
+            if( !br )
+            {
+                br = true;
+                w--;
+            }
+        }
+    }
 }
 
 void MessageView::PrintRot13( const char* start, const char* end )

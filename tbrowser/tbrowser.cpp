@@ -53,6 +53,7 @@ int main( int argc, char** argv )
     init_pair( 7, COLOR_CYAN, COLOR_BLACK );
     init_pair( 8, COLOR_BLACK, COLOR_BLACK );
     init_pair( 9, COLOR_CYAN, COLOR_BLUE );
+    init_pair( 10, COLOR_RED, COLOR_WHITE );
 
     Browser browser( std::move( archive ), storage, lastOpen.c_str() );
     browser.Entry();
