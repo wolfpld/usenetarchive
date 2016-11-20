@@ -234,6 +234,25 @@ void Browser::Entry()
             }
             break;
         }
+        case 'g':
+        {
+            auto msgid = m_bottom.Query( "MsgID: " );
+            if( !msgid.empty() )
+            {
+                auto idx = m_archive->GetMessageIndex( msgid.c_str() );
+                if( idx >= 0 )
+                {
+                    SwitchToMessage( idx );
+                    MoveOrEnterAction( 0 );
+                }
+                else
+                {
+                    m_bottom.Status( "No such message." );
+                }
+                doupdate();
+            }
+            break;
+        }
         default:
             break;
         }
