@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <limits>
 #include <stdlib.h>
 #include <time.h>
 
@@ -357,11 +358,34 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     len = w - 33 - dlen;
     if( treecnt > 0 )
     {
+        int childline = std::numeric_limits<int>::max();
+        if( m_mview.IsActive() && !hilite )
+        {
+            const auto active = ReverseLookup( m_mview.DisplayedMessage() );
+            int parent = m_data[idx].parent;
+            int cnt = 1;
+            while( parent != -1 )
+            {
+                if( parent == active )
+                {
+                    childline = treecnt - cnt;
+                    break;
+                }
+                cnt++;
+                parent = m_data[parent].parent;
+            }
+        }
+
         len -= 2;
         if( !hilite ) wattron( m_win, COLOR_PAIR(5) );
         int i;
         for( i=0; i<treecnt-1 && len > 1; i++ )
         {
+            if( childline == i )
+            {
+                wattroff( m_win, COLOR_PAIR(5) );
+                wattron( m_win, COLOR_PAIR(4) );
+            }
             if( tree.Get( i ) )
             {
                 wmove( m_win, line, 31 + i*2 );
@@ -370,6 +394,11 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
             len -= 2;
         }
         wmove( m_win, line, 31 + i*2 );
+        if( treecnt-1 == childline )
+        {
+            wattroff( m_win, COLOR_PAIR(5) );
+            wattron( m_win, COLOR_PAIR(4) );
+        }
         if( tree.Get( treecnt-1 ) )
         {
             waddch( m_win, ACS_LTEE );
@@ -379,7 +408,11 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
             waddch( m_win, ACS_LLCORNER );
         }
         waddch( m_win, ACS_HLINE );
-        if( !hilite ) wattroff( m_win, COLOR_PAIR(5) );
+        if( !hilite )
+        {
+            wattroff( m_win, COLOR_PAIR(5) );
+            wattroff( m_win, COLOR_PAIR(4) );
+        }
     }
     if( len > 0 )
     {
