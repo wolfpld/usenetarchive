@@ -64,6 +64,14 @@ std::string BottomBar::Query( const char* prompt )
     }
 }
 
+void BottomBar::Status( const char* status )
+{
+    m_reset = 2;
+    werase( m_win );
+    wprintw( m_win, "%s", status );
+    wnoutrefresh( m_win );
+}
+
 void BottomBar::PrintHelp() const
 {
     werase( m_win );

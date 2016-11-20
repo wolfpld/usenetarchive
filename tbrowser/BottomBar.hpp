@@ -14,6 +14,7 @@ public:
     void Resize() const;
 
     std::string Query( const char* prompt );
+    void Status( const char* status );
 
 private:
     void PrintHelp() const;
