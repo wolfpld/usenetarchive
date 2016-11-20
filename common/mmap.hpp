@@ -1,7 +1,7 @@
 #ifndef __MMAP_HPP__
 #define __MMAP_HPP__
 
-#ifndef _MSC_VER
+#if !defined _MSC_VER && !defined __MINGW32__
 #  include <sys/mman.h>
 #else
 #  include <string.h>
