@@ -7,8 +7,8 @@
 class BitSet
 {
 public:
-    BitSet();
-    ~BitSet();
+    BitSet() : asNumber( 1 ) {}
+    ~BitSet() { if( !inplace ) delete ptr; }
 
     void Set( bool enabled );
     bool Get( int pos ) const;

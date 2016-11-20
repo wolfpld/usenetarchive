@@ -2,19 +2,6 @@
 
 #include "BitSet.hpp"
 
-BitSet::BitSet()
-    : asNumber( 1 )
-{
-}
-
-BitSet::~BitSet()
-{
-    if( !inplace )
-    {
-        delete ptr;
-    }
-}
-
 void BitSet::Set( bool enabled )
 {
     if( inplace )
