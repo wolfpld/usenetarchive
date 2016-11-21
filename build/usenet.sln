@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.25920.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract-msgid", "..\extract-msgid\build\win32\extract-msgid.vcxproj", "{F4589BE3-DB05-4D70-9C97-EE1DD099D807}"
 EndProject
@@ -56,6 +56,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "verify", "..\verify\build\win32\verify.vcxproj", "{F01EBCF3-0BC3-422D-9E83-E96BB3337A5A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tbrowser", "..\tbrowser\build\win32\tbrowser.vcxproj", "{EC7532E1-6191-42A4-8781-CE4D2E2F9FB9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "google-groups", "..\google-groups\build\win32\google-groups.vcxproj", "{1DA4E986-7E5F-4260-940A-C505388F967D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -171,6 +173,10 @@ Global
 		{EC7532E1-6191-42A4-8781-CE4D2E2F9FB9}.Debug|x64.Build.0 = Debug|x64
 		{EC7532E1-6191-42A4-8781-CE4D2E2F9FB9}.Release|x64.ActiveCfg = Release|x64
 		{EC7532E1-6191-42A4-8781-CE4D2E2F9FB9}.Release|x64.Build.0 = Release|x64
+		{1DA4E986-7E5F-4260-940A-C505388F967D}.Debug|x64.ActiveCfg = Debug|x64
+		{1DA4E986-7E5F-4260-940A-C505388F967D}.Debug|x64.Build.0 = Debug|x64
+		{1DA4E986-7E5F-4260-940A-C505388F967D}.Release|x64.ActiveCfg = Release|x64
+		{1DA4E986-7E5F-4260-940A-C505388F967D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
