@@ -190,10 +190,12 @@ int main( int argc, char** argv )
         {
             baddate++;
             struct tm tm = {};
-            if( sscanf( tmp, "%i/%i/%i", tm.tm_year, tm.tm_mon, tm.tm_mday ) == 3 )
+            if( sscanf( buf, "%d/%d/%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday ) == 3 )
             {
                 if( tm.tm_year >= 1970 && tm.tm_mon <= 12 && tm.tm_mday <= 31 )
                 {
+                    tm.tm_year -= 1900;
+                    tm.tm_mon--;
                     date = mktime( &tm );
                 }
                 else
