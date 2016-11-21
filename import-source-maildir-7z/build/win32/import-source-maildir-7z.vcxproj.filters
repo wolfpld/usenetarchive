@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="import-source-slrnpull-7z">
+    <Filter Include="import-source-maildir-7z">
       <UniqueIdentifier>{5df1d216-1c27-45ba-9517-114130cb0ff2}</UniqueIdentifier>
     </Filter>
     <Filter Include="common">
@@ -15,8 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\import-source-slrnpull-7z.cpp">
-      <Filter>import-source-slrnpull-7z</Filter>
+    <ClCompile Include="..\..\import-source-maildir-7z.cpp">
+      <Filter>import-source-maildir-7z</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c">
       <Filter>lz4</Filter>

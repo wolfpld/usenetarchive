@@ -35,8 +35,8 @@ UAT provides a multitude of utilities, each specialized for its own task. You ca
 
 Usenet messages may be retrieved from a number of different sources. Currently we support:
 
-- import-source-slrnpull --- Import from a directory where each file is a separate message (slrnpull was chosen because of extra-simple setup required to get it working).
-- import-source-slrnpull-7z --- Import from a slrnpull directory compressed into a single 7z compressed file.
+- import-source-maildir --- Import from a directory tree where each file is a separate message (e.g. slrnpull produces this with extra-simple setup required to get it working).
+- import-source-maildir-7z --- Import from a maildir tree compressed into a single 7z compressed file.
 - import-source-mbox --- [Archive.org](https://archive.org/details/usenet) keeps its collection of usenet messages in a mbox format, in which all posts are merged into a single file.
 
 Imported messages are stored in a per-message LZ4 compressed meta+payload database.
@@ -112,8 +112,8 @@ Here are some viable ideas that I'm not really planning to do any time soon, but
 
 Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completely new database indexing schema, which invalidates rest of databases.
 
-slrnpull directory → **import-source-slrnpull** → produces: *LZ4*  
-slrnpull compressed → **import-source-slrnpull-7z** → produces: *LZ4*  
+maildir directory → **import-source-maildir** → produces: *LZ4*  
+maildir compressed → **import-source-maildir-7z** → produces: *LZ4*  
 mbox file → **import-source-mbox** → produces: *LZ4*  
 *LZ4*, *msgid* → **export-messages** → produces: separate message files  
 *LZ4* → **kill-duplicates** → produces: *LZ4*  

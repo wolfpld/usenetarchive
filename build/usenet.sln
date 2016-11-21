@@ -7,9 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract-msgid", "..\extract
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "import-source-mbox", "..\import-source-mbox\build\win32\import-source-mbox.vcxproj", "{9B29E4F4-5BCC-4007-92C8-C89E0BBA5AD1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "import-source-slrnpull", "..\import-source-slrnpull\build\win32\import-source-slrnpull.vcxproj", "{448B7B2E-A716-4BCF-91F6-117677C42ED8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "import-source-maildir", "..\import-source-maildir\build\win32\import-source-maildir.vcxproj", "{448B7B2E-A716-4BCF-91F6-117677C42ED8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "import-source-slrnpull-7z", "..\import-source-slrnpull-7z\build\win32\import-source-slrnpull-7z.vcxproj", "{1F3E26A3-BF6B-4056-BA2D-2CE1E1EDFD2F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "import-source-maildir-7z", "..\import-source-maildir-7z\build\win32\import-source-maildir-7z.vcxproj", "{1F3E26A3-BF6B-4056-BA2D-2CE1E1EDFD2F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kill-duplicates", "..\kill-duplicates\build\win32\kill-duplicates.vcxproj", "{EE865277-EE31-4E2E-A9FA-6F1D7CFC08DD}"
 EndProject

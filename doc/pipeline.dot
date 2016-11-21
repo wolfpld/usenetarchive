@@ -5,7 +5,7 @@ digraph
     dst1[label="Archive", color=blue];
 
     mbox[label="import-source-mbox"];
-    slrnpull[label="import-source-slrnpull"];
+    maildir[label="import-source-maildir"];
 
     kill1[label="kill-duplicates"];
     kill2[label="kill-duplicates"];
@@ -22,9 +22,9 @@ digraph
     repack[label="repack-zstd"];
 
     src1 -> mbox;
-    src2 -> slrnpull;
+    src2 -> maildir;
     mbox -> kill1;
-    slrnpull -> kill2;
+    maildir -> kill2;
     kill1 -> msgid4;
     msgid4 -> conn2;
     conn2 -> filter;

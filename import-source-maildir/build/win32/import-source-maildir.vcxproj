@@ -22,7 +22,7 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4hc.c" />
-    <ClCompile Include="..\..\import-source-slrnpull.cpp" />
+    <ClCompile Include="..\..\import-source-maildir.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp" />
@@ -34,7 +34,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{448B7B2E-A716-4BCF-91F6-117677C42ED8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>importsourceslrnpull</RootNamespace>
+    <RootNamespace>importsourcemaildir</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -10,5 +10,5 @@ pipelines:
     - step:
         script: # Modify the commands below to build your repository.
           - apt-get update && apt-get install -y libicu-dev libgmime-2.6-dev qt5-default ncurses-dev
-          - for i in connectivity export-messages extract-msgid extract-msgmeta filter-newsgroups filter-spam import-source-mbox import-source-slrnpull import-source-slrnpull-7z kill-duplicates lexdist lexhash lexicon lexopt lexsort lexstats merge-raw package query query-raw relative-complement repack-lz4 repack-zstd tbrowser threadify utf8ize verify ; do make -j8 -C $i/build/unix ; done
+          - for i in connectivity export-messages extract-msgid extract-msgmeta filter-newsgroups filter-spam import-source-mbox import-source-maildir import-source-maildir-7z kill-duplicates lexdist lexhash lexicon lexopt lexsort lexstats merge-raw package query query-raw relative-complement repack-lz4 repack-zstd tbrowser threadify utf8ize verify ; do make -j8 -C $i/build/unix ; done
           - cd browser && qmake && make -j8

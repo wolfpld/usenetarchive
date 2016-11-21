@@ -3,7 +3,7 @@ CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES :=
 LIBS :=
-IMAGE := import-source-slrnpull
+IMAGE := import-source-maildir-7z
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
 SRC2 := $(shell egrep 'ClCompile.*c"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
