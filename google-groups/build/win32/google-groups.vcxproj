@@ -20,10 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
+    <ClCompile Include="..\..\..\common\System.cpp" />
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
     <ClCompile Include="..\..\google-groups.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\System.hpp" />
+    <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1DA4E986-7E5F-4260-940A-C505388F967D}</ProjectGuid>
