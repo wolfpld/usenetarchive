@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include <time.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -188,7 +189,22 @@ int main( int argc, char** argv )
         if( date == -1 )
         {
             baddate++;
-            date = 0;
+            struct tm tm = {};
+            if( sscanf( tmp, "%i/%i/%i", tm.tm_year, tm.tm_mon, tm.tm_mday ) == 3 )
+            {
+                if( tm.tm_year >= 1970 && tm.tm_mon <= 12 && tm.tm_mday <= 31 )
+                {
+                    date = mktime( &tm );
+                }
+                else
+                {
+                    date = 0;
+                }
+            }
+            else
+            {
+                date = 0;
+            }
         }
         data[i].epoch = date;
     }
