@@ -84,6 +84,58 @@ static std::vector<std::string> ListDirectory( const std::string& path )
     return ret;
 }
 
+static int idx = 0;
+static int dirs = 0;
+static FILE* meta;
+static FILE* data;
+static uint64_t offset = 0;
+static ExpandingBuffer eb1, eb2;
+
+void RecursivePack( const char* dir )
+{
+    dirs++;
+    const auto list = ListDirectory( dir );
+    char in[1024];
+    int fpos = strlen( dir );
+    memcpy( in, dir, fpos );
+    in[fpos++] = '/';
+
+    for( const auto& f : list )
+    {
+        if( ( idx & 0x3FF ) == 0 )
+        {
+            printf( "[%i] %i\r", dirs, idx );
+            fflush( stdout );
+        }
+
+        if( f[0] == '.' ) continue;
+        strcpy( in+fpos, f.c_str() );
+        if( f.back() == '/' )
+        {
+            RecursivePack( in );
+        }
+        else
+        {
+            idx++;
+            uint64_t size = GetFileSize( in );
+            char* buf = eb1.Request( size );
+            FILE* src = fopen( in, "rb" );
+            fread( buf, 1, size, src );
+            fclose( src );
+
+            int maxSize = LZ4_compressBound( size );
+            char* compressed = eb2.Request( maxSize );
+            int csize = LZ4_compress_HC( buf, compressed, size, maxSize, 16 );
+
+            fwrite( compressed, 1, csize, data );
+
+            RawImportMeta metaPacket = { offset, size, csize };
+            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
+            offset += csize;
+        }
+    }
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 3 )
@@ -103,53 +155,18 @@ int main( int argc, char** argv )
     }
 
     CreateDirStruct( argv[2] );
-    const auto list = ListDirectory( argv[1] );
 
     std::string metafn = argv[2];
     metafn.append( "/" );
     std::string datafn = metafn;
     metafn.append( "meta" );
     datafn.append( "data" );
-    FILE* meta = fopen( metafn.c_str(), "wb" );
-    FILE* data = fopen( datafn.c_str(), "wb" );
+    meta = fopen( metafn.c_str(), "wb" );
+    data = fopen( datafn.c_str(), "wb" );
 
-    uint64_t offset = 0;
+    RecursivePack( argv[1] );
 
-    ExpandingBuffer eb1, eb2;
-    char in[1024];
-    int fpos = strlen( argv[1] );
-    memcpy( in, argv[1], fpos );
-    in[fpos++] = '/';
-    int idx = 0;
-    for( const auto& f : list )
-    {
-        if( ( idx & 0x3FF ) == 0 )
-        {
-            printf( "%i/%i\r", idx, list.size() );
-            fflush( stdout );
-        }
-        idx++;
-
-        if( f[0] == '.' ) continue;
-
-        strcpy( in+fpos, f.c_str() );
-        uint64_t size = GetFileSize( in );
-        char* buf = eb1.Request( size );
-        FILE* src = fopen( in, "rb" );
-        fread( buf, 1, size, src );
-        fclose( src );
-
-        int maxSize = LZ4_compressBound( size );
-        char* compressed = eb2.Request( maxSize );
-        int csize = LZ4_compress_HC( buf, compressed, size, maxSize, 16 );
-
-        fwrite( compressed, 1, csize, data );
-
-        RawImportMeta metaPacket = { offset, size, csize };
-        fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
-        offset += csize;
-    }
-    printf( "%i files processed.\n", list.size() );
+    printf( "%i files processed in %i directories.\n", idx, dirs );
 
     fclose( meta );
     fclose( data );
