@@ -1,8 +1,8 @@
-CFLAGS += 
+CFLAGS += $(shell pkg-config --cflags libcurl)
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES :=
-LIBS :=
+LIBS := $(shell pkg-config --libs libcurl) -lpthread
 IMAGE := google-groups
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
