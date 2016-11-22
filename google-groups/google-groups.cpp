@@ -19,14 +19,16 @@ static std::mutex state;
 static int pages = 0;
 static int threads = 0;
 static int threadstotal = 0;
+static int threadsbad = 0;
 static int messages = 0;
 static int messagestotal = 0;
+static int messagesbad = 0;
 
 static std::string base;
 
 static void PrintState( const char* group )
 {
-    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i .:. [M]: %i/%i", group, pages, threads, threadstotal, messages, messagestotal );
+    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i (!%i) .:. [M]: %i/%i (!%i)", group, pages, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
     fflush( stdout );
 }
 
@@ -76,6 +78,7 @@ static void GetMsg( const std::string& msgid, const char* group, int len )
     {
         std::lock_guard<std::mutex> lock( state );
         messages++;
+        messagesbad++;
         PrintState( group );
         return;
     }
@@ -108,6 +111,7 @@ static void GetThread( const std::string& id, const char* group, int len )
     {
         std::lock_guard<std::mutex> lock( state );
         threads++;
+        threadsbad++;
         PrintState( group );
         return;
     }
