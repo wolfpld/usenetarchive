@@ -38,6 +38,7 @@ Usenet messages may be retrieved from a number of different sources. Currently w
 - import-source-maildir --- Import from a directory tree where each file is a separate message (e.g. slrnpull produces this with extra-simple setup required to get it working).
 - import-source-maildir-7z --- Import from a maildir tree compressed into a single 7z compressed file.
 - import-source-mbox --- [Archive.org](https://archive.org/details/usenet) keeps its collection of usenet messages in a mbox format, in which all posts are merged into a single file.
+- google-groups --- Crawl google groups and save group in a maildir format.
 
 Imported messages are stored in a per-message LZ4 compressed meta+payload database.
 
@@ -112,6 +113,7 @@ Here are some viable ideas that I'm not really planning to do any time soon, but
 
 Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completely new database indexing schema, which invalidates rest of databases.
 
+groups.google.com → **google-groups** → produces: maildir tree
 maildir directory → **import-source-maildir** → produces: *LZ4*  
 maildir compressed → **import-source-maildir-7z** → produces: *LZ4*  
 mbox file → **import-source-mbox** → produces: *LZ4*  

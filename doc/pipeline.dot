@@ -1,5 +1,8 @@
 digraph
 {
+    ggsrc[label="groups.google.com", color=magenta];
+    gg[label="google-groups"];
+
     src1[label="First source", color=red];
     src2[label="Second source", color=red];
     dst1[label="Archive", color=blue];
@@ -21,6 +24,8 @@ digraph
     msgmeta[label="extract-msgmeta"];
     repack[label="repack-zstd"];
 
+    ggsrc -> gg;
+    gg -> src2;
     src1 -> mbox;
     src2 -> maildir;
     mbox -> kill1;
