@@ -9,3 +9,4 @@ bin/
 *.d
 *.o
 */packages/*
+contrib/curl
