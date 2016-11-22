@@ -51,7 +51,7 @@ int thread_setup(void)
 {
     int i;
 
-    mutex_buf = malloc(CRYPTO_num_locks() * sizeof(MUTEX_TYPE));
+    mutex_buf = (pthread_mutex_t*)malloc(CRYPTO_num_locks() * sizeof(MUTEX_TYPE));
     if(!mutex_buf)
         return 0;
     for(i = 0;  i < CRYPTO_num_locks();  i++)
