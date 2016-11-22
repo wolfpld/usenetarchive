@@ -201,6 +201,7 @@ int main( int argc, char** argv )
         GetTopics( startUrl, argv[1], strlen( argv[1] ) );
     } );
     td.Sync();
+    printf( "\n" );
 
     return 0;
 }
