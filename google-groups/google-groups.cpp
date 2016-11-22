@@ -93,7 +93,7 @@ static std::string base;
 
 static void PrintState( const char* group )
 {
-    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i (!%i) .:. [M]: %i/%i (!%i)", group, pages, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
+    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, pages, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
     fflush( stdout );
 }
 
