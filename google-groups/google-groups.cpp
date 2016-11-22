@@ -19,10 +19,14 @@ static std::mutex state;
 static int pages = 0;
 static int threads = 0;
 static int threadstotal = 0;
+static int messages = 0;
+static int messagestotal = 0;
+
+static std::string base;
 
 static void PrintState( const char* group )
 {
-    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i", group, pages, threads, threadstotal );
+    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i .:. [M]: %i/%i", group, pages, threads, threadstotal, messages, messagestotal );
     fflush( stdout );
 }
 
@@ -61,19 +65,68 @@ static std::vector<unsigned char> Fetch( const std::string& url )
     return buf;
 }
 
-void GetThread( const std::string& id, const char* group, int len )
+static void GetMsg( const std::string& msgid, const char* group, int len )
+{
+    std::string url( "https://groups.google.com/forum/message/raw?msg=" );
+    url += group;
+    url.push_back( '/' );
+    url += msgid;
+    auto buf = Fetch( url );
+    if( buf.empty() ) return;
+    assert( buf.back() == '\0' );
+    buf.pop_back();
+
+    auto str = base;
+    str += msgid;
+
+    FILE* f = fopen( str.c_str(), "wb" );
+    if( f )
+    {
+        fwrite( buf.data(), 1, buf.size(), f );
+        fclose( f );
+    }
+
+    std::lock_guard<std::mutex> lock( state );
+    messages++;
+    PrintState( group );
+}
+
+static void GetThread( const std::string& id, const char* group, int len )
 {
     std::string url( "https://groups.google.com/forum/?_escaped_fragment_=topic/" );
     url += group;
     url.push_back( '/' );
     url += id;
     auto buf = Fetch( url );
+    if( buf.empty() ) return;
     auto ptr = (const char*)buf.data();
+    int nummsg = 0;
+
+    auto str = base;
+    str += id;
+    CreateDirStruct( str );
+
     while( *ptr )
     {
-        ptr++;
+        if( strncmp( ptr, "https://groups.google.com/d/msg/", 32 ) == 0 )
+        {
+            ptr += 33 + len;
+            auto end = ptr;
+            while( *end != '"' ) end++;
+            std::string msgid( ptr, end );
+            td.Queue( [msgid, group, len] {
+                GetMsg( msgid, group, len );
+            } );
+            ptr = end + 1;
+            nummsg++;
+        }
+        else
+        {
+            ptr++;
+        }
     }
     std::lock_guard<std::mutex> lock( state );
+    messagestotal += nummsg;
     threads++;
     PrintState( group );
 }
@@ -81,6 +134,7 @@ void GetThread( const std::string& id, const char* group, int len )
 void GetTopics( const std::string& url, const char* group, int len )
 {
     auto buf = Fetch( url );
+    if( buf.empty() ) return;
     auto ptr = (const char*)buf.data();
     int numthr = 0;
     while( *ptr )
@@ -137,17 +191,16 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
+    CreateDirStruct( argv[1] );
+    base = argv[1];
+    base.append( "/" );
+
     std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
     startUrl += argv[1];
     td.Queue( [startUrl, argv] {
         GetTopics( startUrl, argv[1], strlen( argv[1] ) );
     } );
     td.Sync();
-
-    //CreateDirStruct( argv[1] );
-
-    std::string base = argv[1];
-    base.append( "/" );
 
     return 0;
 }
