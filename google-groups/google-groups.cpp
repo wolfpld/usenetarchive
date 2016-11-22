@@ -197,7 +197,7 @@ int main( int argc, char** argv )
     }
     if( Exists( argv[1] ) )
     {
-        fprintf( stderr, "Source directory doesn't exist.\n" );
+        fprintf( stderr, "Destination directory already exists.\n" );
         exit( 1 );
     }
     if( curl_global_init( CURL_GLOBAL_ALL ) != 0 )
