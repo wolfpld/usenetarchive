@@ -40,9 +40,52 @@ static std::vector<unsigned char> Fetch( const std::string& url )
         {
             buf.clear();
         }
+        else
+        {
+            buf.emplace_back( '\0' );
+        }
         curl_easy_cleanup( curl );
     }
     return buf;
+}
+
+void GetThread( const char* start, const char* end, const char* group, int len )
+{
+
+}
+
+void GetTopics( const std::string& url, const char* group, int len )
+{
+    auto buf = Fetch( url );
+    auto ptr = (const char*)buf.data();
+    while( *ptr )
+    {
+        if( strncmp( ptr, "/topic/", 7 ) == 0 )
+        {
+            ptr += 8 + len;
+            auto end = ptr;
+            while( *end != '"' ) end++;
+            td.Queue( [ptr, end, group, len] {
+                GetThread( ptr, end, group, len );
+            } );
+            ptr = end + 1;
+        }
+        else if( strncmp( ptr, "_escaped_fragment_", 18 ) == 0 )
+        {
+            auto begin = ptr - 33;
+            auto end = ptr + 18;
+            while( *end != '"' ) end++;
+            std::string url( begin, end );
+            td.Queue( [url, group, len] {
+                GetTopics( url, group, len );
+            } );
+            ptr = end + 1;
+        }
+        else
+        {
+            ptr++;
+        }
+    }
 }
 
 int main( int argc, char** argv )
@@ -63,7 +106,12 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-
+    std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
+    startUrl += argv[1];
+    td.Queue( [startUrl, argv] {
+        GetTopics( startUrl, argv[1], strlen( argv[1] ) );
+    } );
+    td.Sync();
 
     //CreateDirStruct( argv[1] );
 
