@@ -138,7 +138,7 @@ static void GetMsg( const std::string& msgid, const char* group, int len )
     url.push_back( '/' );
     url += msgid;
     auto buf = Fetch( url );
-    if( buf.empty() )
+    if( buf.empty() || buf[0] == '<' )
     {
         std::lock_guard<std::mutex> lock( state );
         messages++;
