@@ -72,7 +72,13 @@ static void GetMsg( const std::string& msgid, const char* group, int len )
     url.push_back( '/' );
     url += msgid;
     auto buf = Fetch( url );
-    if( buf.empty() ) return;
+    if( buf.empty() )
+    {
+        std::lock_guard<std::mutex> lock( state );
+        messages++;
+        PrintState( group );
+        return;
+    }
     assert( buf.back() == '\0' );
     buf.pop_back();
 
@@ -98,7 +104,13 @@ static void GetThread( const std::string& id, const char* group, int len )
     url.push_back( '/' );
     url += id;
     auto buf = Fetch( url );
-    if( buf.empty() ) return;
+    if( buf.empty() )
+    {
+        std::lock_guard<std::mutex> lock( state );
+        threads++;
+        PrintState( group );
+        return;
+    }
     auto ptr = (const char*)buf.data();
     int nummsg = 0;
 
