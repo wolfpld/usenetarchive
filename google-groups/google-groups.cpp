@@ -1,18 +1,30 @@
 // Based on https://github.com/henryk/gggd
 
 #include <assert.h>
+#include <curl/curl.h>
+#include <mutex>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <string.h>
-#include <curl/curl.h>
 
 #include "../common/Filesystem.hpp"
 #include "../common/TaskDispatch.hpp"
 
 enum { Workers = 8 };
 TaskDispatch td( Workers );
+
+static std::mutex state;
+static int pages = 0;
+static int threads = 0;
+static int threadstotal = 0;
+
+static void PrintState( const char* group )
+{
+    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i", group, pages, threads, threadstotal );
+    fflush( stdout );
+}
 
 static size_t WriteFn( void* _data, size_t size, size_t num, void* ptr )
 {
@@ -58,6 +70,7 @@ void GetTopics( const std::string& url, const char* group, int len )
 {
     auto buf = Fetch( url );
     auto ptr = (const char*)buf.data();
+    int numthr = 0;
     while( *ptr )
     {
         if( strncmp( ptr, "/topic/", 7 ) == 0 )
@@ -69,6 +82,7 @@ void GetTopics( const std::string& url, const char* group, int len )
                 GetThread( ptr, end, group, len );
             } );
             ptr = end + 1;
+            numthr++;
         }
         else if( strncmp( ptr, "_escaped_fragment_", 18 ) == 0 )
         {
@@ -86,6 +100,10 @@ void GetTopics( const std::string& url, const char* group, int len )
             ptr++;
         }
     }
+    std::lock_guard<std::mutex> lock( state );
+    threadstotal += numthr;
+    pages++;
+    PrintState( group );
 }
 
 int main( int argc, char** argv )
