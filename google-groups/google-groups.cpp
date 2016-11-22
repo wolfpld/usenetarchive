@@ -44,8 +44,7 @@ static size_t WriteFn( void* _data, size_t size, size_t num, void* ptr )
 static std::vector<unsigned char> Fetch( const std::string& url )
 {
     std::vector<unsigned char> buf;
-
-    buf.reserve( 64 * 1024 );
+    buf.reserve( 128 * 1024 );
     auto curl = curl_easy_init();
     if( curl )
     {
