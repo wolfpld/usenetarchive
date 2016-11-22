@@ -113,7 +113,7 @@ Here are some viable ideas that I'm not really planning to do any time soon, but
 
 Usenet Archive Toolkit operates on a couple of distinct databases. Each utility requires a specific set of these databases and produces its own database, or creates a completely new database indexing schema, which invalidates rest of databases.
 
-groups.google.com → **google-groups** → produces: maildir tree
+groups.google.com → **google-groups** → produces: maildir tree  
 maildir directory → **import-source-maildir** → produces: *LZ4*  
 maildir compressed → **import-source-maildir-7z** → produces: *LZ4*  
 mbox file → **import-source-mbox** → produces: *LZ4*  
