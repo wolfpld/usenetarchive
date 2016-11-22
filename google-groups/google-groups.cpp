@@ -12,7 +12,7 @@
 #include "../common/Filesystem.hpp"
 #include "../common/TaskDispatch.hpp"
 
-enum { Workers = 8 };
+enum { Workers = 16 };
 TaskDispatch td( Workers );
 
 static std::mutex state;
