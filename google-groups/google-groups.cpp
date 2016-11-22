@@ -12,7 +12,7 @@
 
 int main( int argc, char** argv )
 {
-    if( argc != 3 )
+    if( argc != 2 )
     {
         fprintf( stderr, "USAGE: %s group\n", argv[0] );
         exit( 1 );
