@@ -9,6 +9,10 @@
 #include <curl/curl.h>
 
 #include "../common/Filesystem.hpp"
+#include "../common/TaskDispatch.hpp"
+
+enum { Workers = 8 };
+TaskDispatch td( Workers );
 
 static size_t WriteFn( void* _data, size_t size, size_t num, void* ptr )
 {
