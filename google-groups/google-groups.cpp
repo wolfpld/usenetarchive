@@ -61,9 +61,21 @@ static std::vector<unsigned char> Fetch( const std::string& url )
     return buf;
 }
 
-void GetThread( const char* start, const char* end, const char* group, int len )
+void GetThread( const std::string& id, const char* group, int len )
 {
-
+    std::string url( "https://groups.google.com/forum/?_escaped_fragment_=topic/" );
+    url += group;
+    url.push_back( '/' );
+    url += id;
+    auto buf = Fetch( url );
+    auto ptr = (const char*)buf.data();
+    while( *ptr )
+    {
+        ptr++;
+    }
+    std::lock_guard<std::mutex> lock( state );
+    threads++;
+    PrintState( group );
 }
 
 void GetTopics( const std::string& url, const char* group, int len )
@@ -78,8 +90,9 @@ void GetTopics( const std::string& url, const char* group, int len )
             ptr += 8 + len;
             auto end = ptr;
             while( *end != '"' ) end++;
-            td.Queue( [ptr, end, group, len] {
-                GetThread( ptr, end, group, len );
+            std::string id( ptr, end );
+            td.Queue( [id, group, len] {
+                GetThread( id, group, len );
             } );
             ptr = end + 1;
             numthr++;
