@@ -1,3 +1,5 @@
+// Based on https://github.com/henryk/gggd
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
