@@ -48,7 +48,7 @@ bin/Browser: .FORCE
 clean:
 	rm -f bin/*
 	$(foreach dir,$(TOOLS),make clean -C $(dir)/build/unix;)
-	make clean -C browser
+	make clean -C browser || /bin/true
 
 .PHONY: all clean
 .NOTPARALLEL: $(TARGET)
