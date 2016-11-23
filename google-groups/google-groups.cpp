@@ -77,7 +77,7 @@ int thread_cleanup(void)
 }
 #endif
 
-enum { Workers = 16 };
+enum { Workers = 32 };
 TaskDispatch td( Workers );
 
 static std::mutex state;
