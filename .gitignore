@@ -10,3 +10,6 @@ bin/
 *.o
 */packages/*
 contrib/curl
+*/build/unix/*
+!*/build/unix/*.mk
+!*/build/unix/Makefile
