@@ -25,6 +25,7 @@ TOOLS := \
 	repack-zstd \
 	tbrowser \
 	threadify \
+	uat \
 	utf8ize \
 	verify
 
