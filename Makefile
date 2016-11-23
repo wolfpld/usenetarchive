@@ -28,7 +28,9 @@ TOOLS := \
 	utf8ize \
 	verify
 
-TARGET := $(addprefix bin/,$(TOOLS))
+QTOOLS := Browser
+
+TARGET := $(addprefix bin/,$(TOOLS)) $(addprefix bin/,$(QTOOLS))
 
 all: $(TARGET)
 
@@ -38,9 +40,15 @@ $(TARGET): .FORCE
 	+make -C $(base)/build/unix release
 	cp -f $(base)/build/unix/$(base) $@
 
+bin/Browser: .FORCE
+	cd browser && qmake
+	+make -C browser
+	cp -f browser/Browser $@
+
 clean:
 	rm -f bin/*
 	$(foreach dir,$(TOOLS),make clean -C $(dir)/build/unix;)
+	make clean -C browser
 
 .PHONY: all clean
 .NOTPARALLEL: $(TARGET)

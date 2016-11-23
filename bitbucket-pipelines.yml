@@ -11,4 +11,3 @@ pipelines:
         script: # Modify the commands below to build your repository.
           - apt-get update && apt-get install -y libicu-dev libgmime-2.6-dev qt5-default ncurses-dev
           - make -j8
-          - cd browser && qmake && make -j8
