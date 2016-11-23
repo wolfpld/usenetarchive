@@ -82,6 +82,7 @@ TaskDispatch td( Workers );
 
 static std::mutex state;
 static int pages = 0;
+static bool pagesdone = false;
 static int threads = 0;
 static int threadstotal = 0;
 static int threadsbad = 0;
@@ -93,7 +94,16 @@ static std::string base;
 
 static void PrintState( const char* group )
 {
-    printf( "\r%s .:. [P]: %i .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, pages, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
+    char buf[32];
+    if( !pagesdone )
+    {
+        sprintf( buf, "+" );
+    }
+    else
+    {
+        sprintf( buf, "/%i", pages );
+    }
+    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, pages, buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
     fflush( stdout );
 }
 
@@ -217,6 +227,7 @@ void GetTopics( const std::string& url, const char* group, int len )
     if( buf.empty() ) return;
     auto ptr = (const char*)buf.data();
     int numthr = 0;
+    bool done = true;
     while( *ptr )
     {
         if( strncmp( ptr, "/topic/", 7 ) == 0 )
@@ -241,6 +252,7 @@ void GetTopics( const std::string& url, const char* group, int len )
                 GetTopics( url, group, len );
             } );
             ptr = end + 1;
+            done = false;
         }
         else
         {
@@ -250,6 +262,7 @@ void GetTopics( const std::string& url, const char* group, int len )
     std::lock_guard<std::mutex> lock( state );
     threadstotal += numthr;
     pages++;
+    pagesdone = done;
     PrintState( group );
 }
 
