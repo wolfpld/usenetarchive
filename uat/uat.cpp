@@ -76,7 +76,7 @@ int main( int argc, char** argv )
     auto old = argv[1];
     argv[1] = fn;
 
-    execve( tmp, argv+1, nullptr );
+    execv( tmp, argv+1 );
 
     fprintf( stderr, "No such command: %s\n", old );
     exit( 1 );
