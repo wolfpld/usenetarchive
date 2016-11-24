@@ -33,7 +33,7 @@ int main( int argc, char** argv )
 
     if( argc < 2 )
     {
-        fprintf( stderr, "USAGE: [params] %s directory\nParams:\n", argv[0] );
+        fprintf( stderr, "USAGE: %s [params] directory\nParams:\n", argv[0] );
         fprintf( stderr, " -z level     - set compression level (default: %i)\n", zlevel );
         fprintf( stderr, " -s power     - set max sample size to 2^power (default: %i)\n", dpower );
         exit( 1 );
