@@ -54,10 +54,11 @@ clean:
 	make clean -C browser || /bin/true
 
 install: $(TARGET)
-	install -d $(DESTDIR)/usr/{bin,lib/uat}
+	install -d $(DESTDIR)/usr/{bin,lib/uat,share/man/man1}
 	$(foreach util,$(DISPATCH),install -s bin/$(util) $(DESTDIR)/usr/bin/;)
 	$(foreach util,$(TOOLS),install -s bin/$(util) $(DESTDIR)/usr/lib/uat/;)
 	$(foreach util,$(QTOOLS),install -s bin/$(util) $(DESTDIR)/usr/lib/uat/;)
+	install -m644 man/*.1 $(DESTDIR)/usr/share/man/man1/
 
 .PHONY: all clean install
 .NOTPARALLEL: $(TARGET)
