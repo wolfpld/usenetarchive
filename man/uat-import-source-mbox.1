@@ -1,0 +1,19 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-import-source-mbox \- import messages from mbox
+.SH SYNOPSIS
+.I uat-import-source-mbox
+<source>
+<destination>
+.SH DESCRIPTION
+Import from mbox archive, in which all posts are merged into a single file.
+
+This will produce archive in LZ4 format, suitable for working with data.
+.SH NOTES
+Archive.org keeps its collection of usenet messages in mbox format.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%google-groups (1),
+.BR \%import-source-maildir (1),
+.BR \%import-source-maildir-7z (1)

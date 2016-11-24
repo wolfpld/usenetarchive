@@ -1,0 +1,24 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-google-groups \- crawl Google Groups and save messages
+.SH SYNOPSIS
+.I uat-google-groups
+<group name>
+.SH DESCRIPTION
+This utility will crawl Google Groups content and save messages in maildir
+format.
+
+It will create one directory per group, one subdirectory per thread and one
+file per message.
+
+Crawling is performed using 32 download threads to achieve reasonable levels
+of speed.
+.SH NOTES
+Downloaded messages are encoded in UTF-8, even if \%Content-Type headers tell
+otherwise. This is limitation of Google Groups.
+
+Based on https://github.com/henryk/gggd.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-import-source-maildir (1)

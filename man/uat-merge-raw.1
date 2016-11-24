@@ -1,0 +1,24 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-merge-raw \- merge two archives into one
+.SH SYNOPSIS
+.I uat-merge-raw
+<destination>
+<archive 1>
+<archive 2>
+[archive 3]...
+.SH DESCRIPTION
+Merges two or more archives into one. Does not duplicate messages only when
+two archives are merged. Use
+.I uat-kill-duplicates
+after merging three or more archives at once to perform cleanup.
+
+This will produce archive in LZ4 format.
+.SH NOTES
+Requires LZ4 archives processed using
+.I uat-extract-msgid
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-extract-msgid (1),
+.BR \%uat-kill-duplicates (1)

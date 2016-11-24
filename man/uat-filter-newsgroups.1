@@ -1,0 +1,20 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-filter-newsgroups \- remove messages from wrong groups
+.SH SYNOPSIS
+.I uat-filter-newsgroups
+<group name>
+<source archive>
+<destination>
+.SH DESCRIPTION
+Some data sources (for example Archive.org's giganews collection) contain
+messages that were not sent to the collection's newsgroup. This utility will
+remove such bogus messages.
+
+This will produce archive in LZ4 format.
+.SH NOTES
+Requires LZ4 archive with message connectivity graph.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-connectivity (1)

@@ -1,0 +1,22 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-utf8ize \- convert to UTF-8
+.SH SYNOPSIS
+.I uat-utf8ize
+<source archive>
+<destination>
+.SH DESCRIPTION
+Converts messages to a common character encoding, UTF-8.
+
+UAT tries very hard to properly decode broken and/or completely invalid
+headers, messages without specified encoding or with bad encoding. HTML
+parts of message are removed. Quoted-Printable and Base64 encodings are
+converted to plain text.
+
+This will produce archive in LZ4 format.
+.SH NOTES
+Requires LZ4 archive.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%unicode (7)

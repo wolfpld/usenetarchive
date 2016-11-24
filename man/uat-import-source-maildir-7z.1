@@ -1,0 +1,20 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-import-source-maildir-7z \- import messages from 7-Zip compressed maildir
+.SH SYNOPSIS
+.I uat-import-source-maildir-7z
+<source>
+<destination>
+.SH DESCRIPTION
+Import from a maildir tree compressed into a single 7-Zip file.
+
+This will produce archive in LZ4 format, suitable for working with data.
+.SH NOTES
+7-Zip decompression can be slow. Processing time may be quite lenghty due
+to this.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%7z (1),
+.BR \%import-source-maildir (1),
+.BR \%import-source-mbox (1)

@@ -1,0 +1,14 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-kill-duplicates \- remove duplicated messages
+.SH SYNOPSIS
+.I uat-kill-duplicates
+<source archive>
+<destination>
+.SH DESCRIPTION
+Removes duplicate messages. It is relatively rare, but data sets from even a
+single NNTP server may contain the same message twice.
+
+This will produce archive in LZ4 format.
+.SH NOTES
+Requires LZ4 archive.

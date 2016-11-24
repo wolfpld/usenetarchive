@@ -1,0 +1,52 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-repack-zstd \- recompress archive to Zstandard format
+.SH SYNOPSIS
+.I uat-repack-zstd
+[-z level]
+[-s power]
+<archive>
+.SH DESCRIPTION
+Builds common dictionary for all messages and recompresses them to a
+Zstandard meta+payload+dict database. This format provides high compression
+ratio with the ability to randomly access messages and is suitable for final
+message storage.
+
+Compression is performed using all available CPU cores.
+.SH OPTIONS
+Control switches modify the compression performance. More compression equals
+more CPU and memory usage. Default values are appropriate for production
+archive deployment and are very resource exhausting.
+.TP
+.BR \-z\fI\ level
+Zstandard compression level. Consult https://github.com/facebook/zstd for
+more information.
+.TP
+.BR \-s\fI\ power
+Set maximum data sample size used for building dictionary to 2^\fIpower\fR bytes.
+Valid values: 10-31.
+.I uat-repack-zstd
+requires 10*N bytes of memory to build N-byte sized dictionary.
+.SH EXAMPLE
+The following table shows how dictionary sample size may influence
+compressed data size for a 1 GB archive.
+.TS
+tab(;);
+c c c
+n n n .
+Sample size ; Dictionary size ; Data size
+8 MB ; 325 KB ; 375 MB
+16 MB ; 349 KB ; 369 MB
+32 MB ; 400 KB ; 364 MB
+64 MB ; 448 KB ; 357 MB
+128 MB ; 453 KB ; 352 MB
+256 MB ; 452 KB ; 346 MB
+512 MB ; 461 KB ; 333 MB
+1024 MB ; 483 KB ; 324 MB
+.TE
+.SH NOTES
+Requires LZ4 archive.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-repack-lz4 (1)
