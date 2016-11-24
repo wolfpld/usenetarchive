@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 
 static const char* s_help =
 "Usenet Archive Toolkit\n\n"
@@ -65,4 +66,13 @@ int main( int argc, char** argv )
         PrintHelp();
         return 0;
     }
+
+    char tmp[1024];
+    sprintf( tmp, "%s/%s", "/usr/lib/uat/", argv[1] );
+
+    char fn[1024];
+    sprintf( fn, "uat %s", argv[1] );
+    argv[1] = fn;
+
+    execve( tmp, argv+1, nullptr );
 }
