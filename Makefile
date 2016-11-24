@@ -57,6 +57,7 @@ install: $(TARGET)
 	install -d $(DESTDIR)/usr/{bin,lib/uat}
 	$(foreach util,$(DISPATCH),install -s bin/$(util) $(DESTDIR)/usr/bin/;)
 	$(foreach util,$(TOOLS),install -s bin/$(util) $(DESTDIR)/usr/lib/uat/;)
+	$(foreach util,$(QTOOLS),install -s bin/$(util) $(DESTDIR)/usr/lib/uat/;)
 
 .PHONY: all clean install
 .NOTPARALLEL: $(TARGET)
