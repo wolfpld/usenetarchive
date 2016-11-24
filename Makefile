@@ -25,13 +25,14 @@ TOOLS := \
 	repack-zstd \
 	tbrowser \
 	threadify \
-	uat \
 	utf8ize \
 	verify
 
 QTOOLS := Browser
 
-TARGET := $(addprefix bin/,$(TOOLS)) $(addprefix bin/,$(QTOOLS))
+DISPATCH := uat
+
+TARGET := $(addprefix bin/,$(TOOLS)) $(addprefix bin/,$(QTOOLS)) $(addprefix bin/,$(DISPATCH))
 
 all: $(TARGET)
 
@@ -49,9 +50,15 @@ bin/Browser: .FORCE
 clean:
 	rm -f bin/*
 	$(foreach dir,$(TOOLS),make clean -C $(dir)/build/unix;)
+	$(foreach dir,$(DISPATCH),make clean -C $(dir)/build/unix;)
 	make clean -C browser || /bin/true
 
-.PHONY: all clean
+install: $(TARGET)
+	install -d $(DESTDIR)/usr/{bin,lib/uat}
+	$(foreach util,$(DISPATCH),install -s bin/$(util) $(DESTDIR)/usr/bin/;)
+	$(foreach util,$(TOOLS),install -s bin/$(util) $(DESTDIR)/usr/lib/uat/;)
+
+.PHONY: all clean install
 .NOTPARALLEL: $(TARGET)
 .SUFFIX:
 .FORCE:
