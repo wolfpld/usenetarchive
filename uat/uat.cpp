@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 static const char* s_help =
@@ -72,7 +73,11 @@ int main( int argc, char** argv )
 
     char fn[1024];
     sprintf( fn, "uat %s", argv[1] );
+    auto old = argv[1];
     argv[1] = fn;
 
     execve( tmp, argv+1, nullptr );
+
+    fprintf( stderr, "No such command: %s\n", old );
+    exit( 1 );
 }
