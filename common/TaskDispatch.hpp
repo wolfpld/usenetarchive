@@ -15,10 +15,10 @@ public:
     TaskDispatch( size_t workers );
     ~TaskDispatch();
 
-    static void Queue( const std::function<void(void)>& f );
-    static void Queue( std::function<void(void)>&& f );
+    void Queue( const std::function<void(void)>& f );
+    void Queue( std::function<void(void)>&& f );
 
-    static void Sync();
+    void Sync();
 
 private:
     void Worker();

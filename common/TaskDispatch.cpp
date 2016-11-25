@@ -4,15 +4,10 @@
 #include "System.hpp"
 #include "TaskDispatch.hpp"
 
-static TaskDispatch* s_instance = nullptr;
-
 TaskDispatch::TaskDispatch( size_t workers )
     : m_exit( false )
     , m_jobs( 0 )
 {
-    assert( !s_instance );
-    s_instance = this;
-
     assert( workers >= 1 );
     workers--;
 
@@ -36,47 +31,44 @@ TaskDispatch::~TaskDispatch()
     {
         worker.join();
     }
-
-    assert( s_instance );
-    s_instance = nullptr;
 }
 
 void TaskDispatch::Queue( const std::function<void(void)>& f )
 {
-    std::unique_lock<std::mutex> lock( s_instance->m_queueLock );
-    s_instance->m_queue.emplace( f );
-    const auto size = s_instance->m_queue.size();
+    std::unique_lock<std::mutex> lock( m_queueLock );
+    m_queue.emplace( f );
+    const auto size = m_queue.size();
     lock.unlock();
     if( size > 1 )
     {
-        s_instance->m_cvWork.notify_one();
+        m_cvWork.notify_one();
     }
 }
 
 void TaskDispatch::Queue( std::function<void(void)>&& f )
 {
-    std::unique_lock<std::mutex> lock( s_instance->m_queueLock );
-    s_instance->m_queue.emplace( std::move( f ) );
-    const auto size = s_instance->m_queue.size();
+    std::unique_lock<std::mutex> lock( m_queueLock );
+    m_queue.emplace( std::move( f ) );
+    const auto size = m_queue.size();
     lock.unlock();
     if( size > 1 )
     {
-        s_instance->m_cvWork.notify_one();
+        m_cvWork.notify_one();
     }
 }
 
 void TaskDispatch::Sync()
 {
-    std::unique_lock<std::mutex> lock( s_instance->m_queueLock );
-    while( !s_instance->m_queue.empty() )
+    std::unique_lock<std::mutex> lock( m_queueLock );
+    while( !m_queue.empty() )
     {
-        auto f = s_instance->m_queue.front();
-        s_instance->m_queue.pop();
+        auto f = m_queue.front();
+        m_queue.pop();
         lock.unlock();
         f();
         lock.lock();
     }
-    s_instance->m_cvJobs.wait( lock, []{ return s_instance->m_jobs == 0; } );
+    m_cvJobs.wait( lock, [this]{ return m_jobs == 0; } );
 }
 
 void TaskDispatch::Worker()
