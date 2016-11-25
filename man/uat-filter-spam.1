@@ -1,0 +1,48 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-filter-spam \- filter spam
+.SH SYNOPSIS
+.I uat-filter spam
+<spam database directory>
+<archive>
+[destination [--quiet]] | [-m msgid]
+.SH DESCRIPTION
+This utility may be used to learn which messages are legitimate and which
+are spam. After database has been sufficiently trained, spam messages may be
+removed from archive.
+
+Messages for spam training are selected randomly, unless
+.I -m
+switch is used. This prevents over-training in a limited time period when
+archive spans multiple years.
+
+During spam removal basic data about removed messages will be printed. It is
+recommended to review this list to check for any false positives, especially
+if reusing spam database trained on another news group.
+
+Only top-level messages which have no replies are considered for spam
+removal. It is a common pattern for spam messages to be "fired and forgot"
+and be ignored by everyone, but in case such message would incite some
+discussion, it wouldn't be good to remove it, as it provides context.
+.SH OPTIONS
+.TP
+.BR destination
+Destination archive for spam removal. Omit it to start training session.
+.TP
+.BR --quiet
+Prevent listing removed messages. Only valid in spam removal mode.
+.TP
+.BR -m\fI\ msgid
+Perform training only on a message with
+.I msgid
+Message ID. This should be used to exclude any false positives from removal.
+.SH NOTES
+Requires LZ4 archive processed using
+.I uat-connectivity
+and
+.I uat-extract-msgmeta
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-connectivity (1),
+.BR \%uat-extract-msgmeta (1)

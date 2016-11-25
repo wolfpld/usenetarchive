@@ -1,0 +1,43 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-threadify \- find missing connections between messages
+.SH SYNOPSIS
+.I uat-threadify
+<archive>
+[-i ignore]...
+.SH DESCRIPTION
+Some messages do not have connectivity data embedded in headers. For example
+it's a common artifact of using news-email gateways. This tool parses
+top-level messages, looking for quotations, then it searches other messages
+for these quotes and creates (not restores \- it was never there!) missing
+connectivity between children and parents.
+
+Matching is performed only on messages with the same "Subject" field. This
+helps in ignoring invalid matches between random messages and also prevents
+relinking when a new thread was started intentionally, typically with "Was:
+old subject" postfix added to the new "Subject" field.
+
+It is normal practice to add "Re:" prefix to replies to a message (RFC 2822,
+3.6.5) and this utility ignores it when doing "Subject" field comparison.
+Some news readers were horribly broken and due to this
+.I uat-threadify
+will in fact ignore any number of the following prefixes: "Re:", "RE:",
+"re:", "Odp:", "Re[2]:", "Re[3]:", ..., "Re[9]:".
+.SH OPTIONS
+.TP
+.BR -i\fI\ ignore
+Add
+.I ignore
+to prefix ignore list.
+.SH NOTES
+Requires LZ4 archive processed using
+.I uat-lexsort
+
+Running this utility will invalidate archive lexicon, if any matches are
+made.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-lexicon (1),
+.BR \%uat-lexhash (1),
+.BR \%uat-lexsort (1)

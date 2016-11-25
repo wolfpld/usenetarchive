@@ -1,0 +1,18 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-lexicon \- create search lexicon
+.SH SYNOPSIS
+.I uat-lexicon
+<archive>
+.SH DESCRIPTION
+Build a list of words and hit tables for each word. This data is used to
+enable search functionality in an archive.
+.SH NOTES
+Requires LZ4 archive processed using
+.I uat-connectivity
+
+This utility has very high memory requirements.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-connectivity (1)

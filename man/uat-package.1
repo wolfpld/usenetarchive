@@ -1,0 +1,21 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-package \- package archive
+.SH SYNOPSIS
+.I uat-package
+[-x]
+<source archive>
+<destination archive>
+.SH DESCRIPTION
+UAT archives are a collection of various databases in a single directory.
+This utility can pack these databases into a single file, which is more
+convenient in typical day-to-day use.
+.SH OPTIONS
+.TP
+.BR -x
+Perform archive extract operation.
+.SH NOTES
+Requires completely processed archive.
+
+While not required, it is recommended to use the ".usenet" extension for the
+final archive file.

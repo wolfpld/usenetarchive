@@ -1,0 +1,18 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-verify \- check for known problems
+.SH SYNOPSIS
+.I uat-verify
+<archive>
+.SH DESCRIPTION
+Check archive file or directory for known issues caused by older versions of
+UAT. Currently the detected problems include:
+.IP \[bu] 2
+some messages may be not present in connectivity graph, thus making them
+unreachable.
+.SH NOTES
+Requires completely processed archive.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-package (1)

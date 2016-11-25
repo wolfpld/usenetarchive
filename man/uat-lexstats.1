@@ -1,0 +1,26 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-lexstats \- display lexicon statistics
+.SH SYNOPSIS
+.I uat-lexstats
+<archive>
+.SH DESCRIPTION
+This utility will display various statistics about archive lexicon. These
+include:
+.IP \[bu] 2
+total word count,
+.IP \[bu]
+word distribution between message headers, body and quotations,
+.IP \[bu]
+information about how many times each word is present in archive,
+.IP \[bu]
+various disk usage counts.
+.SH NOTES
+Requires LZ4 archive processed using
+.I uat-lexsort
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-lexicon (1),
+.BR \%uat-lexhash (1),
+.BR \%uat-lexsort (1)
