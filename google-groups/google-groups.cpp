@@ -79,6 +79,7 @@ int thread_cleanup(void)
 
 enum { Workers = 32 };
 TaskDispatch td( Workers );
+TaskDispatch tdp( 1 );
 
 static std::mutex state;
 static int pages = 0;
@@ -248,7 +249,7 @@ void GetTopics( const std::string& url, const char* group, int len )
             auto end = ptr + 18;
             while( *end != '"' ) end++;
             std::string url( begin, end );
-            td.Queue( [url, group, len] {
+            tdp.Queue( [url, group, len] {
                 GetTopics( url, group, len );
             } );
             ptr = end + 1;
@@ -295,9 +296,10 @@ int main( int argc, char** argv )
 
     std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
     startUrl += argv[1];
-    td.Queue( [startUrl, argv] {
+    tdp.Queue( [startUrl, argv] {
         GetTopics( startUrl, argv[1], strlen( argv[1] ) );
     } );
+    tdp.Sync();
     td.Sync();
     printf( "\n" );
 
