@@ -11,6 +11,7 @@ bin/
 */packages/*
 contrib/curl
 */build/unix/*
+*/build/win32/packages
 !*/build/unix/*.mk
 !*/build/unix/Makefile
 *.swp
