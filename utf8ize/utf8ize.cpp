@@ -43,39 +43,39 @@ static bool IsValidUTF8( guint8* data, gint64 len )
     bool utf = false;
     while( len > 0 )
     {
-        if( *data & 0x80 == 0 )
+        if( (*data & 0x80) == 0 )
         {
             data++;
             len--;
         }
-        else if( *data & 0xE0 == 0xC0 )
+        else if( (*data & 0xE0) == 0xC0 )
         {
             if( len < 2 ) return false;
             data++;
-            if( *data & 0xC0 != 0x80 ) return false;
+            if( (*data & 0xC0) != 0x80 ) return false;
             data++;
             len -= 2;
             utf = true;
         }
-        else if( *data & 0xF0 == 0xE0 )
+        else if( (*data & 0xF0) == 0xE0 )
         {
             if( len < 3 ) return false;
             data++;
             for( int i=0; i<2; i++ )
             {
-                if( *data & 0xC0 != 0x80 ) return false;
+                if( (*data & 0xC0) != 0x80 ) return false;
                 data++;
             }
             len -= 3;
             utf = true;
         }
-        else if( *data & 0xF8 == 0xF0 )
+        else if( (*data & 0xF8) == 0xF0 )
         {
             if( len < 4 ) return false;
             data++;
             for( int i=0; i<3; i++ )
             {
-                if( *data & 0xC0 != 0x80 ) return false;
+                if( (*data & 0xC0) != 0x80 ) return false;
                 data++;
             }
             len -= 4;
