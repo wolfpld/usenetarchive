@@ -38,6 +38,57 @@ int weights[18]= { 1, 1, 1, 1, 1, 1, 1, 1, 1, 15, 10, 16, 19, 1, 13, 13, 1, 18 }
 
 static int deductions[sizeof(userEncodings)/sizeof(const char*)] = {};
 
+static bool IsValidUTF8( guint8* data, gint64 len )
+{
+    bool utf = false;
+    while( len > 0 )
+    {
+        if( *data & 0x80 == 0 )
+        {
+            data++;
+            len--;
+        }
+        else if( *data & 0xE0 == 0xC0 )
+        {
+            if( len < 2 ) return false;
+            data++;
+            if( *data & 0xC0 != 0x80 ) return false;
+            data++;
+            len -= 2;
+            utf = true;
+        }
+        else if( *data & 0xF0 == 0xE0 )
+        {
+            if( len < 3 ) return false;
+            data++;
+            for( int i=0; i<2; i++ )
+            {
+                if( *data & 0xC0 != 0x80 ) return false;
+                data++;
+            }
+            len -= 3;
+            utf = true;
+        }
+        else if( *data & 0xF8 == 0xF0 )
+        {
+            if( len < 4 ) return false;
+            data++;
+            for( int i=0; i<3; i++ )
+            {
+                if( *data & 0xC0 != 0x80 ) return false;
+                data++;
+            }
+            len -= 4;
+            utf = true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return utf;
+}
+
 static std::string ConvertToUTF8( guint8* data, gint64 len )
 {
     if( g_utf8_validate( (gchar*)data, len, nullptr ) == TRUE )
@@ -115,14 +166,29 @@ static std::string mime_part_to_text( GMimeObject* obj )
     gint64 len = g_mime_data_wrapper_write_to_stream( c, memstream );
     guint8* b = g_mime_stream_mem_get_byte_array( (GMimeStreamMem*)memstream )->data;
 
-    const char* charset;
-    if( ( charset = g_mime_content_type_get_parameter( content_type, "charset" ) ) && strcasecmp( charset, "utf-8" ) != 0 )
+    if( IsValidUTF8( b, len ) )
     {
-        iconv_t cv = g_mime_iconv_open( "UTF-8", charset );
-        if( char* converted = g_mime_iconv_strndup( cv, (const char*)b, len ) )
+        ret = std::string( b, b+len );
+    }
+    else
+    {
+        const char* charset;
+        if( ( charset = g_mime_content_type_get_parameter( content_type, "charset" ) ) && strcasecmp( charset, "utf-8" ) != 0 )
         {
-            ret = converted;
-            g_free( converted );
+            iconv_t cv = g_mime_iconv_open( "UTF-8", charset );
+            if( char* converted = g_mime_iconv_strndup( cv, (const char*)b, len ) )
+            {
+                ret = converted;
+                g_free( converted );
+            }
+            else
+            {
+                if( b )
+                {
+                    ret = ConvertToUTF8( b, len );
+                }
+            }
+            g_mime_iconv_close( cv );
         }
         else
         {
@@ -130,14 +196,6 @@ static std::string mime_part_to_text( GMimeObject* obj )
             {
                 ret = ConvertToUTF8( b, len );
             }
-        }
-        g_mime_iconv_close( cv );
-    }
-    else
-    {
-        if( b )
-        {
-            ret = ConvertToUTF8( b, len );
         }
     }
 
