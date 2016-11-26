@@ -8,6 +8,8 @@ Usenet is dead. You may believe it's not, but it really is.
 
 ![](doc/stats.png)
 
+Polish usenet [message count from 2016.08 to 2016.12](doc/2016.08-to-2016.12.pdf) (approximate).
+
 People went away to various forums, facebooks and twitters and seem fine there. Meanwhile, the old discussions slowly rot away. Google groups is a sad, unusable joke. Archive.org dataset, at least with regard to polish usenet archives, is vastly incomplete. There is no easy way to get the data, browse it, or search it. So, maybe something needs to be done. How hard can it be anyway? (Not very: one month for a working prototype, another one for polish and bugfixing.)
 
 ## Advantages
