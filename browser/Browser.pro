@@ -19,6 +19,7 @@ SOURCES += main.cpp\
     ../common/mmap.cpp \
     ../libuat/Archive.cpp \
     ../contrib/zstd/common/entropy_common.c \
+    ../contrib/zstd/common/error_private.c \
     ../contrib/zstd/common/fse_decompress.c \
     ../contrib/zstd/common/xxhash.c \
     ../contrib/zstd/common/zstd_common.c \
