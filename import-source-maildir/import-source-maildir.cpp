@@ -89,7 +89,7 @@ static int dirs = 0;
 static FILE* meta;
 static FILE* data;
 static uint64_t offset = 0;
-static ExpandingBuffer eb1, eb2;
+static ExpandingBuffer eb1, eb2, eb3;
 
 void RecursivePack( const char* dir )
 {
@@ -119,13 +119,30 @@ void RecursivePack( const char* dir )
             idx++;
             uint64_t size = GetFileSize( in );
             char* buf = eb1.Request( size );
-            FILE* src = fopen( in, "rb" );
-            fread( buf, 1, size, src );
-            fclose( src );
+            FILE* fsrc = fopen( in, "rb" );
+            fread( buf, 1, size, fsrc );
+            fclose( fsrc );
+
+            char* processed = eb3.Request( size );
+            auto osp = size;
+            auto src = buf;
+            auto dst = processed;
+            for( int i=0; i<osp; i++ )
+            {
+                if( *src == '\r' )
+                {
+                    size--;
+                    src++;
+                }
+                else
+                {
+                    *dst++ = *src++;
+                }
+            }
 
             int maxSize = LZ4_compressBound( size );
             char* compressed = eb2.Request( maxSize );
-            int csize = LZ4_compress_HC( buf, compressed, size, maxSize, 16 );
+            int csize = LZ4_compress_HC( processed, compressed, size, maxSize, 16 );
 
             fwrite( compressed, 1, csize, data );
 
