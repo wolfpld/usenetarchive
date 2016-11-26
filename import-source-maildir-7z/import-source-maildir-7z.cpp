@@ -125,7 +125,7 @@ int main( int argc, char** argv )
 
     uint64_t offset = 0;
 
-    ExpandingBuffer eb2, fnbuf;
+    ExpandingBuffer eb, eb2, fnbuf;
     uint32_t blockIndex = 0;
     char* outBuffer = nullptr;
     size_t outBufferSize = 0;
@@ -153,9 +153,26 @@ int main( int argc, char** argv )
             (Byte**)&outBuffer, &outBufferSize, &lzmaOffset, &outSizeProcessed,
             &s_alloc, &s_alloc );
 
+        char* processed = eb.Request( outSizeProcessed );
+        auto osp = outSizeProcessed;
+        auto src = outBuffer + lzmaOffset;
+        auto dst = processed;
+        for( int i=0; i<osp; i++ )
+        {
+            if( *src == '\r' )
+            {
+                outSizeProcessed--;
+                src++;
+            }
+            else
+            {
+                *dst++ = *src++;
+            }
+        }
+
         int maxSize = LZ4_compressBound( outSizeProcessed );
         char* compressed = eb2.Request( maxSize );
-        int csize = LZ4_compress_HC( outBuffer + lzmaOffset, compressed, outSizeProcessed, maxSize, 16 );
+        int csize = LZ4_compress_HC( processed, compressed, outSizeProcessed, maxSize, 16 );
 
         fwrite( compressed, 1, csize, data );
 
