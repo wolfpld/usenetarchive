@@ -26,6 +26,7 @@
     <ClCompile Include="..\..\..\contrib\linenoise-ng\linenoise.cpp" />
     <ClCompile Include="..\..\..\contrib\linenoise-ng\wcwidth.cpp" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c" />

@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\..\contrib\pdcurses\util.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\window.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c" />

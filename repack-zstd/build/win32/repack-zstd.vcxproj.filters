@@ -69,6 +69,9 @@
     <ClCompile Include="..\..\..\common\TaskDispatch.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
