@@ -79,7 +79,8 @@ int thread_cleanup(void)
 
 enum { Workers = 32 };
 TaskDispatch td( Workers );
-TaskDispatch tdp( 1 );
+enum { PageWorkers = 8 };
+TaskDispatch tdp( PageWorkers );
 
 static std::mutex state;
 static int pages = 0;
@@ -90,6 +91,7 @@ static int threadsbad = 0;
 static int messages = 0;
 static int messagestotal = 0;
 static int messagesbad = 0;
+static int pagenum = 0;
 
 static std::string base;
 
@@ -228,7 +230,6 @@ void GetTopics( const std::string& url, const char* group, int len )
     if( buf.empty() ) return;
     auto ptr = (const char*)buf.data();
     int numthr = 0;
-    bool done = true;
     while( *ptr )
     {
         if( strncmp( ptr, "/topic/", 7 ) == 0 )
@@ -243,28 +244,39 @@ void GetTopics( const std::string& url, const char* group, int len )
             ptr = end + 1;
             numthr++;
         }
-        else if( strncmp( ptr, "_escaped_fragment_", 18 ) == 0 )
-        {
-            auto begin = ptr - 33;
-            auto end = ptr + 18;
-            while( *end != '"' ) end++;
-            std::string url( begin, end );
-            tdp.Queue( [url, group, len] {
-                GetTopics( url, group, len );
-            } );
-            ptr = end + 1;
-            done = false;
-        }
         else
         {
             ptr++;
         }
     }
+
     std::lock_guard<std::mutex> lock( state );
-    threadstotal += numthr;
-    pages++;
-    pagesdone = done;
-    PrintState( group );
+    if( numthr > 0 )
+    {
+        if( !pagesdone )
+        {
+            for( int i=0; i<2; i++ )
+            {
+                pagenum++;
+                std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
+                startUrl += group;
+                char tmp[128];
+                sprintf( tmp, "[%d-%d]", pagenum * 100 + 1, (pagenum+1) * 100 );
+                startUrl += tmp;
+                tdp.Queue( [startUrl, group, len] {
+                    GetTopics( startUrl, group, len );
+                } );
+            }
+        }
+
+        threadstotal += numthr;
+        pages++;
+        PrintState( group );
+    }
+    else
+    {
+        pagesdone = true;
+    }
 }
 
 int main( int argc, char** argv )
