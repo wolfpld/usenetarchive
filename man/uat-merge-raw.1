@@ -8,10 +8,14 @@ uat-merge-raw \- merge two archives into one
 <archive 2>
 [archive 3]...
 .SH DESCRIPTION
-Merges two or more archives into one. Does not duplicate messages only when
-two archives are merged. Use
+Merges two or more archives into one. Does not duplicate messages when two
+archives are merged. Messages from the first archive take precedence over
+messages in the second archive.
+
+Specifying three or more source archives will introduce message duplication.
+Use
 .I uat-kill-duplicates
-after merging three or more archives at once to perform cleanup.
+to perform cleanup in such case.
 
 This will produce archive in LZ4 format.
 .SH NOTES
