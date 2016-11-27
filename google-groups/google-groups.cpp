@@ -296,6 +296,7 @@ int main( int argc, char** argv )
 
     std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
     startUrl += argv[1];
+    startUrl += "[1-100]";
     tdp.Queue( [startUrl, argv] {
         GetTopics( startUrl, argv[1], strlen( argv[1] ) );
     } );
