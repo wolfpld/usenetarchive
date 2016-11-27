@@ -92,6 +92,7 @@ static int messages = 0;
 static int messagestotal = 0;
 static int messagesbad = 0;
 static int pagenum = 0;
+static int limitpnum = std::numeric_limits<int>::max();
 
 static std::string base;
 
@@ -224,8 +225,13 @@ static void GetThread( const std::string& id, const char* group, int len )
     PrintState( group );
 }
 
-void GetTopics( const std::string& url, const char* group, int len )
+void GetTopics( const std::string& url, const char* group, int len, int pnum )
 {
+    {
+        std::lock_guard<std::mutex> lock( state );
+        if( pagesdone && pnum > limitpnum ) return;
+    }
+
     auto buf = Fetch( url );
     if( buf.empty() ) return;
     auto ptr = (const char*)buf.data();
@@ -263,8 +269,9 @@ void GetTopics( const std::string& url, const char* group, int len )
                 char tmp[128];
                 sprintf( tmp, "[%d-%d]", pagenum * 100 + 1, (pagenum+1) * 100 );
                 startUrl += tmp;
-                tdp.Queue( [startUrl, group, len] {
-                    GetTopics( startUrl, group, len );
+                int num = pagenum;
+                tdp.Queue( [startUrl, group, len, num] {
+                    GetTopics( startUrl, group, len, num );
                 } );
             }
         }
@@ -276,6 +283,10 @@ void GetTopics( const std::string& url, const char* group, int len )
     else
     {
         pagesdone = true;
+        if( limitpnum > pnum )
+        {
+            limitpnum = pnum;
+        }
     }
 }
 
@@ -310,7 +321,7 @@ int main( int argc, char** argv )
     startUrl += argv[1];
     startUrl += "[1-100]";
     tdp.Queue( [startUrl, argv] {
-        GetTopics( startUrl, argv[1], strlen( argv[1] ) );
+        GetTopics( startUrl, argv[1], strlen( argv[1] ), 0 );
     } );
     tdp.Sync();
     td.Sync();
