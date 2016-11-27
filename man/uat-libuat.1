@@ -1,0 +1,42 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-libuat - UAT library
+.SH DESCRIPTION
+libuat is a library used to interact with UAT archives. It provides two
+major functionality groups: archive access and state tracking.
+.SS Archive access
+Archive access is realized through
+.I \%Archive
+class, which provides various methods to access archive's internal
+databases. Each archive consists of a number of messages (also referred to
+as "articles"). These messages can be accessed using either numerical index,
+or unique textual message identifier (Message-ID). Using Message-IDs
+involves hash-map lookup step to translate them into message indexes.
+
+Each archive may also contain the following metadata:
+.IP \[bu] 2
+archive name \- typically source usenet group, for example
+.I comp.os.linux
+.IP \[bu]
+short description \- short information about purpose of the group (per RFC
+3977, 7.6.6).
+.IP \[bu]
+long description \- group charter. (Some newsgroups regularly post a
+description to the group that describes its intention. These descriptions
+are posted by the people involved with the newsgroup creation and/or
+administration. If the group has such a description, it almost always
+includes the word "charter", so you can quickly find it by searching the
+newsgroup for that word. A charter is the "set of rules and guidelines"
+which supposedly govern the users of that group.)
+.SS State tracking
+Information such as last opened archive, a list of previously viewed messages
+and whether any message was visited in the past are provided by the
+.I \%PersistentStorage
+class.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat (1),
+.BR \%uat-Browser (1),
+.BR \%uat-tbrowser (1),
+.BR \%uat-query (1)
