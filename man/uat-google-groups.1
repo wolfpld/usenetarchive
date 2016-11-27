@@ -11,8 +11,10 @@ format.
 It will create one directory per group, one subdirectory per thread and one
 file per message.
 
-Crawling is performed using 32 download threads to achieve reasonable levels
-of speed.
+Crawling threads and messages is performed using 32 download threads to
+achieve reasonable levels of speed. Additionally, thread list is
+speculatively crawled on 8 download threads with 100 message threads per
+page. This is done to lessen the impact of reply slowdown on further pages.
 .SH NOTES
 Downloaded messages are encoded in UTF-8, even if \%Content-Type headers tell
 otherwise. This is limitation of Google Groups.
