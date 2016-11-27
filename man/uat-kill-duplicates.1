@@ -7,7 +7,9 @@ uat-kill-duplicates \- remove duplicated messages
 <destination>
 .SH DESCRIPTION
 Removes duplicate messages. It is relatively rare, but data sets from even a
-single NNTP server may contain the same message twice.
+single NNTP server may contain the same message twice. The first occurrence
+of each message will be stored in the resulting archive and the subsequent
+ones will be ignored.
 
 This will produce archive in LZ4 format.
 .SH NOTES
