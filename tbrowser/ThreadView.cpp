@@ -19,7 +19,6 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_mview( mview )
     , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )
-    , m_revLookup( archive.NumberOfMessages(), -1 )
     , m_top( 0 )
     , m_cursor( 0 )
     , m_fillPos( 0 )
@@ -72,9 +71,7 @@ void ThreadView::Draw()
     auto idx = m_top;
     for( int i=0; i<h-1; i++ )
     {
-        if( !m_data[idx].valid ) FillTo( idx );
-        assert( m_data[idx].valid == 1 );
-        if( m_data[idx].parent == -1 ) prev = nullptr;
+        if( m_archive.GetParent( idx ) == -1 ) prev = nullptr;
         DrawLine( i, idx, prev );
         idx = GetNext( idx );
         if( idx >= m_archive.NumberOfMessages() ) break;
@@ -96,17 +93,15 @@ void ThreadView::Draw()
 
 bool ThreadView::CanExpand( int cursor )
 {
-    assert( m_data[cursor].valid );
-    return m_archive.GetTotalChildrenCount( m_data[cursor].msgid ) > 1;
+    return m_archive.GetTotalChildrenCount( cursor ) > 1;
 }
 
 void ThreadView::Expand( int cursor, bool recursive )
 {
-    if( !m_data[cursor].valid ) FillTo( cursor );
-    assert( m_data[cursor].valid );
+    m_data[cursor].valid = 1;
     m_data[cursor].expanded = 1;
 
-    auto children = m_archive.GetChildren( m_data[cursor].msgid );
+    auto children = m_archive.GetChildren( cursor );
     int parent = cursor;
     cursor++;
     for( int i=0; i<children.size; i++ )
@@ -114,7 +109,7 @@ void ThreadView::Expand( int cursor, bool recursive )
         auto skip = m_archive.GetTotalChildrenCount( children.ptr[i] );
         if( !m_data[cursor].valid )
         {
-            Fill( cursor, children.ptr[i], parent );
+            m_data[cursor].valid = 1;
             bool line = i != children.size - 1;
             for( int j=0; j<skip; j++ )
             {
@@ -131,23 +126,8 @@ void ThreadView::Expand( int cursor, bool recursive )
 
 int ThreadView::GetRoot( int cursor ) const
 {
-    assert( m_data[cursor].valid );
-    while( m_data[cursor].parent != -1 ) cursor = m_data[cursor].parent;
+    while( m_archive.GetParent( cursor ) != -1 ) cursor = m_archive.GetParent( cursor );
     return cursor;
-}
-
-int ThreadView::GetParent( int cursor ) const
-{
-    assert( m_data[cursor].valid );
-    return m_data[cursor].parent;
-}
-
-int32_t ThreadView::ReverseLookupRoot( int msgidx )
-{
-    if( m_revLookup[msgidx] == -1 ) FillToMsgIdx( msgidx );
-    assert( m_revLookup[msgidx] != -1 );
-    assert( m_data[m_revLookup[msgidx]].parent == -1 );
-    return m_revLookup[msgidx];
 }
 
 void ThreadView::PageForward()
@@ -175,14 +155,14 @@ void ThreadView::PageBackward()
 void ThreadView::ExpandFill( int cursor )
 {
     if( cursor == m_archive.NumberOfMessages()-1 || m_data[cursor+1].valid ) return;
-    auto children = m_archive.GetChildren( m_data[cursor].msgid );
+    auto children = m_archive.GetChildren( cursor );
     int parent = cursor;
     cursor++;
     for( int i=0; i<children.size; i++ )
     {
         auto skip = m_archive.GetTotalChildrenCount( children.ptr[i] );
         assert( !m_data[cursor].valid );
-        Fill( cursor, children.ptr[i], parent );
+        m_data[cursor].valid = true;
         bool line = i != children.size - 1;
         for( int j=0; j<skip; j++ )
         {
@@ -222,15 +202,6 @@ void ThreadView::FocusOn( int cursor )
     Draw();
 }
 
-void ThreadView::Fill( int index, int msgid, int parent )
-{
-    assert( m_data[index].valid == 0 );
-    m_data[index].msgid = msgid;
-    m_data[index].valid = 1;
-    m_data[index].parent = parent;
-    m_revLookup[msgid] = index;
-}
-
 static bool SameSubject( const char* subject, const char*& prev )
 {
     if( subject == prev ) return true;
@@ -247,11 +218,10 @@ static bool SameSubject( const char* subject, const char*& prev )
 
 void ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
-    bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == m_data[idx].msgid;
+    bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
-    const auto midx = m_data[idx].msgid;
     if( m_cursor == idx )
     {
         if( !hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
@@ -273,14 +243,11 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
             complete = true;
             std::vector<uint32_t> stack;
             stack.reserve( 4 * 1024 );
-            stack.push_back( m_data[idx].msgid );
+            stack.push_back( idx );
             while( !stack.empty() )
             {
                 const auto id = stack.back();
-                auto didx = m_revLookup[id];
-                assert( didx != -1 );
-                assert( m_data[didx].valid );
-                if( !CheckVisited( didx ) )
+                if( !CheckVisited( id ) )
                 {
                     complete = false;
                     break;
@@ -289,8 +256,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
                 const auto children = m_archive.GetChildren( id );
                 for( int i=0; i<children.size; i++ )
                 {
-                    assert( m_revLookup[children.ptr[i]] != -1 );
-                    if( !m_data[m_revLookup[children.ptr[i]]].visall )
+                    if( !m_data[children.ptr[i]].visall )
                     {
                         stack.emplace_back( children.ptr[i] );
                     }
@@ -315,7 +281,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
         waddch( m_win, '-' );
     }
 
-    const auto children = m_archive.GetTotalChildrenCount( midx );
+    const auto children = m_archive.GetTotalChildrenCount( idx );
     if( children > 9999 )
     {
         wprintw( m_win, "++++ [" );
@@ -325,7 +291,7 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
         wprintw( m_win, "%4i [", children );
     }
 
-    auto realname = m_archive.GetRealName( midx );
+    auto realname = m_archive.GetRealName( idx );
     if( !hilite ) wattron( m_win, COLOR_PAIR(3) | A_BOLD );
     int len = 18;
     auto end = utfendl( realname, len );
@@ -345,14 +311,14 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
         if( !hilite ) wattroff( m_win, COLOR_PAIR(4) );
     }
 
-    time_t date = m_archive.GetDate( midx );
+    time_t date = m_archive.GetDate( idx );
     auto lt = localtime( &date );
     char buf[64];
     auto dlen = strftime( buf, 64, "%F %R", lt );
 
     wmove( m_win, line, 31 );
     auto w = getmaxx( m_win );
-    auto subject = m_archive.GetSubject( midx );
+    auto subject = m_archive.GetSubject( idx );
     auto& tree = m_tree[idx];
     auto treecnt = tree.Size();
     len = w - 33 - dlen;
@@ -361,18 +327,17 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
         int childline = std::numeric_limits<int>::max();
         if( m_mview.IsActive() && !hilite )
         {
-            const auto active = ReverseLookup( m_mview.DisplayedMessage() );
-            int parent = m_data[idx].parent;
+            int parent = m_archive.GetParent( idx );
             int cnt = 1;
             while( parent != -1 )
             {
-                if( parent == active )
+                if( parent == m_mview.DisplayedMessage() )
                 {
                     childline = treecnt - cnt;
                     break;
                 }
                 cnt++;
-                parent = m_data[parent].parent;
+                parent = m_archive.GetParent( parent );
             }
         }
 
@@ -500,8 +465,6 @@ void ThreadView::GoNextUnread()
 
 int ThreadView::GetNext( int idx )
 {
-    if( !m_data[idx].valid ) FillTo( idx );
-    assert( m_data[idx].valid );
     assert( idx < m_archive.NumberOfMessages() );
     if( m_data[idx].expanded )
     {
@@ -509,7 +472,7 @@ int ThreadView::GetNext( int idx )
     }
     else
     {
-        idx += m_archive.GetTotalChildrenCount( m_data[idx].msgid );
+        idx += m_archive.GetTotalChildrenCount( idx );
     }
     return idx;
 }
@@ -517,46 +480,23 @@ int ThreadView::GetNext( int idx )
 int ThreadView::GetPrev( int idx ) const
 {
     assert( idx > 0 );
-    while( !m_data[--idx].valid );
-    auto parent = m_data[idx].parent;
+    idx--;
+    auto parent = m_archive.GetParent( idx );
     while( parent != -1 )
     {
         if( !m_data[parent].expanded )
         {
             idx = parent;
         }
-        parent = m_data[parent].parent;
+        parent = m_archive.GetParent( parent );
     }
     return idx;
 }
 
 bool ThreadView::CheckVisited( int idx )
 {
-    assert( m_data[idx].valid );
     if( m_data[idx].visited ) return true;
-    auto ret = m_storage.WasVisited( m_archive.GetMessageId( m_data[idx].msgid ) );
+    auto ret = m_storage.WasVisited( m_archive.GetMessageId( idx ) );
     if( ret ) m_data[idx].visited = true;
     return ret;
-}
-
-void ThreadView::FillTo( int index )
-{
-    const auto toplevel = m_archive.GetTopLevel();
-    while( m_fillPos <= index )
-    {
-        Fill( m_fillPos, toplevel.ptr[m_topLevelPos], -1 );
-        m_fillPos += m_archive.GetTotalChildrenCount( toplevel.ptr[m_topLevelPos++] );
-    }
-}
-
-void ThreadView::FillToMsgIdx( int msgidx )
-{
-    assert( m_revLookup[msgidx] == -1 );
-    const auto toplevel = m_archive.GetTopLevel();
-    do
-    {
-        Fill( m_fillPos, toplevel.ptr[m_topLevelPos], -1 );
-        m_fillPos += m_archive.GetTotalChildrenCount( toplevel.ptr[m_topLevelPos++] );
-    }
-    while( m_revLookup[msgidx] == -1 );
 }

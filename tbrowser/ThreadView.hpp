@@ -13,15 +13,13 @@ class PersistentStorage;
 
 struct ThreadData
 {
-    uint32_t expanded   : 1;
-    uint32_t valid      : 1;
-    uint32_t visited    : 1;
-    uint32_t visall     : 1;
-    uint32_t msgid      : 28;
-    int32_t parent;
+    uint8_t expanded   : 1;
+    uint8_t valid      : 1;
+    uint8_t visited    : 1;
+    uint8_t visall     : 1;
 };
 
-static_assert( sizeof( ThreadData ) == sizeof( uint64_t ), "Thread data size greater than 8 bytes." );
+static_assert( sizeof( ThreadData ) == sizeof( uint8_t ), "Thread data size greater than 1 bytes." );
 
 class ThreadView : public View
 {
@@ -41,21 +39,14 @@ public:
 
     int GetCursor() const { return m_cursor; }
     void SetCursor( int cursor ) { m_cursor = cursor; }
-    int GetMessageIndex() const { return m_data[m_cursor].msgid; }
     int GetRoot( int cursor ) const;
-    int GetParent( int cursor ) const;
-    int32_t ReverseLookup( int msgidx ) const { return m_revLookup[msgidx]; }
-    int32_t ReverseLookupRoot( int msgidx );
 
     void PageForward();
     void PageBackward();
 
 private:
     void ExpandFill( int cursor );
-    void Fill( int index, int msgid, int parent );
     void DrawLine( int line, int idx, const char*& prev );
-    void FillTo( int index );
-    void FillToMsgIdx( int msgidx );
 
     int GetNext( int idx );
     int GetPrev( int idx ) const;
@@ -67,7 +58,6 @@ private:
 
     const MessageView& m_mview;
     std::vector<ThreadData> m_data;
-    std::vector<int32_t> m_revLookup;
     std::vector<BitSet> m_tree;
     int m_top, m_bottom;
     int m_cursor;

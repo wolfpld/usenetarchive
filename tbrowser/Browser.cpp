@@ -26,8 +26,8 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
 bool Browser::MoveOrEnterAction( int move )
 {
     auto resizeNeeded = !m_mview.IsActive();
-    bool newMessage = m_mview.DisplayedMessage() != m_tview.GetMessageIndex();
-    bool ret = m_mview.Display( m_tview.GetMessageIndex(), move );
+    bool newMessage = m_mview.DisplayedMessage() != m_tview.GetCursor();
+    bool ret = m_mview.Display( m_tview.GetCursor(), move );
     if( resizeNeeded )
     {
         m_tview.Resize();
@@ -38,7 +38,7 @@ bool Browser::MoveOrEnterAction( int move )
     {
         if( m_tview.CanExpand( cursor ) &&
             !m_tview.IsExpanded( cursor ) &&
-            m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 )
+            m_archive->GetParent( m_tview.GetCursor() ) == -1 )
         {
             m_tview.Expand( cursor, true );
         }
@@ -46,7 +46,7 @@ bool Browser::MoveOrEnterAction( int move )
         m_tview.FocusOn( cursor );
 
         auto& history = m_storage.GetArticleHistory();
-        auto idx = m_tview.GetMessageIndex();
+        auto idx = m_tview.GetCursor();
         if( history.empty() || history.back() != idx )
         {
             m_storage.AddToHistory( idx );
@@ -120,7 +120,7 @@ void Browser::Entry()
             doupdate();
             break;
         case 'd':
-            m_storage.MarkVisited( m_archive->GetMessageId( m_tview.GetMessageIndex() ) );
+            m_storage.MarkVisited( m_archive->GetMessageId( m_tview.GetCursor() ) );
             m_tview.GoNextUnread();
             doupdate();
             break;
@@ -153,7 +153,7 @@ void Browser::Entry()
             }
             else
             {
-                m_tview.Expand( cursor, m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 );
+                m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
             }
             m_tview.Draw();
             doupdate();
@@ -171,7 +171,7 @@ void Browser::Entry()
             }
             else
             {
-                auto parent = m_tview.GetParent( cursor );
+                auto parent = m_archive->GetParent( cursor );
                 if( parent != -1 )
                 {
                     m_tview.SetCursor( parent );
@@ -187,7 +187,7 @@ void Browser::Entry()
             auto cursor = m_tview.GetCursor();
             if( m_tview.CanExpand( cursor ) && !m_tview.IsExpanded( cursor ) )
             {
-                m_tview.Expand( cursor, m_archive->GetParent( m_tview.GetMessageIndex() ) == -1 );
+                m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
                 m_tview.Draw();
                 doupdate();
             }
@@ -263,30 +263,12 @@ void Browser::Entry()
 
 void Browser::SwitchToMessage( int msgidx )
 {
-    auto cursor = m_tview.ReverseLookup( msgidx );
-    if( cursor == -1 )
+    auto root = m_tview.GetRoot( msgidx );
+    if( msgidx != root && m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
     {
-        auto root = msgidx;
-        for(;;)
-        {
-            auto parent = m_archive->GetParent( root );
-            if( parent == -1 ) break;
-            root = parent;
-        }
-        m_tview.Expand( m_tview.ReverseLookupRoot( root ), true );
+        m_tview.Expand( root, true );
         m_tview.Draw();
-        cursor = m_tview.ReverseLookup( msgidx );
-        assert( cursor != -1 );
     }
-    else
-    {
-        auto root = m_tview.GetRoot( cursor );
-        if( cursor != root && m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
-        {
-            m_tview.Expand( root, true );
-            m_tview.Draw();
-        }
-    }
-    m_tview.SetCursor( cursor );
-    m_tview.FocusOn( cursor );
+    m_tview.SetCursor( msgidx );
+    m_tview.FocusOn( msgidx );
 }
