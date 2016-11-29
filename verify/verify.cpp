@@ -16,6 +16,16 @@ void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive
     }
 }
 
+void Expand( std::vector<uint32_t>& order, Archive& archive, uint32_t msgidx )
+{
+    auto children = archive.GetChildren( msgidx );
+    for( int i=0; i<children.size; i++ )
+    {
+        order.emplace_back( children.ptr[i] );
+        Expand( order, archive, order.back() );
+    }
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -31,30 +41,61 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    printf( "Verifying message reachibility...\n" );
-    fflush( stdout );
-    std::unordered_set<uint32_t> messages;
     const auto size = archive->NumberOfMessages();
-    messages.reserve( size );
-    for( int i=0; i<size; i++ )
+
     {
-        messages.emplace( i );
-    }
-    const auto top = archive->GetTopLevel();
-    for( int i=0; i<top.size; i++ )
-    {
-        RecursiveRemove( top.ptr[i], messages, *archive );
-    }
-    if( messages.empty() )
-    {
-        printf( "All messages reachable\n" );
-    }
-    else
-    {
-        printf( "%i messages unreachable:\n", messages.size() );
-        for( auto& v : messages )
+        std::unordered_set<uint32_t> messages;
+        messages.reserve( size );
+        for( int i=0; i<size; i++ )
         {
-            printf( "%s\n", archive->GetMessageId( v ) );
+            messages.emplace( i );
+        }
+        const auto top = archive->GetTopLevel();
+        for( int i=0; i<top.size; i++ )
+        {
+            RecursiveRemove( top.ptr[i], messages, *archive );
+        }
+        if( messages.empty() )
+        {
+            printf( "[ OK ] All messages reachable\n" );
+        }
+        else
+        {
+            printf( "[FAIL] %i messages unreachable:\n", messages.size() );
+            for( auto& v : messages )
+            {
+                printf( "      -> %s\n", archive->GetMessageId( v ) );
+            }
+        }
+    }
+
+    {
+        std::vector<uint32_t> order;
+        order.reserve( size );
+        auto toplevel = archive->GetTopLevel();
+        for( int i=0; i<toplevel.size; i++ )
+        {
+            order.push_back( toplevel.ptr[i] );
+            Expand( order, *archive, order.back() );
+        }
+        assert( order.size() == size );
+
+        bool ok = true;
+        for( int i=0; i<size; i++ )
+        {
+            if( order[i] != i )
+            {
+                ok = false;
+                break;
+            }
+        }
+        if( ok )
+        {
+            printf( "[ OK ] Messages are sorted\n" );
+        }
+        else
+        {
+            printf( "[FAIL] Messages are not sorted\n" );
         }
     }
 
