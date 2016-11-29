@@ -28,7 +28,7 @@ Why use UAT? Why not use existing solutions, like google groups, archives from a
 - UAT archives are mapped to memory and 100% disk backed. In high memory pressure situations archive pages may just be purged away and later reloaded on demand. No memory allocations are required during normal libuat operation, other than:
     * Small, static growing buffer used to decompress single message into.
     * std::vectors used during search operation.
-- Merits of such approach can be seen in tbrowser, which requires only 20 bytes per message for bookkeeping. Total memory required to display a group with 2.5 million messages is only 50 MB.
+- Merits of such approach can be seen in tbrowser, which requires only 9 bytes per message for bookkeeping. Total memory required to display a group with 2.5 million messages is only 22.5 MB.
 
 ## Toolkit description
 
