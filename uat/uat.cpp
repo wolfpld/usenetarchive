@@ -42,6 +42,7 @@ static const Tool tools[] = {
     { "relative-complement", "Create archive with messages unique to one archive." },
     { "repack-lz4", "Recompress zstd data to workset LZ4 format." },
     { "repack-zstd", "Recompress LZ4 data to the final zstd format." },
+    { "sort", "Sort messages in thread-chronological order." },
     { "tbrowser", "Curses-based text mode archive browser." },
     { "threadify", "Find missing connections between messages." },
     { "utf8ize", "Perform conversion to UTF-8." },
