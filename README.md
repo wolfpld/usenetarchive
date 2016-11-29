@@ -59,6 +59,7 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
 - repack-lz4 --- Converts zstd database to LZ4 database.
 - package --- Packages all databases into a single file. Supports unpacking.
+- sort --- Sort messages in a thread-chronological order.
 
 ### Data Filtering
 
@@ -125,6 +126,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4* → **extract-msgid** → adds: *msgid*  
 *LZ4*, *msgid* → **connectivity** → adds: *conn*  
 *LZ4*, *conn* → **filter-newsgroups** → produces: *LZ4*  
+*LZ4*, *conn* → **sort** → produces: *LZ4*  
 *LZ4*, *msgid*, *conn*, *str* → **filter-spam** → produces: *LZ4*  
 *LZ4* → **extract-msgmeta** → adds: *str*  
 (*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  

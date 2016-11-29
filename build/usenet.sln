@@ -59,6 +59,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tbrowser", "..\tbrowser\bui
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "google-groups", "..\google-groups\build\win32\google-groups.vcxproj", "{1DA4E986-7E5F-4260-940A-C505388F967D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sort", "..\sort\build\win32\sort.vcxproj", "{3A475E28-7F34-4A64-9677-7E3A8EF61F2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -177,6 +179,10 @@ Global
 		{1DA4E986-7E5F-4260-940A-C505388F967D}.Debug|x64.Build.0 = Debug|x64
 		{1DA4E986-7E5F-4260-940A-C505388F967D}.Release|x64.ActiveCfg = Release|x64
 		{1DA4E986-7E5F-4260-940A-C505388F967D}.Release|x64.Build.0 = Release|x64
+		{3A475E28-7F34-4A64-9677-7E3A8EF61F2F}.Debug|x64.ActiveCfg = Debug|x64
+		{3A475E28-7F34-4A64-9677-7E3A8EF61F2F}.Debug|x64.Build.0 = Debug|x64
+		{3A475E28-7F34-4A64-9677-7E3A8EF61F2F}.Release|x64.ActiveCfg = Release|x64
+		{3A475E28-7F34-4A64-9677-7E3A8EF61F2F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

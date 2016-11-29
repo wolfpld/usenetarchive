@@ -286,6 +286,7 @@ int main( int argc, char** argv )
     {
         printf( "Saving...\n" );
         printf( "WARNING! Lexicon data has been invalidated!\n" );
+        printf( "WARNING! Sorting order has been changed!\n" );
 
         FILE* tlout = fopen( ( base + "toplevel" ).c_str(), "wb" );
         fwrite( toplevel.data(), 1, sizeof( uint32_t ) * toplevel.size(), tlout );

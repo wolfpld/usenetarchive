@@ -23,6 +23,7 @@ TOOLS := \
 	relative-complement \
 	repack-lz4 \
 	repack-zstd \
+	sort \
 	tbrowser \
 	threadify \
 	utf8ize \
