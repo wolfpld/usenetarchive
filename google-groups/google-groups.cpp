@@ -82,6 +82,10 @@ TaskDispatch td( Workers );
 enum { PageWorkers = 8 };
 TaskDispatch tdp( PageWorkers );
 
+enum { TotalHandles = Workers + PageWorkers };
+static std::mutex handlelock;
+static std::vector<CURL*> handlepool;
+
 static std::mutex state;
 static int pages = 0;
 static bool pagesdone = false;
@@ -124,24 +128,31 @@ static std::vector<unsigned char> Fetch( const std::string& url )
 {
     std::vector<unsigned char> buf;
     buf.reserve( 128 * 1024 );
-    auto curl = curl_easy_init();
-    if( curl )
+
+    handlelock.lock();
+    assert( !handlepool.empty() );
+    auto curl = handlepool.back();
+    handlepool.pop_back();
+    handlelock.unlock();
+
+    curl_easy_setopt( curl, CURLOPT_URL, url.c_str() );
+    curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 1L );
+    curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, WriteFn );
+    curl_easy_setopt( curl, CURLOPT_WRITEDATA, &buf );
+    auto res = curl_easy_perform( curl );
+    if( res != CURLE_OK )
     {
-        curl_easy_setopt( curl, CURLOPT_URL, url.c_str() );
-        curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 1L );
-        curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, WriteFn );
-        curl_easy_setopt( curl, CURLOPT_WRITEDATA, &buf );
-        auto res = curl_easy_perform( curl );
-        if( res != CURLE_OK )
-        {
-            buf.clear();
-        }
-        else
-        {
-            buf.emplace_back( '\0' );
-        }
-        curl_easy_cleanup( curl );
+        buf.clear();
     }
+    else
+    {
+        buf.emplace_back( '\0' );
+    }
+
+    handlelock.lock();
+    handlepool.emplace_back( curl );
+    handlelock.unlock();
+
     return buf;
 }
 
@@ -313,6 +324,12 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
+    handlepool.reserve( TotalHandles );
+    for( int i=0; i<TotalHandles; i++ )
+    {
+        handlepool.emplace_back( curl_easy_init() );
+    }
+
     CreateDirStruct( argv[1] );
     base = argv[1];
     base.append( "/" );
@@ -326,6 +343,11 @@ int main( int argc, char** argv )
     tdp.Sync();
     td.Sync();
     printf( "\n" );
+
+    for( auto& v : handlepool )
+    {
+        curl_easy_cleanup( v );
+    }
 
 #ifndef _MSC_VER
     thread_cleanup();
