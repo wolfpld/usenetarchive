@@ -39,6 +39,26 @@ size_t utflen( const char* str, const char* end )
     return ret;
 }
 
+size_t utflen_relaxed( const char* str, const char* end )
+{
+    size_t ret = 0;
+    while( *str != '\0' && str < end )
+    {
+        auto len = codepointlen( *str );
+        str++;
+        len--;
+        while( len-- > 0 )
+        {
+            if( !iscontinuationbyte( *str++ ) || str > end )
+            {
+                return ret;
+            }
+        }
+        ret++;
+    }
+    return ret;
+}
+
 const char* utfend( const char* str, int len )
 {
     while( len-- > 0 && *str != '\0' )
