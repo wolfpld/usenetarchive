@@ -243,6 +243,9 @@
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c">
       <Filter>zstd\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\SearchView.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -352,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\Alloc.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SearchView.hpp">
+      <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

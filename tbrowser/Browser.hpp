@@ -7,6 +7,7 @@
 #include "HeaderBar.hpp"
 #include "MessageView.hpp"
 #include "ThreadView.hpp"
+#include "SearchView.hpp"
 
 class Archive;
 class PersistentStorage;
@@ -29,6 +30,7 @@ private:
     BottomBar m_bottom;
     MessageView m_mview;
     ThreadView m_tview;
+    SearchView m_sview;
 
     const char* m_fn;
     int m_historyIdx;

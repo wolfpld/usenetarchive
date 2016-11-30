@@ -206,6 +206,7 @@
     <ClCompile Include="..\..\Browser.cpp" />
     <ClCompile Include="..\..\HeaderBar.cpp" />
     <ClCompile Include="..\..\MessageView.cpp" />
+    <ClCompile Include="..\..\SearchView.cpp" />
     <ClCompile Include="..\..\tbrowser.cpp" />
     <ClCompile Include="..\..\ThreadView.cpp" />
     <ClCompile Include="..\..\UTF8.cpp" />
@@ -245,6 +246,7 @@
     <ClInclude Include="..\..\Browser.hpp" />
     <ClInclude Include="..\..\HeaderBar.hpp" />
     <ClInclude Include="..\..\MessageView.hpp" />
+    <ClInclude Include="..\..\SearchView.hpp" />
     <ClInclude Include="..\..\ThreadView.hpp" />
     <ClInclude Include="..\..\UTF8.hpp" />
     <ClInclude Include="..\..\View.hpp" />

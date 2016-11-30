@@ -71,6 +71,7 @@ void Browser::Entry()
             m_header.Resize();
             m_mview.Resize();
             m_tview.Resize();
+            m_sview.Resize();
             m_bottom.Resize();
             doupdate();
             break;
