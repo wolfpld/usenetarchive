@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "BottomBar.hpp"
+#include "UTF8.hpp"
 
 BottomBar::BottomBar()
     : View( 0, LINES-1, 0, 1 )
@@ -41,7 +42,8 @@ std::string BottomBar::Query( const char* prompt )
     for(;;)
     {
         PrintQuery( prompt, ret.c_str() );
-        wmove( m_win, 0, plen + insert );
+        int slen = utflen_relaxed( ret.c_str(), ret.c_str() + insert );
+        wmove( m_win, 0, plen + slen );
         wrefresh( m_win );
 
         auto key = GetKey();
@@ -52,14 +54,21 @@ std::string BottomBar::Query( const char* prompt )
         case 127:
             if( !ret.empty() && insert > 0 )
             {
-                ret.erase( ret.begin() + insert - 1 );
+                int cnt = 1;
                 insert--;
+                while( iscontinuationbyte( ret[insert] ) )
+                {
+                    insert--;
+                    cnt++;
+                }
+                ret.erase( insert, cnt );
             }
             break;
         case KEY_DC:
             if( !ret.empty() && insert < ret.size() )
             {
-                ret.erase( ret.begin() + insert );
+                auto len = codepointlen( ret[insert] );
+                ret.erase( insert, len );
             }
             break;
         case KEY_ENTER:
@@ -78,10 +87,17 @@ std::string BottomBar::Query( const char* prompt )
             insert = 0;
             break;
         case KEY_LEFT:
-            if( insert > 0 ) insert--;
+            if( insert > 0 )
+            {
+                insert--;
+                while( iscontinuationbyte( ret[insert] ) )
+                {
+                    insert--;
+                }
+            }
             break;
         case KEY_RIGHT:
-            if( insert < ret.size() ) insert++;
+            if( insert < ret.size() ) insert += codepointlen( ret[insert] );
             break;
         case KEY_DOWN:
         case KEY_UP:
