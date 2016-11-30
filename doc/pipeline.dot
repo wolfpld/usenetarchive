@@ -17,11 +17,14 @@ digraph
     msgid2[label="extract-msgid"];
     msgid3[label="extract-msgid"];
     msgid4[label="extract-msgid"];
+    msgid5[label="extract-msgid"];
     conn2[label="connectivity"];
+    conn3[label="connectivity"];
 
     filter[label="filter-newsgroups"];
     merge[label="merge-raw"];
     msgmeta[label="extract-msgmeta"];
+    msgmeta2[label="extract-msgmeta"];
     repack[label="repack-zstd"];
 
     ggsrc -> gg;
@@ -41,16 +44,19 @@ digraph
     utf8ize -> msgid3;
     msgid3 -> msgmeta;
     msgmeta -> connectivity;
-    connectivity -> repack;
-    repack -> lexicon;
+    connectivity -> lexicon;
     lexicon -> lexopt;
     lexopt -> lexhash;
     lexhash -> lexsort;
-    lexsort -> package;
+    lexsort -> repack;
+    repack -> package;
     package -> dst1;
     dst1 -> query;
     dst1 -> browser;
     lexsort -> threadify;
     threadify -> sort;
-    sort -> lexicon;
+    sort -> msgid5;
+    msgid5 -> conn3;
+    conn3 -> msgmeta2;
+    msgmeta2 -> lexicon;
 }
