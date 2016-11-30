@@ -55,6 +55,7 @@ std::string BottomBar::Query( const char* prompt )
             return ret;
             break;
         case KEY_EXIT:
+        case 27:
             return "";
             break;
         default:
