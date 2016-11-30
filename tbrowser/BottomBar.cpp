@@ -34,19 +34,31 @@ std::string BottomBar::Query( const char* prompt )
 {
     std::string ret;
     m_reset = 2;
+    int insert = 0;
+    int plen = strlen( prompt );
 
     for(;;)
     {
         PrintQuery( prompt, ret.c_str() );
+        wmove( m_win, 0, plen + insert );
+        wrefresh( m_win );
+
         auto key = GetKey();
         switch( key )
         {
         case KEY_BACKSPACE:
         case '\b':
         case 127:
-            if( !ret.empty() )
+            if( !ret.empty() && insert > 0 )
             {
-                ret.pop_back();
+                ret.erase( ret.begin() + insert - 1 );
+                insert--;
+            }
+            break;
+        case KEY_DC:
+            if( !ret.empty() && insert < ret.size() )
+            {
+                ret.erase( ret.begin() + insert );
             }
             break;
         case KEY_ENTER:
@@ -58,8 +70,24 @@ std::string BottomBar::Query( const char* prompt )
         case 27:
             return "";
             break;
+        case KEY_END:
+            insert = ret.size();
+            break;
+        case KEY_HOME:
+            insert = 0;
+            break;
+        case KEY_LEFT:
+            if( insert > 0 ) insert--;
+            break;
+        case KEY_RIGHT:
+            if( insert < ret.size() ) insert++;
+            break;
+        case KEY_DOWN:
+        case KEY_UP:
+            break;
         default:
-            ret.push_back( key );
+            ret.insert( ret.begin() + insert, key );
+            insert++;
             break;
         }
     }
@@ -93,5 +121,4 @@ void BottomBar::PrintQuery( const char* prompt, const char* str ) const
     wprintw( m_win, prompt );
     wattroff( m_win, A_BOLD );
     wprintw( m_win, str );
-    wrefresh( m_win );
 }
