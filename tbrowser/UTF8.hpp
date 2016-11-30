@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <curses.h>
 
+bool iscontinuationbyte( char c );
 int codepointlen( char c );
 size_t utflen( const char* str );
 size_t utflen( const char* str, const char* end );

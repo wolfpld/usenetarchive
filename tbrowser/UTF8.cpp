@@ -2,6 +2,11 @@
 
 #include "UTF8.hpp"
 
+bool iscontinuationbyte( char c )
+{
+    return ( c & 0xC0 ) == 0x80;
+}
+
 int codepointlen( char c )
 {
     if( ( c & 0x80 ) == 0 ) return 1;
