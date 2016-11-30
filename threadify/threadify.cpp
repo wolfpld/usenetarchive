@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "../libuat/Archive.hpp"
@@ -256,10 +257,14 @@ int main( int argc, char** argv )
         }
     }
 
+    std::unordered_set<uint32_t> bad;
+
     printf( "\nApplying changes...\n" );
     fflush( stdout );
     for( auto& v : found )
     {
+        if( bad.find( v.first ) != bad.end() ) continue;
+
         msgdata[v.first].parent = v.second;
         msgdata[v.second].children.push_back( v.first );
 
@@ -269,7 +274,11 @@ int main( int argc, char** argv )
         {
             msgdata[idx].childTotal += add;
             auto parent = msgdata[idx].parent;
-            if( parent == -1 ) break;
+            if( parent == -1 )
+            {
+                bad.emplace( idx );
+                break;
+            }
             idx = parent;
         }
 
