@@ -341,6 +341,16 @@ int main( int argc, char** argv )
         GetTopics( startUrl, argv[1], strlen( argv[1] ), 0 );
     } );
     tdp.Sync();
+
+    handlelock.lock();
+    for( int i=0; i<PageWorkers; i++ )
+    {
+        auto& curl = handlepool.back();
+        handlepool.pop_back();
+        curl_easy_cleanup( curl );
+    }
+    handlelock.unlock();
+
     td.Sync();
     printf( "\n" );
 
