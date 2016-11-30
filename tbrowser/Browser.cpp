@@ -251,6 +251,11 @@ void Browser::Entry()
                 }
                 doupdate();
             }
+            else
+            {
+                m_bottom.Update();
+                doupdate();
+            }
             break;
         }
         default:
