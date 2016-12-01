@@ -21,7 +21,7 @@ public:
     void Update();
     void Resize() const;
 
-    std::string Query( const char* prompt );
+    std::string Query( const char* prompt, const char* entry = nullptr );
     void Status( const char* status );
     void SetHelp( HelpSet set );
 

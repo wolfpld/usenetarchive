@@ -35,9 +35,13 @@ void BottomBar::Resize() const
     wnoutrefresh( m_win );
 }
 
-std::string BottomBar::Query( const char* prompt )
+std::string BottomBar::Query( const char* prompt, const char* entry )
 {
     std::string ret;
+    if( entry )
+    {
+        ret = entry;
+    }
     m_reset = 2;
     int insert = 0;
     int plen = strlen( prompt );
