@@ -111,7 +111,7 @@ static void PrintState( const char* group )
     {
         sprintf( buf, "/%i", numpages );
     }
-    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, numpages, buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
+    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, pages, buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
     fflush( stdout );
 }
 
