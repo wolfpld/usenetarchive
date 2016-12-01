@@ -313,6 +313,7 @@ void GetTopics( const std::string& url, const char* group, int len, int pnum )
     for( int i=0; i<2; i++ )
     {
         pagenum++;
+        if( pagenum > numpages ) break;
         std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
         startUrl += group;
         char tmp[128];
