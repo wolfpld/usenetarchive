@@ -18,6 +18,7 @@ public:
     Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const char* fn );
 
     void Entry();
+    void Resize();
 
 private:
     bool MoveOrEnterAction( int move );

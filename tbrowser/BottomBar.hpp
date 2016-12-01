@@ -5,10 +5,12 @@
 
 #include "View.hpp"
 
+class Browser;
+
 class BottomBar : public View
 {
 public:
-    BottomBar();
+    BottomBar( Browser* parent );
 
     void Update();
     void Resize() const;
@@ -20,6 +22,7 @@ private:
     void PrintHelp() const;
     void PrintQuery( const char* prompt, const char* str ) const;
 
+    Browser* m_parent;
     int m_reset;
 };
 

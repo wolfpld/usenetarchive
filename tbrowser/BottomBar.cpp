@@ -2,10 +2,12 @@
 #include <string.h>
 
 #include "BottomBar.hpp"
+#include "Browser.hpp"
 #include "UTF8.hpp"
 
-BottomBar::BottomBar()
+BottomBar::BottomBar( Browser* parent )
     : View( 0, LINES-1, 0, 1 )
+    , m_parent( parent )
     , m_reset( 0 )
 {
     PrintHelp();
@@ -101,6 +103,9 @@ std::string BottomBar::Query( const char* prompt )
             break;
         case KEY_DOWN:
         case KEY_UP:
+            break;
+        case KEY_RESIZE:
+            m_parent->Resize();
             break;
         default:
             ret.insert( ret.begin() + insert, key );
