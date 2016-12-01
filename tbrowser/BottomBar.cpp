@@ -149,7 +149,7 @@ void BottomBar::PrintHelp() const
     case HelpSet::Search:
         waddch( m_win, ACS_DARROW );
         waddch( m_win, ACS_UARROW );
-        wprintw( m_win, ":Move " );
+        wprintw( m_win, ":Move q:Quit" );
         break;
     default:
         break;
