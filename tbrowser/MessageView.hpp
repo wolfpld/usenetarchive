@@ -13,6 +13,7 @@ class MessageView : public View
 public:
     MessageView( Archive& archive, PersistentStorage& storage );
 
+    void Draw();
     void Resize();
     bool Display( uint32_t idx, int move );
     void Close();
@@ -46,7 +47,6 @@ private:
         uint32_t linebreak  : 1;
     };
 
-    void Draw();
     void PrepareLines();
     void BreakLine( uint32_t offset, uint32_t len, uint32_t flags );
     void PrintRot13( const char* start, const char* end );

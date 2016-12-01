@@ -10,6 +10,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     , m_bottom( this )
     , m_mview( *m_archive, m_storage )
     , m_tview( *m_archive, m_storage, m_mview )
+    , m_sview( this )
     , m_fn( fn )
 {
     auto& history = m_storage.GetArticleHistory();
@@ -253,6 +254,17 @@ void Browser::Entry()
             }
             break;
         }
+        case 's':
+            m_bottom.SetHelp( HelpSet::Search );
+            m_sview.Entry();
+            m_bottom.SetHelp( HelpSet::Default );
+            m_tview.Draw();
+            if( m_mview.IsActive() )
+            {
+                m_mview.Draw();
+            }
+            doupdate();
+            break;
         default:
             break;
         }

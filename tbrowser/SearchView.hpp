@@ -3,15 +3,20 @@
 
 #include "View.hpp"
 
+class Browser;
+
 class SearchView : public View
 {
 public:
-    SearchView();
+    SearchView( Browser* parent );
+
+    void Entry();
 
     void Resize();
     void Draw();
 
 private:
+    Browser* m_parent;
     bool m_active;
 };
 
