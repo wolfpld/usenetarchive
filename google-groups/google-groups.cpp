@@ -88,6 +88,7 @@ static std::vector<CURL*> handlepool;
 
 static std::mutex state;
 static int pages = 0;
+static int numpages = -1;
 static bool pagesdone = false;
 static int threads = 0;
 static int threadstotal = 0;
@@ -96,7 +97,6 @@ static int messages = 0;
 static int messagestotal = 0;
 static int messagesbad = 0;
 static int pagenum = 0;
-static int limitpnum = std::numeric_limits<int>::max();
 
 static std::string base;
 
@@ -109,9 +109,9 @@ static void PrintState( const char* group )
     }
     else
     {
-        sprintf( buf, "/%i", pages );
+        sprintf( buf, "/%i", numpages );
     }
-    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, pages, buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
+    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, numpages, buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
     fflush( stdout );
 }
 
@@ -238,67 +238,95 @@ static void GetThread( const std::string& id, const char* group, int len )
 
 void GetTopics( const std::string& url, const char* group, int len, int pnum )
 {
-    {
-        std::lock_guard<std::mutex> lock( state );
-        if( pagesdone && pnum > limitpnum ) return;
-    }
+    if( pagesdone && pnum > numpages ) return;
 
-    auto buf = Fetch( url );
-    if( buf.empty() ) return;
-    auto ptr = (const char*)buf.data();
     int numthr = 0;
-    while( *ptr )
+    do
     {
-        if( strncmp( ptr, "/topic/", 7 ) == 0 )
-        {
-            ptr += 8 + len;
-            auto end = ptr;
-            while( *end != '"' ) end++;
-            std::string id( ptr, end );
-            td.Queue( [id, group, len] {
-                GetThread( id, group, len );
-            } );
-            ptr = end + 1;
-            numthr++;
-        }
-        else
-        {
-            ptr++;
-        }
-    }
-
-    std::lock_guard<std::mutex> lock( state );
-    if( numthr > 0 )
-    {
+        auto buf = Fetch( url );
+        if( buf.empty() ) continue;
+        auto ptr = (const char*)buf.data();
         if( !pagesdone )
         {
-            for( int i=0; i<2; i++ )
+            while( !pagesdone && *ptr )
             {
-                pagenum++;
-                std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
-                startUrl += group;
-                char tmp[128];
-                sprintf( tmp, "[%d-%d]", pagenum * 100 + 1, (pagenum+1) * 100 );
-                startUrl += tmp;
-                int num = pagenum;
-                tdp.Queue( [startUrl, group, len, num] {
-                    GetTopics( startUrl, group, len, num );
-                } );
+                if( strncmp( ptr, "<i>", 3 ) == 0 )
+                {
+                    ptr += 3;
+                    while( *ptr != '\n' )
+                    {
+                        auto end = ptr;
+                        while( *end != ' ' ) end++;
+                        bool ok = true;
+                        for( int i=0; i<end-ptr; i++ )
+                        {
+                            if( !( ptr[i] >= '0' && ptr[i] <= '9' ) )
+                            {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if( ok )
+                        {
+                            std::string tmp( ptr, end );
+                            numpages = atoi( tmp.c_str() ) / 100;
+                            pagesdone = true;
+                            break;
+                        }
+                        ptr = end + 1;
+                    }
+                }
+                else
+                {
+                    ptr++;
+                }
+            }
+            if( !pagesdone )
+            {
+                fprintf( stderr, "Cannot find number of threads!" );
+                exit( 1 );
             }
         }
-
-        threadstotal += numthr;
-        pages++;
-        PrintState( group );
-    }
-    else
-    {
-        pagesdone = true;
-        if( limitpnum > pnum )
+        while( *ptr )
         {
-            limitpnum = pnum;
+            if( strncmp( ptr, "/topic/", 7 ) == 0 )
+            {
+                ptr += 8 + len;
+                auto end = ptr;
+                while( *end != '"' ) end++;
+                std::string id( ptr, end );
+                td.Queue( [id, group, len] {
+                    GetThread( id, group, len );
+                } );
+                ptr = end + 1;
+                numthr++;
+            }
+            else
+            {
+                ptr++;
+            }
         }
     }
+    while( numthr == 0 );
+
+    std::lock_guard<std::mutex> lock( state );
+    for( int i=0; i<2; i++ )
+    {
+        pagenum++;
+        std::string startUrl( "https://groups.google.com/forum/?_escaped_fragment_=forum/" );
+        startUrl += group;
+        char tmp[128];
+        sprintf( tmp, "[%d-%d]", pagenum * 100 + 1, (pagenum+1) * 100 );
+        startUrl += tmp;
+        int num = pagenum;
+        tdp.Queue( [startUrl, group, len, num] {
+            GetTopics( startUrl, group, len, num );
+        } );
+    }
+
+    threadstotal += numthr;
+    pages++;
+    PrintState( group );
 }
 
 int main( int argc, char** argv )
