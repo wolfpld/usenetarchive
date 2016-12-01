@@ -6,7 +6,7 @@
 Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const char* fn )
     : m_archive( std::move( archive ) )
     , m_storage( storage )
-    , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr )
+    , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, fn )
     , m_bottom()
     , m_mview( *m_archive, m_storage )
     , m_tview( *m_archive, m_storage, m_mview )

@@ -9,7 +9,7 @@
 class HeaderBar : public View
 {
 public:
-    HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc );
+    HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc, const char* fn );
 
     void Resize() const;
 
