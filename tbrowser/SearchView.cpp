@@ -2,10 +2,11 @@
 #include "Browser.hpp"
 #include "SearchView.hpp"
 
-SearchView::SearchView( Browser* parent, BottomBar& bar )
+SearchView::SearchView( Browser* parent, BottomBar& bar, Archive& archive )
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_bar( bar )
+    , m_archive( archive )
     , m_active( false )
 {
 }
@@ -32,7 +33,8 @@ void SearchView::Entry()
             auto query = m_bar.Query( "Search: ", m_query.c_str() );
             if( !query.empty() )
             {
-                m_query = query;
+                std::swap( m_query, query );
+                m_result = m_archive.Search( m_query.c_str() );
             }
             else
             {
@@ -59,14 +61,27 @@ void SearchView::Resize()
 void SearchView::Draw()
 {
     wclear( m_win );
-    if( m_query.empty() )
+    if( m_result.empty() )
     {
-        mvwprintw( m_win, 2, 4, "Nothing to show." );
+        if( m_query.empty() )
+        {
+            mvwprintw( m_win, 2, 4, "Nothing to show." );
+        }
+        else
+        {
+            mvwprintw( m_win, 2, 4, "No results for: %s", m_query.c_str() );
+        }
+        mvwprintw( m_win, 4, 4, "Press '/' to enter search query." );
     }
     else
     {
-        mvwprintw( m_win, 2, 4, "No results for: %s", m_query.c_str() );
+        wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+        wprintw( m_win, "%i", m_result.size() );
+        wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+        wprintw( m_win, " results for query: " );
+        wattron( m_win, A_BOLD );
+        wprintw( m_win, "%s", m_query.c_str() );
+        wattroff( m_win, A_BOLD );
     }
-    mvwprintw( m_win, 4, 4, "Press '/' to enter search query." );
     wnoutrefresh( m_win );
 }
