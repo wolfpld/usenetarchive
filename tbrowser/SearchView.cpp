@@ -26,6 +26,7 @@ void SearchView::Entry()
         case 'q':
             m_active = false;
             return;
+        case 's':
         case '/':
         {
             auto query = m_bar.Query( "Search: ", m_query.c_str() );
