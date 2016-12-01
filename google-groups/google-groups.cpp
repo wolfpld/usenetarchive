@@ -78,6 +78,7 @@ int thread_cleanup(void)
 }
 #endif
 
+// This is banhammer safe
 enum { Workers = 32 };
 TaskDispatch td( Workers );
 enum { PageWorkers = 8 };
