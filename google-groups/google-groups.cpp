@@ -139,6 +139,7 @@ static std::vector<unsigned char> Fetch( const std::string& url )
     curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 1L );
     curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, WriteFn );
     curl_easy_setopt( curl, CURLOPT_WRITEDATA, &buf );
+    curl_easy_setopt( curl, CURLOPT_TIMEOUT, 120 );
     auto res = curl_easy_perform( curl );
     if( res != CURLE_OK )
     {
