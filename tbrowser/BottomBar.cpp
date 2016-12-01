@@ -155,7 +155,7 @@ void BottomBar::PrintHelp() const
     case HelpSet::Search:
         waddch( m_win, ACS_DARROW );
         waddch( m_win, ACS_UARROW );
-        wprintw( m_win, ":Move q:Quit" );
+        wprintw( m_win, ":Move q:Quit /:Search" );
         break;
     default:
         break;

@@ -10,7 +10,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     , m_bottom( this )
     , m_mview( *m_archive, m_storage )
     , m_tview( *m_archive, m_storage, m_mview )
-    , m_sview( this )
+    , m_sview( this, m_bottom )
     , m_fn( fn )
 {
     auto& history = m_storage.GetArticleHistory();
