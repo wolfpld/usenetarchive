@@ -7,6 +7,12 @@
 
 class Browser;
 
+enum class HelpSet
+{
+    Default,
+    Search
+};
+
 class BottomBar : public View
 {
 public:
@@ -17,6 +23,7 @@ public:
 
     std::string Query( const char* prompt );
     void Status( const char* status );
+    void SetHelp( HelpSet set );
 
 private:
     void PrintHelp() const;
@@ -24,6 +31,7 @@ private:
 
     Browser* m_parent;
     int m_reset;
+    HelpSet m_help;
 };
 
 #endif

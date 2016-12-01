@@ -9,6 +9,7 @@ BottomBar::BottomBar( Browser* parent )
     : View( 0, LINES-1, 0, 1 )
     , m_parent( parent )
     , m_reset( 0 )
+    , m_help( HelpSet::Default )
 {
     PrintHelp();
     wnoutrefresh( m_win );
@@ -123,17 +124,36 @@ void BottomBar::Status( const char* status )
     wnoutrefresh( m_win );
 }
 
+void BottomBar::SetHelp( HelpSet set )
+{
+    m_help = set;
+    PrintHelp();
+    wnoutrefresh( m_win );
+}
+
 void BottomBar::PrintHelp() const
 {
     werase( m_win );
-    waddch( m_win, ACS_DARROW );
-    waddch( m_win, ACS_UARROW );
-    wprintw( m_win, ":Move " );
-    waddch( m_win, ACS_RARROW );
-    wprintw( m_win, ":Exp " );
-    waddch( m_win, ACS_LARROW );
-    wprintw( m_win, ":Coll " );
-    wprintw( m_win, "x:Co/Ex e:CoAll q:Quit RET:+Ln BCK:-Ln SPC:+Pg d:MrkRd ,:Bck .:Fwd t:Hdrs r:R13 g:GoTo" );
+    switch( m_help )
+    {
+    case HelpSet::Default:
+        waddch( m_win, ACS_DARROW );
+        waddch( m_win, ACS_UARROW );
+        wprintw( m_win, ":Move " );
+        waddch( m_win, ACS_RARROW );
+        wprintw( m_win, ":Exp " );
+        waddch( m_win, ACS_LARROW );
+        wprintw( m_win, ":Coll " );
+        wprintw( m_win, "x:Co/Ex e:CoAll q:Quit RET:+Ln BCK:-Ln SPC:+Pg d:MrkRd ,:Bck .:Fwd t:Hdrs r:R13 g:GoTo s:Srch" );
+        break;
+    case HelpSet::Search:
+        waddch( m_win, ACS_DARROW );
+        waddch( m_win, ACS_UARROW );
+        wprintw( m_win, ":Move " );
+        break;
+    default:
+        break;
+    };
 }
 
 void BottomBar::PrintQuery( const char* prompt, const char* str ) const
