@@ -38,13 +38,15 @@ void BottomBar::Resize() const
 std::string BottomBar::Query( const char* prompt, const char* entry )
 {
     std::string ret;
-    if( entry )
+    int insert = 0;
+    m_reset = 2;
+    int plen = strlen( prompt );
+
+    if( entry && *entry )
     {
         ret = entry;
+        insert = ret.size();
     }
-    m_reset = 2;
-    int insert = 0;
-    int plen = strlen( prompt );
 
     for(;;)
     {
