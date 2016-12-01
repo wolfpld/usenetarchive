@@ -98,6 +98,7 @@ static int messages = 0;
 static int messagestotal = 0;
 static int messagesbad = 0;
 static int pagenum = 0;
+static int retries = 0;
 
 static std::string base;
 
@@ -112,7 +113,7 @@ static void PrintState( const char* group )
     {
         sprintf( buf, "/%i", numpages );
     }
-    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i)", group, std::min( pages, numpages ), buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad );
+    printf( "\r%s .:. [P]: %i%s .:. [T]: %i/%i (-%i) .:. [M]: %i/%i (-%i) .:. [R]: %i", group, std::min( pages, numpages ), buf, threads, threadstotal, threadsbad, messages, messagestotal, messagesbad, retries );
     fflush( stdout );
 }
 
@@ -125,7 +126,7 @@ static size_t WriteFn( void* _data, size_t size, size_t num, void* ptr )
     return sz;
 }
 
-static std::vector<unsigned char> Fetch( const std::string& url, bool reconnect = false )
+static std::vector<unsigned char> Fetch( const std::string& url, bool reconnect = false, const char* group = nullptr )
 {
     std::vector<unsigned char> buf;
     buf.reserve( 128 * 1024 );
@@ -135,9 +136,11 @@ static std::vector<unsigned char> Fetch( const std::string& url, bool reconnect 
     auto curl = handlepool.back();
     if( reconnect )
     {
-        printf( "\nReconnect\n" );
         curl_easy_cleanup( curl );
         curl = curl_easy_init();
+        std::lock_guard<std::mutex> lock( state );
+        retries++;
+        PrintState( group );
     }
     handlepool.pop_back();
     handlelock.unlock();
@@ -252,7 +255,7 @@ void GetTopics( const std::string& url, const char* group, int len, int pnum )
     bool reconnect = false;
     for(;;)
     {
-        auto buf = Fetch( url, reconnect );
+        auto buf = Fetch( url, reconnect, group );
         if( buf.empty() )
         {
             reconnect = true;
