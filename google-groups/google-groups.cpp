@@ -124,7 +124,7 @@ static size_t WriteFn( void* _data, size_t size, size_t num, void* ptr )
     return sz;
 }
 
-static std::vector<unsigned char> Fetch( const std::string& url )
+static std::vector<unsigned char> Fetch( const std::string& url, bool reconnect = false )
 {
     std::vector<unsigned char> buf;
     buf.reserve( 128 * 1024 );
@@ -132,6 +132,12 @@ static std::vector<unsigned char> Fetch( const std::string& url )
     handlelock.lock();
     assert( !handlepool.empty() );
     auto curl = handlepool.back();
+    if( reconnect )
+    {
+        printf( "\nReconnect\n" );
+        curl_easy_cleanup( curl );
+        curl = curl_easy_init();
+    }
     handlepool.pop_back();
     handlelock.unlock();
 
@@ -242,10 +248,15 @@ void GetTopics( const std::string& url, const char* group, int len, int pnum )
     if( pagesdone && pnum > numpages ) return;
 
     int numthr = 0;
-    do
+    bool reconnect = false;
+    for(;;)
     {
-        auto buf = Fetch( url );
-        if( buf.empty() ) continue;
+        auto buf = Fetch( url, reconnect );
+        if( buf.empty() )
+        {
+            reconnect = true;
+            continue;
+        };
         auto ptr = (const char*)buf.data();
         if( !pagesdone )
         {
@@ -307,8 +318,9 @@ void GetTopics( const std::string& url, const char* group, int len, int pnum )
                 ptr++;
             }
         }
+        if( numthr > 0 ) break;
+        reconnect = true;
     }
-    while( numthr == 0 );
 
     std::lock_guard<std::mutex> lock( state );
     for( int i=0; i<2; i++ )
