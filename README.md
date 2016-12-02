@@ -111,7 +111,6 @@ Here are some viable ideas that I'm not really planning to do any time soon, but
 - Implement messages extractor, for example in mbox format. Would need to properly encode headers and add content encoding information (UTF-8 everywhere).
 - Implement a read-only NNTP server. Would need to properly encode headers and add content encoding information. 7-bit cleanness probably would be nice, so also encode as quoted-printable. Some headers may need to be rewritten (eg. "Lines", which most probably won't be true, due to MIME processing). Message sorting by date may be necessary to put some sense into internal message numbers, which currently have no meaning at all.
 - Implement pan-group search mechanism.
-- Query google groups for missing messages present in "references" header.
 
 ## Workflow
 
