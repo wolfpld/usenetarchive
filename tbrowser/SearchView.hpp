@@ -4,18 +4,18 @@
 #include <string>
 #include <vector>
 
-#include "../libuat/Archive.hpp"
-
 #include "View.hpp"
 
 class Archive;
 class BottomBar;
 class Browser;
+class PersistentStorage;
+class SearchResult;
 
 class SearchView : public View
 {
 public:
-    SearchView( Browser* parent, BottomBar& bar, Archive& archive );
+    SearchView( Browser* parent, BottomBar& bar, Archive& archive, PersistentStorage& storage );
 
     void Entry();
 
@@ -26,6 +26,7 @@ private:
     Browser* m_parent;
     BottomBar& m_bar;
     Archive& m_archive;
+    PersistentStorage& m_storage;
     std::string m_query;
     std::vector<SearchResult> m_result;
     bool m_active;
