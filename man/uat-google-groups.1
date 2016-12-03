@@ -13,10 +13,16 @@ file per message.
 
 Crawling threads and messages is performed using 32 download threads to
 achieve reasonable levels of speed. Additionally, thread list is crawled on
-8 download threads with 100 message threads per page. Be aware that further
-thread list pages will be progressively slower to download, to the point
-where most requests will timeout. \fIuat-google-groups\fR will try to
-download such pages until it succeeds.
+8 download threads with 100 message threads per page.
+
+Be aware that further thread list pages will be progressively slower to
+download, to the point where most requests will timeout.
+\fIuat-google-groups\fR will try to download such pages until it succeeds.
+This is a valid tactic to mine out as much as possible, as sometimes new
+pages will be accessible after thousands of retries. Retry attempts never
+stop, and shortly after page 1000 google servers just fail to produce thread
+list before the server gives up on waiting for it. This may cause automated
+scripts to become stuck.
 .SH NOTES
 Downloaded messages are encoded in UTF-8, even if \%Content-Type headers tell
 otherwise. This is limitation of Google Groups.
