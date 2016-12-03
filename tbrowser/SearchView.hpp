@@ -23,12 +23,15 @@ public:
     void Draw();
 
 private:
+    void FillPreview( int idx );
+
     Browser* m_parent;
     BottomBar& m_bar;
     Archive& m_archive;
     PersistentStorage& m_storage;
     std::string m_query;
     std::vector<SearchResult> m_result;
+    std::vector<std::string> m_preview;
     bool m_active;
 };
 
