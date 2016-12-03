@@ -2,7 +2,7 @@ CFLAGS +=
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES :=
-LIBS := -licule -licuuc
+LIBS := -licuuc
 IMAGE := lexicon
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
