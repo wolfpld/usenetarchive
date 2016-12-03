@@ -101,7 +101,7 @@ void SearchView::Resize()
 
 void SearchView::Draw()
 {
-    wclear( m_win );
+    werase( m_win );
     if( m_result.empty() )
     {
         if( m_query.empty() )
