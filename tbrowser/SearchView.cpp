@@ -224,7 +224,7 @@ void SearchView::FillPreview( int idx )
     std::ostringstream s;
     for( auto& v : ranges )
     {
-        s << " ... ";
+        s << " ...";
         for( size_t i = v.first; i<v.second; i++ )
         {
             switch( msg[i] )
