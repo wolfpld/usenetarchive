@@ -69,6 +69,13 @@ void SearchView::Entry()
             MoveCursor( -1 );
             doupdate();
             break;
+        case KEY_NPAGE:
+            MoveCursor( m_bottom - m_top );
+            doupdate();
+            break;
+        case KEY_PPAGE:
+            MoveCursor( m_top - m_bottom );
+            break;
         default:
             break;
         }
