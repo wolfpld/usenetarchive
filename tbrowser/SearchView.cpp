@@ -19,6 +19,9 @@ SearchView::SearchView( Browser* parent, BottomBar& bar, Archive& archive, Persi
     , m_archive( archive )
     , m_storage( storage )
     , m_active( false )
+    , m_top( 0 )
+    , m_bottom( 0 )
+    , m_cursor( 0 )
 {
 }
 
@@ -48,6 +51,7 @@ void SearchView::Entry()
                 m_result = m_archive.Search( m_query.c_str() );
                 m_preview.clear();
                 m_preview.reserve( m_result.size() );
+                m_top = m_bottom = m_cursor = 0;
             }
             else
             {
@@ -57,6 +61,14 @@ void SearchView::Entry()
             doupdate();
             break;
         }
+        case KEY_DOWN:
+            MoveCursor( 1 );
+            doupdate();
+            break;
+        case KEY_UP:
+            MoveCursor( -1 );
+            doupdate();
+            break;
         default:
             break;
         }
@@ -98,7 +110,7 @@ void SearchView::Draw()
 
         const int h = getmaxy( m_win ) - 1;
         const int w = getmaxx( m_win );
-        int cnt = 0;
+        int cnt = m_top;
         int line = 0;
         while( line < h && cnt < m_result.size() )
         {
@@ -108,6 +120,15 @@ void SearchView::Draw()
             wprintw( m_win, "%5i ", cnt );
             wattron( m_win, COLOR_PAIR(15) );
             wprintw( m_win, "(%5.1f%%) ", res.rank * 100.f );
+
+            if( m_cursor == cnt )
+            {
+                wmove( m_win, line + 1, 0 );
+                wattron( m_win, COLOR_PAIR(14) | A_BOLD );
+                wprintw( m_win, "->" );
+                wattroff( m_win, COLOR_PAIR(14) | A_BOLD );
+                wmove( m_win, line + 1, 15 );
+            }
 
             wattron( m_win, COLOR_PAIR(1) );
             if( m_storage.WasVisited( m_archive.GetMessageId( res.postid ) ) )
@@ -156,7 +177,7 @@ void SearchView::Draw()
             wprintw( m_win, "%s", buf );
             wattroff( m_win, COLOR_PAIR(14) | A_BOLD );
             wattron( m_win, COLOR_PAIR(1) );
-            waddch( m_win, ']' );
+            waddch( m_win, m_cursor == cnt ? '<' : ']' );
             wattroff( m_win, COLOR_PAIR(1) );
 
             assert( cnt <= m_preview.size() );
@@ -173,6 +194,7 @@ void SearchView::Draw()
             cnt++;
             line += 4;
         }
+        m_bottom = cnt;
     }
     wnoutrefresh( m_win );
 }
@@ -241,4 +263,31 @@ void SearchView::FillPreview( int idx )
     s << " ...";
 
     m_preview.emplace_back( s.str() );
+}
+
+void SearchView::MoveCursor( int offset )
+{
+    while( offset < 0 )
+    {
+        if( m_cursor == 0 ) break;
+        m_cursor--;
+        if( m_cursor < m_top )
+        {
+            m_top--;
+            m_bottom--;
+        }
+        offset++;
+    }
+    while( offset > 0 )
+    {
+        if( m_cursor == m_result.size() - 1 ) break;
+        m_cursor++;
+        if( m_cursor >= m_bottom )
+        {
+            m_top++;
+            m_bottom++;
+        }
+        offset--;
+    }
+    Draw();
 }

@@ -24,6 +24,7 @@ public:
 
 private:
     void FillPreview( int idx );
+    void MoveCursor( int offset );
 
     Browser* m_parent;
     BottomBar& m_bar;
@@ -33,6 +34,9 @@ private:
     std::vector<SearchResult> m_result;
     std::vector<std::string> m_preview;
     bool m_active;
+
+    int m_top, m_bottom;
+    int m_cursor;
 };
 
 #endif
