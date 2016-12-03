@@ -238,8 +238,7 @@ void Browser::Entry()
                 auto idx = m_archive->GetMessageIndex( msgid.c_str() );
                 if( idx >= 0 )
                 {
-                    SwitchToMessage( idx );
-                    MoveOrEnterAction( 0 );
+                    OpenMessage( idx );
                 }
                 else
                 {
@@ -282,6 +281,12 @@ void Browser::Resize()
     m_sview.Resize();
     m_bottom.Resize();
     doupdate();
+}
+
+void Browser::OpenMessage( int msgidx )
+{
+    SwitchToMessage( msgidx );
+    MoveOrEnterAction( 0 );
 }
 
 void Browser::SwitchToMessage( int msgidx )

@@ -20,6 +20,8 @@ public:
     void Entry();
     void Resize();
 
+    void OpenMessage( int msgidx );
+
 private:
     bool MoveOrEnterAction( int move );
     void SwitchToMessage( int msgidx );
