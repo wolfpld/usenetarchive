@@ -76,6 +76,15 @@ void SearchView::Entry()
         case KEY_PPAGE:
             MoveCursor( m_top - m_bottom );
             break;
+        case KEY_ENTER:
+        case '\n':
+        case 459:   // numpad enter
+            if( !m_result.empty() )
+            {
+                m_parent->OpenMessage( m_result[m_cursor].postid );
+                return;
+            }
+            break;
         default:
             break;
         }
