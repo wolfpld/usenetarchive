@@ -12,6 +12,9 @@
 #  include <windows.h>
 #else
 #  include <dirent.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <unistd.h>
 #endif
 
 #include "../contrib/lz4/lz4.h"
@@ -71,7 +74,11 @@ static std::vector<std::string> ListDirectory( const std::string& path )
         std::string s = ent->d_name;
         if( s != "." && s != ".." )
         {
-            if( ent->d_type == DT_DIR )
+            char tmp[1024];
+            sprintf( tmp, "%s/%s", path.c_str(), ent->d_name );
+            struct stat stat;
+            lstat( tmp, &stat );
+            if( S_ISDIR( stat.st_mode ) )
             {
                 s += "/";
             }
