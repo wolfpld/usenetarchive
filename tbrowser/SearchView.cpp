@@ -117,7 +117,7 @@ void SearchView::Draw()
             const auto& res = m_result[cnt];
             wmove( m_win, line + 1, 0 );
             wattron( m_win, COLOR_PAIR(1) );
-            wprintw( m_win, "%5i ", cnt );
+            wprintw( m_win, "%5i ", cnt+1 );
             wattron( m_win, COLOR_PAIR(15) );
             wprintw( m_win, "(%5.1f%%) ", res.rank * 100.f );
 
