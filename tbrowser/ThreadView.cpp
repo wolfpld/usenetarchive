@@ -86,7 +86,11 @@ void ThreadView::Draw()
     wprintw( m_win, tmp );
     wmove( m_win, h-1, 0 );
     wprintw( m_win, " [%i/%i]", m_cursor+1, m_archive.NumberOfMessages() );
-    wattroff( m_win, COLOR_PAIR( 11 ) | A_BOLD );
+    wattron( m_win, COLOR_PAIR( 1 ) );
+    wprintw( m_win, " :: " );
+    wattroff( m_win, A_BOLD );
+    wprintw( m_win, "%i threads", m_archive.NumberOfTopLevel() );
+    wattroff( m_win, COLOR_PAIR( 1 ) );
 
     wnoutrefresh( m_win );
 }
