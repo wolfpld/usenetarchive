@@ -295,7 +295,7 @@ int main( int argc, char** argv )
     fclose( cdata );
     fclose( cmeta );
 
-    printf( "\n" );
+    printf( "%i/%i\n", size, size );
 
     delete[] data;
     return 0;
