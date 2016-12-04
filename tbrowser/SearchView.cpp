@@ -94,8 +94,8 @@ void SearchView::Entry()
 
 void SearchView::Resize()
 {
-    if( !m_active ) return;
     ResizeView( 0, 1, 0, -2 );
+    if( !m_active ) return;
     Draw();
 }
 
