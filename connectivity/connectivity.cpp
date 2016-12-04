@@ -174,7 +174,7 @@ int main( int argc, char** argv )
         auto post = mview[i];
         auto buf = post;
 
-        while( strnicmpl( buf, "date: ", 6 ) != 0 )
+        while( strnicmpl( buf, "date: ", 6 ) != 0 && strnicmpl( buf, "date:\t", 6 ) != 0 )
         {
             while( *buf != '\n' ) buf++;
             buf++;
