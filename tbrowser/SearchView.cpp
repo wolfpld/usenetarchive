@@ -298,7 +298,7 @@ void SearchView::MoveCursor( int offset )
     {
         if( m_cursor == m_result.size() - 1 ) break;
         m_cursor++;
-        if( m_cursor >= m_bottom )
+        if( m_cursor >= m_bottom - 1 )
         {
             m_top++;
             m_bottom++;
