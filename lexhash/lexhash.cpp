@@ -31,8 +31,11 @@ int main( int argc, char** argv )
     FileMap<LexiconMetaPacket> meta( base + "lexmeta" );
     FileMap<char> str( base + "lexstr" );
 
-    auto bucket = new std::vector<HashData>[MsgIdHashSize];
     auto size = meta.DataSize();
+    auto hashbits = MsgIdHashBits( size );
+    auto hashsize = MsgIdHashSize( hashbits );
+    auto hashmask = MsgIdHashMask( hashbits );
+    auto bucket = new std::vector<HashData>[hashsize];
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
@@ -44,7 +47,7 @@ int main( int argc, char** argv )
         auto m = meta[i];
         auto s = str + m.str;
 
-        uint32_t hash = XXH32( s, strlen( s ), 0 ) & MsgIdHashMask;
+        uint32_t hash = XXH32( s, strlen( s ), 0 ) & hashmask;
         bucket[hash].emplace_back( HashData { m.str, i } );
     }
 
@@ -59,11 +62,11 @@ int main( int argc, char** argv )
     const uint32_t zero = 0;
     fwrite( &zero, 1, sizeof( uint32_t ), fhashdata );
     uint32_t offset = sizeof( uint32_t );
-    for( uint32_t i=0; i<MsgIdHashSize; i++ )
+    for( uint32_t i=0; i<hashsize; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", i, MsgIdHashSize );
+            printf( "%i/%i\r", i, hashsize );
             fflush( stdout );
         }
 
@@ -88,7 +91,7 @@ int main( int argc, char** argv )
 
     delete[] bucket;
 
-    printf( "Processed %i buckets.\n", MsgIdHashSize );
+    printf( "Processed %i buckets.\n", hashsize );
 
     return 0;
 }
