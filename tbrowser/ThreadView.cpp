@@ -67,12 +67,16 @@ void ThreadView::Draw()
 
     werase( m_win );
 
+    int cursorLine = -1;
     const char* prev = nullptr;
     auto idx = m_top;
     for( int i=0; i<h-1; i++ )
     {
         if( m_archive.GetParent( idx ) == -1 ) prev = nullptr;
-        DrawLine( i, idx, prev );
+        if( DrawLine( i, idx, prev ) )
+        {
+            cursorLine = i;
+        }
         idx = GetNext( idx );
         if( idx >= m_archive.NumberOfMessages() ) break;
     }
@@ -91,6 +95,11 @@ void ThreadView::Draw()
     wattroff( m_win, A_BOLD );
     wprintw( m_win, "%i threads", m_archive.NumberOfTopLevel() );
     wattroff( m_win, COLOR_PAIR( 1 ) );
+
+    if( cursorLine != -1 )
+    {
+        wmove( m_win, cursorLine, 1 );
+    }
 
     wnoutrefresh( m_win );
 }
@@ -220,7 +229,7 @@ static bool SameSubject( const char* subject, const char*& prev )
     return strcmp( prev, oldprev ) == 0;
 }
 
-void ThreadView::DrawLine( int line, int idx, const char*& prev )
+bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
@@ -406,6 +415,8 @@ void ThreadView::DrawLine( int line, int idx, const char*& prev )
     if( !hilite ) wattroff( m_win, COLOR_PAIR(2) );
     waddch( m_win, (m_cursor == idx) ? '<' : ']' );
     if( hilite ) wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
+
+    return m_cursor == idx;
 }
 
 void ThreadView::MoveCursor( int offset )

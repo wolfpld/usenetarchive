@@ -46,7 +46,7 @@ public:
 
 private:
     void ExpandFill( int cursor );
-    void DrawLine( int line, int idx, const char*& prev );
+    bool DrawLine( int line, int idx, const char*& prev );
 
     int GetNext( int idx );
     int GetPrev( int idx ) const;
