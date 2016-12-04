@@ -6,10 +6,8 @@
 #include <string.h>
 
 #include "../common/Filesystem.hpp"
-#include "../common/HashSearch.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
-#include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
 
 int main( int argc, char** argv )
