@@ -42,7 +42,10 @@ int main( int argc, char** argv )
     FILE* midmeta = fopen( midmetafn.c_str(), "wb" );
     FILE* middata = fopen( middatafn.c_str(), "wb" );
 
-    auto bucket = new std::vector<HashData>[MsgIdHashSize];
+    auto hashbits = MsgIdHashBits( size );
+    auto hashsize = MsgIdHashSize( hashbits );
+    auto hashmask = MsgIdHashMask( hashbits );
+    auto bucket = new std::vector<HashData>[hashsize];
 
     uint32_t offset = 0;
     ExpandingBuffer eb;
@@ -73,7 +76,7 @@ int main( int argc, char** argv )
 
         fwrite( &offset, 1, sizeof( offset ), midmeta );
 
-        uint32_t hash = XXH32( buf, end-buf, 0 ) & MsgIdHashMask;
+        uint32_t hash = XXH32( buf, end-buf, 0 ) & hashmask;
         bucket[hash].emplace_back( HashData { offset, i } );
 
         offset += end-buf+1;
@@ -93,7 +96,7 @@ int main( int argc, char** argv )
     FileMap<char> msgid( middatafn );
     fwrite( &zero, 1, sizeof( uint32_t ), midhashdata );
     offset = sizeof( uint32_t );
-    for( uint32_t i=0; i<MsgIdHashSize; i++ )
+    for( uint32_t i=0; i<hashmask; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
         {
@@ -122,7 +125,7 @@ int main( int argc, char** argv )
 
     delete[] bucket;
 
-    printf( "Processed %i buckets.\n", MsgIdHashSize );
+    printf( "Processed %i buckets.\n", hashsize );
 
     return 0;
 }
