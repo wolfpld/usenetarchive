@@ -96,7 +96,7 @@ int main( int argc, char** argv )
     FileMap<char> msgid( middatafn );
     fwrite( &zero, 1, sizeof( uint32_t ), midhashdata );
     offset = sizeof( uint32_t );
-    for( uint32_t i=0; i<hashmask; i++ )
+    for( uint32_t i=0; i<hashsize; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
         {
