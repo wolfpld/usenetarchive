@@ -195,20 +195,50 @@ void SearchView::Draw()
             wattron( m_win, COLOR_PAIR(1) );
             waddch( m_win, m_cursor == cnt ? '<' : ']' );
             wattroff( m_win, COLOR_PAIR(1) );
+            line++;
 
+            int frameCol = COLOR_PAIR(6);
             assert( cnt <= m_preview.size() );
             if( m_preview.size() == cnt )
             {
                 FillPreview( cnt );
             }
-            wmove( m_win, line+2, 0 );
-            len = w * std::min( 3, h - line - 1 );
             const char* preview = m_preview[cnt].c_str();
-            end = utfendl( preview, len );
-            utfprint( m_win, preview, end );
+            for( int i=0; i<3; i++ )
+            {
+                if( !*preview || line == h ) break;
+                wmove( m_win, line+1, 0 );
+                wattron( m_win, frameCol );
+                waddch( m_win, ACS_VLINE );
+                wattroff( m_win, frameCol );
+                len = w - 3;
+                auto end = utfendl( preview, len );
+                if( *end )
+                {
+                    while( *end != ' ' ) end--;
+                }
+                utfprint( m_win, preview, end );
+                preview = end;
+                wmove( m_win, line+1, w-1 );
+                wattron( m_win, frameCol );
+                waddch( m_win, ACS_VLINE );
+                wattroff( m_win, frameCol );
+                line++;
+            }
+            if( line < h )
+            {
+                wattron( m_win, frameCol );
+                waddch( m_win, ACS_LLCORNER );
+                for( int i=0; i<w-2; i++ )
+                {
+                    waddch( m_win, ACS_HLINE );
+                }
+                waddch( m_win, ACS_LRCORNER );
+                wattroff( m_win, frameCol );
+                line++;
+            }
 
             cnt++;
-            line += 4;
         }
         m_bottom = cnt;
     }
