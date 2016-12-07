@@ -90,11 +90,17 @@ int main( int argc, char** argv )
     CreateDirStruct( dbase );
     dbase.append( "/" );
 
+    printf( "Copy common files..." );
+    fflush( stdout );
+
     if( Exists( base + "name" ) ) CopyFile( base + "name", dbase + "name" );
     if( Exists( base + "desc_long" ) ) CopyFile( base + "desc_long", dbase + "desc_long" );
     if( Exists( base + "desc_short" ) ) CopyFile( base + "desc_short", dbase + "desc_short" );
     if( Exists( base + "strings" ) ) CopyFile( base + "strings", dbase + "strings" );
     if( Exists( base + "strmeta" ) ) CopyFile( base + "strmeta", dbase + "strmeta" );
+    CopyFile( base + "conndata", dbase + "conndata" );
+
+    printf( " done\n" );
 
     if( Exists( base + "meta" ) && Exists( base + "data" ) )
     {
@@ -158,7 +164,39 @@ int main( int argc, char** argv )
         }
 
         printf( "\n" );
+    }
 
+    {
+        FILE* dst = fopen( ( dbase + "toplevel" ).c_str(), "wb" );
+        for( int i=0; i<toplevel.DataSize(); i++ )
+        {
+            if( ( i & 0xFFF ) == 0 )
+            {
+                printf( "toplevel %i/%i\r", i, toplevel.DataSize() );
+                fflush( stdout );
+            }
+            fwrite( &order[toplevel[i]], 1, sizeof( uint32_t ), dst );
+        }
+        fclose( dst );
+        printf( "\n" );
+    }
+
+    {
+        FileMap<uint32_t> connmeta( base + "connmeta" );
+        std::vector<uint32_t> v( size );
+        for( int i=0; i<size; i++ )
+        {
+            if( ( i & 0xFFF ) == 0 )
+            {
+                printf( "connmeta %i/%i\r", i, toplevel.DataSize() );
+                fflush( stdout );
+            }
+            v[order[i]] = connmeta[i];
+        }
+        FILE* dst = fopen( ( dbase + "connmeta" ).c_str(), "wb" );
+        fwrite( v.data(), 1, size * sizeof( uint32_t ), dst );
+        fclose( dst );
+        printf( "\n" );
     }
 
     return 0;
