@@ -31,6 +31,24 @@ int Expand( int idx, std::vector<uint32_t>& order, const uint32_t* data, const M
     return cskip;
 }
 
+void CopyFile( const std::string& from, const std::string& to )
+{
+    assert( Exists( from ) );
+    FILE* src = fopen( from.c_str(), "rb" );
+    FILE* dst = fopen( to.c_str(), "wb" );
+    assert( src && dst );
+    enum { BlockSize = 16 * 1024 };
+    char buf[BlockSize];
+    for(;;)
+    {
+        auto read = fread( buf, 1, BlockSize, src );
+        fwrite( buf, 1, read, dst );
+        if( read != BlockSize ) break;
+    }
+    fclose( src );
+    fclose( dst );
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 3 )
