@@ -90,6 +90,10 @@ int main( int argc, char** argv )
     CreateDirStruct( dbase );
     dbase.append( "/" );
 
+    if( Exists( base + "name" ) ) CopyFile( base + "name", dbase + "name" );
+    if( Exists( base + "desc_long" ) ) CopyFile( base + "desc_long", dbase + "desc_long" );
+    if( Exists( base + "desc_short" ) ) CopyFile( base + "desc_short", dbase + "desc_short" );
+
     if( Exists( base + "meta" ) && Exists( base + "data" ) )
     {
         MessageView mview( base + "meta", base + "data" );
