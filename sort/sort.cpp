@@ -70,11 +70,10 @@ int main( int argc, char** argv )
     std::string base = argv[1];
     base.append( "/" );
 
-    MessageView mview( base + "meta", base + "data" );
     MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
     FileMap<uint32_t> toplevel( base + "toplevel" );
 
-    const auto size = mview.Size();
+    const auto size = conn.Size();
     std::vector<uint32_t> order( size );
     unsigned int idx = 0;
     for( int i=0; i<toplevel.DataSize(); i++ )
@@ -90,30 +89,71 @@ int main( int argc, char** argv )
     std::string dbase = argv[2];
     CreateDirStruct( dbase );
     dbase.append( "/" );
-    std::string dmetafn = dbase + "meta";
-    std::string ddatafn = dbase + "data";
 
-    FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
-    FILE* ddata = fopen( ddatafn.c_str(), "wb" );
-
-    uint64_t offset = 0;
-    for( int i=0; i<size; i++ )
+    if( Exists( base + "meta" ) && Exists( base + "data" ) )
     {
-        if( ( i & 0x3FF ) == 0 )
+        MessageView mview( base + "meta", base + "data" );
+
+        std::string dmetafn = dbase + "meta";
+        std::string ddatafn = dbase + "data";
+
+        FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
+        FILE* ddata = fopen( ddatafn.c_str(), "wb" );
+
+        uint64_t offset = 0;
+        for( int i=0; i<size; i++ )
         {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
+            if( ( i & 0x3FF ) == 0 )
+            {
+                printf( "LZ4 %i/%i\r", i, size );
+                fflush( stdout );
+            }
+
+            auto raw = mview.Raw( order[i] );
+            fwrite( raw.ptr, 1, raw.compressedSize, ddata );
+
+            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
+            offset += raw.compressedSize;
         }
 
-        auto raw = mview.Raw( order[i] );
-        fwrite( raw.ptr, 1, raw.compressedSize, ddata );
-
-        RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
-        fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
-        offset += raw.compressedSize;
+        printf( "\n" );
     }
 
-    printf( "\n" );
+    if( Exists( base + "zmeta" ) && Exists( base + "zdata" ) && Exists( base + "zdict" ) )
+    {
+        CopyFile( base + "zdict", dbase + "zdict" );
+
+        // Hack! This should be ZMessageView, but we only use common data addressing,
+        // so MessageView works here.
+        MessageView mview( base + "meta", base + "data" );
+
+        std::string dmetafn = dbase + "zmeta";
+        std::string ddatafn = dbase + "zdata";
+
+        FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
+        FILE* ddata = fopen( ddatafn.c_str(), "wb" );
+
+        uint64_t offset = 0;
+        for( int i=0; i<size; i++ )
+        {
+            if( ( i & 0x3FF ) == 0 )
+            {
+                printf( "zstd %i/%i\r", i, size );
+                fflush( stdout );
+            }
+
+            auto raw = mview.Raw( order[i] );
+            fwrite( raw.ptr, 1, raw.compressedSize, ddata );
+
+            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
+            offset += raw.compressedSize;
+        }
+
+        printf( "\n" );
+
+    }
 
     return 0;
 }
