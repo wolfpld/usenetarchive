@@ -188,7 +188,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0xFFF ) == 0 )
             {
-                printf( "connmeta %i/%i\r", i, toplevel.DataSize() );
+                printf( "connmeta %i/%i\r", i, size );
                 fflush( stdout );
             }
             v[order[i]] = connmeta[i];
