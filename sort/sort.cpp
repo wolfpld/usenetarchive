@@ -102,8 +102,6 @@ int main( int argc, char** argv )
     if( Exists( base + "strings" ) ) CopyFile( base + "strings", dbase + "strings" );
     if( Exists( base + "strmeta" ) ) CopyFile( base + "strmeta", dbase + "strmeta" );
 
-    CopyFile( base + "conndata", dbase + "conndata" );
-
     CopyFile( base + "middata", dbase + "middata" );
     CopyFile( base + "midhash", dbase + "midhash" );
 
@@ -188,27 +186,41 @@ int main( int argc, char** argv )
                 printf( "toplevel %i/%i\r", i, toplevel.DataSize() );
                 fflush( stdout );
             }
-            fwrite( &order[toplevel[i]], 1, sizeof( uint32_t ), dst );
+            fwrite( order.data() + toplevel[i], 1, sizeof( uint32_t ), dst );
         }
         fclose( dst );
         printf( "\n" );
     }
 
     {
-        FileMap<uint32_t> connmeta( base + "connmeta" );
-        std::vector<uint32_t> v( size );
-        for( int i=0; i<size; i++ )
+        FILE* data = fopen( ( dbase + "conndata" ).c_str(), "wb" );
+        FILE* meta = fopen( ( dbase + "connmeta" ).c_str(), "wb" );
+        uint32_t offset = 0;
+        for( int i=0; i<conn.Size(); i++ )
         {
-            if( ( i & 0xFFF ) == 0 )
+            if( ( i & 0x3FF ) == 0 )
             {
-                printf( "connmeta %i/%i\r", i, size );
+                printf( "conn %i/%i\r", i, size );
                 fflush( stdout );
             }
-            v[order[i]] = connmeta[i];
+            fwrite( &offset, 1, sizeof( offset ), meta );
+
+            auto src = conn[order[i]];
+            offset += fwrite( src++, 1, sizeof( uint32_t ), data );     // epoch
+            int32_t parent = *src++;
+            if( parent != -1 ) parent = order[parent];
+            offset += fwrite( &parent, 1, sizeof( int32_t ), data );
+            offset += fwrite( src++, 1, sizeof( uint32_t ), data );     // child total
+            auto num = *src;
+            offset += fwrite( src++, 1, sizeof( uint32_t ), data );     // child num
+            for( int j=0; j<num; j++ )
+            {
+                auto child = order[*src++];
+                offset += fwrite( &child, 1, sizeof( uint32_t ), data );
+            }
         }
-        FILE* dst = fopen( ( dbase + "connmeta" ).c_str(), "wb" );
-        fwrite( v.data(), 1, size * sizeof( uint32_t ), dst );
-        fclose( dst );
+        fclose( data );
+        fclose( meta );
         printf( "\n" );
     }
 
