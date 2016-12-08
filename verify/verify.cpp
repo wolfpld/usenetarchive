@@ -67,6 +67,7 @@ int main( int argc, char** argv )
 
     const auto size = archive->NumberOfMessages();
 
+    // message reachibility
     {
         std::unordered_set<uint32_t> messages;
         messages.reserve( size );
@@ -93,6 +94,7 @@ int main( int argc, char** argv )
         }
     }
 
+    // message sorting
     {
         std::vector<uint32_t> order;
         order.reserve( size );
@@ -123,6 +125,7 @@ int main( int argc, char** argv )
         }
     }
 
+    // archive name
     {
         auto name = archive->GetArchiveName();
         if( name.second == 0 )
@@ -151,6 +154,7 @@ int main( int argc, char** argv )
         }
     }
 
+    // archive description
     {
         auto ds = archive->GetShortDescription();
         auto dl = archive->GetLongDescription();
