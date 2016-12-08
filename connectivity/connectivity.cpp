@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <assert.h>
+#include <functional>
+#include <limits>
 #include <time.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,7 +22,7 @@ struct Message
 {
     uint32_t epoch = 0;
     int32_t parent = -1;
-    uint32_t childTotal = 0;
+    uint32_t childTotal = std::numeric_limits<uint32_t>::max();
     std::vector<uint32_t> children;
 };
 
@@ -228,10 +230,6 @@ int main( int argc, char** argv )
         for(;;)
         {
             auto parent = data[idx].parent;
-            if( parent != idx )
-            {
-                data[idx].childTotal++;
-            }
             if( parent == -1 ) break;
             if( visited.find( parent ) != visited.end() )
             {
@@ -267,7 +265,35 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\nSaving...\n" );
+    printf( "\nCalculating total children counts...\n" );
+    std::function<int(int)> Count;
+    Count = [&data, &Count]( int idx ) {
+        if( data[idx].childTotal != std::numeric_limits<uint32_t>::max() )
+        {
+            return data[idx].childTotal;
+        }
+        uint32_t cnt = 1;
+        auto& children = data[idx].children;
+        for( int j=0; j<children.size(); j++ )
+        {
+            if( data[children[j]].childTotal == std::numeric_limits<uint32_t>::max() )
+            {
+                cnt += Count( children[j] );
+            }
+            else
+            {
+                cnt += data[children[j]].childTotal;
+            }
+        }
+        data[idx].childTotal = cnt;
+        return cnt;
+    };
+    for( int i=0; i<size; i++ )
+    {
+        Count( i );
+    }
+
+    printf( "Saving...\n" );
     FILE* tlout = fopen( ( base + "toplevel" ).c_str(), "wb" );
     fwrite( toplevel.data(), 1, sizeof( uint32_t ) * toplevel.size(), tlout );
     fclose( tlout );
