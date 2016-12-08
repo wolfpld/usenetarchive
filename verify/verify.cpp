@@ -99,5 +99,33 @@ int main( int argc, char** argv )
         }
     }
 
+    {
+        auto name = archive->GetArchiveName();
+        if( name.second == 0 )
+        {
+            printf( "[FAIL] Archive name not available\n" );
+        }
+        else
+        {
+            bool bad = false;
+            for( int i=0; i<name.second; i++ )
+            {
+                if( name.first[i] == '\n' )
+                {
+                    bad = true;
+                    break;
+                }
+            }
+            if( bad )
+            {
+                printf( "[FAIL] Archive name contains newline\n" );
+            }
+            else
+            {
+                printf( "[ OK ] Archive name is valid\n" );
+            }
+        }
+    }
+
     return 0;
 }
