@@ -8,6 +8,7 @@
 
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/LexiconTypes.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
@@ -97,11 +98,20 @@ int main( int argc, char** argv )
     if( Exists( base + "name" ) ) CopyFile( base + "name", dbase + "name" );
     if( Exists( base + "desc_long" ) ) CopyFile( base + "desc_long", dbase + "desc_long" );
     if( Exists( base + "desc_short" ) ) CopyFile( base + "desc_short", dbase + "desc_short" );
+
     if( Exists( base + "strings" ) ) CopyFile( base + "strings", dbase + "strings" );
     if( Exists( base + "strmeta" ) ) CopyFile( base + "strmeta", dbase + "strmeta" );
+
     CopyFile( base + "conndata", dbase + "conndata" );
+
     CopyFile( base + "middata", dbase + "middata" );
     CopyFile( base + "midhash", dbase + "midhash" );
+
+    CopyFile( base + "lexhash", dbase + "lexhash" );
+    CopyFile( base + "lexhashdata", dbase + "lexhashdata" );
+    CopyFile( base + "lexhit", dbase + "lexhit" );
+    CopyFile( base + "lexmeta", dbase + "lexmeta" );
+    CopyFile( base + "lexstr", dbase + "lexstr" );
 
     printf( " done\n" );
 
@@ -242,6 +252,31 @@ int main( int argc, char** argv )
         }
         fclose( dst );
         printf( "midhashdata: %i\n", i );
+    }
+
+    {
+        FileMap<LexiconMetaPacket> lexmeta( base + "lexmeta" );
+        FileMap<LexiconDataPacket> lexdata( base + "lexdata" );
+
+        FILE* dst = fopen( ( dbase + "lexdata" ).c_str(), "wb" );
+        for( int i=0; i<lexmeta.DataSize(); i++ )
+        {
+            if( ( i & 0x3FF ) == 0 )
+            {
+                printf( "lexmeta %i/%i\r", i, lexmeta.DataSize() );
+                fflush( stdout );
+            }
+            auto meta = lexmeta[i];
+            auto data = lexdata + ( meta.data / sizeof( LexiconDataPacket ) );
+            for( int j=0; j<meta.dataSize; j++ )
+            {
+                auto idx = order[data->postid & LexiconPostMask] | ( data->postid & LexiconChildMask );
+                fwrite( &idx, 1, sizeof( idx ), dst );
+                fwrite( &data->hitoffset, 1, sizeof( data->hitoffset ), dst );
+            }
+        }
+        fclose( dst );
+        printf( "\n" );
     }
 
     return 0;

@@ -62,5 +62,8 @@
     <ClInclude Include="..\..\..\common\MessageView.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
