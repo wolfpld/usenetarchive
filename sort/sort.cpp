@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../common/Filesystem.hpp"
+#include "../common/FileMap.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
@@ -99,6 +100,8 @@ int main( int argc, char** argv )
     if( Exists( base + "strings" ) ) CopyFile( base + "strings", dbase + "strings" );
     if( Exists( base + "strmeta" ) ) CopyFile( base + "strmeta", dbase + "strmeta" );
     CopyFile( base + "conndata", dbase + "conndata" );
+    CopyFile( base + "middata", dbase + "middata" );
+    CopyFile( base + "midhash", dbase + "midhash" );
 
     printf( " done\n" );
 
@@ -197,6 +200,48 @@ int main( int argc, char** argv )
         fwrite( v.data(), 1, size * sizeof( uint32_t ), dst );
         fclose( dst );
         printf( "\n" );
+    }
+
+    {
+        FileMap<uint32_t> midmeta( base + "midmeta" );
+        std::vector<uint32_t> v( size );
+        for( int i=0; i<size; i++ )
+        {
+            if( ( i & 0xFFF ) == 0 )
+            {
+                printf( "midmeta %i/%i\r", i, size );
+                fflush( stdout );
+            }
+            v[order[i]] = midmeta[i];
+        }
+        FILE* dst = fopen( ( dbase + "midmeta" ).c_str(), "wb" );
+        fwrite( v.data(), 1, size * sizeof( uint32_t ), dst );
+        fclose( dst );
+        printf( "\n" );
+
+        FileMap<uint32_t> midhashdata( base + "midhashdata" );
+        auto ptr = (const uint32_t*)midhashdata;
+        dst = fopen( ( dbase + "midhashdata" ).c_str(), "wb" );
+        int i = 0;
+        while( ptr != midhashdata + midhashdata.DataSize() )
+        {
+            if( ( i++ & 0x3FF ) == 0 )
+            {
+                printf( "midhashdata %i\r", i );
+                fflush( stdout );
+            }
+            auto num = *ptr++;
+            fwrite( &num, 1, sizeof( num ), dst );
+            for( int i=0; i<num; i++ )
+            {
+                auto offset = *ptr++;
+                fwrite( &offset, 1, sizeof( offset ), dst );
+                auto idx = order[*ptr++];
+                fwrite( &idx, 1, sizeof( idx ), dst );
+            }
+        }
+        fclose( dst );
+        printf( "midhashdata: %i\n", i );
     }
 
     return 0;
