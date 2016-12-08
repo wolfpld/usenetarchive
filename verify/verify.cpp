@@ -16,7 +16,13 @@
 
 void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
 {
-    data.erase( data.find( idx ) );
+    auto it = data.find( idx );
+    if( it == data.end() )
+    {
+        printf( MSG_FAIL " \033[31;1mBroken connectivity data! Aborting!\033[0m\n" );
+        exit( 1 );
+    }
+    data.erase( it );
     const auto children = archive.GetChildren( idx );
     for( int i=0; i<children.size; i++ )
     {
