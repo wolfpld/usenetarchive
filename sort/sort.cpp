@@ -75,6 +75,8 @@ int main( int argc, char** argv )
     MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
     FileMap<uint32_t> toplevel( base + "toplevel" );
 
+    printf( "Sorting..." );
+    fflush( stdout );
     const auto size = conn.Size();
     std::vector<uint32_t> order( size );
     std::vector<uint32_t> revtop( toplevel.DataSize() );
@@ -90,11 +92,17 @@ int main( int argc, char** argv )
     }
     assert( idx == size );
 
+    std::vector<uint32_t> rev( size );
+    for( int i=0; i<size; i++ )
+    {
+        rev[order[i]] = i;
+    }
+
     std::string dbase = argv[2];
     CreateDirStruct( dbase );
     dbase.append( "/" );
 
-    printf( "Copy common files..." );
+    printf( "done\nCopy common files..." );
     fflush( stdout );
 
     if( Exists( base + "name" ) ) CopyFile( base + "name", dbase + "name" );
