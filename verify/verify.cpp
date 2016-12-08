@@ -1,3 +1,4 @@
+#include <functional>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -179,6 +180,48 @@ int main( int argc, char** argv )
             {
                 printf( MSG_OK " Short and long descriptions are present\n" );
             }
+        }
+    }
+
+    // children total counts
+    {
+        std::vector<int> v( size, -1 );
+
+        std::function<int(int)> Count;
+        Count = [&v, &archive, &Count]( int idx ) {
+            int cnt = 1;
+            auto children = archive->GetChildren( idx );
+            for( int j=0; j<children.size; j++ )
+            {
+                if( v[children.ptr[j]] == -1 )
+                {
+                    cnt += Count( children.ptr[j] );
+                }
+                else
+                {
+                    cnt += v[children.ptr[j]];
+                }
+            }
+            return cnt;
+        };
+
+        bool ok = true;
+        for( int i=0; i<size; i++ )
+        {
+            if( Count( i ) != archive->GetTotalChildrenCount( i ) )
+            {
+                ok = false;
+                break;
+            }
+        }
+
+        if( ok )
+        {
+            printf( MSG_OK " Total children counts valid\n" );
+        }
+        else
+        {
+            printf( MSG_FAIL " Wrong total children counts\n" );
         }
     }
 
