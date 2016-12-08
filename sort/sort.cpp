@@ -218,14 +218,14 @@ int main( int argc, char** argv )
             auto src = conn[order[i]];
             offset += fwrite( src++, 1, sizeof( uint32_t ), data );     // epoch
             int32_t parent = *src++;
-            if( parent != -1 ) parent = order[parent];
+            if( parent != -1 ) parent = rev[parent];
             offset += fwrite( &parent, 1, sizeof( int32_t ), data );
             offset += fwrite( src++, 1, sizeof( uint32_t ), data );     // child total
             auto num = *src;
             offset += fwrite( src++, 1, sizeof( uint32_t ), data );     // child num
             for( int j=0; j<num; j++ )
             {
-                auto child = order[*src++];
+                auto child = rev[*src++];
                 offset += fwrite( &child, 1, sizeof( uint32_t ), data );
             }
         }
@@ -268,7 +268,7 @@ int main( int argc, char** argv )
             {
                 auto offset = *ptr++;
                 fwrite( &offset, 1, sizeof( offset ), dst );
-                auto idx = order[*ptr++];
+                auto idx = rev[*ptr++];
                 fwrite( &idx, 1, sizeof( idx ), dst );
             }
         }
@@ -292,7 +292,7 @@ int main( int argc, char** argv )
             auto data = lexdata + ( meta.data / sizeof( LexiconDataPacket ) );
             for( int j=0; j<meta.dataSize; j++ )
             {
-                auto idx = order[data->postid & LexiconPostMask] | ( data->postid & LexiconChildMask );
+                auto idx = rev[data->postid & LexiconPostMask] | ( data->postid & LexiconChildMask );
                 fwrite( &idx, 1, sizeof( idx ), dst );
                 fwrite( &data->hitoffset, 1, sizeof( data->hitoffset ), dst );
             }
