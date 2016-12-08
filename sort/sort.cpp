@@ -151,7 +151,7 @@ int main( int argc, char** argv )
 
         // Hack! This should be ZMessageView, but we only use common data addressing,
         // so MessageView works here.
-        MessageView mview( base + "meta", base + "data" );
+        MessageView mview( base + "zmeta", base + "zdata" );
 
         std::string dmetafn = dbase + "zmeta";
         std::string ddatafn = dbase + "zdata";
