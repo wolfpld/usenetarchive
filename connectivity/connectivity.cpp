@@ -227,8 +227,11 @@ int main( int argc, char** argv )
         auto idx = i;
         for(;;)
         {
-            data[idx].childTotal++;
             auto parent = data[idx].parent;
+            if( parent != idx )
+            {
+                data[idx].childTotal++;
+            }
             if( parent == -1 ) break;
             if( visited.find( parent ) != visited.end() )
             {
