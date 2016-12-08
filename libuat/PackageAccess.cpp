@@ -11,7 +11,8 @@ PackageAccess* PackageAccess::Open( const std::string& fn )
     if( !f ) goto err;
     char tmp[PackageHeaderSize];
     if( fread( tmp, 1, PackageHeaderSize, f ) != PackageHeaderSize ) goto err;
-    if( memcmp( tmp, PackageHeader, PackageHeaderSize ) != 0 ) goto err;
+    if( memcmp( tmp, PackageHeader, PackageMagicSize ) != 0 ) goto err;
+    if( tmp[PackageMagicSize] > PackageVersion ) goto err;
     fclose( f );
     return new PackageAccess( fn );
 

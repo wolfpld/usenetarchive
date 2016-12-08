@@ -45,10 +45,14 @@ int main( int argc, char** argv )
         uint64_t offset = 0;
         char tmp[PackageHeaderSize];
         offset += fread( tmp, 1, PackageHeaderSize, fin );
-        if( memcmp( tmp, PackageHeader, PackageHeaderSize ) != 0 )
+        if( memcmp( tmp, PackageHeader, PackageMagicSize ) != 0 )
         {
             fprintf( stderr, "Source file is not an Usenet archive.\n" );
             exit( 1 );
+        }
+        if( tmp[PackageMagicSize] > PackageVersion )
+        {
+            fprintf( stderr, "Archive version %i is not supported. Update your tools.\n", tmp[PackageMagicSize] );
         }
 
         uint64_t sizes[PackageFiles];

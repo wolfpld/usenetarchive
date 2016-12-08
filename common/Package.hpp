@@ -62,8 +62,9 @@ struct PackageFile
 
 enum { PackageFiles = sizeof( PackageContents ) / sizeof( PackMeta ) };
 
-enum : char { PackageVersion = 0 };
+enum : char { PackageVersion = 1 };
 enum { PackageHeaderSize = 8 };
+enum { PackageMagicSize = PackageHeaderSize - 1 };
 static const char PackageHeader[PackageHeaderSize] = { '\0', 'U', 's', 'e', 'n', 'e', 't', PackageVersion };
 
 static inline uint64_t PackageAlign( uint64_t offset ) { return ( ( offset + 7 ) / 8 ) * 8; }
