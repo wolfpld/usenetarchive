@@ -77,10 +77,12 @@ int main( int argc, char** argv )
 
     const auto size = conn.Size();
     std::vector<uint32_t> order( size );
+    std::vector<uint32_t> revtop( size );
     unsigned int idx = 0;
     for( int i=0; i<toplevel.DataSize(); i++ )
     {
         order[idx] = toplevel[i];
+        revtop[i] = idx;
         auto data = conn[toplevel[i]];
         auto ret = Expand( idx, order, data, conn );
         assert( ret == data[2] );
@@ -186,7 +188,7 @@ int main( int argc, char** argv )
                 printf( "toplevel %i/%i\r", i, toplevel.DataSize() );
                 fflush( stdout );
             }
-            fwrite( order.data() + toplevel[i], 1, sizeof( uint32_t ), dst );
+            fwrite( &revtop[i], 1, sizeof( uint32_t ), dst );
         }
         fclose( dst );
         printf( "\n" );
