@@ -63,6 +63,8 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
+    printf( "Verifying archive \033[37;1m%s\033[0m\n", argv[1] );
+
     const auto size = archive->NumberOfMessages();
 
     {
