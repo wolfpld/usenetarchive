@@ -77,7 +77,7 @@ int main( int argc, char** argv )
 
     const auto size = conn.Size();
     std::vector<uint32_t> order( size );
-    std::vector<uint32_t> revtop( size );
+    std::vector<uint32_t> revtop( toplevel.DataSize() );
     unsigned int idx = 0;
     for( int i=0; i<toplevel.DataSize(); i++ )
     {
