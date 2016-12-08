@@ -6,6 +6,14 @@
 
 #include "../libuat/Archive.hpp"
 
+#ifdef _WIN32
+#  include <windows.h>
+#endif
+
+#define MSG_OK "[\033[32;1m OK \033[0m]"
+#define MSG_FAIL "[\033[31;1mFAIL\033[0m]"
+#define MSG_INFO "[\033[33;1mINFO\033[0m]"
+
 void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
 {
     data.erase( data.find( idx ) );
@@ -28,6 +36,14 @@ void Expand( std::vector<uint32_t>& order, Archive& archive, uint32_t msgidx )
 
 int main( int argc, char** argv )
 {
+#ifdef _WIN32
+    if( !AttachConsole( ATTACH_PARENT_PROCESS ) )
+    {
+        AllocConsole();
+        SetConsoleMode( GetStdHandle( STD_OUTPUT_HANDLE ), 0x07 );
+    }
+#endif
+
     if( argc != 2 )
     {
         fprintf( stderr, "USAGE: %s archive\n", argv[0] );
@@ -57,11 +73,11 @@ int main( int argc, char** argv )
         }
         if( messages.empty() )
         {
-            printf( "[ OK ] All messages reachable\n" );
+            printf( MSG_OK " All messages reachable\n" );
         }
         else
         {
-            printf( "[FAIL] %i messages unreachable:\n", messages.size() );
+            printf( MSG_FAIL " %i messages unreachable:\n", messages.size() );
             for( auto& v : messages )
             {
                 printf( "      -> %s\n", archive->GetMessageId( v ) );
@@ -91,11 +107,11 @@ int main( int argc, char** argv )
         }
         if( ok )
         {
-            printf( "[ OK ] Messages are sorted\n" );
+            printf( MSG_OK " Messages are sorted\n" );
         }
         else
         {
-            printf( "[FAIL] Messages are not sorted\n" );
+            printf( MSG_FAIL " Messages are not sorted\n" );
         }
     }
 
@@ -103,7 +119,7 @@ int main( int argc, char** argv )
         auto name = archive->GetArchiveName();
         if( name.second == 0 )
         {
-            printf( "[FAIL] Archive name not available\n" );
+            printf( MSG_FAIL " Archive name not available\n" );
         }
         else
         {
@@ -118,11 +134,11 @@ int main( int argc, char** argv )
             }
             if( bad )
             {
-                printf( "[FAIL] Archive name contains newline\n" );
+                printf( MSG_FAIL " Archive name contains newline\n" );
             }
             else
             {
-                printf( "[ OK ] Archive name is valid\n" );
+                printf( MSG_OK " Archive name is valid\n" );
             }
         }
     }
@@ -134,22 +150,22 @@ int main( int argc, char** argv )
         {
             if( dl.second == 0 )
             {
-                printf( "[INFO] Lack of short and long descriptions\n" );
+                printf( MSG_INFO " Lack of short and long descriptions\n" );
             }
             else
             {
-                printf( "[INFO] Lack of short description\n" );
+                printf( MSG_INFO " Lack of short description\n" );
             }
         }
         else
         {
             if( dl.second == 0 )
             {
-                printf( "[INFO] Lack of long description\n" );
+                printf( MSG_INFO " Lack of long description\n" );
             }
             else
             {
-                printf( "[ OK ] Short and long descriptions are present\n" );
+                printf( MSG_OK " Short and long descriptions are present\n" );
             }
         }
     }
