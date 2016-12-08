@@ -127,5 +127,32 @@ int main( int argc, char** argv )
         }
     }
 
+    {
+        auto ds = archive->GetShortDescription();
+        auto dl = archive->GetLongDescription();
+        if( ds.second == 0 )
+        {
+            if( dl.second == 0 )
+            {
+                printf( "[INFO] Lack of short and long descriptions\n" );
+            }
+            else
+            {
+                printf( "[INFO] Lack of short description\n" );
+            }
+        }
+        else
+        {
+            if( dl.second == 0 )
+            {
+                printf( "[INFO] Lack of long description\n" );
+            }
+            else
+            {
+                printf( "[ OK ] Short and long descriptions are present\n" );
+            }
+        }
+    }
+
     return 0;
 }
