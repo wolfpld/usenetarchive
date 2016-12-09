@@ -27,22 +27,40 @@ static inline bool Exists( const std::string& path )
 static inline bool IsFile( const std::string& path )
 {
     struct stat64 buf;
-    stat64( path.c_str(), &buf );
-    return S_ISREG( buf.st_mode );
+    if( stat64( path.c_str(), &buf ) == 0 )
+    {
+        return S_ISREG( buf.st_mode );
+    }
+    else
+    {
+        return false;
+    }
 }
 
 static inline uint64_t GetFileSize( const char* path )
 {
     struct stat64 buf;
-    stat64( path, &buf );
-    return buf.st_size;
+    if( stat64( path, &buf ) == 0 )
+    {
+        return buf.st_size;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 static inline int64_t GetFileMTime( const char* path )
 {
     struct stat64 buf;
-    stat64( path, &buf );
-    return (int64_t)buf.st_mtime;
+    if( stat64( path, &buf ) == 0 )
+    {
+        return (int64_t)buf.st_mtime;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 #endif
