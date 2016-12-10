@@ -235,7 +235,7 @@ int main( int argc, char** argv )
 
     {
         FileMap<uint32_t> midmeta( base + "midmeta" );
-        std::vector<uint32_t> v( size );
+        FILE* dst = fopen( ( dbase + "midmeta" ).c_str(), "wb" );
         for( int i=0; i<size; i++ )
         {
             if( ( i & 0xFFF ) == 0 )
@@ -243,10 +243,8 @@ int main( int argc, char** argv )
                 printf( "midmeta %i/%i\r", i, size );
                 fflush( stdout );
             }
-            v[order[i]] = midmeta[i];
+            fwrite( midmeta + order[i], 1, sizeof( uint32_t ), dst );
         }
-        FILE* dst = fopen( ( dbase + "midmeta" ).c_str(), "wb" );
-        fwrite( v.data(), 1, size * sizeof( uint32_t ), dst );
         fclose( dst );
         printf( "\n" );
 
