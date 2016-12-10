@@ -70,6 +70,27 @@ static const EncodingFixupEntry EncodingFixup[] = {
     { { 0xC2, 0xBF }, { 0xC5, 0xBC } }      // U+00BF -> 0+017C
 };
 
+static void FixBrokenEncoding( char* v )
+{
+    const auto sz = sizeof( EncodingFixup ) / sizeof( EncodingFixupEntry );
+
+    while( *v )
+    {
+        for( int i=0; i<sz; i++ )
+        {
+            if( v[0] == EncodingFixup[i].from[0] &&
+                v[1] == EncodingFixup[i].from[1] )
+            {
+                v[0] = EncodingFixup[i].to[0];
+                v[1] = EncodingFixup[i].to[1];
+                v++;
+                break;
+            }
+        }
+        v++;
+    }
+}
+
 static bool IsValidUTF8( guint8* data, gint64 len )
 {
     bool utf = false;
@@ -312,6 +333,7 @@ int main( int argc, char** argv )
                 auto value = g_mime_header_iter_get_value( hit );
                 auto tmp = g_mime_utils_header_decode_text( value );
                 auto decode = g_mime_utils_header_decode_phrase( tmp );
+                FixBrokenEncoding( decode );
                 g_free( tmp );
                 ss << name << ": " << decode << "\n";
                 g_free( decode );
