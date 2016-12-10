@@ -38,6 +38,38 @@ int weights[18]= { 1, 1, 1, 1, 1, 1, 1, 1, 1, 15, 10, 16, 19, 1, 13, 13, 1, 18 }
 
 static int deductions[sizeof(userEncodings)/sizeof(const char*)] = {};
 
+struct EncodingFixupEntry
+{
+    unsigned char from[2];
+    unsigned char to[2];
+};
+
+// ISO8859-2 or CP1250 encoded as ISO8859-1 in UTF-8
+static const EncodingFixupEntry EncodingFixup[] = {
+    { { 0xC2, 0xA1 }, { 0xC4, 0x84 } },     // U+00A1 -> U+0104
+    { { 0xC2, 0xA5 }, { 0xC4, 0x84 } },     // U+00A5 -> U+0104
+    { { 0xC3, 0x86 }, { 0xC4, 0x86 } },     // U+00C6 -> U+0106
+    { { 0xC3, 0x8A }, { 0xC4, 0x98 } },     // U+00CA -> U+0118
+    { { 0xC2, 0xA3 }, { 0xC5, 0x81 } },     // U+00A3 -> U+0141
+    { { 0xC3, 0x91 }, { 0xC5, 0x83 } },     // U+00D1 -> U+0143
+    { { 0xC2, 0xA6 }, { 0xC5, 0x9A } },     // U+00A6 -> U+015A
+    { { 0xC2, 0x8C }, { 0xC5, 0x9A } },     // U+008C -> U+015A
+    { { 0xC2, 0xAC }, { 0xC5, 0xB9 } },     // U+00AC -> U+0179
+    { { 0xC2, 0x8F }, { 0xC5, 0xB9 } },     // U+008F -> U+0179
+    { { 0xC2, 0xAF }, { 0xC5, 0xBB } },     // U+00AF -> U+017B
+    { { 0xC2, 0xB1 }, { 0xC4, 0x85 } },     // U+00B1 -> U+0105
+    { { 0xC2, 0xB9 }, { 0xC4, 0x85 } },     // U+00B9 -> U+0105
+    { { 0xC3, 0xA6 }, { 0xC4, 0x87 } },     // U+00E6 -> U+0107
+    { { 0xC3, 0xAA }, { 0xC4, 0x99 } },     // U+00EA -> U+0119
+    { { 0xC2, 0xB3 }, { 0xC5, 0x82 } },     // U+00B3 -> U+0142
+    { { 0xC3, 0xB1 }, { 0xC5, 0x84 } },     // U+00F1 -> U+0144
+    { { 0xC2, 0xB6 }, { 0xC5, 0x9B } },     // U+00B6 -> U+015B
+    { { 0xC2, 0x9C }, { 0xC5, 0x9B } },     // U+009C -> U+015B
+    { { 0xC2, 0xBC }, { 0xC5, 0xBA } },     // U+00BC -> U+017A
+    { { 0xC2, 0x9F }, { 0xC5, 0xBA } },     // U+009F -> U+017A
+    { { 0xC2, 0xBF }, { 0xC5, 0xBC } }      // U+00BF -> 0+017C
+};
+
 static bool IsValidUTF8( guint8* data, gint64 len )
 {
     bool utf = false;
