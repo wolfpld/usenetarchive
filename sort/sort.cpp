@@ -109,8 +109,7 @@ int main( int argc, char** argv )
     if( Exists( base + "desc_long" ) ) CopyFile( base + "desc_long", dbase + "desc_long" );
     if( Exists( base + "desc_short" ) ) CopyFile( base + "desc_short", dbase + "desc_short" );
 
-    if( Exists( base + "strings" ) ) CopyFile( base + "strings", dbase + "strings" );
-    if( Exists( base + "strmeta" ) ) CopyFile( base + "strmeta", dbase + "strmeta" );
+    CopyFile( base + "strings", dbase + "strings" );
 
     CopyFile( base + "middata", dbase + "middata" );
     CopyFile( base + "midhash", dbase + "midhash" );
@@ -296,6 +295,23 @@ int main( int argc, char** argv )
                 fwrite( &idx, 1, sizeof( idx ), dst );
                 fwrite( &data->hitoffset, 1, sizeof( data->hitoffset ), dst );
             }
+        }
+        fclose( dst );
+        printf( "\n" );
+    }
+
+    {
+        FileMap<uint32_t> strmeta( base + "strmeta" );
+
+        FILE* dst = fopen( ( dbase + "strmeta" ).c_str(), "wb" );
+        for( int i=0; i<size; i++ )
+        {
+            if( ( i & 0x3FF ) == 0 )
+            {
+                printf( "strmeta %i/%i\r", i, size );
+                fflush( stdout );
+            }
+            fwrite( strmeta + order[i] * 3, 1, sizeof( uint32_t ) * 3, dst );
         }
         fclose( dst );
         printf( "\n" );
