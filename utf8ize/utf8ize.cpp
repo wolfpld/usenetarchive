@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 #include <strings.h>
 #include <sstream>
 #include <sys/types.h>
@@ -91,7 +92,7 @@ static void FixBrokenEncoding( char* v )
     }
 }
 
-static bool IsValidUTF8( guint8* data, gint64 len )
+static bool IsValidUTF8( const guint8* data, gint64 len )
 {
     bool utf = false;
     while( len > 0 )
@@ -333,7 +334,10 @@ int main( int argc, char** argv )
                 auto value = g_mime_header_iter_get_value( hit );
                 auto tmp = g_mime_utils_header_decode_text( value );
                 auto decode = g_mime_utils_header_decode_phrase( tmp );
-                FixBrokenEncoding( decode );
+                if( strcmp( value, decode ) == 0 && IsValidUTF8( (const unsigned char*)value, strlen( value ) ) )
+                {
+                    FixBrokenEncoding( decode );
+                }
                 g_free( tmp );
                 ss << name << ": " << decode << "\n";
                 g_free( decode );
