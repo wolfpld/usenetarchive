@@ -225,5 +225,33 @@ int main( int argc, char** argv )
         }
     }
 
+    // duplicates
+    {
+        std::unordered_set<std::string> unique;
+        bool ok = true;
+        for( int i=0; i<size; i++ )
+        {
+            std::string msgid = archive->GetMessageId( i );
+            if( unique.find( msgid ) == unique.end() )
+            {
+                unique.emplace( std::move( msgid ) );
+            }
+            else
+            {
+                ok = false;
+                break;
+            }
+        }
+
+        if( ok )
+        {
+            printf( MSG_OK " No duplicate messages found\n" );
+        }
+        else
+        {
+            printf( MSG_FAIL " Message duplicates exist\n" );
+        }
+    }
+
     return 0;
 }
