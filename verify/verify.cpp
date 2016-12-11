@@ -27,19 +27,29 @@ const char* path = nullptr;
 
 void PrintInfo( State state, const char* message )
 {
-    switch( state )
+    if( quiet )
     {
-    case State::Ok:
-        printf( MSG_OK " " );
-        break;
-    case State::Fail:
-        printf( MSG_FAIL " " );
-        break;
-    case State::Info:
-        printf( MSG_INFO " " );
-        break;
+        if( state == State::Fail )
+        {
+            printf( MSG_FAIL " \033[37;1m%s\033[0m: %s\n", path, message );
+        }
     }
-    printf( "%s\n", message );
+    else
+    {
+        switch( state )
+        {
+        case State::Ok:
+            printf( MSG_OK " " );
+            break;
+        case State::Fail:
+            printf( MSG_FAIL " " );
+            break;
+        case State::Info:
+            printf( MSG_INFO " " );
+            break;
+        }
+        printf( "%s\n", message );
+    }
 }
 
 void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
@@ -101,7 +111,10 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    printf( "Verifying archive \033[37;1m%s\033[0m\n", path );
+    if( !quiet )
+    {
+        printf( "Verifying archive \033[37;1m%s\033[0m\n", path );
+    }
 
     const auto size = archive->NumberOfMessages();
 
