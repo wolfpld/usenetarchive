@@ -15,6 +15,8 @@
 #define MSG_FAIL "[\033[31;1mFAIL\033[0m]"
 #define MSG_INFO "[\033[33;1mINFO\033[0m]"
 
+bool quiet = false;
+
 void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
 {
     auto it = data.find( idx );
@@ -41,6 +43,12 @@ void Expand( std::vector<uint32_t>& order, Archive& archive, uint32_t msgidx )
     }
 }
 
+void Usage( const char* image )
+{
+    fprintf( stderr, "USAGE: %s [-q] archive\n", image );
+    exit( 1 );
+}
+
 int main( int argc, char** argv )
 {
 #ifdef _WIN32
@@ -51,20 +59,24 @@ int main( int argc, char** argv )
     }
 #endif
 
-    if( argc != 2 )
+    if( argc < 2 ) Usage( argv[0] );
+
+    const char* path = argv[1];
+    if( strcmp( path, "-q" ) == 0 )
     {
-        fprintf( stderr, "USAGE: %s archive\n", argv[0] );
-        exit( 1 );
+        if( argc == 2 ) Usage( argv[0] );
+        path = argv[2];
+        quiet = true;
     }
 
-    auto archive = Archive::Open( argv[1] );
+    auto archive = Archive::Open( path );
     if( !archive )
     {
-        fprintf( stderr, "Cannot open archive %s\n", argv[1] );
+        fprintf( stderr, "Cannot open archive %s\n", path );
         exit( 1 );
     }
 
-    printf( "Verifying archive \033[37;1m%s\033[0m\n", argv[1] );
+    printf( "Verifying archive \033[37;1m%s\033[0m\n", path );
 
     const auto size = archive->NumberOfMessages();
 
