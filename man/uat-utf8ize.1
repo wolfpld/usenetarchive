@@ -13,6 +13,12 @@ headers, messages without specified encoding or with bad encoding. HTML
 parts of message are removed. Quoted-Printable and Base64 encodings are
 converted to plain text.
 
+When header fields contain raw UTF-8 data (which is incorrect, but
+common in google groups messages), additional conversion step is
+performed. ISO8859-1 code points which overlap with ISO8859-2 and CP1250
+ones are assumed to be incorrectly encoded and are converted to polish
+characters.
+
 This will produce archive in LZ4 format.
 .SH NOTES
 Requires LZ4 archive.
