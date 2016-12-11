@@ -15,14 +15,39 @@
 #define MSG_FAIL "[\033[31;1mFAIL\033[0m]"
 #define MSG_INFO "[\033[33;1mINFO\033[0m]"
 
+enum class State
+{
+    Ok,
+    Fail,
+    Info
+};
+
 bool quiet = false;
+const char* path = nullptr;
+
+void PrintInfo( State state, const char* message )
+{
+    switch( state )
+    {
+    case State::Ok:
+        printf( MSG_OK " " );
+        break;
+    case State::Fail:
+        printf( MSG_FAIL " " );
+        break;
+    case State::Info:
+        printf( MSG_INFO " " );
+        break;
+    }
+    printf( "%s\n", message );
+}
 
 void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
 {
     auto it = data.find( idx );
     if( it == data.end() )
     {
-        printf( MSG_FAIL " \033[31;1mBroken connectivity data! Aborting!\033[0m\n" );
+        PrintInfo( State::Fail, "\033[31;1mBroken connectivity data! Aborting!\033[0m" );
         exit( 1 );
     }
     data.erase( it );
@@ -61,7 +86,7 @@ int main( int argc, char** argv )
 
     if( argc < 2 ) Usage( argv[0] );
 
-    const char* path = argv[1];
+    path = argv[1];
     if( strcmp( path, "-q" ) == 0 )
     {
         if( argc == 2 ) Usage( argv[0] );
@@ -95,15 +120,11 @@ int main( int argc, char** argv )
         }
         if( messages.empty() )
         {
-            printf( MSG_OK " All messages reachable\n" );
+            PrintInfo( State::Ok, "All messages reachable" );
         }
         else
         {
-            printf( MSG_FAIL " %i messages unreachable:\n", messages.size() );
-            for( auto& v : messages )
-            {
-                printf( "      -> %s\n", archive->GetMessageId( v ) );
-            }
+            PrintInfo( State::Fail, "Some messages are unreachable" );
         }
     }
 
@@ -130,11 +151,11 @@ int main( int argc, char** argv )
         }
         if( ok )
         {
-            printf( MSG_OK " Messages are sorted\n" );
+            PrintInfo( State::Ok, "Messages are sorted" );
         }
         else
         {
-            printf( MSG_FAIL " Messages are not sorted\n" );
+            PrintInfo( State::Fail, "Messages are not sorted" );
         }
     }
 
@@ -143,7 +164,7 @@ int main( int argc, char** argv )
         auto name = archive->GetArchiveName();
         if( name.second == 0 )
         {
-            printf( MSG_FAIL " Archive name not available\n" );
+            PrintInfo( State::Fail, "Archive name not available" );
         }
         else
         {
@@ -158,11 +179,11 @@ int main( int argc, char** argv )
             }
             if( bad )
             {
-                printf( MSG_FAIL " Archive name contains newline\n" );
+                PrintInfo( State::Fail, "Archive name contains newline" );
             }
             else
             {
-                printf( MSG_OK " Archive name is valid\n" );
+                PrintInfo( State::Ok, "Archive name is valid" );
             }
         }
     }
@@ -175,22 +196,22 @@ int main( int argc, char** argv )
         {
             if( dl.second == 0 )
             {
-                printf( MSG_INFO " Lack of short and long descriptions\n" );
+                PrintInfo( State::Info, "Lack of short and long descriptions" );
             }
             else
             {
-                printf( MSG_INFO " Lack of short description\n" );
+                PrintInfo( State::Info, "Lack of short description" );
             }
         }
         else
         {
             if( dl.second == 0 )
             {
-                printf( MSG_INFO " Lack of long description\n" );
+                PrintInfo( State::Info, "Lack of long description" );
             }
             else
             {
-                printf( MSG_OK " Short and long descriptions are present\n" );
+                PrintInfo( State::Ok, "Short and long descriptions are present" );
             }
         }
     }
@@ -229,11 +250,11 @@ int main( int argc, char** argv )
 
         if( ok )
         {
-            printf( MSG_OK " Total children counts valid\n" );
+            PrintInfo( State::Ok, "Total children counts valid" );
         }
         else
         {
-            printf( MSG_FAIL " Wrong total children counts\n" );
+            PrintInfo( State::Fail, "Wrong total children counts" );
         }
     }
 
@@ -257,11 +278,11 @@ int main( int argc, char** argv )
 
         if( ok )
         {
-            printf( MSG_OK " No duplicate messages found\n" );
+            PrintInfo( State::Ok, "No duplicate messages found" );
         }
         else
         {
-            printf( MSG_FAIL " Message duplicates exist\n" );
+            PrintInfo( State::Fail, "Message duplicates exist" );
         }
     }
 
