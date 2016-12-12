@@ -108,7 +108,7 @@ int main( int argc, char** argv )
     fclose( buf1 );
     fclose( buf2 );
 
-    enum { DictSize = 1024*1024 };
+    enum { DictSize = 4*1024*1024 };
     auto dict = new char[DictSize];
     size_t realDictSize;
 
