@@ -23,8 +23,8 @@ Zstandard compression level. Consult https://github.com/facebook/zstd for
 more information.
 .TP
 .BR \-s\fI\ power
-Set maximum data sample size used for building dictionary to 2^\fIpower\fR bytes.
-Valid values: 10-31.
+Set maximum data sample size used for building dictionary to 2^\fIpower\fR
+bytes.  Valid values: 10-31.
 .I uat-repack-zstd
 requires 10*N bytes of memory to build N-byte sized dictionary.
 .SH EXAMPLE
@@ -43,6 +43,38 @@ Sample size ; Dictionary size ; Data size
 256 MB ; 452 KB ; 346 MB
 512 MB ; 461 KB ; 333 MB
 1024 MB ; 483 KB ; 324 MB
+.TE
+
+Here are output data sizes obtained using various compression levels on a
+62\ MB archive. Dictionary size was constant at 364\ KB. Time was measured
+with a small (128\ KB) dictionary.
+.TS
+tab(;);
+c c c
+n n n .
+Level ; Data size ; Time
+1 ; 25104384 ; 0.31s
+2 ; 23509818 ; 0.30s
+3 ; 22718925 ; 0.35s
+4 ; 22462288 ; 0.44s
+5 ; 21826232 ; 0.48s
+6 ; 21164245 ; 0.51s
+7 ; 20857144 ; 0.53s
+8 ; 20461183 ; 0.53s
+9 ; 20427667 ; 0.87s
+10 ; 20312570 ; 1.23s
+11 ; 20312570 ; 1.38s
+12 ; 20254263 ; 1.47s
+13 ; 20254263 ; 1.63s
+14 ; 20227239 ; 1.86s
+15 ; 20189331 ; 2.08s
+16 ; 20189331 ; 2.20s
+17 ; 20011183 ; 2.23s
+18 ; 19975813 ; 2.51s
+19 ; 19863161 ; 2.22s
+20 ; 19809713 ; 2.22s
+21 ; 19791759 ; 2.21s
+22 ; 19791740 ; 2.27s
 .TE
 .SH NOTES
 Requires LZ4 archive.
