@@ -10,12 +10,6 @@
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
 
-struct DataStruct
-{
-    uint32_t id;
-    uint32_t offset;
-};
-
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -28,17 +22,17 @@ int main( int argc, char** argv )
     base.append( "/" );
     FileMap<LexiconMetaPacket> meta( base + "lexmeta" );
 
-    DataStruct* data;
+    LexiconDataPacket* data;
     uint8_t* hits;
     uint32_t datasize, hitssize;
     {
-        FileMap<DataStruct> mdata( base + "lexdata" );
+        FileMap<LexiconDataPacket> mdata( base + "lexdata" );
         FileMap<uint8_t> mhits( base + "lexhit" );
 
         datasize = mdata.DataSize();
         hitssize = mhits.DataSize();
 
-        data = new DataStruct[datasize];
+        data = new LexiconDataPacket[datasize];
         hits = new uint8_t[hitssize];
 
         memcpy( data, mdata, mdata.Size() );
@@ -55,22 +49,22 @@ int main( int argc, char** argv )
         }
 
         auto mp = meta + i;
-        auto dptr = data + ( mp->data / sizeof( DataStruct ) );
+        auto dptr = data + ( mp->data / sizeof( LexiconDataPacket ) );
         auto dsize = mp->dataSize;
-        std::sort( dptr, dptr + dsize, [] ( const auto& l, const auto& r ) { return ( l.id & LexiconPostMask ) < ( r.id & LexiconPostMask ); } );
+        std::sort( dptr, dptr + dsize, [] ( const auto& l, const auto& r ) { return ( l.postid & LexiconPostMask ) < ( r.postid & LexiconPostMask ); } );
 
         for( int i=0; i<dsize; i++ )
         {
-            uint8_t hnum = dptr[i].offset >> LexiconHitShift;
+            uint8_t hnum = dptr[i].hitoffset >> LexiconHitShift;
             uint8_t* hptr;
             if( hnum == 0 )
             {
-                hptr = hits + ( dptr[i].offset & LexiconHitOffsetMask );
+                hptr = hits + ( dptr[i].hitoffset & LexiconHitOffsetMask );
                 hnum = *hptr++;
             }
             else
             {
-                hptr = (uint8_t*)&dptr[i].offset;
+                hptr = (uint8_t*)&dptr[i].hitoffset;
             }
             if( hnum > 1 )
             {
@@ -84,7 +78,7 @@ int main( int argc, char** argv )
     FILE* fdata = fopen( ( base + "lexdata" ).c_str(), "wb" );
     FILE* fhits = fopen( ( base + "lexhit" ).c_str(), "wb" );
 
-    fwrite( data, 1, datasize * sizeof( DataStruct ), fdata );
+    fwrite( data, 1, datasize * sizeof( LexiconDataPacket ), fdata );
     fwrite( hits, 1, hitssize * sizeof( uint8_t ), fhits );
 
     fclose( fdata );
