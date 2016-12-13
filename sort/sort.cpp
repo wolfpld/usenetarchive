@@ -282,7 +282,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "lexmeta %i/%i\r", i, lexmeta.DataSize() );
+                printf( "lexdata %i/%i\r", i, lexmeta.DataSize() );
                 fflush( stdout );
             }
             auto meta = lexmeta[i];
