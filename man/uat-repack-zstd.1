@@ -27,6 +27,10 @@ Set maximum data sample size used for building dictionary to 2^\fIpower\fR
 bytes.  Valid values: 10-31.
 .I uat-repack-zstd
 requires 10*N bytes of memory to build N-byte sized dictionary.
+.TP
+.BR \-S\fI\ selectivity
+Set selectivity level. This handles balance between compactness of the
+dictionary and efficiency of compression.
 .SH EXAMPLE
 The following table shows how dictionary sample size may influence
 compressed data size for a 1 GB archive.
