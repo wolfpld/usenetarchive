@@ -316,5 +316,7 @@ int main( int argc, char** argv )
         printf( "\n" );
     }
 
+    printf( "Note: Remember to run uat-lexsort.\n" );
+
     return 0;
 }
