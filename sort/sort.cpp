@@ -292,6 +292,7 @@ int main( int argc, char** argv )
                 auto idx = rev[data->postid & LexiconPostMask] | ( data->postid & LexiconChildMask );
                 fwrite( &idx, 1, sizeof( idx ), dst );
                 fwrite( &data->hitoffset, 1, sizeof( data->hitoffset ), dst );
+                data++;
             }
         }
         fclose( dst );
