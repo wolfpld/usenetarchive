@@ -102,7 +102,7 @@ int main( int argc, char** argv )
     CreateDirStruct( dbase );
     dbase.append( "/" );
 
-    printf( "done\nCopy common files..." );
+    printf( " done\nCopy common files..." );
     fflush( stdout );
 
     if( Exists( base + "name" ) ) CopyFile( base + "name", dbase + "name" );
