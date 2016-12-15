@@ -549,11 +549,11 @@ void Browser::on_lineEdit_returnPressed()
 
     QString str;
     str += "Search query found ";
-    str += QString::number( res.size() );
+    str += QString::number( res.results.size() );
     str += " messages in ";
     str += QString::number( std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );
     str += "ms.";
-    if( res.size() > DisplayLimit )
+    if( res.results.size() > DisplayLimit )
     {
         str += " (Limiting display to ";
         str += QString::number( DisplayLimit );
@@ -563,10 +563,10 @@ void Browser::on_lineEdit_returnPressed()
 
     ui->SearchContentsScroll->setUpdatesEnabled( false );
     ClearSearch();
-    const auto size = std::min<size_t>( DisplayLimit, res.size() );
+    const auto size = std::min<size_t>( DisplayLimit, res.results.size() );
     for( size_t i=0; i<size; i++ )
     {
-        auto& v = res[i];
+        auto& v = res.results[i];
         auto panel = new QFrame();
         panel->setFrameShape( QFrame::StyledPanel );
         auto vbox = new QVBoxLayout( panel );
@@ -605,7 +605,7 @@ void Browser::on_lineEdit_returnPressed()
         std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
 
         std::vector<size_t> tpos;
-        for( auto& match : v.matched )
+        for( auto& match : res.matched )
         {
             size_t pos = 0;
             while( ( pos = lower.find( match, pos+1 ) ) != std::string::npos ) tpos.emplace_back( pos );

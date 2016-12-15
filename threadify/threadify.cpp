@@ -201,12 +201,13 @@ int main( int argc, char** argv )
                         SplitLine( line, end, wordbuf );
                         if( !wordbuf.empty() )
                         {
-                            auto res = archive->Search( wordbuf, T_Content );
+                            auto results = archive->Search( wordbuf, T_Content );
+                            auto& res = results.results;
                             if( !res.empty() )
                             {
-                                for( auto r : res )
+                                auto matched = results.matched.size();
+                                for( auto& r : res )
                                 {
-                                    auto matched = r.matched.size();
                                     hits[r.postid] += r.rank * matched * matched;
                                 }
                             }

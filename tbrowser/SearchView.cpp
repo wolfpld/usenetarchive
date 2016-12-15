@@ -50,7 +50,7 @@ void SearchView::Entry()
                 std::swap( m_query, query );
                 m_result = m_archive.Search( m_query.c_str() );
                 m_preview.clear();
-                m_preview.reserve( m_result.size() );
+                m_preview.reserve( m_result.results.size() );
                 m_top = m_bottom = m_cursor = 0;
             }
             else
@@ -79,9 +79,9 @@ void SearchView::Entry()
         case KEY_ENTER:
         case '\n':
         case 459:   // numpad enter
-            if( !m_result.empty() )
+            if( !m_result.results.empty() )
             {
-                m_parent->OpenMessage( m_result[m_cursor].postid );
+                m_parent->OpenMessage( m_result.results[m_cursor].postid );
                 return;
             }
             break;
@@ -102,7 +102,7 @@ void SearchView::Resize()
 void SearchView::Draw()
 {
     werase( m_win );
-    if( m_result.empty() )
+    if( m_result.results.empty() )
     {
         if( m_query.empty() )
         {
@@ -117,7 +117,7 @@ void SearchView::Draw()
     else
     {
         wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
-        wprintw( m_win, " %i", m_result.size() );
+        wprintw( m_win, " %i", m_result.results.size() );
         wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
         wprintw( m_win, " results for query: " );
         wattron( m_win, A_BOLD );
@@ -128,9 +128,9 @@ void SearchView::Draw()
         const int w = getmaxx( m_win );
         int cnt = m_top;
         int line = 0;
-        while( line < h && cnt < m_result.size() )
+        while( line < h && cnt < m_result.results.size() )
         {
-            const auto& res = m_result[cnt];
+            const auto& res = m_result.results[cnt];
             wmove( m_win, line + 1, 0 );
             wattron( m_win, COLOR_PAIR(1) );
             wprintw( m_win, "%5i ", cnt+1 );
@@ -247,12 +247,12 @@ void SearchView::Draw()
 
 void SearchView::FillPreview( int idx )
 {
-    auto msg = std::string( m_archive.GetMessage( m_result[idx].postid ) );
+    auto msg = std::string( m_archive.GetMessage( m_result.results[idx].postid ) );
     auto lower = msg;
     std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
 
     std::vector<size_t> tpos;
-    for( auto& match : m_result[idx].matched )
+    for( auto& match : m_result.matched )
     {
         size_t pos = 0;
         while( ( pos = lower.find( match, pos+1 ) ) != std::string::npos ) tpos.emplace_back( pos );
@@ -326,7 +326,7 @@ void SearchView::MoveCursor( int offset )
     }
     while( offset > 0 )
     {
-        if( m_cursor == m_result.size() - 1 ) break;
+        if( m_cursor == m_result.results.size() - 1 ) break;
         m_cursor++;
         if( m_cursor >= m_bottom - 1 )
         {

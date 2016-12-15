@@ -4,13 +4,12 @@
 #include <string>
 #include <vector>
 
+#include "../libuat/Archive.hpp"
+
 #include "View.hpp"
 
-class Archive;
 class BottomBar;
 class Browser;
-class PersistentStorage;
-class SearchResult;
 
 class SearchView : public View
 {
@@ -31,7 +30,7 @@ private:
     Archive& m_archive;
     PersistentStorage& m_storage;
     std::string m_query;
-    std::vector<SearchResult> m_result;
+    SearchData m_result;
     std::vector<std::string> m_preview;
     bool m_active;
 
