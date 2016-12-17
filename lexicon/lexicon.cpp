@@ -51,7 +51,7 @@ using HitData = std::unordered_map<std::string, spp::sparse_hash_map<uint32_t, s
 
 enum { MaxChildren = 0xF8 };
 
-void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
+static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
     assert( ( idx & LexiconPostMask ) == idx );
     assert( childCount <= LexiconChildMax );
@@ -61,12 +61,19 @@ void Add( HitData& data, const std::vector<std::string>& words, uint32_t idx, in
     uint8_t max = LexiconHitPosMask[type];
     for( auto& w : words )
     {
-        auto& hits = data[w];
-        auto& vec = hits[idx];
-        if( vec.size() < std::numeric_limits<uint8_t>::max() )
+        auto it = data.find( w );
+        if( it == data.end() )
         {
-            uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
-            vec.emplace_back( hit );
+            data.emplace( std::move( w ), spp::sparse_hash_map<uint32_t, std::vector<uint8_t>> { std::make_pair( idx, std::vector<uint8_t> { uint8_t( enc | std::min<uint8_t>( max, basePos++ ) ) } ) } );
+        }
+        else
+        {
+            auto& vec = it->second[idx];
+            if( vec.size() < std::numeric_limits<uint8_t>::max() )
+            {
+                uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
+                vec.emplace_back( hit );
+            }
         }
     }
 }
