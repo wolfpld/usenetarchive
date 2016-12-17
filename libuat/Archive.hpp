@@ -20,7 +20,6 @@ struct SearchResult
 {
     uint32_t postid;
     float rank;
-    uint32_t timestamp;
 };
 
 struct SearchData

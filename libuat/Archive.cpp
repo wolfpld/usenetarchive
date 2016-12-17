@@ -193,12 +193,6 @@ struct PostData
     const uint8_t* hits;
 };
 
-struct MergedData
-{
-    uint32_t postid;
-    float rank;
-};
-
 static float HitRank( const PostData& data )
 {
     float rank = 0;
@@ -284,13 +278,13 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int filter ) 
         }
     }
 
-    std::vector<MergedData> merged;
+    std::vector<SearchResult> merged;
     if( wdata.size() == 1 )
     {
         merged.reserve( wdata[0].size() );
         for( auto& v : wdata[0] )
         {
-            merged.emplace_back( MergedData { v.postid, PostRank( v ) * HitRank( v ) } );
+            merged.emplace_back( SearchResult { v.postid, PostRank( v ) * HitRank( v ) } );
         }
     }
     else
@@ -326,7 +320,7 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int filter ) 
                 {
                     rank += HitRank( *v );
                 }
-                merged.emplace_back( MergedData { post.postid, rank * PostRank( post ) } );
+                merged.emplace_back( SearchResult { post.postid, rank * PostRank( post ) } );
             }
         }
     }
@@ -335,11 +329,7 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int filter ) 
     std::sort( merged.begin(), merged.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
 
     std::swap( ret.matched, matched );
-    for( int i=0; i<merged.size(); i++ )
-    {
-        const auto postid = merged[i].postid;
-        ret.results.emplace_back( SearchResult { postid, merged[i].rank, *m_connectivity[postid] } );
-    }
+    std::swap( ret.results, merged );
 
     return ret;
 }
