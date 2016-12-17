@@ -1,7 +1,7 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
-INCLUDES :=
+INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS := -licuuc
 IMAGE := threadify
 
