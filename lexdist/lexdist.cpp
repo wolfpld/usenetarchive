@@ -35,7 +35,7 @@ static size_t utflen( const char* str )
 }
 
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
-static int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
+static int levenshtein_distance( const char32_t* s1, const unsigned int len1, const char32_t* s2, const unsigned int len2 )
 {
     // max word length generated in lexicon is 13 letters
     static thread_local int _col[16], _prevCol[16];
@@ -57,6 +57,13 @@ static int levenshtein_distance( const char* s1, const unsigned int len1, const 
     return prevCol[len2];
 }
 
+static int GetMaxLD( int len )
+{
+    if( len <= 5 ) return 1;
+    if( len <= 10 ) return 2;
+    return 3;
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -72,7 +79,6 @@ int main( int argc, char** argv )
 
     const auto size = meta.DataSize();
     auto data = new std::vector<uint32_t>[size];
-    auto datalock = new std::mutex[size];
     auto lengths = new unsigned int[size];
     auto stru32 = new std::u32string[size];
     auto counts = new unsigned int[size];
@@ -115,55 +121,63 @@ int main( int argc, char** argv )
         printf( "%2i: %i\n", i, byLen[i].size() );
     }
 
-    uint32_t cnt = 0;
-    for( uint32_t i=0; i<size; i++ )
+    printf( "Working...\n" );
+
+    std::vector<std::pair<unsigned int, uint32_t>> candidates;
+    for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
     {
-        if( ( i & 0x3F ) == 0 )
+        const auto maxld = GetMaxLD( i );
+        const auto ldstart = std::max<int>( i-maxld, LexiconMinLen );
+        const auto ldend = std::min<int>( i+maxld, LexiconMaxLen );
+        const auto& byLen1 = byLen[i];
+
+        const auto size = byLen1.size();
+        for( int j=0; j<size; j++ )
         {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
-        }
-
-        auto mp = meta + i;
-        auto s = str + mp->str;
-
-        bool shorti = lengths[i] == 3;
-
-        for( uint32_t j=i+1; j<size; j++ )
-        {
-            if( shorti && lengths[j] != 3 ) continue;
-            auto dist = abs( int( lengths[i] ) - int( lengths[j] ) );
-            if( dist > 2 ) continue;
-
-            auto mp2 = meta + j;
-            auto s2 = str + mp2->str;
-
-            if( shorti )
+            if( ( j & 0x3F ) == 0 )
             {
-                assert( lengths[j] == 3 );
-                if( levenshtein_distance( s, 3, s2, 3 ) <= 1 )
+                printf( "%2i: %i/%i\r", i, j, size );
+                fflush( stdout );
+            }
+
+            const auto idx = byLen1[j];
+            const auto cnt = counts[idx];
+            const auto tcnt = cnt / 10;    // 10%
+            const auto& str1 = stru32[idx];
+
+            unsigned int maxCount = 0;
+            candidates.clear();
+            for( int k=ldstart; k<=ldend; k++ )
+            {
+                const auto& byLen2 = byLen[k];
+                const auto size2 = byLen2.size();
+                for( int l=0; l<size2; l++ )
                 {
-                    datalock[i].lock();
-                    data[i].push_back( mp2->str );
-                    datalock[i].unlock();
-                    datalock[j].lock();
-                    data[j].push_back( mp->str );
-                    datalock[j].unlock();
+                    const auto idx2 = byLen2[l];
+                    const auto cnt2 = counts[idx2];
+
+                    if( cnt2 >= tcnt )
+                    {
+                        const auto& str2 = stru32[idx2];
+                        const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k );
+                        if( ld > 0 && ld <= maxld )
+                        {
+                            candidates.emplace_back( cnt2, offsets[idx2] );
+                            if( cnt2 > maxCount ) maxCount = cnt2;
+                        }
+                    }
                 }
             }
-            else
+            const auto tmc = maxCount / 5;  // 20%
+            for( auto& v : candidates )
             {
-                if( lengths[j] > 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
+                if( v.first >= tmc )
                 {
-                    datalock[i].lock();
-                    data[i].push_back( mp2->str );
-                    datalock[i].unlock();
-                    datalock[j].lock();
-                    data[j].push_back( mp->str );
-                    datalock[j].unlock();
+                    data[idx].emplace_back( v.second );
                 }
             }
         }
+        printf( "%2i: %i/%i\n", i, size, size );
     }
 
     FILE* fdata = fopen( ( base + "lexdist" ).c_str(), "wb" );
