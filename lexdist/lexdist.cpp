@@ -13,6 +13,8 @@
 
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
+#include "../common/System.hpp"
+#include "../common/TaskDispatch.hpp"
 
 static int codepointlen( char c )
 {
@@ -124,9 +126,13 @@ int main( int argc, char** argv )
         printf( "%2i: %i\n", i, byLen[i].size() );
     }
 
-    printf( "Working...\n" );
+    const auto cpus = System::CPUCores();
+    printf( "Working... (%i threads)\n", cpus );
 
-    std::vector<std::pair<unsigned int, uint32_t>> candidates;
+    std::mutex mtx;
+    TaskDispatch tasks( cpus );
+    const auto taskNum = cpus * 16;
+
     for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
     {
         const auto maxld = GetMaxLD( i );
@@ -135,51 +141,68 @@ int main( int argc, char** argv )
         const auto& byLen1 = byLen[i];
 
         const auto size = byLen1.size();
-        for( int j=0; j<size; j++ )
+        uint32_t start = 0;
+        uint32_t inPass = ( size + taskNum - 1 ) / taskNum;
+        uint32_t left = size;
+        uint32_t cnt = 0;
+        for( int t=0; t<taskNum; t++ )
         {
-            if( ( j & 0x3F ) == 0 )
-            {
-                printf( "%2i: %i/%i\r", i, j, size );
-                fflush( stdout );
-            }
-
-            const auto idx = byLen1[j];
-            const auto cnt = counts[idx];
-            const auto tcnt = cnt / 10;    // 10%
-            const auto& str1 = stru32[idx];
-
-            unsigned int maxCount = 0;
-            candidates.clear();
-            for( int k=ldstart; k<=ldend; k++ )
-            {
-                const auto& byLen2 = byLen[k];
-                const auto size2 = byLen2.size();
-                for( int l=0; l<size2; l++ )
+            uint32_t todo = std::min( left, inPass );
+            tasks.Queue( [&stru32, &byLen1, &byLen, start, todo, size, &cnt, &mtx, i, counts, ldstart, ldend, maxld, offsets, &data]() {
+                std::vector<std::pair<unsigned int, uint32_t>> candidates;
+                for( int j=start; j<start+todo; j++ )
                 {
-                    const auto idx2 = byLen2[l];
-                    const auto cnt2 = counts[idx2];
-
-                    if( cnt2 >= tcnt )
+                    mtx.lock();
+                    auto c = cnt++;
+                    mtx.unlock();
+                    if( ( c & 0x1FF ) == 0 )
                     {
-                        const auto& str2 = stru32[idx2];
-                        const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
-                        if( ld > 0 && ld <= maxld )
+                        printf( "%2i: %i/%i\r", i, c, size );
+                        fflush( stdout );
+                    }
+
+                    const auto idx = byLen1[j];
+                    const auto cnt = counts[idx];
+                    const auto tcnt = cnt / 10;    // 10%
+                    const auto& str1 = stru32[idx];
+
+                    unsigned int maxCount = 0;
+                    candidates.clear();
+                    for( int k=ldstart; k<=ldend; k++ )
+                    {
+                        const auto& byLen2 = byLen[k];
+                        const auto size2 = byLen2.size();
+                        for( int l=0; l<size2; l++ )
                         {
-                            candidates.emplace_back( cnt2, offsets[idx2] );
-                            if( cnt2 > maxCount ) maxCount = cnt2;
+                            const auto idx2 = byLen2[l];
+                            const auto cnt2 = counts[idx2];
+
+                            if( cnt2 >= tcnt )
+                            {
+                                const auto& str2 = stru32[idx2];
+                                const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
+                                if( ld > 0 && ld <= maxld )
+                                {
+                                    candidates.emplace_back( cnt2, offsets[idx2] );
+                                    if( cnt2 > maxCount ) maxCount = cnt2;
+                                }
+                            }
+                        }
+                    }
+                    const auto tmc = maxCount / 5;  // 20%
+                    for( auto& v : candidates )
+                    {
+                        if( v.first >= tmc )
+                        {
+                            data[idx].emplace_back( v.second );
                         }
                     }
                 }
-            }
-            const auto tmc = maxCount / 5;  // 20%
-            for( auto& v : candidates )
-            {
-                if( v.first >= tmc )
-                {
-                    data[idx].emplace_back( v.second );
-                }
-            }
+            } );
+            start += todo;
+            left -= todo;
         }
+        tasks.Sync();
         printf( "%2i: %i/%i\n", i, size, size );
     }
 
