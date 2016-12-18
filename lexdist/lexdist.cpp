@@ -76,6 +76,7 @@ int main( int argc, char** argv )
     auto lengths = new unsigned int[size];
     auto stru32 = new std::u32string[size];
     auto counts = new unsigned int[size];
+    auto offsets = new uint32_t[size];
     std::vector<uint32_t> byLen[LexiconMaxLen+1];
 
 #ifdef _MSC_VER
@@ -92,6 +93,7 @@ int main( int argc, char** argv )
         }
 
         auto mp = meta + i;
+        offsets[i] = mp->str;
         auto s = str + mp->str;
         auto len = utflen( s );
         assert( len <= LexiconMaxLen );
