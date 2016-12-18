@@ -67,4 +67,10 @@ static inline float LexiconHitRank( uint8_t v )
     return LexiconWeights[type] * ( pos * 0.9f + 0.1f );
 }
 
+static inline uint8_t LexiconHitPos( uint8_t v )
+{
+    auto type = LexiconDecodeType( v );
+    return v & LexiconHitPosMask[type];
+}
+
 #endif
