@@ -217,6 +217,143 @@ SearchData Archive::Search( const char* query, int filter ) const
     return Search( terms, filter );
 }
 
+static float GetAverageWordDistance( const std::vector<PostData*>& list )
+{
+    float sum = 0;
+    int cnt = 0;
+
+    std::vector<std::vector<uint8_t>> hits;
+    for( auto& post : list )
+    {
+        std::vector<uint8_t> v;
+        for( int i=0; i<post->hitnum; i++ )
+        {
+            auto pos = LexiconHitPos( post->hits[i] );
+            if( pos < LexiconHitPosMask[LexiconDecodeType( post->hits[i] )] )
+            {
+                v.emplace_back( post->hits[i] );
+            }
+        }
+        std::sort( v.begin(), v.end(), []( const uint8_t l, const uint8_t r ) { return LexiconHitPos( l ) < LexiconHitPos( r ); } );
+        hits.emplace_back( std::move( v ) );
+    }
+
+    std::vector<int> start[NUM_LEXICON_TYPES];
+    std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
+
+    for( int i=0; i<NUM_LEXICON_TYPES; i++ )
+    {
+        for( int j=0; j<list.size(); j++ )
+        {
+            start[i].emplace_back( -1 );
+            hop[i].emplace_back();
+        }
+    }
+
+    for( int i=0; i<list.size(); i++ )
+    {
+        auto& post = hits[i];
+        for( auto& hit : post )
+        {
+            auto type = LexiconDecodeType( hit );
+            auto pos = LexiconHitPos( hit );
+            if( start[type][i] == -1 )
+            {
+                start[type][i] = pos;
+            }
+            else
+            {
+                auto prev = hop[type][i].empty() ? start[type][i] : hop[type][i].back();
+                auto diff = pos - prev;
+                if( diff > 0 )
+                {
+                    hop[type][i].emplace_back( diff );
+                }
+            }
+        }
+    }
+
+    for( int t=0; t<NUM_LEXICON_TYPES; t++ )
+    {
+        const auto max = LexiconHitPosMask[t];
+        for( int w1=0; w1<list.size() - 1; w1++ )
+        {
+            if( start[t][w1] == -1 )
+            {
+                auto num = list.size() - w1 - 1;
+                sum += max * num;
+                cnt += num;
+            }
+            else
+            {
+                for( int w2=w1+1; w2<list.size(); w2++ )
+                {
+                    cnt++;
+                    if( start[t][w2] == -1 )
+                    {
+                        sum += max;
+                    }
+                    else
+                    {
+                        auto p1 = start[t][w1];
+                        auto p2 = start[t][w2];
+
+                        auto it1 = hop[t][w1].begin();
+                        auto it2 = hop[t][w2].begin();
+
+                        const auto end1 = hop[t][w1].end();
+                        const auto end2 = hop[t][w2].end();
+
+                        int min = max;
+                        for(;;)
+                        {
+                            auto diff = p1 - p2;
+                            auto ad = abs( diff );
+                            if( ad < min )
+                            {
+                                if( ad < 2 )
+                                {
+                                    min = 1;
+                                    break;
+                                }
+                                else
+                                {
+                                    min = ad;
+                                }
+                            }
+                            if( diff < 0 )
+                            {
+                                if( it1 != end1 )
+                                {
+                                    p1 += *it1++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if( it2 != end2 )
+                                {
+                                    p2 += *it2++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        sum += min;
+                    }
+                }
+            }
+        }
+    }
+
+    return sum / cnt;
+}
+
 SearchData Archive::Search( const std::vector<std::string>& terms, int filter ) const
 {
     SearchData ret;
