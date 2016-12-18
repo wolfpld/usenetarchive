@@ -25,14 +25,10 @@
     <ClCompile Include="..\..\lexdist.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp" />
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
-    <ClInclude Include="..\..\..\common\MessageView.hpp" />
-    <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
-    <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
     <ClInclude Include="..\..\..\common\System.hpp" />
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
   </ItemGroup>
