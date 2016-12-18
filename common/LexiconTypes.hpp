@@ -10,7 +10,8 @@ enum LexiconType
     T_Quote1,
     T_Quote2,
     T_Quote3,
-    T_Header
+    T_Header,
+    NUM_LEXICON_TYPES
 };
 
 enum { T_All = 0xFF };
