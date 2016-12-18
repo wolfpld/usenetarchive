@@ -13,8 +13,6 @@
 
 #include "../common/FileMap.hpp"
 #include "../common/LexiconTypes.hpp"
-#include "../common/System.hpp"
-#include "../common/TaskDispatch.hpp"
 
 static int codepointlen( char c )
 {
@@ -115,78 +113,56 @@ int main( int argc, char** argv )
         printf( "%2i: %i\n", i, byLen[i].size() );
     }
 
-    const auto cpus = System::CPUCores();
-    printf( "Running %i threads...\n", cpus );
-
-    std::mutex mtx;
-    TaskDispatch tasks( cpus );
-    auto taskNum = cpus * 16;
-    uint32_t start = 0;
-    uint32_t inPass = ( size + taskNum - 1 ) / taskNum;
-    uint32_t left = size;
     uint32_t cnt = 0;
-
-    for( int i=0; i<taskNum; i++ )
+    for( uint32_t i=0; i<size; i++ )
     {
-        uint32_t todo = std::min( left, inPass );
-        tasks.Queue( [data, lengths, start, &mtx, &cnt, size, &meta, &str, todo, datalock] () {
-            for( uint32_t i=start; i<start+todo; i++ )
+        if( ( i & 0x3F ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        auto mp = meta + i;
+        auto s = str + mp->str;
+
+        bool shorti = lengths[i] == 3;
+
+        for( uint32_t j=i+1; j<size; j++ )
+        {
+            if( shorti && lengths[j] != 3 ) continue;
+            auto dist = abs( int( lengths[i] ) - int( lengths[j] ) );
+            if( dist > 2 ) continue;
+
+            auto mp2 = meta + j;
+            auto s2 = str + mp2->str;
+
+            if( shorti )
             {
-                mtx.lock();
-                auto c = cnt++;
-                mtx.unlock();
-                if( ( c & 0x3F ) == 0 )
+                assert( lengths[j] == 3 );
+                if( levenshtein_distance( s, 3, s2, 3 ) <= 1 )
                 {
-                    printf( "%i/%i\r", c, size );
-                    fflush( stdout );
-                }
-
-                auto mp = meta + i;
-                auto s = str + mp->str;
-
-                bool shorti = lengths[i] == 3;
-
-                for( uint32_t j=i+1; j<size; j++ )
-                {
-                    if( shorti && lengths[j] != 3 ) continue;
-                    auto dist = abs( int( lengths[i] ) - int( lengths[j] ) );
-                    if( dist > 2 ) continue;
-
-                    auto mp2 = meta + j;
-                    auto s2 = str + mp2->str;
-
-                    if( shorti )
-                    {
-                        assert( lengths[j] == 3 );
-                        if( levenshtein_distance( s, 3, s2, 3 ) <= 1 )
-                        {
-                            datalock[i].lock();
-                            data[i].push_back( mp2->str );
-                            datalock[i].unlock();
-                            datalock[j].lock();
-                            data[j].push_back( mp->str );
-                            datalock[j].unlock();
-                        }
-                    }
-                    else
-                    {
-                        if( lengths[j] > 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
-                        {
-                            datalock[i].lock();
-                            data[i].push_back( mp2->str );
-                            datalock[i].unlock();
-                            datalock[j].lock();
-                            data[j].push_back( mp->str );
-                            datalock[j].unlock();
-                        }
-                    }
+                    datalock[i].lock();
+                    data[i].push_back( mp2->str );
+                    datalock[i].unlock();
+                    datalock[j].lock();
+                    data[j].push_back( mp->str );
+                    datalock[j].unlock();
                 }
             }
-        } );
-        start += todo;
-        left -= todo;
+            else
+            {
+                if( lengths[j] > 3 && levenshtein_distance( s, lengths[i], s2, lengths[j] ) <= 2 )
+                {
+                    datalock[i].lock();
+                    data[i].push_back( mp2->str );
+                    datalock[i].unlock();
+                    datalock[j].lock();
+                    data[j].push_back( mp->str );
+                    datalock[j].unlock();
+                }
+            }
+        }
     }
-    tasks.Sync();
 
     FILE* fdata = fopen( ( base + "lexdist" ).c_str(), "wb" );
     FILE* fmeta = fopen( ( base + "lexdistmeta" ).c_str(), "wb" );
