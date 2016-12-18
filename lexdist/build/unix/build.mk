@@ -1,6 +1,6 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++14
-DEFINES +=
+DEFINES += -D_GNU_SOURCE
 INCLUDES :=
 LIBS := -lpthread
 IMAGE := lexdist
