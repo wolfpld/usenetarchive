@@ -1,5 +1,7 @@
 #include <assert.h>
 #include <algorithm>
+#include <codecvt>
+#include <locale>
 #include <math.h>
 #include <mutex>
 #include <stdint.h>
@@ -74,18 +76,37 @@ int main( int argc, char** argv )
     auto data = new std::vector<uint32_t>[size];
     auto datalock = new std::mutex[size];
     auto lengths = new unsigned int[size];
-    std::vector<const char*> byLen[LexiconMaxLen+1];
+    auto stru32 = new std::u32string[size];
+    std::vector<uint32_t> byLen[LexiconMaxLen+1];
+
+#ifdef _MSC_VER
+    std::wstring_convert<std::codecvt_utf8<unsigned int>, unsigned int> conv;
+#else
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+#endif
     for( uint32_t i=0; i<size; i++ )
     {
+        if( ( i & 0x3FF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
         auto mp = meta + i;
         auto s = str + mp->str;
         auto len = utflen( s );
         assert( len <= LexiconMaxLen );
+
         lengths[i] = len;
-        byLen[len].emplace_back( s );
+#ifdef _MSC_VER
+        stru32[i] = std::u32string( (const char32_t*)conv.from_bytes( s ).data() );
+#else
+        stru32[i] = conv.from_bytes( s );
+#endif
+        byLen[len].emplace_back( i );
     }
 
-    printf( "Word length histogram\n" );
+    printf( "\nWord length histogram\n" );
     for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
     {
         printf( "%2i: %i\n", i, byLen[i].size() );
