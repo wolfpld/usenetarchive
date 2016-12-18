@@ -77,6 +77,7 @@ int main( int argc, char** argv )
     auto datalock = new std::mutex[size];
     auto lengths = new unsigned int[size];
     auto stru32 = new std::u32string[size];
+    auto counts = new unsigned int[size];
     std::vector<uint32_t> byLen[LexiconMaxLen+1];
 
 #ifdef _MSC_VER
@@ -104,6 +105,8 @@ int main( int argc, char** argv )
         stru32[i] = conv.from_bytes( s );
 #endif
         byLen[len].emplace_back( i );
+
+        counts[i] = mp->dataSize;
     }
 
     printf( "\nWord length histogram\n" );
