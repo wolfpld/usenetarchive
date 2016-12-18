@@ -35,7 +35,7 @@ static size_t utflen( const char* str )
 }
 
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
-static int levenshtein_distance( const char32_t* s1, const unsigned int len1, const char32_t* s2, const unsigned int len2 )
+static int levenshtein_distance( const char32_t* s1, const unsigned int len1, const char32_t* s2, const unsigned int len2, int threshold )
 {
     // max word length generated in lexicon is 13 letters
     static thread_local int _col[16], _prevCol[16];
@@ -48,10 +48,13 @@ static int levenshtein_distance( const char32_t* s1, const unsigned int len1, co
     for( unsigned int i = 0; i < len1; i++ )
     {
         col[0] = i+1;
+        auto min = col[0];
         for( unsigned int j = 0; j < len2; j++ )
         {
             col[j+1] = std::min( { prevCol[1 + j], col[j], prevCol[j] - (s1[i]==s2[j] ? 1 : 0) } ) + 1;
+            if( col[j+1] < min ) min = col[j+1];
         }
+        if( min >= threshold ) return threshold;
         std::swap( col, prevCol );
     }
     return prevCol[len2];
@@ -159,7 +162,7 @@ int main( int argc, char** argv )
                     if( cnt2 >= tcnt )
                     {
                         const auto& str2 = stru32[idx2];
-                        const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k );
+                        const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
                         if( ld > 0 && ld <= maxld )
                         {
                             candidates.emplace_back( cnt2, offsets[idx2] );
