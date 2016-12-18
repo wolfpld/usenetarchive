@@ -8,7 +8,7 @@ int main( int argc, char** argv )
     }
 
     auto a = Archive::Open( argv[1] );
-    a->Search( argv[2] );
+    a->Search( argv[2], true );
 
     return 0;
 }

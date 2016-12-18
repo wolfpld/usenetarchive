@@ -210,11 +210,11 @@ static float PostRank( const PostData& data )
     return ( float( data.children ) / LexiconChildMax ) * 0.9f + 0.1f;
 }
 
-SearchData Archive::Search( const char* query, int filter ) const
+SearchData Archive::Search( const char* query, bool adjacentWords, int filter ) const
 {
     std::vector<std::string> terms;
     split( query, std::back_inserter( terms ) );
-    return Search( terms, filter );
+    return Search( terms, adjacentWords, filter );
 }
 
 static float GetAverageWordDistance( const std::vector<PostData*>& list )
@@ -354,7 +354,7 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
     return sum / cnt;
 }
 
-SearchData Archive::Search( const std::vector<std::string>& terms, int filter ) const
+SearchData Archive::Search( const std::vector<std::string>& terms, bool adjacentWords, int filter ) const
 {
     SearchData ret;
 
@@ -456,6 +456,10 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int filter ) 
                 for( auto& v : list )
                 {
                     rank += HitRank( *v );
+                }
+                if( adjacentWords )
+                {
+                    rank /= GetAverageWordDistance( list );
                 }
                 merged.emplace_back( SearchResult { post.postid, rank * PostRank( post ) } );
             }
