@@ -16,6 +16,9 @@ enum LexiconType
 
 enum { T_All = 0xFF };
 
+enum { LexiconMinLen = 3 };
+enum { LexiconMaxLen = 13 };
+
 extern const char* LexiconNames[];
 extern const float LexiconWeights[];
 

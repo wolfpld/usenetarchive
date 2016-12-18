@@ -3,6 +3,7 @@
 #include <unicode/unistr.h>
 
 #include "ICU.hpp"
+#include "LexiconTypes.hpp"
 
 UErrorCode wordItErr = U_ZERO_ERROR;
 auto wordIt = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), wordItErr );
@@ -20,7 +21,7 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out 
     {
         auto part = lower.tempSubStringBetween( p0, p1 );
         auto len = part.length();
-        if( len > 2 && len < 14 )
+        if( len >= LexiconMinLen && len <= LexiconMaxLen )
         {
             std::string str;
             part.toUTF8String( str );
