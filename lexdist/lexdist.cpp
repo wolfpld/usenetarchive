@@ -14,6 +14,26 @@
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
 
+static int codepointlen( char c )
+{
+    if( ( c & 0x80 ) == 0 ) return 1;
+    if( ( c & 0x20 ) == 0 ) return 2;
+    if( ( c & 0x10 ) == 0 ) return 3;
+    assert( ( c & 0x08 ) == 0 );
+    return 4;
+}
+
+static size_t utflen( const char* str )
+{
+    size_t ret = 0;
+    while( *str != '\0' )
+    {
+        str += codepointlen( *str );
+        ret++;
+    }
+    return ret;
+}
+
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C.2B.2B
 static int levenshtein_distance( const char* s1, const unsigned int len1, const char* s2, const unsigned int len2 )
 {
@@ -54,11 +74,21 @@ int main( int argc, char** argv )
     auto data = new std::vector<uint32_t>[size];
     auto datalock = new std::mutex[size];
     auto lengths = new unsigned int[size];
+    std::vector<const char*> byLen[LexiconMaxLen+1];
     for( uint32_t i=0; i<size; i++ )
     {
         auto mp = meta + i;
         auto s = str + mp->str;
-        lengths[i] = strlen( s );
+        auto len = utflen( s );
+        assert( len <= LexiconMaxLen );
+        lengths[i] = len;
+        byLen[len].emplace_back( s );
+    }
+
+    printf( "Word length histogram\n" );
+    for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
+    {
+        printf( "%2i: %i\n", i, byLen[i].size() );
     }
 
     const auto cpus = System::CPUCores();
