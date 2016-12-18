@@ -186,12 +186,17 @@ int main( int argc, char** argv )
     const uint32_t zero = 0;
     fwrite( &zero, 1, sizeof( uint32_t ), fdata );
 
+    int statnone = 0;
+    int statcnt = 0;
+    int statnum = 0;
+
     uint32_t offset = sizeof( uint32_t );
     for( int i=0; i<size; i++ )
     {
         if( data[i].empty() )
         {
             fwrite( &zero, 1, sizeof( uint32_t ), fmeta );
+            statnone++;
         }
         else
         {
@@ -200,11 +205,22 @@ int main( int argc, char** argv )
             fwrite( &size, 1, sizeof( uint32_t ), fdata );
             fwrite( data[i].data(), 1, sizeof( uint32_t ) * size, fdata );
             offset += sizeof( uint32_t ) * ( size + 1 );
+            statnum++;
+            statcnt += size;
         }
     }
 
     fclose( fdata );
     fclose( fmeta );
+
+    if( statnum == 0 )
+    {
+        printf( "No similar words found for %i words.\n", statnone );
+    }
+    else
+    {
+        printf( "No similar words found for %i words. Average %.2f similar words found for %i words.\n", statnone, float( statcnt ) / statnum, statnum );
+    }
 
     return 0;
 }
