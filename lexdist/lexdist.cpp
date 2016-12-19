@@ -193,7 +193,7 @@ int main( int argc, char** argv )
         for( int t=0; t<taskNum; t++ )
         {
             uint32_t todo = std::min( left, inPass );
-            tasks.Queue( [&stru32, &byLen1, &byLen, start, todo, size, &cnt, &mtx, i, counts, ldstart, ldend, maxld, offsets, &data]() {
+            tasks.Queue( [&stru32, &byLen1, &byLen, start, todo, size, &cnt, &mtx, i, counts, ldstart, ldend, maxld, offsets, &data, heurdata]() {
                 std::vector<std::pair<unsigned int, uint32_t>> candidates;
                 for( int j=start; j<start+todo; j++ )
                 {
@@ -210,6 +210,7 @@ int main( int argc, char** argv )
                     const auto cnt = counts[idx];
                     const auto tcnt = cnt / 10;    // 10%
                     const auto& str1 = stru32[idx];
+                    const auto heur1 = heurdata[idx];
 
                     unsigned int maxCount = 0;
                     candidates.clear();
@@ -221,15 +222,18 @@ int main( int argc, char** argv )
                         {
                             const auto idx2 = byLen2[l];
                             const auto cnt2 = counts[idx2];
-
                             if( cnt2 >= tcnt )
                             {
-                                const auto& str2 = stru32[idx2];
-                                const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
-                                if( ld > 0 && ld <= maxld )
+                                const auto heur2 = heurdata[idx2];
+                                if( CountBits( heur1 ^ heur2 ) <= maxld * 2 )
                                 {
-                                    candidates.emplace_back( cnt2, offsets[idx2] );
-                                    if( cnt2 > maxCount ) maxCount = cnt2;
+                                    const auto& str2 = stru32[idx2];
+                                    const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
+                                    if( ld > 0 && ld <= maxld )
+                                    {
+                                        candidates.emplace_back( cnt2, offsets[idx2] );
+                                        if( cnt2 > maxCount ) maxCount = cnt2;
+                                    }
                                 }
                             }
                         }
