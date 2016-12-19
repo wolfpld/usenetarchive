@@ -216,6 +216,7 @@ int main( int argc, char** argv )
                     candidates.clear();
                     for( int k=ldstart; k<=ldend; k++ )
                     {
+                        const auto hld = maxld * 2 - abs( k - i );
                         const auto& byLen2 = byLen[k];
                         const auto size2 = byLen2.size();
                         for( int l=0; l<size2; l++ )
@@ -225,7 +226,7 @@ int main( int argc, char** argv )
                             if( cnt2 >= tcnt )
                             {
                                 const auto heur2 = heurdata[idx2];
-                                if( CountBits( heur1 ^ heur2 ) <= maxld * 2 )
+                                if( CountBits( heur1 ^ heur2 ) <= hld )
                                 {
                                     const auto& str2 = stru32[idx2];
                                     const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
