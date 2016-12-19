@@ -69,6 +69,40 @@ static int GetMaxLD( int len )
     return 3;
 }
 
+void BuildHeuristicData( uint64_t& v, const char* str )
+{
+    v = 0;
+    while( *str != '\0' )
+    {
+        auto cpl = codepointlen( *str );
+        if( cpl > 1 )
+        {
+            str += cpl;
+            v |= 0x1;
+        }
+        else
+        {
+            if( *str >= '0' && *str <= '9' )
+            {
+                v |= ( 1LL << ( *str - '0' + 1 ) );
+            }
+            else if( *str >= 'a' && *str <= 'z' )
+            {
+                v |= ( 1LL << ( *str - 'a' + 12 ) );
+            }
+            else if( *str == '.' )
+            {
+                v |= ( 1LL << 39 );
+            }
+            else
+            {
+                v |= 0x1;
+            }
+            str++;
+        }
+    }
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -88,6 +122,7 @@ int main( int argc, char** argv )
     auto stru32 = new std::u32string[size];
     auto counts = new unsigned int[size];
     auto offsets = new uint32_t[size];
+    auto heurdata = new uint64_t[size];
     std::vector<uint32_t> byLen[LexiconMaxLen+1];
 
 #ifdef _MSC_VER
@@ -118,6 +153,8 @@ int main( int argc, char** argv )
         byLen[len].emplace_back( i );
 
         counts[i] = mp->dataSize;
+
+        BuildHeuristicData( heurdata[i], s );
     }
 
     printf( "\nWord length histogram\n" );
