@@ -241,16 +241,18 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
     std::vector<int> start[NUM_LEXICON_TYPES];
     std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
 
+    const auto listsize = list.size();
+
     for( int i=0; i<NUM_LEXICON_TYPES; i++ )
     {
-        for( int j=0; j<list.size(); j++ )
+        for( int j=0; j<listsize; j++ )
         {
             start[i].emplace_back( -1 );
             hop[i].emplace_back();
         }
     }
 
-    for( int i=0; i<list.size(); i++ )
+    for( int i=0; i<listsize; i++ )
     {
         auto& post = hits[i];
         for( auto& hit : post )
@@ -276,17 +278,17 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
     for( int t=0; t<NUM_LEXICON_TYPES; t++ )
     {
         const auto max = LexiconHitPosMask[t];
-        for( int w1=0; w1<list.size() - 1; w1++ )
+        for( int w1=0; w1<listsize - 1; w1++ )
         {
             if( start[t][w1] == -1 )
             {
-                auto num = list.size() - w1 - 1;
+                auto num = listsize - w1 - 1;
                 sum += max * num;
                 cnt += num;
             }
             else
             {
-                for( int w2=w1+1; w2<list.size(); w2++ )
+                for( int w2=w1+1; w2<listsize; w2++ )
                 {
                     cnt++;
                     if( start[t][w2] == -1 )
