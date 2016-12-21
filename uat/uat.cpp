@@ -29,7 +29,7 @@ static const Tool tools[] = {
     { "import-source-maildir-7z", "Import messages from a compressed directory tree." },
     { "import-source-mbox", "Import messages from mbox archive." },
     { "kill-duplicates", "Remove duplicated messages." },
-    { "lexdist", "Calculate distance between words. (EXPERIMENTAL, DO NOT USE!)" },
+    { "lexdist", "Calculate distance between words." },
     { "lexhash", "Calculate lexicon hash tables." },
     { "lexicon", "Create search lexicon." },
     { "lexopt", "Optimize lexicon." },

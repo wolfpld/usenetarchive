@@ -76,7 +76,7 @@ Search in archive is performed with the help of a word lexicon. The following to
 - lexicon --- Build a list of words and hit-tables for each word.
 - lexopt --- Optimize lexicon string database.
 - lexstats --- Display lexicon statistics.
-- lexdist --- Calculate distances between words (unused).
+- lexdist --- Calculate distances between words.
 - lexhash --- Prepare lexicon hash table.
 - lexsort --- Sort lexicon data.
 
@@ -141,7 +141,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *lex* → **lexopt** → modifies: *lex*  
 *lex* → **lexhash** → adds: *lexhash*  
 *lex* → **lexsort** → modifies: *lex*  
-*lex* → **lexdist** → adds: *lexdist* (unused)  
+*lex* → **lexdist** → adds: *lexdist*  
 *lex* → **lexstats** → user interaction  
 *LZ4*, *msgid* → **query-raw** → user interaction  
 *zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction  
