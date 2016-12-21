@@ -222,9 +222,12 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
     float sum = 0;
     int cnt = 0;
 
+    const auto listsize = list.size();
+
     static thread_local std::vector<std::vector<uint8_t>> hits;
     const auto hs = hits.size();
-    for( int i=0; i<list.size(); i++ )
+
+    for( int i=0; i<listsize; i++ )
     {
         const auto& post = list[i];
 
@@ -252,8 +255,7 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
     static thread_local std::vector<int> start[NUM_LEXICON_TYPES];
     static thread_local std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
 
-    const auto listsize = list.size();
-
+    const auto hops = hop[0].size();
     for( int i=0; i<NUM_LEXICON_TYPES; i++ )
     {
         start[i].clear();
@@ -261,8 +263,6 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
         {
             start[i].emplace_back( -1 );
         }
-
-        const auto hops = hop[i].size();
         if( listsize < hops )
         {
             for( int j=0; j<listsize; j++ )
