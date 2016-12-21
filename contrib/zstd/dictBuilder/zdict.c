@@ -36,12 +36,11 @@
 #include <time.h>          /* clock */
 
 #include "mem.h"           /* read */
-#include "error_private.h"
 #include "fse.h"           /* FSE_normalizeCount, FSE_writeNCount */
 #define HUF_STATIC_LINKING_ONLY
-#include "huf.h"
+#include "huf.h"           /* HUF_buildCTable, HUF_writeCTable */
 #include "zstd_internal.h" /* includes zstd.h */
-#include "xxhash.h"
+#include "xxhash.h"        /* XXH64 */
 #include "divsufsort.h"
 #ifndef ZDICT_STATIC_LINKING_ONLY
 #  define ZDICT_STATIC_LINKING_ONLY
@@ -570,7 +569,7 @@ static void ZDICT_countEStats(EStats_ress_t esr, ZSTD_parameters params,
             if (ZSTD_isError(errorCode)) { DISPLAYLEVEL(1, "warning : ZSTD_copyCCtx failed \n"); return; }
     }
     cSize = ZSTD_compressBlock(esr.zc, esr.workPlace, ZSTD_BLOCKSIZE_ABSOLUTEMAX, src, srcSize);
-    if (ZSTD_isError(cSize)) { DISPLAYLEVEL(1, "warning : could not compress sample size %u \n", (U32)srcSize); return; }
+    if (ZSTD_isError(cSize)) { DISPLAYLEVEL(3, "warning : could not compress sample size %u \n", (U32)srcSize); return; }
 
     if (cSize) {  /* if == 0; block is not compressible */
         const seqStore_t* seqStorePtr = ZSTD_getSeqStore(esr.zc);
@@ -898,12 +897,14 @@ size_t ZDICT_trainFromBuffer_unsafe(
         U32 const nb = MIN(25, dictList[0].pos);
         U32 const dictContentSize = ZDICT_dictSize(dictList);
         U32 u;
-        DISPLAYLEVEL(3, "\n %u segments found, of total size %u \n", dictList[0].pos, dictContentSize);
-        DISPLAYLEVEL(3, "list %u best segments \n", nb);
-        for (u=1; u<=nb; u++) {
-            U32 pos = dictList[u].pos;
-            U32 length = dictList[u].length;
-            U32 printedLength = MIN(40, length);
+        DISPLAYLEVEL(3, "\n %u segments found, of total size %u \n", dictList[0].pos-1, dictContentSize);
+        DISPLAYLEVEL(3, "list %u best segments \n", nb-1);
+        for (u=1; u<nb; u++) {
+            U32 const pos = dictList[u].pos;
+            U32 const length = dictList[u].length;
+            U32 const printedLength = MIN(40, length);
+            if ((pos > samplesBuffSize) || ((pos + length) > samplesBuffSize))
+                return ERROR(GENERIC);   /* should never happen */
             DISPLAYLEVEL(3, "%3u:%3u bytes at pos %8u, savings %7u bytes |",
                          u, length, pos, dictList[u].savings);
             ZDICT_printHex((const char*)samplesBuffer+pos, printedLength);
