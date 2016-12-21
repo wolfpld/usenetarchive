@@ -359,5 +359,8 @@
     <ClInclude Include="..\..\SearchView.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\ZMessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

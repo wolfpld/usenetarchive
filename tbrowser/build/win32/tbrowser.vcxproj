@@ -220,6 +220,7 @@
     <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
+    <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\panel.h" />

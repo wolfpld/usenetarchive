@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string>
 
+#define ZSTD_STATIC_LINKING_ONLY
 #include "../contrib/zstd/zstd.h"
 
 #include "ExpandingBuffer.hpp"
@@ -20,7 +21,7 @@ public:
         , m_ctx( ZSTD_createDCtx() )
     {
         const FileMap<char> dictdata( dict );
-        m_dict = ZSTD_createDDict( dictdata, dictdata.Size() );
+        m_dict = ZSTD_createDDict_byReference( dictdata, dictdata.Size() );
     }
 
     ZMessageView( const FileMapPtrs& meta, const FileMapPtrs& data, const FileMapPtrs& dict )
@@ -29,7 +30,7 @@ public:
         , m_ctx( ZSTD_createDCtx() )
     {
         const FileMap<char> dictdata( dict );
-        m_dict = ZSTD_createDDict( dictdata, dictdata.Size() );
+        m_dict = ZSTD_createDDict_byReference( dictdata, dictdata.Size() );
     }
 
     ~ZMessageView()
