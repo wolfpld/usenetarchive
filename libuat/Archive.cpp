@@ -222,10 +222,22 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
     float sum = 0;
     int cnt = 0;
 
-    std::vector<std::vector<uint8_t>> hits;
-    for( auto& post : list )
+    static thread_local std::vector<std::vector<uint8_t>> hits;
+    const auto hs = hits.size();
+    for( int i=0; i<list.size(); i++ )
     {
-        std::vector<uint8_t> v;
+        const auto& post = list[i];
+
+        if( i < hs )
+        {
+            hits[i].clear();
+        }
+        else
+        {
+            hits.emplace_back();
+        }
+        auto& v = hits[i];
+
         for( int i=0; i<post->hitnum; i++ )
         {
             auto pos = LexiconHitPos( post->hits[i] );
@@ -235,7 +247,6 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
             }
         }
         std::sort( v.begin(), v.end(), []( const uint8_t l, const uint8_t r ) { return LexiconHitPos( l ) < LexiconHitPos( r ); } );
-        hits.emplace_back( std::move( v ) );
     }
 
     static thread_local std::vector<int> start[NUM_LEXICON_TYPES];
@@ -251,8 +262,8 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
             start[i].emplace_back( -1 );
         }
 
-        const auto hs = hop[i].size();
-        if( listsize < hs )
+        const auto hops = hop[i].size();
+        if( listsize < hops )
         {
             for( int j=0; j<listsize; j++ )
             {
@@ -261,11 +272,11 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
         }
         else
         {
-            for( int j=0; j<hs; j++ )
+            for( int j=0; j<hops; j++ )
             {
                 hop[i][j].clear();
             }
-            for( int j=hs; j<listsize; j++ )
+            for( int j=hops; j<listsize; j++ )
             {
                 hop[i].emplace_back();
             }
