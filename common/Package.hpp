@@ -30,7 +30,9 @@ static const PackMeta PackageContents[] = {
     { "toplevel", false },
     { "zdata", false },
     { "zmeta", false },
-    { "zdict", false }
+    { "zdict", false },
+    { "lexdist", true },
+    { "lexdistmeta", true }
 };
 
 struct PackageFile
@@ -56,11 +58,14 @@ struct PackageFile
         toplevel,
         zdata,
         zmeta,
-        zdict
+        zdict,
+        lexdist,
+        lexdistmeta
     };
 };
 
 enum { PackageFiles = sizeof( PackageContents ) / sizeof( PackMeta ) };
+enum { AdditionalFilesV1 = 2 };
 
 enum : char { PackageVersion = 1 };
 enum { PackageHeaderSize = 8 };

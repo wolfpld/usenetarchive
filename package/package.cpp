@@ -50,13 +50,20 @@ int main( int argc, char** argv )
             fprintf( stderr, "Source file is not an Usenet archive.\n" );
             exit( 1 );
         }
-        if( tmp[PackageMagicSize] > PackageVersion )
+        const auto version = tmp[PackageMagicSize];
+        if( version > PackageVersion )
         {
             fprintf( stderr, "Archive version %i is not supported. Update your tools.\n", tmp[PackageMagicSize] );
         }
 
+        int numfiles = PackageFiles;
+        if( version == 0 )
+        {
+            numfiles -= AdditionalFilesV1;
+        }
+
         uint64_t sizes[PackageFiles];
-        for( int i=0; i<PackageFiles; i++ )
+        for( int i=0; i<numfiles; i++ )
         {
             offset += fread( sizes+i, 1, sizeof( uint64_t ), fin );
         }
@@ -65,7 +72,7 @@ int main( int argc, char** argv )
         CreateDirStruct( base );
         base.append( "/" );
 
-        for( int i=0; i<PackageFiles; i++ )
+        for( int i=0; i<numfiles; i++ )
         {
             if( sizes[i] == 0 ) continue;
             FILE* fout = fopen( ( base + PackageContents[i].filename ).c_str(), "wb" );
