@@ -238,17 +238,37 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
         hits.emplace_back( std::move( v ) );
     }
 
-    std::vector<int> start[NUM_LEXICON_TYPES];
-    std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
+    static thread_local std::vector<int> start[NUM_LEXICON_TYPES];
+    static thread_local std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
 
     const auto listsize = list.size();
 
     for( int i=0; i<NUM_LEXICON_TYPES; i++ )
     {
+        start[i].clear();
         for( int j=0; j<listsize; j++ )
         {
             start[i].emplace_back( -1 );
-            hop[i].emplace_back();
+        }
+
+        const auto hs = hop[i].size();
+        if( listsize < hs )
+        {
+            for( int j=0; j<listsize; j++ )
+            {
+                hop[i][j].clear();
+            }
+        }
+        else
+        {
+            for( int j=0; j<hs; j++ )
+            {
+                hop[i][j].clear();
+            }
+            for( int j=hs; j<listsize; j++ )
+            {
+                hop[i].emplace_back();
+            }
         }
     }
 
