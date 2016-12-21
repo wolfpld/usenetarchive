@@ -47,8 +47,9 @@ digraph
     lexopt -> lexhash;
     lexhash -> lexsort;
     lexsort -> sort;
-    sort -> package;
+    sort -> lexdist;
     sort -> verify;
+    lexdist -> package;
     package -> dst1;
     dst1 -> query;
     dst1 -> browser;
