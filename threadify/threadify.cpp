@@ -201,7 +201,7 @@ int main( int argc, char** argv )
                         SplitLine( line, end, wordbuf );
                         if( !wordbuf.empty() )
                         {
-                            auto results = archive->Search( wordbuf, false, T_Content );
+                            auto results = archive->Search( wordbuf, Archive::SF_FlagsNone, T_Content );
                             auto& res = results.results;
                             if( !res.empty() )
                             {

@@ -8,7 +8,7 @@ int main( int argc, char** argv )
     }
 
     auto a = Archive::Open( argv[1] );
-    a->Search( argv[2], true );
+    a->Search( argv[2], Archive::SF_AdjacentWords );
 
     return 0;
 }

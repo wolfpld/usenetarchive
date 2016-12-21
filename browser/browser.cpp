@@ -542,7 +542,7 @@ void Browser::on_lineEdit_returnPressed()
 
     auto t0 = std::chrono::high_resolution_clock::now();
     auto tmp = query.toStdString();
-    const auto res = m_archive->Search( tmp.c_str(), true );
+    const auto res = m_archive->Search( tmp.c_str(), Archive::SF_AdjacentWords );
     auto t1 = std::chrono::high_resolution_clock::now();
 
     enum { DisplayLimit = 250 };

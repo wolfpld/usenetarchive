@@ -31,6 +31,12 @@ struct SearchData
 class Archive
 {
 public:
+    enum SearchFlags
+    {
+        SF_FlagsNone        = 0,
+        SF_AdjacentWords    = 1 << 0,   // Calculate words adjacency
+    };
+
     static Archive* Open( const std::string& fn );
 
     const char* GetMessage( uint32_t idx );
@@ -64,8 +70,8 @@ public:
     const char* GetRealName( uint32_t idx ) const;
     const char* GetRealName( const char* msgid ) const;
 
-    SearchData Search( const char* query, bool adjacentWords, int filter = T_All ) const;
-    SearchData Search( const std::vector<std::string>& terms, bool adjacentWords, int filter = T_All ) const;
+    SearchData Search( const char* query, int flags = SF_FlagsNone, int filter = T_All ) const;
+    SearchData Search( const std::vector<std::string>& terms, int flags = SF_FlagsNone, int filter = T_All ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 
     std::pair<const char*, uint64_t> GetShortDescription() const;

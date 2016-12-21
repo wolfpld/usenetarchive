@@ -48,7 +48,7 @@ void SearchView::Entry()
             if( !query.empty() )
             {
                 std::swap( m_query, query );
-                m_result = m_archive.Search( m_query.c_str(), true );
+                m_result = m_archive.Search( m_query.c_str(), Archive::SF_AdjacentWords );
                 m_preview.clear();
                 m_preview.reserve( m_result.results.size() );
                 m_top = m_bottom = m_cursor = 0;
