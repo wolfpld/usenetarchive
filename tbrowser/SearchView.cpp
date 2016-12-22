@@ -125,7 +125,9 @@ void SearchView::Draw()
         wprintw( m_win, " results for query: " );
         wattron( m_win, A_BOLD );
         wprintw( m_win, "%s", m_query.c_str() );
-        wattroff( m_win, A_BOLD );
+        wattron( m_win, COLOR_PAIR( 8 ) );
+        wprintw( m_win, " (%.3f ms elapsed)", m_queryTime );
+        wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
 
         const int h = getmaxy( m_win ) - 1;
         const int w = getmaxx( m_win );
