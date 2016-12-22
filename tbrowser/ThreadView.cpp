@@ -385,7 +385,14 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
         {
             waddch( m_win, ACS_LLCORNER );
         }
-        waddch( m_win, ACS_HLINE );
+        if( children > 1 && !m_data[idx].expanded )
+        {
+            waddch( m_win, ACS_TTEE );
+        }
+        else
+        {
+            waddch( m_win, ACS_HLINE );
+        }
         if( !hilite )
         {
             wattroff( m_win, COLOR_PAIR(5) );
