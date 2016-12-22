@@ -30,6 +30,7 @@ private:
     Archive& m_archive;
     PersistentStorage& m_storage;
     std::string m_query;
+    float m_queryTime;
     SearchData m_result;
     std::vector<std::string> m_preview;
     bool m_active;
