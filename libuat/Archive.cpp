@@ -217,11 +217,8 @@ SearchData Archive::Search( const char* query, int flags, int filter ) const
     return Search( terms, flags, filter );
 }
 
-static float GetAverageWordDistance( const std::vector<PostData*>& list )
+static float GetWordDistance( const std::vector<PostData*>& list )
 {
-    float sum = 0;
-    int cnt = 0;
-
     const auto listsize = list.size();
 
     static thread_local std::vector<std::vector<uint8_t>> hits;
@@ -306,27 +303,16 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
         }
     }
 
+    int min = 0x7F;
     for( int t=0; t<NUM_LEXICON_TYPES; t++ )
     {
-        const auto max = LexiconHitPosMask[t];
         for( int w1=0; w1<listsize - 1; w1++ )
         {
-            if( start[t][w1] == -1 )
-            {
-                auto num = listsize - w1 - 1;
-                sum += max * num;
-                cnt += num;
-            }
-            else
+            if( start[t][w1] != -1 )
             {
                 for( int w2=w1+1; w2<listsize; w2++ )
                 {
-                    cnt++;
-                    if( start[t][w2] == -1 )
-                    {
-                        sum += max;
-                    }
-                    else
+                    if( start[t][w2] != -1 )
                     {
                         auto p1 = start[t][w1];
                         auto p2 = start[t][w2];
@@ -337,7 +323,6 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
                         const auto end1 = hop[t][w1].end();
                         const auto end2 = hop[t][w2].end();
 
-                        int min = max;
                         for(;;)
                         {
                             auto diff = p1 - p2;
@@ -377,14 +362,14 @@ static float GetAverageWordDistance( const std::vector<PostData*>& list )
                                 }
                             }
                         }
-                        sum += min;
                     }
                 }
             }
+            if( min == 1 ) break;
         }
     }
 
-    return sum / cnt;
+    return min;
 }
 
 SearchData Archive::Search( const std::vector<std::string>& terms, int flags, int filter ) const
@@ -492,7 +477,7 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
                 }
                 if( flags & SF_AdjacentWords )
                 {
-                    rank /= GetAverageWordDistance( list );
+                    rank /= GetWordDistance( list );
                 }
                 merged.emplace_back( SearchResult { post.postid, rank * PostRank( post ) } );
             }
