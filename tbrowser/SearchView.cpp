@@ -50,7 +50,7 @@ void SearchView::Entry()
             {
                 std::swap( m_query, query );
                 auto start = std::chrono::high_resolution_clock::now();
-                m_result = m_archive.Search( m_query.c_str(), Archive::SF_AdjacentWords );
+                m_result = m_archive.Search( m_query.c_str(), Archive::SF_AdjacentWords | Archive::SF_FuzzySearch );
                 m_queryTime = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - start ).count() / 1000.f;
                 m_preview.clear();
                 m_preview.reserve( m_result.results.size() );

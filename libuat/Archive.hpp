@@ -36,6 +36,7 @@ public:
         SF_FlagsNone        = 0,
         SF_AdjacentWords    = 1 << 0,   // Calculate words adjacency
         SF_RequireAllWords  = 1 << 1,   // Require all words to be present
+        SF_FuzzySearch      = 1 << 2,   // Also search for similar words
     };
 
     static Archive* Open( const std::string& fn );

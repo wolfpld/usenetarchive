@@ -2,6 +2,7 @@
 #include <iterator>
 #include <time.h>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "Archive.hpp"
@@ -387,6 +388,19 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
 {
     SearchData ret;
 
+    if( flags & SF_FuzzySearch )
+    {
+        if( m_lexdist )
+        {
+            flags &= ~SF_RequireAllWords;
+        }
+        else
+        {
+            flags &= ~SF_FuzzySearch;
+        }
+    }
+
+    std::unordered_set<uint32_t> wordset;
     std::vector<const char*> matched;
     std::vector<uint32_t> words;
     std::vector<float> wordMod;
@@ -394,11 +408,31 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
     for( auto& v : terms )
     {
         auto res = m_lexhash.Search( v.c_str() );
-        if( res >= 0 )
+        if( res >= 0 && wordset.find( res ) == wordset.end() )
         {
             words.emplace_back( res );
+            wordset.emplace( res );
             wordMod.emplace_back( 1 );
             matched.emplace_back( m_lexstr + m_lexmeta[res].str );
+
+            if( flags & SF_FuzzySearch )
+            {
+                auto ptr = (*m_lexdist)[res];
+                const auto size = *ptr++;
+                for( uint32_t i=0; i<size; i++ )
+                {
+                    auto word = m_lexstr + *ptr++;
+                    auto res2 = m_lexhash.Search( word );
+                    assert( res2 >= 0 );
+                    if( wordset.find( res2 ) == wordset.end() )
+                    {
+                        words.emplace_back( res2 );
+                        wordset.emplace( res2 );
+                        wordMod.emplace_back( 0.5f );
+                        matched.emplace_back( word );
+                    }
+                }
+            }
         }
     }
     if( words.empty() ) return ret;
