@@ -55,6 +55,10 @@ Archive::Archive( const std::string& dir )
     , m_descLong( dir + "desc_long", true )
     , m_name( dir + "name", true )
 {
+    if( Exists( dir + "lexdist" ) && Exists( dir + "lexdistmeta" ) )
+    {
+        m_lexdist = std::make_unique<MetaView<uint32_t, uint32_t>>( dir + "lexdistmeta", dir + "lexdist" );
+    }
 }
 
 Archive::Archive( const PackageAccess* pkg )
@@ -75,6 +79,12 @@ Archive::Archive( const PackageAccess* pkg )
     , m_descLong( pkg->Get( PackageFile::desc_long ) )
     , m_name( pkg->Get( PackageFile::name ) )
 {
+    const auto lexdist = pkg->Get( PackageFile::lexdist );
+    const auto lexdistmeta = pkg->Get( PackageFile::lexdistmeta );
+    if( lexdist.size > 0 && lexdistmeta.size > 0 )
+    {
+        m_lexdist = std::make_unique<MetaView<uint32_t, uint32_t>>( lexdistmeta, lexdist );
+    }
 }
 
 const char* Archive::GetMessage( uint32_t idx )

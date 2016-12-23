@@ -100,6 +100,7 @@ private:
     const FileMap<char> m_descShort;
     const FileMap<char> m_descLong;
     const FileMap<char> m_name;
+    std::unique_ptr<MetaView<uint32_t, uint32_t>> m_lexdist;
 };
 
 #endif
