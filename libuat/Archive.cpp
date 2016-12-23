@@ -331,8 +331,7 @@ static float GetWordDistance( const std::vector<PostData*>& list )
                             {
                                 if( ad < 2 )
                                 {
-                                    min = 1;
-                                    break;
+                                    return 1;
                                 }
                                 else
                                 {
@@ -365,10 +364,10 @@ static float GetWordDistance( const std::vector<PostData*>& list )
                     }
                 }
             }
-            if( min == 1 ) break;
         }
     }
 
+    assert( min != 1 );
     return min;
 }
 
