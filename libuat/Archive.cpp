@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <iterator>
 #include <time.h>
+#include <unordered_map>
+#include <vector>
 
 #include "Archive.hpp"
 #include "PackageAccess.hpp"
@@ -377,6 +379,7 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
 
     std::vector<const char*> matched;
     std::vector<uint32_t> words;
+    std::vector<float> wordMod;
     words.reserve( terms.size() );
     for( auto& v : terms )
     {
@@ -384,6 +387,7 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
         if( res >= 0 )
         {
             words.emplace_back( res );
+            wordMod.emplace_back( 1 );
             matched.emplace_back( m_lexstr + m_lexmeta[res].str );
         }
     }
@@ -432,22 +436,23 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
         }
     }
 
-    std::vector<SearchResult> merged;
-    if( wdata.size() == 1 )
+    std::vector<SearchResult> result;
+
+    const auto wsize = wdata.size();
+    if( wsize == 1 )
     {
-        merged.reserve( wdata[0].size() );
+        result.reserve( wdata[0].size() );
         for( auto& v : wdata[0] )
         {
-            merged.emplace_back( SearchResult { v.postid, PostRank( v ) * HitRank( v ) } );
+            result.emplace_back( SearchResult { v.postid, PostRank( v ) * HitRank( v ) } );
         }
     }
-    else
+    else if( flags & SF_RequireAllWords )
     {
         std::vector<PostData*> list;
         list.reserve( words.size() );
 
         auto& vec = *wdata.begin();
-        auto wsize = wdata.size();
         for( auto& post : vec )
         {
             list.clear();
@@ -478,16 +483,60 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
                 {
                     rank /= GetWordDistance( list );
                 }
-                merged.emplace_back( SearchResult { post.postid, rank * PostRank( post ) } );
+                result.emplace_back( SearchResult { post.postid, rank * PostRank( post ) } );
             }
         }
     }
-    if( merged.empty() ) return ret;
+    else
+    {
+        struct Posts
+        {
+            uint32_t word;
+            PostData* data;
+        };
+        std::unordered_map<uint32_t, std::vector<Posts>> posts;
+        for( uint32_t word = 0; word < wsize; word++ )
+        {
+            for( auto& post : wdata[word] )
+            {
+                auto pidx = post.postid;
+                auto it = posts.find( pidx );
+                if( it == posts.end() )
+                {
+                    posts.emplace( pidx, std::vector<Posts>( { Posts { word, &post } } ) );
+                }
+                else
+                {
+                    it->second.emplace_back( Posts { word, &post } );
+                }
+            }
+        }
+        std::vector<PostData*> list;
+        for( auto& entry : posts )
+        {
+            float rank = 0;
+            for( auto& v : entry.second )
+            {
+                rank += HitRank( *v.data ) * wordMod[v.word];
+            }
+            if( flags & SF_AdjacentWords )
+            {
+                list.clear();
+                for( auto& v : entry.second )
+                {
+                    list.emplace_back( v.data );
+                }
+                rank /= GetWordDistance( list );
+            }
+            result.emplace_back( SearchResult { entry.first, rank * PostRank( *entry.second[0].data ) } );
+        }
+    }
+    if( result.empty() ) return ret;
 
-    std::sort( merged.begin(), merged.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
+    std::sort( result.begin(), result.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
 
     std::swap( ret.matched, matched );
-    std::swap( ret.results, merged );
+    std::swap( ret.results, result );
 
     return ret;
 }
