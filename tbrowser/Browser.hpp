@@ -6,6 +6,7 @@
 #include "BottomBar.hpp"
 #include "HeaderBar.hpp"
 #include "MessageView.hpp"
+#include "TextView.hpp"
 #include "ThreadView.hpp"
 #include "SearchView.hpp"
 
@@ -25,6 +26,7 @@ public:
 private:
     bool MoveOrEnterAction( int move );
     void SwitchToMessage( int msgidx );
+    void RestoreDefaultView();
 
     std::unique_ptr<Archive> m_archive;
     PersistentStorage& m_storage;
@@ -34,6 +36,7 @@ private:
     MessageView m_mview;
     ThreadView m_tview;
     SearchView m_sview;
+    TextView m_textview;
 
     const char* m_fn;
     int m_historyIdx;

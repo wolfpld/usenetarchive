@@ -157,7 +157,13 @@ void BottomBar::PrintHelp() const
         waddch( m_win, ACS_UARROW );
         wprintw( m_win, ":Move q:Quit s:Search RET:Open" );
         break;
+    case HelpSet::Text:
+        waddch( m_win, ACS_DARROW );
+        waddch( m_win, ACS_UARROW );
+        wprintw( m_win, ":Move q:Quit" );
+        break;
     default:
+        assert( false );
         break;
     };
 }

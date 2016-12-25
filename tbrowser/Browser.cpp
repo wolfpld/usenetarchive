@@ -11,6 +11,7 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     , m_mview( *m_archive, m_storage )
     , m_tview( *m_archive, m_storage, m_mview )
     , m_sview( this, m_bottom, *m_archive, m_storage )
+    , m_textview( this )
     , m_fn( fn )
 {
     auto& history = m_storage.GetArticleHistory();
@@ -267,11 +268,14 @@ void Browser::Entry()
             m_bottom.SetHelp( HelpSet::Search );
             m_sview.Entry();
             m_bottom.SetHelp( HelpSet::Default );
-            m_tview.Draw();
-            if( m_mview.IsActive() )
-            {
-                m_mview.Draw();
-            }
+            RestoreDefaultView();
+            doupdate();
+            break;
+        case '?':
+            m_bottom.SetHelp( HelpSet::Text );
+            m_textview.Entry();
+            m_bottom.SetHelp( HelpSet::Default );
+            RestoreDefaultView();
             doupdate();
             break;
         default:
@@ -289,6 +293,7 @@ void Browser::Resize()
     m_mview.Resize();
     m_tview.Resize();
     m_sview.Resize();
+    m_textview.Resize();
     m_bottom.Resize();
     doupdate();
 }
@@ -309,4 +314,13 @@ void Browser::SwitchToMessage( int msgidx )
     }
     m_tview.SetCursor( msgidx );
     m_tview.FocusOn( msgidx );
+}
+
+void Browser::RestoreDefaultView()
+{
+    m_tview.Draw();
+    if( m_mview.IsActive() )
+    {
+        m_mview.Draw();
+    }
 }

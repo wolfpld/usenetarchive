@@ -10,7 +10,8 @@ class Browser;
 enum class HelpSet
 {
     Default,
-    Search
+    Search,
+    Text
 };
 
 class BottomBar : public View
