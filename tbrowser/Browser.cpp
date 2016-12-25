@@ -140,6 +140,16 @@ void Browser::Entry()
             m_tview.Draw();
             doupdate();
             break;
+        case KEY_HOME:
+            m_tview.MoveCursorTop();
+            m_tview.Draw();
+            doupdate();
+            break;
+        case KEY_END:
+            m_tview.MoveCursorBottom();
+            m_tview.Draw();
+            doupdate();
+            break;
         case 'x':
         {
             auto cursor = m_tview.GetCursor();

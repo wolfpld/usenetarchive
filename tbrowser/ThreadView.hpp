@@ -43,6 +43,8 @@ public:
 
     void PageForward();
     void PageBackward();
+    void MoveCursorTop();
+    void MoveCursorBottom();
 
 private:
     void ExpandFill( int cursor );

@@ -165,6 +165,16 @@ void ThreadView::PageBackward()
     }
 }
 
+void ThreadView::MoveCursorTop()
+{
+    m_cursor = m_top;
+}
+
+void ThreadView::MoveCursorBottom()
+{
+    m_cursor = GetPrev( m_bottom );
+}
+
 void ThreadView::ExpandFill( int cursor )
 {
     if( cursor == m_archive.NumberOfMessages()-1 || m_data[cursor+1].valid ) return;
