@@ -65,10 +65,12 @@ void SearchView::Entry()
             break;
         }
         case KEY_DOWN:
+        case 'j':
             MoveCursor( 1 );
             doupdate();
             break;
         case KEY_UP:
+        case 'k':
             MoveCursor( -1 );
             doupdate();
             break;
