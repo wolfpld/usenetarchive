@@ -23,7 +23,7 @@ public:
     void Resize() const;
 
     std::string Query( const char* prompt, const char* entry = nullptr );
-    void Status( const char* status );
+    void Status( const char* status, int timeout = 2 );
     void SetHelp( HelpSet set );
 
 private:

@@ -122,9 +122,9 @@ std::string BottomBar::Query( const char* prompt, const char* entry )
     }
 }
 
-void BottomBar::Status( const char* status )
+void BottomBar::Status( const char* status, int timeout )
 {
-    m_reset = 2;
+    m_reset = timeout;
     werase( m_win );
     wprintw( m_win, "%s", status );
     wnoutrefresh( m_win );
