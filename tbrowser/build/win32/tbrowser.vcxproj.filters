@@ -249,6 +249,9 @@
     <ClCompile Include="..\..\TextView.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Help.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -366,6 +369,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\TextView.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Help.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
