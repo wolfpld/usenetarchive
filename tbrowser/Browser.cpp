@@ -22,6 +22,8 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     }
     m_historyIdx = history.size() - 1;
 
+    m_bottom.Status( "Press '?' for help.", 1 );
+
     doupdate();
 }
 
