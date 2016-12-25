@@ -33,7 +33,7 @@ public:
     void MoveCursor( int offset );
     void GoNextUnread();
     bool CanExpand( int cursor );
-    void Expand( int cursor, bool recursive );
+    int Expand( int cursor, bool recursive );
     void Collapse( int cursor );
     bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }
     void FocusOn( int cursor );
