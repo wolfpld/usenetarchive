@@ -212,6 +212,7 @@ void MessageView::Draw()
             }
         }
     }
+    wattron( m_win, COLOR_PAIR( 6 ) );
     for( ; i<h-1; i++ )
     {
         wmove( m_win, i, 0 );
@@ -219,9 +220,8 @@ void MessageView::Draw()
         {
             wattron( m_win, COLOR_PAIR( 7 ) );
             waddch( m_win, ACS_VLINE );
-            wattroff( m_win, COLOR_PAIR( 7 ) );
+            wattron( m_win, COLOR_PAIR( 6 ) );
         }
-        wattron( m_win, COLOR_PAIR( 6 ) );
         wprintw( m_win, "~\n" );
     }
     wattroff( m_win, COLOR_PAIR( 6 ) );
