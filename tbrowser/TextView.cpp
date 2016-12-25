@@ -17,8 +17,10 @@ TextView::TextView( Browser* parent )
 {
 }
 
-void TextView::Entry( const char* text )
+void TextView::Entry( const char* text, int size )
 {
+    if( size == -1 ) size = strlen( text );
+    m_size = size;
     m_text = text;
     PrepareLines();
     m_top = 0;
@@ -139,7 +141,7 @@ void TextView::PrepareLines()
     for(;;)
     {
         auto end = txt;
-        while( *end != '\n' && *end != '\0' ) end++;
+        while( *end != '\n' && end - m_text < m_size ) end++;
         const auto len = std::min<uint32_t>( end - txt, ( 1 << LenBits ) - 1 );
         const auto offset = uint32_t( txt - m_text );
         if( offset >= ( 1 << OffsetBits ) ) return;

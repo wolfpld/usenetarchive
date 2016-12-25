@@ -13,7 +13,7 @@ class TextView : public View
 public:
     TextView( Browser* parent );
 
-    void Entry( const char* text );
+    void Entry( const char* text, int size = -1 );
 
     void Resize();
     void Draw();
@@ -36,6 +36,7 @@ private:
     bool m_active;
 
     const char* m_text;
+    int m_size;
     std::vector<Line> m_lines;
     int m_linesWidth;
     int m_top;
