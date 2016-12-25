@@ -11,6 +11,8 @@ class Archive;
 class MessageView;
 class PersistentStorage;
 
+enum { CondensedDepthThreshold = 20 };
+
 struct ThreadData
 {
     uint8_t expanded   : 1;
