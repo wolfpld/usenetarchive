@@ -225,6 +225,18 @@ void ThreadView::FocusOn( int cursor )
     Draw();
 }
 
+void ThreadView::MarkTreeCondensed( int cursor )
+{
+    assert( GetRoot( cursor ) == cursor );
+    if( m_data[cursor].condensed ) return;
+    auto cnt = m_archive.GetTotalChildrenCount( cursor );
+    do
+    {
+        m_data[cursor++].condensed = 1;
+    }
+    while( --cnt );
+}
+
 static bool SameSubject( const char* subject, const char*& prev )
 {
     if( subject == prev ) return true;
