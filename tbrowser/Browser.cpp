@@ -1,7 +1,10 @@
 #include <curses.h>
+
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
+
 #include "Browser.hpp"
+#include "Help.hpp"
 
 Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const char* fn )
     : m_archive( std::move( archive ) )
@@ -275,7 +278,7 @@ void Browser::Entry()
             break;
         case '?':
             m_bottom.SetHelp( HelpSet::Text );
-            m_textview.Entry();
+            m_textview.Entry( HelpContents );
             m_bottom.SetHelp( HelpSet::Default );
             RestoreDefaultView();
             doupdate();
