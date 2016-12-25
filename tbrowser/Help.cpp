@@ -54,6 +54,7 @@ const char* HelpContents =
 "            delete: scroll message up one screen\n"
 "                 ,: move cursor to previously viewed message\n"
 "                 .: reversal of the above\n"
+"                 c: view group charter\n"
 "                 t: switch between abbreviated and full headers list\n"
 "                 r: enable/disable ROT13 encoding\n"
 "                 g: go to specified message id\n"

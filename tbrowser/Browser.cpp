@@ -283,6 +283,23 @@ void Browser::Entry()
             RestoreDefaultView();
             doupdate();
             break;
+        case 'c':
+        {
+            auto charter = m_archive->GetLongDescription();
+            if( charter.second == 0 )
+            {
+                m_bottom.Status( "Group charter is not available." );
+            }
+            else
+            {
+                m_bottom.SetHelp( HelpSet::Text );
+                m_textview.Entry( charter.first, charter.second );
+                m_bottom.SetHelp( HelpSet::Default );
+                RestoreDefaultView();
+            }
+            doupdate();
+            break;
+        }
         default:
             break;
         }
