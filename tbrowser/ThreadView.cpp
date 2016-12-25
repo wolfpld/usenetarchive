@@ -258,6 +258,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
+    bool condensed = m_data[idx].condensed;
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     if( m_cursor == idx )
@@ -379,7 +380,8 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             }
         }
 
-        len -= 2;
+        const int lw = condensed ? 1 : 2;
+        len -= lw;
         if( !hilite ) wattron( m_win, COLOR_PAIR(5) );
         int i;
         for( i=0; i<treecnt-1 && len > 1; i++ )
@@ -391,12 +393,12 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             }
             if( tree.Get( i ) )
             {
-                wmove( m_win, line, 31 + i*2 );
+                wmove( m_win, line, 31 + i*lw );
                 waddch( m_win, ACS_VLINE );
             }
-            len -= 2;
+            len -= lw;
         }
-        wmove( m_win, line, 31 + i*2 );
+        wmove( m_win, line, 31 + i*lw );
         if( treecnt-1 == childline )
         {
             wattroff( m_win, COLOR_PAIR(5) );
@@ -410,7 +412,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
         {
             waddch( m_win, ACS_LLCORNER );
         }
-        if( children > 1 && !m_data[idx].expanded )
+        if( children > 1 && ( condensed || !m_data[idx].expanded ) )
         {
             waddch( m_win, ACS_TTEE );
         }
