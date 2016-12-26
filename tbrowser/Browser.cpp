@@ -47,9 +47,10 @@ bool Browser::MoveOrEnterAction( int move )
             !m_tview.IsExpanded( cursor ) &&
             m_archive->GetParent( m_tview.GetCursor() ) == -1 )
         {
-            if( m_tview.Expand( cursor, true ) > CondensedDepthThreshold )
+            const auto depth = m_tview.Expand( cursor, true );
+            if( depth > CondensedDepthThreshold )
             {
-                m_tview.MarkTreeCondensed( cursor );
+                m_tview.MarkTreeCondensed( cursor, depth );
             }
         }
         m_tview.Draw();
@@ -168,9 +169,10 @@ void Browser::Entry()
             }
             else
             {
-                if( m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 ) > CondensedDepthThreshold )
+                const auto depth = m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
+                if( depth > CondensedDepthThreshold )
                 {
-                    m_tview.MarkTreeCondensed( cursor );
+                    m_tview.MarkTreeCondensed( cursor, depth );
                 }
             }
             m_tview.Draw();
@@ -205,9 +207,10 @@ void Browser::Entry()
             auto cursor = m_tview.GetCursor();
             if( m_tview.CanExpand( cursor ) && !m_tview.IsExpanded( cursor ) )
             {
-                if( m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 ) > CondensedDepthThreshold )
+                const auto depth = m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
+                if( depth > CondensedDepthThreshold )
                 {
-                    m_tview.MarkTreeCondensed( cursor );
+                    m_tview.MarkTreeCondensed( cursor, depth );
                 }
                 m_tview.Draw();
                 doupdate();
@@ -340,9 +343,10 @@ void Browser::SwitchToMessage( int msgidx )
     auto root = m_tview.GetRoot( msgidx );
     if( msgidx != root && m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
     {
-        if( m_tview.Expand( root, true ) > CondensedDepthThreshold )
+        const auto depth = m_tview.Expand( root, true );
+        if( depth > CondensedDepthThreshold )
         {
-            m_tview.MarkTreeCondensed( root );
+            m_tview.MarkTreeCondensed( root, depth );
         }
         m_tview.Draw();
     }

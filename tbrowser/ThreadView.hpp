@@ -12,6 +12,9 @@ class MessageView;
 class PersistentStorage;
 
 enum { CondensedDepthThreshold = 20 };
+enum { CondensedBits = 4 };
+enum { CondensedMax = ( 1 << CondensedBits ) - 1 };
+enum { CondensedStep = 4 };
 
 struct ThreadData
 {
@@ -19,10 +22,10 @@ struct ThreadData
     uint8_t valid      : 1;
     uint8_t visited    : 1;
     uint8_t visall     : 1;
-    uint8_t condensed  : 1;
+    uint8_t condensed  : CondensedBits;
 };
 
-static_assert( sizeof( ThreadData ) == sizeof( uint8_t ), "Thread data size greater than 1 bytes." );
+static_assert( sizeof( ThreadData ) == sizeof( uint8_t ), "Thread data size greater than 1 byte." );
 
 class ThreadView : public View
 {
@@ -39,7 +42,7 @@ public:
     void Collapse( int cursor );
     bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }
     void FocusOn( int cursor );
-    void MarkTreeCondensed( int cursor );
+    void MarkTreeCondensed( int cursor, int depth );
 
     int GetCursor() const { return m_cursor; }
     void SetCursor( int cursor ) { m_cursor = cursor; }
