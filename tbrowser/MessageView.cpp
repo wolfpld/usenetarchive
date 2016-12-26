@@ -216,6 +216,7 @@ void MessageView::Draw()
         }
     }
     wattron( m_win, COLOR_PAIR( 6 ) );
+    const bool atEnd = i<h-1;
     for( ; i<h-1; i++ )
     {
         wmove( m_win, i, 0 );
@@ -257,6 +258,21 @@ void MessageView::Draw()
         end = utfend( text, w - len - 4 );
         utfprint( m_win, text, end );
     }
+    if( atEnd )
+    {
+        sprintf( tmp, " (End) " );
+    }
+    else if( m_top == 0 )
+    {
+        sprintf( tmp, " (Top) " );
+    }
+    else
+    {
+        sprintf( tmp, " (%.1f%%%%) ", 100.f * ( m_top + h - 1 ) / m_lines.size() );
+    }
+    len = strlen( tmp );
+    wmove( m_win, h-1, w-len );
+    wprintw( m_win, tmp );
     wattroff( m_win, COLOR_PAIR( 11 ) | A_BOLD );
 
     wnoutrefresh( m_win );
