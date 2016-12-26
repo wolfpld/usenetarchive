@@ -9,6 +9,13 @@
 #include "MessageView.hpp"
 #include "UTF8.hpp"
 
+static const chtype QuoteFlags[] = {
+    COLOR_PAIR( 5 ),
+    COLOR_PAIR( 3 ),
+    COLOR_PAIR( 6 ) | A_BOLD,
+    COLOR_PAIR( 2 )
+};
+
 MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     : View( 0, 0, 1, 1 )
     , m_archive( archive )
@@ -156,6 +163,7 @@ void MessageView::Draw()
                 waddch( m_win, '+' );
                 wattroff( m_win, COLOR_PAIR( 10 ) );
             }
+            int len = end - start;
             switch( m_lines[line].flags )
             {
             case L_Header:
@@ -165,16 +173,14 @@ void MessageView::Draw()
                 wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
                 break;
             case L_Quote1:
-                wattron( m_win, COLOR_PAIR( 5 ) );
-                break;
             case L_Quote2:
-                wattron( m_win, COLOR_PAIR( 3 ) );
-                break;
             case L_Quote3:
-                wattron( m_win, COLOR_PAIR( 6 ) | A_BOLD );
-                break;
             case L_Quote4:
-                wattron( m_win, COLOR_PAIR( 2 ) );
+                if( !m_lines[line].linebreak )
+                {
+                    PrintQuotes( start, len, m_lines[line].flags - L_Quote1 + 1 );
+                }
+                wattron( m_win, QuoteFlags[m_lines[line].flags - L_Quote1] );
                 break;
             default:
                 break;
@@ -185,7 +191,7 @@ void MessageView::Draw()
             }
             else
             {
-                wprintw( m_win, "%.*s", end - start, start );
+                wprintw( m_win, "%.*s", len, start );
             }
             switch( m_lines[line].flags )
             {
@@ -196,16 +202,10 @@ void MessageView::Draw()
                 wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
                 break;
             case L_Quote1:
-                wattroff( m_win, COLOR_PAIR( 5 ) );
-                break;
             case L_Quote2:
-                wattroff( m_win, COLOR_PAIR( 3 ) );
-                break;
             case L_Quote3:
-                wattroff( m_win, COLOR_PAIR( 6 ) | A_BOLD );
-                break;
             case L_Quote4:
-                wattroff( m_win, COLOR_PAIR( 2 ) );
+                wattroff( m_win, QuoteFlags[m_lines[line].flags - L_Quote1] );
                 break;
             default:
                 break;
@@ -402,4 +402,16 @@ void MessageView::PrintRot13( const char* start, const char* end )
         }
     }
     wprintw( m_win, "%.*s", end - start, tmp );
+}
+
+void MessageView::PrintQuotes( const char*& start, int& len, int level )
+{
+    for( int i=0; i<level; i++ )
+    {
+        wattron( m_win, QuoteFlags[i] );
+        auto next = NextQuotationLevel( start );
+        wprintw( m_win, "%.*s", next - start + 1, start );
+        start = next+1;
+        wattroff( m_win, QuoteFlags[i] );
+    }
 }

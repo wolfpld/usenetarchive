@@ -38,3 +38,20 @@ int QuotationLevel( const char*& ptr, const char* end )
     }
     return level;
 }
+
+const char* NextQuotationLevel( const char* ptr )
+{
+    for(;;)
+    {
+        switch( *ptr )
+        {
+        case ':':
+        case '>':
+        case '|':
+            return ptr;
+        default:
+            ptr++;
+            break;
+        }
+    }
+}

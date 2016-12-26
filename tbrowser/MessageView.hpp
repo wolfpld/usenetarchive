@@ -50,6 +50,7 @@ private:
     void PrepareLines();
     void BreakLine( uint32_t offset, uint32_t len, uint32_t flags );
     void PrintRot13( const char* start, const char* end );
+    void PrintQuotes( const char*& start, int& len, int level );
 
     std::vector<Line> m_lines;
     Archive& m_archive;
