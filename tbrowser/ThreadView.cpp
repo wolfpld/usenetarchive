@@ -260,7 +260,6 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
-    bool condensed = m_data[idx].condensed;
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     if( m_cursor == idx )
@@ -365,6 +364,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     len = w - 33 - dlen;
     if( treecnt > 0 )
     {
+        const bool condensed = m_data[idx].condensed == CondensedMax || ( m_data[idx].condensed * CondensedStep + CondensedDepthThreshold ) * 2 > len;
         int childline = std::numeric_limits<int>::max();
         if( m_mview.IsActive() && !hilite )
         {
