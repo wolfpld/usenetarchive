@@ -90,15 +90,21 @@ void ThreadView::Draw()
     wattron( m_win, COLOR_PAIR( 11 ) | A_BOLD );
     wprintw( m_win, tmp );
     wmove( m_win, h-1, 0 );
-    wprintw( m_win, " %i/%i", m_cursor+1, m_archive.NumberOfMessages() );
+    const auto allmsg = m_archive.NumberOfMessages();
+    wprintw( m_win, " %i/%i", m_cursor+1, allmsg );
+    wprintw( m_win, " (%.1f%%)", 100.f * (m_cursor+1) / allmsg );
     wattron( m_win, COLOR_PAIR( 1 ) );
-    wattroff( m_win, A_BOLD );
-    wprintw( m_win, " (%.1f%%)", 100.f * m_cursor / m_archive.NumberOfMessages() );
-    wattron( m_win, A_BOLD );
     wprintw( m_win, " :: " );
-    wattroff( m_win, A_BOLD );
+    wattron( m_win, COLOR_PAIR( 11 ) );
+    const auto root = GetRoot( m_cursor );
+    const auto num = m_cursor - root + 1;
+    const auto inthread = m_archive.GetTotalChildrenCount( root );
+    wprintw( m_win, "Thread: %i/%i (%.1f%%)", num, inthread, 100.f * num / inthread );
+    wattron( m_win, COLOR_PAIR( 1 ) );
+    wprintw( m_win, " :: " );
+    wattron( m_win, COLOR_PAIR( 11 ) );
     wprintw( m_win, "%i threads", m_archive.NumberOfTopLevel() );
-    wattroff( m_win, COLOR_PAIR( 1 ) );
+    wattroff( m_win, COLOR_PAIR( 11 ) | A_BOLD );
 
     if( cursorLine != -1 )
     {
