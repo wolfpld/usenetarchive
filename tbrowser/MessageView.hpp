@@ -32,6 +32,7 @@ private:
         L_Quote2,
         L_Quote3,
         L_Quote4,
+        L_Quote5,
         L_Signature,
         L_LAST
     };

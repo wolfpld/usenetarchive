@@ -13,7 +13,8 @@ static const chtype QuoteFlags[] = {
     COLOR_PAIR( 5 ),
     COLOR_PAIR( 3 ),
     COLOR_PAIR( 6 ) | A_BOLD,
-    COLOR_PAIR( 2 )
+    COLOR_PAIR( 2 ),
+    COLOR_PAIR( 4 )
 };
 
 MessageView::MessageView( Archive& archive, PersistentStorage& storage )
@@ -176,6 +177,7 @@ void MessageView::Draw()
             case L_Quote2:
             case L_Quote3:
             case L_Quote4:
+            case L_Quote5:
                 if( !m_lines[line].linebreak )
                 {
                     PrintQuotes( start, len, m_lines[line].flags - L_Quote1 + 1 );
@@ -205,6 +207,7 @@ void MessageView::Draw()
             case L_Quote2:
             case L_Quote3:
             case L_Quote4:
+            case L_Quote5:
                 wattroff( m_win, QuoteFlags[m_lines[line].flags - L_Quote1] );
                 break;
             default:
@@ -328,8 +331,11 @@ void MessageView::PrepareLines()
                 case 3:
                     BreakLine( offset, len, L_Quote3 );
                     break;
-                default:
+                case 4:
                     BreakLine( offset, len, L_Quote4 );
+                    break;
+                default:
+                    BreakLine( offset, len, L_Quote5 );
                     break;
                 }
             }
