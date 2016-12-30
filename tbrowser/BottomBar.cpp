@@ -172,7 +172,7 @@ void BottomBar::PrintQuery( const char* prompt, const char* str ) const
 {
     werase( m_win );
     wattron( m_win, A_BOLD );
-    wprintw( m_win, prompt );
+    wprintw( m_win, "%s", prompt );
     wattroff( m_win, A_BOLD );
-    wprintw( m_win, str );
+    wprintw( m_win, "%s", str );
 }
