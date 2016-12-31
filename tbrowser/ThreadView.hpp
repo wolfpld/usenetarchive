@@ -27,6 +27,14 @@ struct ThreadData
 
 static_assert( sizeof( ThreadData ) == sizeof( uint8_t ), "Thread data size greater than 1 byte." );
 
+enum class ScoreState
+{
+    Unknown,
+    Neutral,
+    Positive,
+    Negative
+};
+
 class ThreadView : public View
 {
 public:
@@ -61,6 +69,7 @@ private:
     int GetPrev( int idx ) const;
 
     bool CheckVisited( int idx );
+    ScoreState GetScoreState( int idx );
 
     const Archive& m_archive;
     PersistentStorage& m_storage;

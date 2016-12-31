@@ -560,3 +560,26 @@ bool ThreadView::CheckVisited( int idx )
     if( ret ) m_data[idx].visited = true;
     return ret;
 }
+
+ScoreState ThreadView::GetScoreState( int idx )
+{
+    auto state = (ScoreState)m_tree[idx].GetScoreData();
+    if( state == ScoreState::Unknown )
+    {
+        int score = m_archive.GetMessageScore( idx, m_storage.GetScoreList() );
+        if( score == 0 )
+        {
+            state = ScoreState::Neutral;
+        }
+        else if( score < 0 )
+        {
+            state = ScoreState::Negative;
+        }
+        else
+        {
+            state = ScoreState::Positive;
+        }
+        m_tree[idx].SetScoreData( (int)state );
+    }
+    return state;
+}
