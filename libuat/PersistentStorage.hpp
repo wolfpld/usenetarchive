@@ -33,6 +33,8 @@ public:
     bool WasVisited( const char* msgid );
     bool MarkVisited( const char* msgid );
 
+    const std::vector<ScoreEntry>& GetScoreList() const { return m_scoreList; }
+
 private:
     struct hash { size_t operator()( const char* v ) const { return XXH32( v, strlen( v ), 0 ); } };
     struct equal_to { bool operator()( const char* l, const char* r ) const { return strcmp( l, r ) == 0; } };
