@@ -341,7 +341,26 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     }
 
     auto realname = m_archive.GetRealName( idx );
-    if( !hilite ) wattron( m_win, COLOR_PAIR(3) | A_BOLD );
+    ScoreState ss;
+    if( !hilite )
+    {
+        ss = GetScoreState( idx );
+        switch( ss )
+        {
+        case ScoreState::Neutral:
+            wattron( m_win, COLOR_PAIR(3) | A_BOLD );
+            break;
+        case ScoreState::Negative:
+            wattron( m_win, COLOR_PAIR(5) );
+            break;
+        case ScoreState::Positive:
+            wattron( m_win, COLOR_PAIR(7) | A_BOLD );
+            break;
+        default:
+            assert( false );
+            break;
+        }
+    }
     int len = 18;
     auto end = utfendl( realname, len );
     utfprint( m_win, realname, end );
@@ -349,7 +368,24 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     {
         wmove( m_win, line, 27 );
     }
-    if( !hilite ) wattroff( m_win, COLOR_PAIR(3) | A_BOLD );
+    if( !hilite )
+    {
+        switch( ss )
+        {
+        case ScoreState::Neutral:
+            wattroff( m_win, COLOR_PAIR(3) | A_BOLD );
+            break;
+        case ScoreState::Negative:
+            wattroff( m_win, COLOR_PAIR(5) );
+            break;
+        case ScoreState::Positive:
+            wattroff( m_win, COLOR_PAIR(7) | A_BOLD );
+            break;
+        default:
+            assert( false );
+            break;
+        }
+    }
     waddch( m_win, ']' );
 
     if( children > 1 )
