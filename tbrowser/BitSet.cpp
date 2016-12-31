@@ -20,13 +20,14 @@ void BitSet::Set( bool enabled )
                 v->emplace_back( ( data >> i ) & 0x1 );
             }
             v->emplace_back( enabled );
-            ptr = v;
+            auto score = scoredata;
+            ptr = (std::vector<bool>*)((size_t)v | ( score << 1 ));
             assert( !inplace );
         }
     }
     else
     {
-        ptr->emplace_back( enabled );
+        GetPtr()->emplace_back( enabled );
     }
 }
 
@@ -39,8 +40,8 @@ bool BitSet::Get( int pos ) const
     }
     else
     {
-        assert( pos < ptr->size() );
-        return ptr->operator[]( pos );
+        assert( pos < GetPtr()->size() );
+        return GetPtr()->operator[]( pos );
     }
 }
 
@@ -52,6 +53,6 @@ int BitSet::Size() const
     }
     else
     {
-        return ptr->size();
+        return GetPtr()->size();
     }
 }
