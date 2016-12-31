@@ -1,16 +1,21 @@
+#include <ctype.h>
 #include <stdlib.h>
 #include <sstream>
 #include <mutex>
 
 #include "../common/FileMap.hpp"
 #include "../common/Filesystem.hpp"
+#include "../common/String.hpp"
+
 #include "PersistentStorage.hpp"
+#include "Score.hpp"
 
 enum { BufSize = 1024 * 1024 };
 
 static const char* LastOpenArchive = "lastopen";
 static const char* LastArticle = "article-";
 static const char* Visited = "visited";
+static const char* Score = "score";
 
 static std::string GetSavePath()
 {
@@ -51,6 +56,7 @@ PersistentStorage::PersistentStorage()
     , m_bufLeft( 0 )
     , m_articleHistory( 256 )
 {
+    LoadScore();
 }
 
 PersistentStorage::~PersistentStorage()
@@ -219,4 +225,77 @@ void PersistentStorage::VerifyVisitedAreValid( const std::string& fn )
         }
     }
     m_visitedLastVerify = std::chrono::steady_clock::now();
+}
+
+void PersistentStorage::LoadScore()
+{
+    const auto fn = m_base + Score;
+    if( !Exists( fn ) ) return;
+
+    FileMap<char> f( fn );
+    auto size = f.DataSize();
+    const char* ptr = f;
+    while( size > 0 )
+    {
+        int score;
+        if( sscanf( ptr, "%i", &score ) != 1 ) return;
+        while( size > 0 && !isspace( *ptr ) )
+        {
+            ptr++;
+            size--;
+        }
+        while( size > 0 && isspace( *ptr ) )
+        {
+            ptr++;
+            size--;
+        }
+        if( size <= 0 ) return;
+        ScoreField field;
+        if( size > 8 && strnicmpl( ptr, "realname", 8 ) == 0 )
+        {
+            field = SF_RealName;
+            ptr += 8;
+            size -= 8;
+        }
+        else if( size > 7 && strnicmpl( ptr, "subject", 7 ) == 0 )
+        {
+            field = SF_Subject;
+            ptr += 7;
+            size -= 7;
+        }
+        else if( size > 4 && strnicmpl( ptr, "from", 4 ) == 0 )
+        {
+            field = SF_Subject;
+            ptr += 4;
+            size -= 4;
+        }
+        else
+        {
+            return;
+        }
+        while( size && isspace( *ptr ) )
+        {
+            ptr++;
+            size--;
+        }
+        if( size <= 0 ) return;
+        bool exact = *ptr == '=';
+        if( exact )
+        {
+            ptr++;
+            size--;
+            if( size <= 0 ) return;
+        }
+        auto end = ptr;
+        while( end - ptr < size && *end != '\n' && *end != '\r' ) end++;
+        std::string match( ptr, end );
+        ptr = end;
+        while( size > 0 && *ptr == '\n' || *ptr == '\r' )
+        {
+            ptr++;
+            size--;
+        }
+
+        m_scoreList.emplace_back( ScoreEntry { score, exact, field, std::move( match ) } );
+    }
 }

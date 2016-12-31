@@ -13,6 +13,8 @@
 
 #include "LockedFile.hpp"
 
+struct ScoreEntry;
+
 class PersistentStorage
 {
 public:
@@ -39,6 +41,8 @@ private:
     const char* StoreString( const char* str );
     void VerifyVisitedAreValid( const std::string& fn );
 
+    void LoadScore();
+
     std::string m_base;
     std::unordered_set<const char*, hash, equal_to> m_visited;
     uint64_t m_visitedTimestamp;
@@ -50,6 +54,7 @@ private:
     size_t m_bufLeft;
 
     ring_buffer<uint32_t> m_articleHistory;
+    std::vector<ScoreEntry> m_scoreList;
 };
 
 #endif

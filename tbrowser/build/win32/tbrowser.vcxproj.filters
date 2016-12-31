@@ -374,5 +374,8 @@
     <ClInclude Include="..\..\Help.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\libuat\Score.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
