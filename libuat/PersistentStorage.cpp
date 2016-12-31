@@ -198,26 +198,25 @@ const char* PersistentStorage::StoreString( const char* str )
 
 void PersistentStorage::VerifyVisitedAreValid( const std::string& fn )
 {
-    if( Exists( fn ) )
+    if( !Exists( fn ) ) return;
+
+    const auto timestamp = GetFileMTime( fn.c_str() );
+    if( timestamp > m_visitedTimestamp )
     {
-        const auto timestamp = GetFileMTime( fn.c_str() );
-        if( timestamp > m_visitedTimestamp )
+        m_visitedTimestamp = timestamp;
+        FileMap<char> fmap( fn );
+        auto ptr = (const char*)fmap;
+        auto datasize = fmap.Size();
+        while( datasize > 0 )
         {
-            m_visitedTimestamp = timestamp;
-            FileMap<char> fmap( fn );
-            auto ptr = (const char*)fmap;
-            auto datasize = fmap.Size();
-            while( datasize > 0 )
+            const auto size = strlen( ptr );
+            if( m_visited.find( ptr ) == m_visited.end() )
             {
-                const auto size = strlen( ptr );
-                if( m_visited.find( ptr ) == m_visited.end() )
-                {
-                    m_visited.emplace( StoreString( ptr ) );
-                }
-                ptr += size + 1;
-                datasize -= size + 1;
+                m_visited.emplace( StoreString( ptr ) );
             }
+            ptr += size + 1;
+            datasize -= size + 1;
         }
-        m_visitedLastVerify = std::chrono::steady_clock::now();
     }
+    m_visitedLastVerify = std::chrono::steady_clock::now();
 }
