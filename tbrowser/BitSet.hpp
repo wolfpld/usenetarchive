@@ -1,6 +1,7 @@
 #ifndef __BITSET_HPP__
 #define __BITSET_HPP__
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <vector>
 
