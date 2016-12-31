@@ -28,6 +28,8 @@ struct SearchData
     std::vector<const char*> matched;
 };
 
+struct ScoreEntry;
+
 class Archive
 {
 public:
@@ -71,6 +73,8 @@ public:
 
     const char* GetRealName( uint32_t idx ) const;
     const char* GetRealName( const char* msgid ) const;
+
+    int GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& scoreList ) const;
 
     SearchData Search( const char* query, int flags = SF_FlagsNone, int filter = T_All ) const;
     SearchData Search( const std::vector<std::string>& terms, int flags = SF_FlagsNone, int filter = T_All ) const;

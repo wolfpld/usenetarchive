@@ -7,6 +7,8 @@
 
 #include "Archive.hpp"
 #include "PackageAccess.hpp"
+#include "Score.hpp"
+
 #include "../common/Filesystem.hpp"
 #include "../common/String.hpp"
 #include "../common/Package.hpp"
@@ -196,6 +198,47 @@ const char* Archive::GetRealName( const char* msgid ) const
 {
     auto idx = m_midhash.Search( msgid );
     return idx >= 0 ? GetSubject( idx ) : nullptr;
+}
+
+static bool MatchStrings( const std::string& s1, const char* s2, bool exact )
+{
+    if( exact )
+    {
+        return strcmp( s1.c_str(), s2 ) == 0;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+int Archive::GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& scoreList ) const
+{
+    int score = 0;
+    for( auto& v : scoreList )
+    {
+        bool match = false;
+        switch( v.field )
+        {
+        case SF_RealName:
+            match = MatchStrings( v.match, GetRealName( idx ), v.exact != 0 );
+            break;
+        case SF_Subject:
+            match = MatchStrings( v.match, GetSubject( idx ), v.exact != 0 );
+            break;
+        case SF_From:
+            match = MatchStrings( v.match, GetFrom( idx ), v.exact != 0 );
+            break;
+        default:
+            assert( false );
+            break;
+        }
+        if( match )
+        {
+            score += v.score;
+        }
+    }
+    return score;
 }
 
 struct PostData
