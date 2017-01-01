@@ -89,6 +89,8 @@ std::string BottomBar::Query( const char* prompt, const char* entry, bool filesy
             break;
         case KEY_EXIT:
         case 27:
+            PrintHelp();
+            wrefresh( m_win );
             return "";
             break;
         case KEY_END:
@@ -147,6 +149,8 @@ char BottomBar::KeyQuery( const char* prompt )
             m_parent->Resize();
             break;
         default:
+            PrintHelp();
+            wrefresh( m_win );
             return key;
         }
     }
