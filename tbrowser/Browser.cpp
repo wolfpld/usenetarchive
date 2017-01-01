@@ -179,6 +179,17 @@ void Browser::Entry()
             doupdate();
             break;
         }
+        case 'p':
+        {
+            auto parent = m_archive->GetParent( m_tview.GetCursor() );
+            if( parent != -1 )
+            {
+                m_tview.SetCursor( parent );
+                m_tview.FocusOn( parent );
+                doupdate();
+            }
+            break;
+        }
         case KEY_LEFT:
         case 'h':
         {
