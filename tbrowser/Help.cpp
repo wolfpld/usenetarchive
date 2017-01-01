@@ -60,6 +60,7 @@ const char* HelpContents =
 "                 r: enable/disable ROT13 encoding\n"
 "                 g: go to specified message id\n"
 "                 s: search messages for specified text\n"
+"                 o: open another archive\n"
 "\n"
 "                                  Search view\n"
 "                                 -------------\n"
