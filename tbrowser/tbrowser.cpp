@@ -79,8 +79,10 @@ int main( int argc, char** argv )
 
     endwin();
 
-    storage.WriteLastOpenArchive( lastOpen.c_str() );
-    storage.WriteArticleHistory( lastOpen.c_str() );
+    auto last = browser.GetArchiveFilename();
+
+    storage.WriteLastOpenArchive( last );
+    storage.WriteArticleHistory( last );
 
     return 0;
 }

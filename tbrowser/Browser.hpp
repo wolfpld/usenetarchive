@@ -24,6 +24,8 @@ public:
 
     void OpenMessage( int msgidx );
 
+    const char* GetArchiveFilename() const { return m_fn.c_str(); }
+
 private:
     bool MoveOrEnterAction( int move );
     void SwitchToMessage( int msgidx );
