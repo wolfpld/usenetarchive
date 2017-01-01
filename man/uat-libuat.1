@@ -33,6 +33,58 @@ Information such as last opened archive, a list of previously viewed messages
 and whether any message was visited in the past are provided by the
 .I \%PersistentStorage
 class.
+.SS Score file
+Messages in UAT archives may be scored, which may be used to determine which
+ones are important, and which ones aren't. Score file entries are formatted
+as specified below:
+
+.in +4
+score field =match
+.in
+
+Score is a positive or negative number that will be added to message score,
+if match succeeds. Field is on of: "realname", "from", "subject" and
+determines which header field will be used to perform match. Match is the
+string to be matched, preceded by a one-letter flag determining match type.
+.TP
+.BR '='
+Exact string match.
+.TP
+.BR '~'
+Exact case insensitive string match. Provided string must be lowercase.
+.TP
+.BR '!'
+Regular expression match using ECMAScript syntax.
+.TP
+.BR '?'
+Case insensitive regular expression match.
+.SH "CONFIGURATION FILES"
+On MS Windows systems (including Cygwin builds) the configuration files are
+stored in
+.I %APPDATA%/UsenetArchive
+directory.
+
+On Unix systems the configuration files are stored either in
+.I $XDG_CONFIG_HOME/UsenetArchive
+or in
+.I $HOME/.config/UsenetArchive
+if the
+.I XDG_CONFIG_HOME
+environment variable is not set.
+
+The following files are used by libuat:
+.TP
+.BR score
+Score file.
+.TP
+.BR lastopen
+Last opened archive file name.
+.TP
+.BR visited
+List of messages that were read.
+.TP
+.BR article-*
+Message viewing history.
 .SH "SEE ALSO"
 .ad l
 .nh
