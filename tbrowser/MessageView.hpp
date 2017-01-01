@@ -13,6 +13,8 @@ class MessageView : public View
 public:
     MessageView( Archive& archive, PersistentStorage& storage );
 
+    void Reset( Archive& archive );
+
     void Draw();
     void Resize();
     bool Display( uint32_t idx, int move );
@@ -54,7 +56,7 @@ private:
     void PrintQuotes( const char*& start, int& len, int level );
 
     std::vector<Line> m_lines;
-    Archive& m_archive;
+    Archive* m_archive;
     PersistentStorage& m_storage;
     const char* m_text;
     int32_t m_idx;

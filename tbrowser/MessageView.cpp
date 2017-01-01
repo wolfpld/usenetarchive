@@ -19,7 +19,7 @@ static const chtype QuoteFlags[] = {
 
 MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     : View( 0, 0, 1, 1 )
-    , m_archive( archive )
+    , m_archive( &archive )
     , m_storage( storage )
     , m_idx( -1 )
     , m_linesWidth( -1 )
@@ -28,6 +28,14 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_rot13( false )
 {
     m_lines.reserve( 512 );
+}
+
+void MessageView::Reset( Archive& archive )
+{
+    Close();
+    m_archive = &archive;
+    m_idx = -1;
+    m_lines.clear();
 }
 
 void MessageView::Resize()
@@ -57,7 +65,7 @@ bool MessageView::Display( uint32_t idx, int move )
     if( idx != m_idx )
     {
         m_idx = idx;
-        m_text = m_archive.GetMessage( idx );
+        m_text = m_archive->GetMessage( idx );
         PrepareLines();
         m_top = 0;
         // If view is not active, drawing will be performed during resize.
@@ -65,7 +73,7 @@ bool MessageView::Display( uint32_t idx, int move )
         {
             Draw();
         }
-        m_storage.MarkVisited( m_archive.GetMessageId( idx ) );
+        m_storage.MarkVisited( m_archive->GetMessageId( idx ) );
     }
     else if( m_active )
     {
@@ -246,7 +254,7 @@ void MessageView::Draw()
     waddch( m_win, ' ' );
     tw--;
     int len = tw;
-    auto text = m_archive.GetSubject( m_idx );
+    auto text = m_archive->GetSubject( m_idx );
     auto end = utfendl( text, len );
     utfprint( m_win, text, end );
     if( tw - len > 5 )
@@ -254,7 +262,7 @@ void MessageView::Draw()
         wattron( m_win, COLOR_PAIR( 1 ) );
         wprintw( m_win, " :: " );
         wattron( m_win, COLOR_PAIR( 11 ) );
-        text = m_archive.GetRealName( m_idx );
+        text = m_archive->GetRealName( m_idx );
         end = utfend( text, w - len - 4 );
         utfprint( m_win, text, end );
     }
