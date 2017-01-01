@@ -2,6 +2,7 @@
 #define __BROWSER_HPP__
 
 #include <memory>
+#include <string>
 
 #include "BottomBar.hpp"
 #include "HeaderBar.hpp"
@@ -16,7 +17,7 @@ class PersistentStorage;
 class Browser
 {
 public:
-    Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const char* fn );
+    Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn );
 
     void Entry();
     void Resize();
@@ -38,7 +39,7 @@ private:
     SearchView m_sview;
     TextView m_textview;
 
-    const char* m_fn;
+    std::string m_fn;
     int m_historyIdx;
 };
 
