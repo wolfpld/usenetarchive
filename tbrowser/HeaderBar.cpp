@@ -21,6 +21,16 @@ void HeaderBar::Resize() const
     Redraw();
 }
 
+void HeaderBar::Change( const std::pair<const char*, uint64_t>& archive, const char* desc, const char* fn )
+{
+    m_archive = archive.first ? archive.first : fn;
+    m_desc = desc;
+    m_archiveLen = archive.first ? archive.second : strlen( fn );
+
+    werase( m_win );
+    Redraw();
+}
+
 void HeaderBar::Redraw() const
 {
     wattron( m_win, COLOR_PAIR(11) | A_BOLD );
