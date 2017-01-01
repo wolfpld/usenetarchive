@@ -4,8 +4,10 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <vector>
 
 bool CreateDirStruct( const std::string& path );
+std::vector<std::string> ListDirectory( const std::string& path );
 
 #ifdef _MSC_VER
 #  define stat64 _stat64
