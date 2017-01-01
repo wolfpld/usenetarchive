@@ -95,10 +95,17 @@ void Browser::Entry()
             break;
         }
         case 'q':
-            if( !m_mview.IsActive() ) return;
-            m_mview.Close();
-            m_tview.Resize();
-            doupdate();
+            if( !m_mview.IsActive() )
+            {
+                const auto key = m_bottom.KeyQuery( "Are you sure you want to quit? [y/n]" );
+                if( key == 'y' || key == 'Y' ) return;
+            }
+            else
+            {
+                m_mview.Close();
+                m_tview.Resize();
+                doupdate();
+            }
             break;
         case KEY_ENTER:
         case '\n':
