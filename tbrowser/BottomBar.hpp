@@ -22,7 +22,7 @@ public:
     void Update();
     void Resize() const;
 
-    std::string Query( const char* prompt, const char* entry = nullptr );
+    std::string Query( const char* prompt, const char* entry = nullptr, bool filesystem = false );
     char KeyQuery( const char* prompt );
     void Status( const char* status, int timeout = 2 );
     void SetHelp( HelpSet set );
@@ -30,6 +30,7 @@ public:
 private:
     void PrintHelp() const;
     void PrintQuery( const char* prompt, const char* str ) const;
+    void SuggestFiles( std::string& str, int& pos ) const;
 
     Browser* m_parent;
     int m_reset;

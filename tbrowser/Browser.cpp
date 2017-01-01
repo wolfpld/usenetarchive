@@ -331,7 +331,7 @@ void Browser::Entry()
         }
         case 'o':
         {
-            auto fn = m_bottom.Query( "Open archive: ", m_fn.c_str() );
+            auto fn = m_bottom.Query( "Open archive: ", m_fn.c_str(), true );
             if( !fn.empty() )
             {
                 if( !Exists( fn ) )

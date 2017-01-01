@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../common/Filesystem.hpp"
+
 #include "BottomBar.hpp"
 #include "Browser.hpp"
 #include "UTF8.hpp"
@@ -35,7 +37,7 @@ void BottomBar::Resize() const
     wnoutrefresh( m_win );
 }
 
-std::string BottomBar::Query( const char* prompt, const char* entry )
+std::string BottomBar::Query( const char* prompt, const char* entry, bool filesystem )
 {
     std::string ret;
     int insert = 0;
@@ -114,6 +116,13 @@ std::string BottomBar::Query( const char* prompt, const char* entry )
         case KEY_RESIZE:
             m_parent->Resize();
             break;
+        case '\t':
+            if( filesystem )
+            {
+                SuggestFiles( ret, insert );
+                break;
+            }
+            // fallthrough
         default:
             ret.insert( ret.begin() + insert, key );
             insert++;
@@ -196,4 +205,70 @@ void BottomBar::PrintQuery( const char* prompt, const char* str ) const
     wprintw( m_win, "%s", prompt );
     wattroff( m_win, A_BOLD );
     wprintw( m_win, "%s", str );
+}
+
+void BottomBar::SuggestFiles( std::string& str, int& pos ) const
+{
+    std::string base;
+    std::string file;
+
+    if( Exists( str ) )
+    {
+        if( IsFile( str ) ) return;
+        base = str;
+    }
+    else
+    {
+        auto pos = str.rfind( '/' );
+        if( pos == std::string::npos )
+        {
+            pos = str.rfind( '\\' );
+            if( pos == std::string::npos ) return;
+        }
+        base = str.substr( 0, pos );
+        if( !Exists( base ) || IsFile( base ) ) return;
+        file = str.substr( pos+1 );
+    }
+
+    auto list = ListDirectory( base );
+    if( list.empty() ) return;
+
+    auto it = list.begin();
+    while( it != list.end() )
+    {
+        if( strncmp( it->c_str(), file.c_str(), file.size() ) == 0 )
+        {
+            ++it;
+        }
+        else
+        {
+            it = list.erase( it );
+        }
+    }
+
+    if( list.size() == 1 )
+    {
+        str = base + '/' + list[0];
+        pos = str.size();
+        return;
+    }
+
+    int ms = file.size();
+    for(;;)
+    {
+        auto test = list[0][ms];
+        for( int i=1; i<list.size(); i++ )
+        {
+            if( list[i][ms] != test )
+            {
+                if( ms != file.size() )
+                {
+                    str = base + '/' + list[0].substr( 0, ms );
+                    pos = str.size();
+                }
+                return;
+            }
+        }
+        ms++;
+    }
 }
