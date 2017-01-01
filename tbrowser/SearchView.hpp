@@ -21,13 +21,15 @@ public:
     void Resize();
     void Draw();
 
+    void Reset( Archive& archive );
+
 private:
     void FillPreview( int idx );
     void MoveCursor( int offset );
 
     Browser* m_parent;
     BottomBar& m_bar;
-    Archive& m_archive;
+    Archive* m_archive;
     PersistentStorage& m_storage;
     std::string m_query;
     float m_queryTime;

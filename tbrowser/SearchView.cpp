@@ -17,7 +17,7 @@ SearchView::SearchView( Browser* parent, BottomBar& bar, Archive& archive, Persi
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_bar( bar )
-    , m_archive( archive )
+    , m_archive( &archive )
     , m_storage( storage )
     , m_active( false )
     , m_top( 0 )
@@ -50,7 +50,7 @@ void SearchView::Entry()
             {
                 std::swap( m_query, query );
                 auto start = std::chrono::high_resolution_clock::now();
-                m_result = m_archive.Search( m_query.c_str(), Archive::SF_AdjacentWords | Archive::SF_FuzzySearch );
+                m_result = m_archive->Search( m_query.c_str(), Archive::SF_AdjacentWords | Archive::SF_FuzzySearch );
                 m_queryTime = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - start ).count() / 1000.f;
                 m_preview.clear();
                 m_preview.reserve( m_result.results.size() );
@@ -154,7 +154,7 @@ void SearchView::Draw()
             }
 
             wattron( m_win, COLOR_PAIR(1) );
-            if( m_storage.WasVisited( m_archive.GetMessageId( res.postid ) ) )
+            if( m_storage.WasVisited( m_archive->GetMessageId( res.postid ) ) )
             {
                 waddch( m_win, 'R' );
             }
@@ -164,7 +164,7 @@ void SearchView::Draw()
             }
 
             wprintw( m_win, " [" );
-            auto realname = m_archive.GetRealName( res.postid );
+            auto realname = m_archive->GetRealName( res.postid );
             wattron( m_win, COLOR_PAIR(13) | A_BOLD );
             int len = 16;
             auto end = utfendl( realname, len );
@@ -177,12 +177,12 @@ void SearchView::Draw()
             wattron( m_win, COLOR_PAIR(1) );
             wprintw( m_win, "] " );
 
-            time_t date = m_archive.GetDate( res.postid );
+            time_t date = m_archive->GetDate( res.postid );
             auto lt = localtime( &date );
             char buf[64];
             auto dlen = strftime( buf, 64, "%F %R", lt );
 
-            auto subject = m_archive.GetSubject( res.postid );
+            auto subject = m_archive->GetSubject( res.postid );
             len = w - 38 - dlen;
             end = utfendl( subject, len );
             wattron( m_win, A_BOLD );
@@ -252,9 +252,17 @@ void SearchView::Draw()
     wnoutrefresh( m_win );
 }
 
+void SearchView::Reset( Archive& archive )
+{
+    m_archive = &archive;
+    m_result.results.clear();
+    m_query.clear();
+    m_top = m_bottom = m_cursor = 0;
+}
+
 void SearchView::FillPreview( int idx )
 {
-    auto msg = std::string( m_archive.GetMessage( m_result.results[idx].postid ) );
+    auto msg = std::string( m_archive->GetMessage( m_result.results[idx].postid ) );
     auto lower = msg;
     std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
 
