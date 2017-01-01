@@ -30,6 +30,7 @@ private:
     bool MoveOrEnterAction( int move );
     void SwitchToMessage( int msgidx );
     void RestoreDefaultView();
+    void OpenArchive( std::string&& fn );
 
     std::unique_ptr<Archive> m_archive;
     PersistentStorage& m_storage;

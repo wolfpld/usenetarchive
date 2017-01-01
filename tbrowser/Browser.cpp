@@ -20,7 +20,6 @@ Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage
     auto& history = m_storage.GetArticleHistory();
     if( m_storage.ReadArticleHistory( m_fn.c_str() ) )
     {
-        const auto article = history.back();
         SwitchToMessage( history.back() );
     }
     m_historyIdx = history.size() - 1;
@@ -330,6 +329,22 @@ void Browser::Entry()
             doupdate();
             break;
         }
+        case 'o':
+        {
+            auto fn = m_bottom.Query( "Open archive: ", m_fn.c_str() );
+            if( !fn.empty() )
+            {
+                if( !Exists( fn ) )
+                {
+                    m_bottom.Status( "No such archive!" );
+                }
+                else
+                {
+                    OpenArchive( std::move( fn ) );
+                }
+            }
+            break;
+        }
         default:
             break;
         }
@@ -379,4 +394,35 @@ void Browser::RestoreDefaultView()
     {
         m_mview.Draw();
     }
+}
+
+void Browser::OpenArchive( std::string&& fn )
+{
+    std::unique_ptr<Archive> archive( Archive::Open( fn ) );
+    if( !archive )
+    {
+        m_bottom.Status( "Cannot open archive!" );
+        return;
+    }
+
+    m_storage.WriteArticleHistory( m_fn.c_str() );
+
+    std::swap( fn, m_fn );
+    std::swap( archive, m_archive );
+
+    m_header.Change( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, m_fn.c_str() );
+    m_mview.Reset( *m_archive );
+    m_sview.Reset( *m_archive );
+    m_tview.Reset( *m_archive );
+
+    if( m_storage.ReadArticleHistory( m_fn.c_str() ) )
+    {
+        SwitchToMessage( m_storage.GetArticleHistory().back() );
+    }
+
+    m_tview.Resize();
+
+    m_bottom.Status( "Archive opened." );
+
+    doupdate();
 }
