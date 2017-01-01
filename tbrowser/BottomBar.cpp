@@ -122,6 +122,27 @@ std::string BottomBar::Query( const char* prompt, const char* entry )
     }
 }
 
+char BottomBar::KeyQuery( const char* prompt )
+{
+    const auto len = strlen( prompt );
+    for(;;)
+    {
+        PrintQuery( prompt, "" );
+        wmove( m_win, 0, len );
+        wrefresh( m_win );
+
+        auto key = GetKey();
+        switch( key )
+        {
+        case KEY_RESIZE:
+            m_parent->Resize();
+            break;
+        default:
+            return key;
+        }
+    }
+}
+
 void BottomBar::Status( const char* status, int timeout )
 {
     m_reset = timeout;
