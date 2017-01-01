@@ -279,13 +279,34 @@ void PersistentStorage::LoadScore()
             size--;
         }
         if( size <= 0 ) return;
-        bool exact = *ptr == '=';
-        if( exact )
+
+        bool exact, ignoreCase;
+        switch( *ptr )
         {
-            ptr++;
-            size--;
-            if( size <= 0 ) return;
+        case '=':
+            exact = true;
+            ignoreCase = false;
+            break;
+        case '~':
+            exact = true;
+            ignoreCase = true;
+            break;
+        case '!':
+            exact = false;
+            ignoreCase = false;
+            break;
+        case '?':
+            exact = false;
+            ignoreCase = true;
+            break;
+        default:
+            return;
         }
+
+        ptr++;
+        size--;
+        if( size <= 0 ) return;
+
         auto end = ptr;
         while( end - ptr < size && *end != '\n' && *end != '\r' ) end++;
         std::string match( ptr, end );
@@ -296,6 +317,6 @@ void PersistentStorage::LoadScore()
             size--;
         }
 
-        m_scoreList.emplace_back( ScoreEntry { score, exact, field, std::move( match ) } );
+        m_scoreList.emplace_back( ScoreEntry { score, exact, ignoreCase, field, std::move( match ) } );
     }
 }

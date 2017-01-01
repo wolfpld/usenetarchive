@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iterator>
 #include <time.h>
+#include <regex>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -200,15 +201,25 @@ const char* Archive::GetRealName( const char* msgid ) const
     return idx >= 0 ? GetSubject( idx ) : nullptr;
 }
 
-static bool MatchStrings( const std::string& s1, const char* s2, bool exact )
+static bool MatchStrings( const std::string& s1, const char* s2, bool exact, bool ignoreCase )
 {
     if( exact )
     {
-        return strcmp( s1.c_str(), s2 ) == 0;
+        if( ignoreCase )
+        {
+            auto l1 = s1.size();
+            auto l2 = strlen( s2 );
+            return l1 == l2 && strnicmpl( s2, s1.c_str(), l1 ) == 0;
+        }
+        else
+        {
+            return strcmp( s1.c_str(), s2 ) == 0;
+        }
     }
     else
     {
-        return false;
+        std::regex r( s1.c_str(), s1.size(), std::regex::flag_type( std::regex_constants::ECMAScript | ( ignoreCase ? std::regex_constants::icase : 0 ) ) );
+        return std::regex_search( s2, r );
     }
 }
 
@@ -221,13 +232,13 @@ int Archive::GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& score
         switch( v.field )
         {
         case SF_RealName:
-            match = MatchStrings( v.match, GetRealName( idx ), v.exact != 0 );
+            match = MatchStrings( v.match, GetRealName( idx ), v.exact != 0, v.ignoreCase != 0 );
             break;
         case SF_Subject:
-            match = MatchStrings( v.match, GetSubject( idx ), v.exact != 0 );
+            match = MatchStrings( v.match, GetSubject( idx ), v.exact != 0, v.ignoreCase != 0 );
             break;
         case SF_From:
-            match = MatchStrings( v.match, GetFrom( idx ), v.exact != 0 );
+            match = MatchStrings( v.match, GetFrom( idx ), v.exact != 0, v.ignoreCase != 0 );
             break;
         default:
             assert( false );

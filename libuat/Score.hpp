@@ -13,8 +13,9 @@ enum ScoreField
 
 struct ScoreEntry
 {
-    int32_t score : 31;
+    int32_t score : 30;
     int32_t exact : 1;
+    int32_t ignoreCase : 1;
     ScoreField field;
     std::string match;
 };
