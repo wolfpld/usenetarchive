@@ -40,6 +40,8 @@ class ThreadView : public View
 public:
     ThreadView( const Archive& archive, PersistentStorage& storage, const MessageView& mview );
 
+    void Reset( const Archive& archive );
+
     void Resize();
     void Draw();
 
@@ -71,7 +73,7 @@ private:
     bool CheckVisited( int idx );
     ScoreState GetScoreState( int idx );
 
-    const Archive& m_archive;
+    const Archive* m_archive;
     PersistentStorage& m_storage;
 
     const MessageView& m_mview;
