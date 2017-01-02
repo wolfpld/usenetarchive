@@ -99,6 +99,60 @@ int main( int argc, char** argv )
     }
     printf( "\nTotal message count: %" PRIu64 "\n", count );
 
+    // name, description
+    {
+        FILE* data = fopen( ( base + "str" ).c_str(), "wb" );
+        FILE* meta = fopen( ( base + "str.meta" ).c_str(), "wb" );
+
+        uint32_t zero = 0;
+        uint32_t offset = fwrite( &zero, 1, 1, data );
+
+        int i=0;
+        for( auto& v : arch )
+        {
+            auto name = v->GetArchiveName();
+            fwrite( &offset, 1, sizeof( offset ), meta );
+            if( name.second == 0 )
+            {
+                auto pos = archives[i].rfind( '/' );
+                if( pos == std::string::npos )
+                {
+                    auto pos = archives[i].rfind( '\\' );
+                }
+                if( pos == std::string::npos )
+                {
+                    offset += fwrite( archives[i].c_str(), 1, archives[i].size() + 1, data );
+                }
+                else
+                {
+                    offset += fwrite( archives[i].c_str() + pos, 1, archives[i].size() + 1 - pos, data );
+                }
+            }
+            else
+            {
+                offset += fwrite( name.first, 1, name.second, data );
+                offset += fwrite( &zero, 1, 1, data );
+            }
+
+            auto desc = v->GetShortDescription();
+            if( desc.second == 0 )
+            {
+                fwrite( &zero, 1, sizeof( zero ), meta );
+            }
+            else
+            {
+                fwrite( &offset, 1, sizeof( offset ), meta );
+                offset += fwrite( desc.first, 1, desc.second, data );
+                offset += fwrite( &zero, 1, 1, data );
+            }
+
+            i++;
+        }
+
+        fclose( data );
+        fclose( meta );
+    }
+
     uint64_t cnt = 0;
     uint64_t unique;
     {
