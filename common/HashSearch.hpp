@@ -26,9 +26,9 @@ public:
     {
     }
 
-    int Search( const char* str ) const
+    int Search( const char* str, XXH32_hash_t _hash ) const
     {
-        const auto hash = XXH32( str, strlen( str ), 0 ) & m_mask;
+        const auto hash = _hash & m_mask;
         auto ptr = m_hash[hash];
         const auto num = *ptr++;
         for( uint32_t i=0; i<num; i++ )
@@ -40,6 +40,12 @@ public:
             ptr++;
         }
         return -1;
+
+    }
+
+    int Search( const char* str ) const
+    {
+        return Search( str, XXH32( str, strlen( str ), 0 ) );
     }
 
 private:

@@ -107,6 +107,11 @@ int Archive::GetMessageIndex( const char* msgid ) const
     return m_midhash.Search( msgid );
 }
 
+int Archive::GetMessageIndex( const char* msgid, XXH32_hash_t hash ) const
+{
+    return m_midhash.Search( msgid, hash );
+}
+
 const char* Archive::GetMessageId( uint32_t idx ) const
 {
     return m_middb[idx];

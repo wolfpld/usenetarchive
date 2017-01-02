@@ -48,6 +48,7 @@ public:
     size_t NumberOfMessages() const { return m_mcnt; }
 
     int GetMessageIndex( const char* msgid ) const;
+    int GetMessageIndex( const char* msgid, XXH32_hash_t hash ) const;
     const char* GetMessageId( uint32_t idx ) const;
 
     ViewReference<uint32_t> GetTopLevel() const;
