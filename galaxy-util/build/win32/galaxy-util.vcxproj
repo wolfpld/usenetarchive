@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
+    <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\galaxy-util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\mmap.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5DE34E2F-AF19-4F00-9BF7-2BD1E9DCDCAD}</ProjectGuid>
