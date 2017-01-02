@@ -34,9 +34,11 @@
     <ClCompile Include="..\..\galaxy-util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\common\CharUtil.hpp" />
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
+    <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h" />

@@ -107,5 +107,11 @@
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\CharUtil.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MetaView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
