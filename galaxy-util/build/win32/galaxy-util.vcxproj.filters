@@ -7,6 +7,18 @@
     <Filter Include="common">
       <UniqueIdentifier>{d991e927-d255-4fae-8641-a731116a9b60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="zstd">
+      <UniqueIdentifier>{28a59dc5-40d4-49e7-963a-a40d876a4ab3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstd\common">
+      <UniqueIdentifier>{4d93d881-b017-4afd-8ed7-317fd90e9974}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstd\decompress">
+      <UniqueIdentifier>{c47df82f-f46a-48ec-9e76-e8f1dccb62a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libuat">
+      <UniqueIdentifier>{c102f792-43fb-4202-9a54-9713337069fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\galaxy-util.cpp">
@@ -18,6 +30,36 @@
     <ClCompile Include="..\..\..\common\mmap.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c">
+      <Filter>zstd\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
+      <Filter>zstd\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libuat\Archive.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libuat\PackageAccess.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\common\LexiconTypes.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -27,6 +69,42 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\mmap.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\zstd.h">
+      <Filter>zstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\fse.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\huf.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\mem.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_errors.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\Archive.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\PackageAccess.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\LexiconTypes.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

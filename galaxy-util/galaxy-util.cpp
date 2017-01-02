@@ -7,6 +7,8 @@
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
 
+#include "../libuat/Archive.hpp"
+
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -71,6 +73,21 @@ int main( int argc, char** argv )
         }
         fclose( out );
     }
+
+    int i = 0;
+    std::vector<std::unique_ptr<Archive>> arch;
+    for( auto& v : archives )
+    {
+        printf( "%i/%i\r", ++i, archives.size() );
+        auto ptr = Archive::Open( v );
+        if( !ptr )
+        {
+            fprintf( stderr, "Cannot open archive: %s\n", v.c_str() );
+            exit( 1 );
+        }
+        arch.emplace_back( ptr );
+    }
+    printf( "\n" );
 
     return 0;
 }
