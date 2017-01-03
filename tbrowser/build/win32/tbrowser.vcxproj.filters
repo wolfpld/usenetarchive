@@ -252,6 +252,9 @@
     <ClCompile Include="..\..\Help.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\libuat\Galaxy.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -376,6 +379,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\libuat\Score.hpp">
       <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\Galaxy.hpp">
+      <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\HashSearchBig.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\HashSearch.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
