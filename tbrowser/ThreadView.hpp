@@ -37,6 +37,16 @@ enum class ScoreState
     Negative
 };
 
+enum class GalaxyState
+{
+    Unknown,
+    Nothing,
+    Crosspost,
+    ParentDifferent,
+    ChildrenDifferent,
+    BothDifferent
+};
+
 class ThreadView : public View
 {
 public:
