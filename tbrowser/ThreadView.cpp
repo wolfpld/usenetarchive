@@ -6,17 +6,20 @@
 
 #include "../common/Alloc.hpp"
 #include "../common/KillRe.hpp"
+
 #include "../libuat/Archive.hpp"
+#include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
 #include "MessageView.hpp"
 #include "ThreadView.hpp"
 #include "UTF8.hpp"
 
-ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, const MessageView& mview )
+ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, const MessageView& mview )
     : View( 0, 1, 0, -2 )
     , m_archive( &archive )
     , m_storage( storage )
+    , m_galaxy( galaxy )
     , m_mview( mview )
     , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )

@@ -8,6 +8,7 @@
 #include "View.hpp"
 
 class Archive;
+class Galaxy;
 class MessageView;
 class PersistentStorage;
 
@@ -38,7 +39,7 @@ enum class ScoreState
 class ThreadView : public View
 {
 public:
-    ThreadView( const Archive& archive, PersistentStorage& storage, const MessageView& mview );
+    ThreadView( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, const MessageView& mview );
 
     void Reset( const Archive& archive );
 
@@ -75,6 +76,7 @@ private:
 
     const Archive* m_archive;
     PersistentStorage& m_storage;
+    const Galaxy* m_galaxy;
 
     const MessageView& m_mview;
     std::vector<ThreadData> m_data;
