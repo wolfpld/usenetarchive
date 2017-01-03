@@ -13,6 +13,7 @@
 enum { BufSize = 1024 * 1024 };
 
 static const char* LastOpenArchive = "lastopen";
+static const char* LastOpenGalaxyArchive = "lastgalaxy";
 static const char* LastArticle = "article-";
 static const char* Visited = "visited";
 static const char* Score = "score";
@@ -87,6 +88,31 @@ std::string PersistentStorage::ReadLastOpenArchive()
     std::lock_guard<LockedFile> lg( guard );
     FileMap<char> map( fn );
     ret.assign( (const char*)map, map + map.Size() );
+    return ret;
+}
+
+void PersistentStorage::WriteLastOpenGalaxyArchive( uint32_t idx )
+{
+    CreateDirStruct( m_base );
+    LockedFile guard( ( m_base + LastOpenGalaxyArchive ).c_str() );
+    std::lock_guard<LockedFile> lg( guard );
+    FILE* f = fopen( guard, "wb" );
+    if( !f ) return;
+    fwrite( &idx, 1, sizeof( idx ), f );
+    fclose( f );
+}
+
+int32_t PersistentStorage::ReadLastOpenGalaxyArchive()
+{
+    int32_t ret = -1;
+    const auto fn = m_base + LastOpenGalaxyArchive;
+    if( !Exists( fn ) ) return ret;
+    LockedFile guard( fn.c_str() );
+    std::lock_guard<LockedFile> lg( guard );
+    FILE* f = fopen( guard, "rb" );
+    if( !f ) return ret;
+    fread( &ret, 1, sizeof( ret ), f );
+    fclose( f );
     return ret;
 }
 

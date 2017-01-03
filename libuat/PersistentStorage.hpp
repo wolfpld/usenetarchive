@@ -24,6 +24,9 @@ public:
     void WriteLastOpenArchive( const char* archive );
     std::string ReadLastOpenArchive();
 
+    void WriteLastOpenGalaxyArchive( uint32_t idx );
+    int32_t ReadLastOpenGalaxyArchive();
+
     void WriteArticleHistory( const char* archive );
     bool ReadArticleHistory( const char* archive );
 
