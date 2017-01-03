@@ -24,9 +24,10 @@ struct ThreadData
     uint8_t visited    : 1;
     uint8_t visall     : 1;
     uint8_t condensed  : CondensedBits;
+    uint8_t galaxy     : 3;
 };
 
-static_assert( sizeof( ThreadData ) == sizeof( uint8_t ), "Thread data size greater than 1 byte." );
+static_assert( sizeof( ThreadData ) == sizeof( uint16_t ), "Thread data size greater than 2 byte." );
 
 enum class ScoreState
 {
