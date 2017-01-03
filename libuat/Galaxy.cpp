@@ -54,3 +54,8 @@ Galaxy::Galaxy( const std::string& fn )
         }
     }
 }
+
+std::string Galaxy::GetArchiveName( int idx ) const
+{
+    return std::string( m_archives[idx*2], m_archives[idx*2+1] );
+}
