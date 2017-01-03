@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <curses.h>
 #include <locale.h>
 #include <memory>
 #include <stdio.h>
 #include <stdlib.h>
 #include "../libuat/Archive.hpp"
+#include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
 #include "Browser.hpp"
@@ -11,6 +13,7 @@
 int main( int argc, char** argv )
 {
     std::unique_ptr<Archive> archive;
+    std::unique_ptr<Galaxy> galaxy;
     PersistentStorage storage;
 
     auto lastOpen = storage.ReadLastOpenArchive();
@@ -26,6 +29,25 @@ int main( int argc, char** argv )
     else
     {
         lastOpen = argv[1];
+    }
+
+    galaxy.reset( Galaxy::Open( lastOpen ) );
+    if( galaxy )
+    {
+        auto available = galaxy->GetAvailableArchives();
+        if( available.empty() )
+        {
+            fprintf( stderr, "No available archives in galaxy!\n" );
+            return 1;
+        }
+        auto galaxyLast = storage.ReadLastOpenGalaxyArchive();
+        auto it = std::lower_bound( available.begin(), available.end(), galaxyLast );
+        if( *it != galaxyLast )
+        {
+            galaxyLast = available.front();
+        }
+        storage.WriteLastOpenArchive( lastOpen.c_str() );
+        lastOpen = galaxy->GetArchiveName( galaxyLast );
     }
 
     archive.reset( Archive::Open( lastOpen ) );
@@ -80,9 +102,15 @@ int main( int argc, char** argv )
     endwin();
 
     auto last = browser.GetArchiveFilename();
-
-    storage.WriteLastOpenArchive( last );
     storage.WriteArticleHistory( last );
+    if( galaxy )
+    {
+        //storage.WriteLastOpenGalaxyArchive( 0 );
+    }
+    else
+    {
+        storage.WriteLastOpenArchive( last );
+    }
 
     return 0;
 }
