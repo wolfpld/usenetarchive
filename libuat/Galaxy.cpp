@@ -94,7 +94,47 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
-    return false;
+
+    auto children = m_arch[*ptr]->GetChildren( msgid );
+    for( int i=1; i<num; i++ )
+    {
+        if( m_arch[ptr[i]]->GetChildren( msgid ).size != children.size )
+        {
+            return false;
+        }
+    }
+
+    std::vector<const char*> test;
+    for( int i=0; i<children.size; i++ )
+    {
+        test.emplace_back( m_arch[*ptr]->GetMessageId( children.ptr[i] ) );
+    }
+    ptr++;
+
+    for( int i=1; i<num; i++ )
+    {
+        auto c2 = m_arch[*ptr]->GetChildren( msgid );
+        for( int j=0; j<c2.size; j++ )
+        {
+            auto tmid = m_arch[*ptr]->GetMessageId( c2.ptr[j] );
+            bool found = false;
+            for( auto& v : test )
+            {
+                if( strcmp( v, tmid ) == 0 )
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if( !found )
+            {
+                return false;
+            }
+        }
+        ptr++;
+    }
+
+    return true;
 }
 
 bool Galaxy::AreParentsSame( const char* msgid ) const
