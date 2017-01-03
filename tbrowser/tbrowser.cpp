@@ -47,7 +47,7 @@ int main( int argc, char** argv )
             galaxyLast = available.front();
         }
         storage.WriteLastOpenArchive( lastOpen.c_str() );
-        lastOpen = galaxy->GetArchiveName( galaxyLast );
+        lastOpen = galaxy->GetArchiveFilename( galaxyLast );
         archive = galaxy->GetArchive( galaxyLast );
     }
     else

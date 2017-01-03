@@ -16,7 +16,7 @@ public:
     static Galaxy* Open( const std::string& fn );
 
     const std::vector<int>& GetAvailableArchives() const { return m_available; }
-    std::string GetArchiveName( int idx ) const;
+    std::string GetArchiveFilename( int idx ) const;
     const std::shared_ptr<Archive>& GetArchive( int idx );
 
     int GetActiveArchive() const { return m_active; }
