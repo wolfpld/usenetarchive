@@ -298,6 +298,20 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
         wmove( m_win, line, 2 );
     }
 
+    if( m_galaxy )
+    {
+        switch( (GalaxyState)m_data[idx].galaxy )
+        {
+        case GalaxyState::Crosspost:
+            if( !hilite ) wattron( m_win, COLOR_PAIR( 3 ) );
+            waddch( m_win, 'x' );
+            if( !hilite ) wattroff( m_win, COLOR_PAIR( 3 ) );
+            break;
+        default:
+            waddch( m_win, ' ' );
+            break;
+        }
+    }
     if( wasVisited )
     {
         bool complete = m_data[idx].visall;
@@ -376,10 +390,11 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             break;
         }
     }
-    int len = 18;
+    const int lenBase = m_galaxy ? 17 : 18;
+    int len = lenBase;
     auto end = utfendl( realname, len );
     utfprint( m_win, realname, end );
-    if( len < 18 )
+    if( len < lenBase )
     {
         wmove( m_win, line, 27 );
     }
