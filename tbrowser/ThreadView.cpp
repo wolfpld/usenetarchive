@@ -307,6 +307,15 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             waddch( m_win, 'x' );
             if( !hilite ) wattroff( m_win, COLOR_PAIR( 3 ) );
             break;
+        case GalaxyState::ParentDifferent:
+            waddch( m_win, 'P' );
+            break;
+        case GalaxyState::ChildrenDifferent:
+            waddch( m_win, 'C' );
+            break;
+        case GalaxyState::BothDifferent:
+            waddch( m_win, 'B' );
+            break;
         default:
             waddch( m_win, ' ' );
             break;
@@ -654,7 +663,8 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
 {
     assert( m_galaxy );
     assert( (GalaxyState)m_data[idx].galaxy == GalaxyState::Unknown );
-    auto groups = m_galaxy->GetNumberOfGroups( m_archive->GetMessageId( idx ) );
+    const auto gidx  = m_galaxy->GetMessageIndex( m_archive->GetMessageId( idx ) );
+    const auto groups = m_galaxy->GetNumberOfGroups( gidx );
     assert( groups > 0 );
     if( groups == 1 )
     {
@@ -662,6 +672,29 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
     }
     else
     {
-        return GalaxyState::Crosspost;
+        bool parents = m_galaxy->AreParentsSame( gidx );
+        bool children = m_galaxy->AreChildrenSame( gidx );
+        if( parents )
+        {
+            if( children )
+            {
+                return GalaxyState::BothDifferent;
+            }
+            else
+            {
+                return GalaxyState::ParentDifferent;
+            }
+        }
+        else
+        {
+            if( children )
+            {
+                return GalaxyState::ChildrenDifferent;
+            }
+            else
+            {
+                return GalaxyState::Crosspost;
+            }
+        }
     }
 }
