@@ -84,6 +84,7 @@ private:
 
     bool CheckVisited( int idx );
     ScoreState GetScoreState( int idx );
+    GalaxyState GetGalaxyState( int idx );
 
     const Archive* m_archive;
     PersistentStorage& m_storage;

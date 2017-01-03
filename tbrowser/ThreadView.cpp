@@ -280,6 +280,10 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
+    if( m_galaxy && (GalaxyState)m_data[idx].galaxy == GalaxyState::Unknown )
+    {
+        m_data[idx].galaxy = (uint8_t)GetGalaxyState( idx );
+    }
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     if( m_cursor == idx )
@@ -629,4 +633,20 @@ ScoreState ThreadView::GetScoreState( int idx )
         m_tree[idx].SetScoreData( (int)state );
     }
     return state;
+}
+
+GalaxyState ThreadView::GetGalaxyState( int idx )
+{
+    assert( m_galaxy );
+    assert( (GalaxyState)m_data[idx].galaxy == GalaxyState::Unknown );
+    auto groups = m_galaxy->GetNumberOfGroups( m_archive->GetMessageId( idx ) );
+    assert( groups > 0 );
+    if( groups == 1 )
+    {
+        return GalaxyState::Nothing;
+    }
+    else
+    {
+        return GalaxyState::Crosspost;
+    }
 }
