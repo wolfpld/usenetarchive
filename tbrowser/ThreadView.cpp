@@ -308,13 +308,19 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             if( !hilite ) wattroff( m_win, COLOR_PAIR( 3 ) );
             break;
         case GalaxyState::ParentDifferent:
-            waddch( m_win, 'P' );
+            if( !hilite ) wattron( m_win, COLOR_PAIR( 7 ) );
+            waddch( m_win, 'F' );
+            if( !hilite ) wattroff( m_win, COLOR_PAIR( 7 ) );
             break;
         case GalaxyState::ChildrenDifferent:
-            waddch( m_win, 'C' );
+            if( !hilite ) wattron( m_win, COLOR_PAIR( 2 ) );
+            waddch( m_win, '!' );
+            if( !hilite ) wattroff( m_win, COLOR_PAIR( 2 ) );
             break;
         case GalaxyState::BothDifferent:
-            waddch( m_win, 'B' );
+            if( !hilite ) wattron( m_win, COLOR_PAIR( 4 ) );
+            waddch( m_win, '&' );
+            if( !hilite ) wattroff( m_win, COLOR_PAIR( 4 ) );
             break;
         default:
             waddch( m_win, ' ' );
