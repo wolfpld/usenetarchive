@@ -18,6 +18,8 @@ public:
     const std::vector<int>& GetAvailableArchives() const { return m_available; }
     std::string GetArchiveFilename( int idx ) const;
     const std::shared_ptr<Archive>& GetArchive( int idx );
+    const char* GetArchiveName( int idx ) const;
+    const char* GetArchiveDescription( int idx ) const;
 
     int GetActiveArchive() const { return m_active; }
 

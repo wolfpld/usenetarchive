@@ -68,6 +68,16 @@ const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
     return m_arch[idx];
 }
 
+const char* Galaxy::GetArchiveName( int idx ) const
+{
+    return m_strings[idx*2];
+}
+
+const char* Galaxy::GetArchiveDescription( int idx ) const
+{
+    return m_strings[idx*2+1];
+}
+
 int Galaxy::GetMessageIndex( const char* msgid ) const
 {
     return m_midhash.Search( msgid );
