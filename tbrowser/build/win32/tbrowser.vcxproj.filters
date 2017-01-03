@@ -255,6 +255,9 @@
     <ClCompile Include="..\..\..\libuat\Galaxy.cpp">
       <Filter>libuat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\GalaxyOpen.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -391,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\MetaView.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GalaxyOpen.hpp">
+      <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

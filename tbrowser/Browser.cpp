@@ -5,6 +5,7 @@
 
 #include "Browser.hpp"
 #include "Help.hpp"
+#include "GalaxyOpen.hpp"
 
 Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, Galaxy* galaxy, const std::string& fn )
     : m_archive( std::move( archive ) )
@@ -18,6 +19,11 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     , m_textview( this )
     , m_fn( fn )
 {
+    if( galaxy )
+    {
+        m_gopen = std::make_unique<GalaxyOpen>( this, m_bottom, *m_galaxy, m_storage );
+    }
+
     auto& history = m_storage.GetArticleHistory();
     if( m_storage.ReadArticleHistory( m_fn.c_str() ) )
     {
@@ -28,6 +34,10 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     m_bottom.Status( "Press '?' for help.", 1 );
 
     doupdate();
+}
+
+Browser::~Browser()
+{
 }
 
 bool Browser::MoveOrEnterAction( int move )
@@ -331,21 +341,30 @@ void Browser::Entry()
             break;
         }
         case 'o':
-        {
-            auto fn = m_bottom.Query( "Open archive: ", m_fn.c_str(), true );
-            if( !fn.empty() )
+            if( m_galaxy )
             {
-                if( !Exists( fn ) )
+                m_bottom.SetHelp( HelpSet::GalaxyOpen );
+                m_gopen->Entry();
+                m_bottom.SetHelp( HelpSet::Default );
+                RestoreDefaultView();
+                doupdate();
+            }
+            else
+            {
+                auto fn = m_bottom.Query( "Open archive: ", m_fn.c_str(), true );
+                if( !fn.empty() )
                 {
-                    m_bottom.Status( "No such archive!" );
-                }
-                else
-                {
-                    OpenArchive( std::move( fn ) );
+                    if( !Exists( fn ) )
+                    {
+                        m_bottom.Status( "No such archive!" );
+                    }
+                    else
+                    {
+                        OpenArchive( std::move( fn ) );
+                    }
                 }
             }
             break;
-        }
         default:
             break;
         }
@@ -363,6 +382,10 @@ void Browser::Resize()
     m_sview.Resize();
     m_textview.Resize();
     m_bottom.Resize();
+    if( m_galaxy )
+    {
+        m_gopen->Resize();
+    }
     doupdate();
 }
 

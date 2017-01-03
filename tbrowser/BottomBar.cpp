@@ -196,6 +196,11 @@ void BottomBar::PrintHelp() const
         waddch( m_win, ACS_UARROW );
         wprintw( m_win, ":Move q:Quit" );
         break;
+    case HelpSet::GalaxyOpen:
+        waddch( m_win, ACS_DARROW );
+        waddch( m_win, ACS_UARROW );
+        wprintw( m_win, ":Move q:Quit" );
+        break;
     default:
         assert( false );
         break;

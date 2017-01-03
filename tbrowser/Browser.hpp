@@ -13,12 +13,14 @@
 
 class Archive;
 class Galaxy;
+class GalaxyOpen;
 class PersistentStorage;
 
 class Browser
 {
 public:
     Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, Galaxy* galaxy, const std::string& fn );
+    ~Browser();
 
     void Entry();
     void Resize();
@@ -43,6 +45,7 @@ private:
     ThreadView m_tview;
     SearchView m_sview;
     TextView m_textview;
+    std::unique_ptr<GalaxyOpen> m_gopen;
 
     std::string m_fn;
     int m_historyIdx;
