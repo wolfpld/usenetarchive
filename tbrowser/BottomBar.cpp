@@ -133,7 +133,7 @@ std::string BottomBar::Query( const char* prompt, const char* entry, bool filesy
     }
 }
 
-char BottomBar::KeyQuery( const char* prompt )
+int BottomBar::KeyQuery( const char* prompt )
 {
     const auto len = strlen( prompt );
     for(;;)

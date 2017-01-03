@@ -96,8 +96,8 @@ void Browser::Entry()
         case 'q':
             if( !m_mview.IsActive() )
             {
-                const auto key = m_bottom.KeyQuery( "Are you sure you want to quit? [y/n]" );
-                if( key == 'y' || key == 'Y' ) return;
+                const auto key = m_bottom.KeyQuery( "Are you sure you want to quit? [Y/n]" );
+                if( key == 'y' || key == 'Y' || key == KEY_ENTER || key == '\n' || key == 459 ) return;
             }
             else
             {

@@ -23,7 +23,7 @@ public:
     void Resize() const;
 
     std::string Query( const char* prompt, const char* entry = nullptr, bool filesystem = false );
-    char KeyQuery( const char* prompt );
+    int KeyQuery( const char* prompt );
     void Status( const char* status, int timeout = 2 );
     void SetHelp( HelpSet set );
 
