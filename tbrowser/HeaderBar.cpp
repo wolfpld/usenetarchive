@@ -4,11 +4,12 @@
 #include "HeaderBar.hpp"
 #include "UTF8.hpp"
 
-HeaderBar::HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc, const char* fn )
+HeaderBar::HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc, const char* fn, bool galaxy )
     : View( 0, 0, 0, 1 )
     , m_archive( archive.first ? archive.first : fn )
     , m_desc( desc )
     , m_archiveLen( archive.first ? archive.second : strlen( fn ) )
+    , m_galaxy( galaxy )
 {
     wbkgd( m_win, COLOR_PAIR(1) );
     Redraw();
@@ -50,6 +51,13 @@ void HeaderBar::Redraw() const
         int w = getmaxx( m_win ) - 23 - m_archiveLen;
         auto end = utfendcrlf( m_desc, w );
         wprintw( m_win, "%.*s", end - m_desc, m_desc );
+    }
+
+    if( m_galaxy )
+    {
+        wmove( m_win, 0, getmaxx( m_win ) - 7 );
+        wattron( m_win, COLOR_PAIR( 14 ) );
+        wprintw( m_win, "Galaxy" );
     }
 
     wnoutrefresh( m_win );

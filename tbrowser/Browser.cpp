@@ -10,7 +10,7 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     : m_archive( std::move( archive ) )
     , m_storage( storage )
     , m_galaxy( galaxy )
-    , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, fn.c_str() )
+    , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, fn.c_str(), galaxy != nullptr )
     , m_bottom( this )
     , m_mview( *m_archive, m_storage )
     , m_tview( *m_archive, m_storage, m_galaxy, m_mview )
