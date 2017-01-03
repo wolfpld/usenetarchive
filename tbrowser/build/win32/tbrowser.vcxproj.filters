@@ -389,5 +389,8 @@
     <ClInclude Include="..\..\..\common\HashSearch.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\MetaView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

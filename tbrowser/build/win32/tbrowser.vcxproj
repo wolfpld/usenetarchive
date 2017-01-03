@@ -223,6 +223,7 @@
     <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
     <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
+    <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
