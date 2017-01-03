@@ -15,3 +15,5 @@ contrib/curl
 !*/build/unix/*.mk
 !*/build/unix/Makefile
 *.swp
+browser/Browser.pro.user
+build-Browser-Desktop_Qt*
