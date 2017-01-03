@@ -19,6 +19,8 @@ public:
     std::string GetArchiveName( int idx ) const;
     const std::shared_ptr<Archive>& GetArchive( int idx );
 
+    int GetActiveArchive() const { return m_active; }
+
 private:
     Galaxy( const std::string& dir );
 
@@ -31,6 +33,8 @@ private:
 
     std::vector<std::shared_ptr<Archive>> m_arch;
     std::vector<int> m_available;
+
+    int m_active;
 };
 
 #endif

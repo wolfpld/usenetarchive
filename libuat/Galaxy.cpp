@@ -62,5 +62,6 @@ std::string Galaxy::GetArchiveName( int idx ) const
 
 const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
 {
+    m_active = idx;
     return m_arch[idx];
 }
