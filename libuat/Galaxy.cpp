@@ -26,5 +26,29 @@ Galaxy::Galaxy( const std::string& fn )
     : m_base( fn )
     , m_middb( fn + "msgid.meta", fn + "msgid" )
     , m_midhash( fn + "msgid.meta", fn + "msgid", fn + "midhash.meta", fn + "midhash" )
+    , m_archives( fn + "archives.meta", fn + "archives" )
+    , m_strings( fn + "str.meta", fn + "str" )
+    , m_midgr( fn + "midgr.meta", fn + "midgr" )
 {
+    const auto size = m_archives.Size() / 2;
+    for( int i=0; i<size; i++ )
+    {
+        const auto path = std::string( m_archives[i*2], m_archives[i*2+1] );
+        if( Exists( path ) )
+        {
+            m_arch.emplace_back( Archive::Open( path ) );
+        }
+        else
+        {
+            const auto relative = m_base + path;
+            if( Exists( relative ) )
+            {
+                m_arch.emplace_back( Archive::Open( relative ) );
+            }
+            else
+            {
+                m_arch.emplace_back( nullptr );
+            }
+        }
+    }
 }
