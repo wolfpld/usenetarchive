@@ -673,8 +673,8 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
     }
     else
     {
-        bool parents = m_galaxy->AreParentsSame( gidx, msgid );
-        bool children = m_galaxy->AreChildrenSame( gidx, msgid );
+        bool parents = !m_galaxy->AreParentsSame( gidx, msgid );
+        bool children = !m_galaxy->AreChildrenSame( gidx, msgid );
         if( parents )
         {
             if( children )
