@@ -33,7 +33,7 @@ int main( int argc, char** argv )
     const auto listfn = base + "archives";
     if( !Exists( listfn ) )
     {
-        fprintf( stderr, "Archive file list doesn't exist. Create %s with absolute paths to each archive in separate lines.\n", listfn.c_str() );
+        fprintf( stderr, "Archive file list doesn't exist. Create %s with paths to each archive in separate lines.\n", listfn.c_str() );
         exit( 1 );
     }
 

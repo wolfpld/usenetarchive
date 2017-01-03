@@ -1,0 +1,20 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-galaxy-util \- create archive galaxy
+.SH SYNOPSIS
+.I uat-galaxy-util
+<galaxy directory>
+.SH DESCRIPTION
+This utility will prepare archive galaxy data files, which are used to
+cross-reference messages across multiple archives. This information may be
+then used to display crossposts, followups, etc.
+
+.I uat-galaxy-util
+needs some setup before it can work. First, create a directory that will
+store data files. Then, create a file named
+.I archives
+which must contain paths to UAT archives. Each archive must be placed in a
+separate line. All archives must be available when
+.I uat-galaxy-util
+is running, but some may be later removed, when the galaxy data files are
+used by end-user utilities.

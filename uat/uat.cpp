@@ -24,6 +24,7 @@ static const Tool tools[] = {
     { "extract-msgmeta", "Extract \"From\" and \"Subject\" fields." },
     { "filter-newsgroups", "Remove messages with wrong \"Newsgroups\" field." },
     { "filter-spam", "Learn which messages are spam and remove them." },
+    { "galaxy-util", "Generate archive galaxy data." },
     { "google-groups", "Crawl google groups and save in maildir tree." },
     { "import-source-maildir", "Import messages from a directory tree." },
     { "import-source-maildir-7z", "Import messages from a compressed directory tree." },

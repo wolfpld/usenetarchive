@@ -93,6 +93,7 @@ These tools provide access to archive data:
 - query --- Testbed for libuat. Exposes all provided functionality.
 - export-messages --- Unpacks messages contained in a LZ4 archive into separate files.
 - verify --- Check archive for known issues.
+- galaxy-util --- Generate archive galaxy data.
 
 ### End-user Utilities
 
@@ -129,7 +130,6 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4* → **extract-msgid** → adds: *msgid*  
 *LZ4*, *msgid* → **connectivity** → adds: *conn*  
 *LZ4*, *conn* → **filter-newsgroups** → produces: *LZ4*  
-*LZ4*, *conn* → **sort** → produces: *LZ4*  
 *LZ4*, *msgid*, *conn*, *str* → **filter-spam** → produces: *LZ4*  
 *LZ4* → **extract-msgmeta** → adds: *str*  
 (*LZ4*, *msgid*) + (*LZ4*, *msgid*) → **merge-raw** → produces: *LZ4*  
@@ -146,7 +146,9 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4*, *msgid* → **query-raw** → user interaction  
 *zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction  
 *everything but LZ4* → **package** → *one file archive*  
-*everything but LZ4* → **threadify** → modifies: *conn*, invalidates: *lex*, *lexhash*
+*everything but LZ4* → **threadify** → modifies: *conn*, invalidates: *lex*, *lexhash*  
+*archive* → **sort** → modifies: *archive*  
+*collection of archives* → **galaxy-util** → *archive galaxy*
 
 Additional, optional information files, not created by any of the above utilities, but used in user-facing programs:
 

@@ -5,6 +5,7 @@ TOOLS := \
 	extract-msgmeta \
 	filter-newsgroups \
 	filter-spam \
+	galaxy-util \
 	google-groups \
 	import-source-maildir \
 	import-source-maildir-7z \
