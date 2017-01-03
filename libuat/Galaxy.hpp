@@ -15,6 +15,8 @@ class Galaxy
 public:
     static Galaxy* Open( const std::string& fn );
 
+    const std::vector<int>& GetAvailableArchives() const { return m_available; }
+
 private:
     Galaxy( const std::string& dir );
 
@@ -26,6 +28,7 @@ private:
     const MetaView<uint32_t, uint32_t> m_midgr;
 
     std::vector<std::unique_ptr<Archive>> m_arch;
+    std::vector<int> m_available;
 };
 
 #endif

@@ -37,6 +37,7 @@ Galaxy::Galaxy( const std::string& fn )
         if( Exists( path ) )
         {
             m_arch.emplace_back( Archive::Open( path ) );
+            m_available.emplace_back( i );
         }
         else
         {
@@ -44,6 +45,7 @@ Galaxy::Galaxy( const std::string& fn )
             if( Exists( relative ) )
             {
                 m_arch.emplace_back( Archive::Open( relative ) );
+                m_available.emplace_back( i );
             }
             else
             {
