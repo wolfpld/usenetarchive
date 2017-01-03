@@ -26,10 +26,10 @@ public:
     int GetNumberOfGroups( uint32_t idx ) const;
     int GetNumberOfGroups( const char* msgid ) const;
 
-    bool AreChildrenSame( uint32_t idx ) const;
+    bool AreChildrenSame( uint32_t idx, const char* msgid ) const;
     bool AreChildrenSame( const char* msgid ) const;
 
-    bool AreParentsSame( uint32_t idx ) const;
+    bool AreParentsSame( uint32_t idx, const char* msgid ) const;
     bool AreParentsSame( const char* msgid ) const;
 
 private:

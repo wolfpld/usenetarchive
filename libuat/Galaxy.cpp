@@ -87,10 +87,10 @@ bool Galaxy::AreChildrenSame( const char* msgid ) const
 {
     auto idx = GetMessageIndex( msgid );
     assert( idx != -1 );
-    return AreChildrenSame( idx );
+    return AreChildrenSame( idx, msgid );
 }
 
-bool Galaxy::AreChildrenSame( uint32_t idx ) const
+bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
@@ -101,10 +101,10 @@ bool Galaxy::AreParentsSame( const char* msgid ) const
 {
     auto idx = GetMessageIndex( msgid );
     assert( idx != -1 );
-    return AreParentsSame( idx );
+    return AreParentsSame( idx, msgid );
 }
 
-bool Galaxy::AreParentsSame( uint32_t idx ) const
+bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;

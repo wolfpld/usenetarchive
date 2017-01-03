@@ -663,7 +663,8 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
 {
     assert( m_galaxy );
     assert( (GalaxyState)m_data[idx].galaxy == GalaxyState::Unknown );
-    const auto gidx  = m_galaxy->GetMessageIndex( m_archive->GetMessageId( idx ) );
+    const auto msgid = m_archive->GetMessageId( idx );
+    const auto gidx  = m_galaxy->GetMessageIndex( msgid );
     const auto groups = m_galaxy->GetNumberOfGroups( gidx );
     assert( groups > 0 );
     if( groups == 1 )
@@ -672,8 +673,8 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
     }
     else
     {
-        bool parents = m_galaxy->AreParentsSame( gidx );
-        bool children = m_galaxy->AreChildrenSame( gidx );
+        bool parents = m_galaxy->AreParentsSame( gidx, msgid );
+        bool children = m_galaxy->AreChildrenSame( gidx, msgid );
         if( parents )
         {
             if( children )
