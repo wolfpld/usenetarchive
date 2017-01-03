@@ -66,10 +66,47 @@ const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
     return m_arch[idx];
 }
 
+int Galaxy::GetMessageIndex( const char* msgid ) const
+{
+    return m_midhash.Search( msgid );
+}
+
 int Galaxy::GetNumberOfGroups( const char* msgid ) const
 {
-    auto idx = m_midhash.Search( msgid );
+    return GetNumberOfGroups( GetMessageIndex( msgid ) );
+}
+
+int Galaxy::GetNumberOfGroups( uint32_t idx ) const
+{
     if( idx == -1 ) return 0;
     auto ptr = m_midgr[idx];
     return *ptr;
+}
+
+bool Galaxy::AreChildrenSame( const char* msgid ) const
+{
+    auto idx = GetMessageIndex( msgid );
+    assert( idx != -1 );
+    return AreChildrenSame( idx );
+}
+
+bool Galaxy::AreChildrenSame( uint32_t idx ) const
+{
+    auto ptr = m_midgr[idx];
+    auto num = *ptr++;
+    return false;
+}
+
+bool Galaxy::AreParentsSame( const char* msgid ) const
+{
+    auto idx = GetMessageIndex( msgid );
+    assert( idx != -1 );
+    return AreParentsSame( idx );
+}
+
+bool Galaxy::AreParentsSame( uint32_t idx ) const
+{
+    auto ptr = m_midgr[idx];
+    auto num = *ptr++;
+    return false;
 }

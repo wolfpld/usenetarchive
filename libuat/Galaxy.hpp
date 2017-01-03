@@ -21,7 +21,16 @@ public:
 
     int GetActiveArchive() const { return m_active; }
 
+    int GetMessageIndex( const char* msgid ) const;
+
+    int GetNumberOfGroups( uint32_t idx ) const;
     int GetNumberOfGroups( const char* msgid ) const;
+
+    bool AreChildrenSame( uint32_t idx ) const;
+    bool AreChildrenSame( const char* msgid ) const;
+
+    bool AreParentsSame( uint32_t idx ) const;
+    bool AreParentsSame( const char* msgid ) const;
 
 private:
     Galaxy( const std::string& dir );
