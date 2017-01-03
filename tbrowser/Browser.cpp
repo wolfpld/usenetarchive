@@ -6,7 +6,7 @@
 #include "Browser.hpp"
 #include "Help.hpp"
 
-Browser::Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn )
+Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn )
     : m_archive( std::move( archive ) )
     , m_storage( storage )
     , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, fn.c_str() )
@@ -398,7 +398,7 @@ void Browser::RestoreDefaultView()
 
 void Browser::OpenArchive( std::string&& fn )
 {
-    std::unique_ptr<Archive> archive( Archive::Open( fn ) );
+    std::shared_ptr<Archive> archive( Archive::Open( fn ) );
     if( !archive )
     {
         m_bottom.Status( "Cannot open archive!" );

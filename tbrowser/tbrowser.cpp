@@ -12,7 +12,7 @@
 
 int main( int argc, char** argv )
 {
-    std::unique_ptr<Archive> archive;
+    std::shared_ptr<Archive> archive;
     std::unique_ptr<Galaxy> galaxy;
     PersistentStorage storage;
 

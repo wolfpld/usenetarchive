@@ -17,7 +17,7 @@ class PersistentStorage;
 class Browser
 {
 public:
-    Browser( std::unique_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn );
+    Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn );
 
     void Entry();
     void Resize();
@@ -32,7 +32,7 @@ private:
     void RestoreDefaultView();
     void OpenArchive( std::string&& fn );
 
-    std::unique_ptr<Archive> m_archive;
+    std::shared_ptr<Archive> m_archive;
     PersistentStorage& m_storage;
 
     HeaderBar m_header;
