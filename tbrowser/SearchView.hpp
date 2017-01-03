@@ -10,6 +10,7 @@
 
 class BottomBar;
 class Browser;
+class PersistentStorage;
 
 class SearchView : public View
 {
