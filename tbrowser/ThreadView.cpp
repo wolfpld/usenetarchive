@@ -237,7 +237,11 @@ void ThreadView::FocusOn( int cursor )
         m_bottom = GetPrev( m_bottom );
     }
     const auto limit = m_archive->NumberOfMessages();
-    if( m_bottom == limit ) return;
+    if( m_bottom == limit )
+    {
+        Draw();
+        return;
+    }
 
     auto last = GetPrev( m_bottom );
     if( cursor == last )
