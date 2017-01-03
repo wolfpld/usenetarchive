@@ -40,7 +40,6 @@ public:
             ptr++;
         }
         return -1;
-
     }
 
     int Search( const char* str ) const
