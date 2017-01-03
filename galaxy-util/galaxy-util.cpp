@@ -227,7 +227,7 @@ int main( int argc, char** argv )
     FILE* meta = fopen( ( base + "midhash.meta" ).c_str(), "wb" );
     uint64_t offset = fwrite( &zero, 1, sizeof( zero ), data );
     cnt = 0;
-    for( size_t i=0; i<msgidsize; i++ )
+    for( size_t i=0; i<hashsize; i++ )
     {
         if( ( cnt++ & 0x3FFFF ) == 0 )
         {
