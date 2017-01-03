@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <inttypes.h>
 #include <stdint.h>
