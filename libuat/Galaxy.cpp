@@ -65,3 +65,11 @@ const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
     m_active = idx;
     return m_arch[idx];
 }
+
+int Galaxy::GetNumberOfGroups( const char* msgid ) const
+{
+    auto idx = m_midhash.Search( msgid );
+    if( idx == -1 ) return 0;
+    auto ptr = m_midgr[idx];
+    return *ptr;
+}

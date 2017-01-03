@@ -21,6 +21,8 @@ public:
 
     int GetActiveArchive() const { return m_active; }
 
+    int GetNumberOfGroups( const char* msgid ) const;
+
 private:
     Galaxy( const std::string& dir );
 
