@@ -108,7 +108,7 @@ int main( int argc, char** argv )
     storage.WriteArticleHistory( last );
     if( galaxy )
     {
-        //storage.WriteLastOpenGalaxyArchive( 0 );
+        storage.WriteLastOpenGalaxyArchive( galaxy->GetActiveArchive() );
     }
     else
     {
