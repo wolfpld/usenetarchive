@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../common/Filesystem.hpp"
 
 #include "Galaxy.hpp"
@@ -95,10 +97,22 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
 
-    auto children = m_arch[*ptr]->GetChildren( msgid );
-    for( int i=1; i<num; i++ )
+    std::vector<Archive*> arch;
+    for( int i=0; i<num; i++ )
     {
-        if( m_arch[ptr[i]]->GetChildren( msgid ).size != children.size )
+        if( *std::lower_bound( m_available.begin(), m_available.end(), *ptr ) == *ptr )
+        {
+            arch.emplace_back( m_arch[*ptr].get() );
+        }
+        ptr++;
+    }
+    assert( !arch.empty() );
+    if( arch.size() == 1 ) return true;
+
+    auto children = arch[0]->GetChildren( msgid );
+    for( int i=1; i<arch.size(); i++ )
+    {
+        if( arch[i]->GetChildren( msgid ).size != children.size )
         {
             return false;
         }
@@ -107,16 +121,15 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     std::vector<const char*> test;
     for( int i=0; i<children.size; i++ )
     {
-        test.emplace_back( m_arch[*ptr]->GetMessageId( children.ptr[i] ) );
+        test.emplace_back( arch[0]->GetMessageId( children.ptr[i] ) );
     }
-    ptr++;
 
-    for( int i=1; i<num; i++ )
+    for( int i=1; i<arch.size(); i++ )
     {
-        auto c2 = m_arch[*ptr]->GetChildren( msgid );
+        auto c2 = arch[i]->GetChildren( msgid );
         for( int j=0; j<c2.size; j++ )
         {
-            auto tmid = m_arch[*ptr]->GetMessageId( c2.ptr[j] );
+            auto tmid = arch[i]->GetMessageId( c2.ptr[j] );
             bool found = false;
             for( auto& v : test )
             {
@@ -131,7 +144,6 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
                 return false;
             }
         }
-        ptr++;
     }
 
     return true;
@@ -149,19 +161,29 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
 
-    const auto tid = m_arch[*ptr]->GetParent( msgid );
-    const auto tmid = tid == -1 ? "" : m_arch[*ptr]->GetMessageId( tid );
-    ptr++;
-
-    for( int i=1; i<num; i++ )
+    std::vector<Archive*> arch;
+    for( int i=0; i<num; i++ )
     {
-        auto tid2 = m_arch[*ptr]->GetParent( msgid );
-        auto tmid2 = tid2 == -1 ? "" : m_arch[*ptr]->GetMessageId( tid2 );
+        if( *std::lower_bound( m_available.begin(), m_available.end(), *ptr ) == *ptr )
+        {
+            arch.emplace_back( m_arch[*ptr].get() );
+        }
+        ptr++;
+    }
+    assert( !arch.empty() );
+    if( arch.size() == 1 ) return true;
+
+    const auto tid = arch[0]->GetParent( msgid );
+    const auto tmid = tid == -1 ? "" : arch[0]->GetMessageId( tid );
+
+    for( int i=1; i<arch.size(); i++ )
+    {
+        auto tid2 = arch[i]->GetParent( msgid );
+        auto tmid2 = tid2 == -1 ? "" : arch[i]->GetMessageId( tid2 );
         if( strcmp( tmid, tmid2 ) != 0 )
         {
             return false;
         }
-        ptr++;
     }
     return true;
 }
