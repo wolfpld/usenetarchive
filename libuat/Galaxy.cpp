@@ -108,5 +108,13 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
-    return false;
+    auto test = m_arch[*ptr++]->GetParent( msgid );
+    for( int i=1; i<num; i++ )
+    {
+        if( m_arch[*ptr++]->GetParent( msgid ) != test )
+        {
+            return false;
+        }
+    }
+    return true;
 }
