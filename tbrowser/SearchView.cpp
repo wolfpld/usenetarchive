@@ -80,6 +80,7 @@ void SearchView::Entry()
             break;
         case KEY_PPAGE:
             MoveCursor( m_top - m_bottom );
+            doupdate();
             break;
         case KEY_ENTER:
         case '\n':
