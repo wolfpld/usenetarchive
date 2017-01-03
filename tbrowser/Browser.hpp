@@ -12,12 +12,13 @@
 #include "SearchView.hpp"
 
 class Archive;
+class Galaxy;
 class PersistentStorage;
 
 class Browser
 {
 public:
-    Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn );
+    Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, Galaxy* galaxy, const std::string& fn );
 
     void Entry();
     void Resize();
@@ -34,6 +35,7 @@ private:
 
     std::shared_ptr<Archive> m_archive;
     PersistentStorage& m_storage;
+    Galaxy* m_galaxy;
 
     HeaderBar m_header;
     BottomBar m_bottom;

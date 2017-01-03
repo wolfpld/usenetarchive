@@ -6,9 +6,10 @@
 #include "Browser.hpp"
 #include "Help.hpp"
 
-Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, const std::string& fn )
+Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, Galaxy* galaxy, const std::string& fn )
     : m_archive( std::move( archive ) )
     , m_storage( storage )
+    , m_galaxy( galaxy )
     , m_header( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, fn.c_str() )
     , m_bottom( this )
     , m_mview( *m_archive, m_storage )
