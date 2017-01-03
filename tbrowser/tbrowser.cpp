@@ -48,9 +48,12 @@ int main( int argc, char** argv )
         }
         storage.WriteLastOpenArchive( lastOpen.c_str() );
         lastOpen = galaxy->GetArchiveName( galaxyLast );
+        archive = galaxy->GetArchive( galaxyLast );
     }
-
-    archive.reset( Archive::Open( lastOpen ) );
+    else
+    {
+        archive.reset( Archive::Open( lastOpen ) );
+    }
 
     if( !archive )
     {

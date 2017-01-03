@@ -17,6 +17,7 @@ public:
 
     const std::vector<int>& GetAvailableArchives() const { return m_available; }
     std::string GetArchiveName( int idx ) const;
+    const std::shared_ptr<Archive>& GetArchive( int idx );
 
 private:
     Galaxy( const std::string& dir );

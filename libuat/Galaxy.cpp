@@ -59,3 +59,8 @@ std::string Galaxy::GetArchiveName( int idx ) const
 {
     return std::string( m_archives[idx*2], m_archives[idx*2+1] );
 }
+
+const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
+{
+    return m_arch[idx];
+}
