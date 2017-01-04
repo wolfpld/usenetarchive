@@ -42,6 +42,8 @@ public:
 
     ViewReference<uint32_t> GetGroups( const char* msgid ) const;
 
+    bool HasParent( const char* msgid, uint32_t arch ) const;
+
 private:
     Galaxy( const std::string& dir );
 
