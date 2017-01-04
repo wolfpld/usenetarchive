@@ -92,6 +92,8 @@ void GalaxyOpen::Resize()
 void GalaxyOpen::Draw()
 {
     const int num = m_galaxy.GetNumberOfArchives();
+    const auto active = m_galaxy.GetActiveArchive();
+
     int w, h;
     getmaxyx( m_win, h, w );
 
@@ -120,10 +122,12 @@ void GalaxyOpen::Draw()
         auto name = m_galaxy.GetArchiveName( line );
         auto desc = m_galaxy.GetArchiveDescription( line );
         bool available = m_galaxy.IsArchiveAvailable( line );
+        bool current = active == line;
 
         int len = lenBase;
         auto end = utfendl( name, len );
         wattroff( m_win, COLOR_PAIR( 2 ) );
+        if( current ) wattron( m_win, COLOR_PAIR( 4 ) );
         if( !available ) wattron( m_win, COLOR_PAIR( 5 ) );
         wprintw( m_win, "%.*s", end - name, name );
 
