@@ -309,15 +309,24 @@ void Browser::Entry()
                             auto groups = m_galaxy->GetGroups( idx );
                             if( groups.size == 1 )
                             {
-                                std::string s = "Go to ";
-                                s += m_galaxy->GetArchiveName( *groups.ptr );
-                                s += "? [Y/n]";
-                                const auto key = m_bottom.KeyQuery( s.c_str() );
-                                if( key == 'y' || key == 'Y' || key == KEY_ENTER || key == '\n' || key == 459 )
+                                if( m_galaxy->IsArchiveAvailable( *groups.ptr ) )
                                 {
-                                    auto archive = m_galaxy->GetArchive( *groups.ptr );
-                                    SwitchArchive( archive, m_galaxy->GetArchiveFilename( *groups.ptr ) );
-                                    SwitchToMessage( archive->GetMessageIndex( msgid.c_str() ) );
+                                    std::string s = "Go to ";
+                                    s += m_galaxy->GetArchiveName( *groups.ptr );
+                                    s += "? [Y/n]";
+                                    const auto key = m_bottom.KeyQuery( s.c_str() );
+                                    if( key == 'y' || key == 'Y' || key == KEY_ENTER || key == '\n' || key == 459 )
+                                    {
+                                        auto archive = m_galaxy->GetArchive( *groups.ptr );
+                                        SwitchArchive( archive, m_galaxy->GetArchiveFilename( *groups.ptr ) );
+                                        SwitchToMessage( archive->GetMessageIndex( msgid.c_str() ) );
+                                    }
+                                }
+                                else
+                                {
+                                    std::string s = m_galaxy->GetArchiveName( *groups.ptr );
+                                    s += " is not available.";
+                                    m_bottom.Status( s.c_str() );
                                 }
                             }
                             else
