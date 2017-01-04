@@ -83,6 +83,16 @@ const char* Galaxy::GetArchiveDescription( int idx ) const
     return m_strings[idx*2+1];
 }
 
+int Galaxy::NumberOfMessages( int idx ) const
+{
+    return m_arch[idx]->NumberOfMessages();
+}
+
+int Galaxy::NumberOfTopLevel( int idx ) const
+{
+    return m_arch[idx]->NumberOfTopLevel();
+}
+
 int Galaxy::GetMessageIndex( const char* msgid ) const
 {
     return m_midhash.Search( msgid );
