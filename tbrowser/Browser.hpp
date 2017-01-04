@@ -29,6 +29,8 @@ public:
 
     const char* GetArchiveFilename() const { return m_fn.c_str(); }
 
+    void SwitchArchive( const std::shared_ptr<Archive>& archive, std::string&& fn );
+
 private:
     bool MoveOrEnterAction( int move );
     void SwitchToMessage( int msgidx );

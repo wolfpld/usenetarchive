@@ -429,10 +429,15 @@ void Browser::OpenArchive( std::string&& fn )
         return;
     }
 
+    SwitchArchive( std::move( archive ), std::move( fn ) );
+}
+
+void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::string&& fn )
+{
     m_storage.WriteArticleHistory( m_fn.c_str() );
 
     std::swap( fn, m_fn );
-    std::swap( archive, m_archive );
+    m_archive = archive;
 
     m_header.Change( m_archive->GetArchiveName(), m_archive->GetShortDescription().second > 0 ? m_archive->GetShortDescription().first : nullptr, m_fn.c_str() );
     m_mview.Reset( *m_archive );
