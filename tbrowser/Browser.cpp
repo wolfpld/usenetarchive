@@ -1,6 +1,7 @@
 #include <curses.h>
 
 #include "../libuat/Archive.hpp"
+#include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
 #include "Browser.hpp"
@@ -300,7 +301,42 @@ void Browser::Entry()
                 }
                 else
                 {
-                    m_bottom.Status( "No such message." );
+                    if( m_galaxy )
+                    {
+                        idx = m_galaxy->GetMessageIndex( msgid.c_str() );
+                        if( idx >= 0 )
+                        {
+                            auto groups = m_galaxy->GetGroups( idx );
+                            if( groups.size == 1 )
+                            {
+                                std::string s = "Go to ";
+                                s += m_galaxy->GetArchiveName( *groups.ptr );
+                                s += "? [Y/n]";
+                                const auto key = m_bottom.KeyQuery( s.c_str() );
+                                if( key == 'y' || key == 'Y' || key == KEY_ENTER || key == '\n' || key == 459 )
+                                {
+                                    auto archive = m_galaxy->GetArchive( *groups.ptr );
+                                    SwitchArchive( archive, m_galaxy->GetArchiveFilename( *groups.ptr ) );
+                                    SwitchToMessage( archive->GetMessageIndex( msgid.c_str() ) );
+                                }
+                            }
+                            else
+                            {
+                                m_bottom.SetHelp( HelpSet::GalaxyOpen );
+                                m_gwarp->Entry( msgid.c_str(), GalaxyState::Unknown );
+                                m_bottom.SetHelp( HelpSet::Default );
+                                RestoreDefaultView();
+                            }
+                        }
+                        else
+                        {
+                            m_bottom.Status( "No such message." );
+                        }
+                    }
+                    else
+                    {
+                        m_bottom.Status( "No such message." );
+                    }
                 }
                 doupdate();
             }
