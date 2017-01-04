@@ -30,8 +30,8 @@ private:
 
     bool m_active;
 
-    int m_top, m_bottom;
     int m_cursor;
+    int m_top, m_bottom;
 };
 
 #endif

@@ -20,9 +20,9 @@ GalaxyOpen::GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy, Persist
     , m_storage( storage )
     , m_galaxy( galaxy )
     , m_active( false )
-    , m_top( 0 )
+    , m_cursor( galaxy.GetActiveArchive() )
+    , m_top( std::max( 0, m_cursor - 2 ) )
     , m_bottom( 0 )
-    , m_cursor( 0 )
 {
 }
 
@@ -63,7 +63,17 @@ void GalaxyOpen::Entry()
         case KEY_ENTER:
         case '\n':
         case 459:   // numpad enter
-
+            if( m_galaxy.IsArchiveAvailable( m_cursor ) )
+            {
+                m_parent->SwitchArchive( m_galaxy.GetArchive( m_cursor ), m_galaxy.GetArchiveFilename( m_cursor ) );
+                m_active = false;
+                return;
+            }
+            else
+            {
+                m_bar.Status( "Archive unavailable!" );
+                doupdate();
+            }
             break;
         default:
             break;
