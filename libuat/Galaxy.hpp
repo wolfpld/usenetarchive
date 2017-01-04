@@ -40,6 +40,7 @@ public:
     bool AreParentsSame( uint32_t idx, const char* msgid ) const;
     bool AreParentsSame( const char* msgid ) const;
 
+    ViewReference<uint32_t> GetGroups( uint32_t idx ) const;
     ViewReference<uint32_t> GetGroups( const char* msgid ) const;
 
     int ParentDepth( const char* msgid, uint32_t arch ) const;
