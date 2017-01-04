@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "BitSet.hpp"
+#include "GalaxyState.hpp"
 #include "View.hpp"
 
 class Archive;
@@ -35,16 +36,6 @@ enum class ScoreState
     Neutral,
     Positive,
     Negative
-};
-
-enum class GalaxyState
-{
-    Unknown,
-    Nothing,
-    Crosspost,
-    ParentDifferent,
-    ChildrenDifferent,
-    BothDifferent
 };
 
 class ThreadView : public View
