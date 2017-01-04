@@ -234,3 +234,13 @@ int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
     while( idx != -1 );
     return num;
 }
+
+int Galaxy::NumberOfChildren( const char* msgid, uint32_t arch ) const
+{
+    return m_arch[arch]->GetChildren( msgid ).size;
+}
+
+int Galaxy::TotalNumberOfChildren( const char* msgid, uint32_t arch ) const
+{
+    return m_arch[arch]->GetTotalChildrenCount( msgid );
+}

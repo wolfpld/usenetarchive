@@ -43,6 +43,8 @@ public:
     ViewReference<uint32_t> GetGroups( const char* msgid ) const;
 
     int ParentDepth( const char* msgid, uint32_t arch ) const;
+    int NumberOfChildren( const char* msgid, uint32_t arch ) const;
+    int TotalNumberOfChildren( const char* msgid, uint32_t arch ) const;
 
 private:
     Galaxy( const std::string& dir );
