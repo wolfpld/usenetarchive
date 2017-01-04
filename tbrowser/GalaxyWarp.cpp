@@ -26,7 +26,7 @@ GalaxyWarp::GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, Persist
 {
 }
 
-void GalaxyWarp::Entry()
+void GalaxyWarp::Entry( int idx, GalaxyState state )
 {
     m_active = true;
     Draw();

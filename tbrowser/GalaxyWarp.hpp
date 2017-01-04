@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "GalaxyState.hpp"
 #include "View.hpp"
 
 class BottomBar;
@@ -15,7 +16,7 @@ class GalaxyWarp : public View
 public:
     GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage );
 
-    void Entry();
+    void Entry( int idx, GalaxyState state );
 
     void Resize();
     void Draw();

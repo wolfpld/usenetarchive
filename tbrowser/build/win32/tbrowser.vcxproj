@@ -256,6 +256,7 @@
     <ClInclude Include="..\..\BottomBar.hpp" />
     <ClInclude Include="..\..\Browser.hpp" />
     <ClInclude Include="..\..\GalaxyOpen.hpp" />
+    <ClInclude Include="..\..\GalaxyState.hpp" />
     <ClInclude Include="..\..\GalaxyWarp.hpp" />
     <ClInclude Include="..\..\HeaderBar.hpp" />
     <ClInclude Include="..\..\Help.hpp" />

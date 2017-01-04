@@ -404,5 +404,8 @@
     <ClInclude Include="..\..\GalaxyWarp.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\GalaxyState.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

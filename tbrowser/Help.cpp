@@ -72,6 +72,7 @@ const char* HelpContents =
 "                 g: go to specified message id\n"
 "                 s: search messages for specified text\n"
 "                 o: open another archive\n"
+"                 w: follow crossposts\n"
 "\n"
 "                                  Search view\n"
 "                                 -------------\n"
