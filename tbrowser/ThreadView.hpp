@@ -75,6 +75,8 @@ public:
     void MoveCursorTop();
     void MoveCursorBottom();
 
+    GalaxyState CheckGalaxyState( int cursor ) const;
+
 private:
     void ExpandFill( int cursor );
     bool DrawLine( int line, int idx, const char*& prev );

@@ -709,3 +709,10 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
         }
     }
 }
+
+GalaxyState ThreadView::CheckGalaxyState( int cursor ) const
+{
+    assert( m_galaxy );
+    assert( (GalaxyState)m_data[cursor].galaxy != GalaxyState::Unknown );
+    return (GalaxyState)m_data[cursor].galaxy;
+}
