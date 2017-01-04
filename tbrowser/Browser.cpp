@@ -444,10 +444,12 @@ void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::strin
     m_sview.Reset( *m_archive );
     m_tview.Reset( *m_archive );
 
+    auto& history = m_storage.GetArticleHistory();
     if( m_storage.ReadArticleHistory( m_fn.c_str() ) )
     {
-        SwitchToMessage( m_storage.GetArticleHistory().back() );
+        SwitchToMessage( history.back() );
     }
+    m_historyIdx = history.size() - 1;
 
     m_tview.Resize();
 
