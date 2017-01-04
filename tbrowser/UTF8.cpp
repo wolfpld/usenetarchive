@@ -89,6 +89,18 @@ const char* utfendcrlf( const char* str, int len )
     return str;
 }
 
+const char* utfendcrlfl( const char* str, int& len )
+{
+    int l = 0;
+    while( l < len && *str != '\0' && *str != '\n' && *str != '\r' )
+    {
+        str += codepointlen( *str );
+        l++;
+    }
+    len = l;
+    return str;
+}
+
 void utfprint( WINDOW* win, const char* str )
 {
     auto end = str;
