@@ -27,6 +27,7 @@ public:
     void Resize();
 
     void OpenMessage( int msgidx );
+    void SwitchToMessage( int msgidx );
 
     const char* GetArchiveFilename() const { return m_fn.c_str(); }
 
@@ -34,7 +35,6 @@ public:
 
 private:
     bool MoveOrEnterAction( int move );
-    void SwitchToMessage( int msgidx );
     void RestoreDefaultView();
     void OpenArchive( std::string&& fn );
 

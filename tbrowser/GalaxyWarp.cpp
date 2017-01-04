@@ -82,7 +82,9 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
         case 459:   // numpad enter
             if( m_list[m_cursor].available )
             {
-                m_parent->SwitchArchive( m_galaxy.GetArchive( m_list[m_cursor].id ), m_galaxy.GetArchiveFilename( m_list[m_cursor].id ) );
+                auto archive = m_galaxy.GetArchive( m_list[m_cursor].id );
+                m_parent->SwitchArchive( archive, m_galaxy.GetArchiveFilename( m_list[m_cursor].id ) );
+                m_parent->SwitchToMessage( archive->GetMessageIndex( msgid ) );
                 m_active = false;
                 return;
             }
