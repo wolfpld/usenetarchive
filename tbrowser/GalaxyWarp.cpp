@@ -40,7 +40,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
         const auto idx = groups.ptr[i];
         if( m_galaxy.IsArchiveAvailable( idx ) )
         {
-            m_list.emplace_back( WarpEntry { idx, true, current == idx, m_galaxy.HasParent( msgid, idx ) } );
+            m_list.emplace_back( WarpEntry { idx, true, current == idx, m_galaxy.ParentDepth( msgid, idx ) } );
         }
         else
         {
@@ -196,7 +196,14 @@ void GalaxyWarp::Draw()
         else
         {
             wattron( m_win, COLOR_PAIR( 3 ) );
-            wprintw( m_win, "%s", m_list[line].hasParent ? "Reply to another message" : "Start of thread" );
+            if( m_list[line].parent > 0 )
+            {
+                wprintw( m_win, "Reply at depth %i", m_list[line].parent );
+            }
+            else
+            {
+                wprintw( m_win, "Start of thread" );
+            }
             wattroff( m_win, COLOR_PAIR( 3 ) );
         }
 

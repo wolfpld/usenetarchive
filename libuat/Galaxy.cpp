@@ -222,7 +222,15 @@ ViewReference<uint32_t> Galaxy::GetGroups( const char* msgid ) const
     return ViewReference<uint32_t> { ptr, num };
 }
 
-bool Galaxy::HasParent( const char* msgid, uint32_t arch ) const
+int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
 {
-    return m_arch[arch]->GetParent( msgid ) != -1;
+    int num = -1;
+    auto idx = m_arch[arch]->GetMessageIndex( msgid );
+    do
+    {
+        num++;
+        idx = m_arch[arch]->GetParent( idx );
+    }
+    while( idx != -1 );
+    return num;
 }
