@@ -206,6 +206,7 @@
     <ClCompile Include="..\..\BottomBar.cpp" />
     <ClCompile Include="..\..\Browser.cpp" />
     <ClCompile Include="..\..\GalaxyOpen.cpp" />
+    <ClCompile Include="..\..\GalaxyWarp.cpp" />
     <ClCompile Include="..\..\HeaderBar.cpp" />
     <ClCompile Include="..\..\Help.cpp" />
     <ClCompile Include="..\..\MessageView.cpp" />
@@ -255,6 +256,7 @@
     <ClInclude Include="..\..\BottomBar.hpp" />
     <ClInclude Include="..\..\Browser.hpp" />
     <ClInclude Include="..\..\GalaxyOpen.hpp" />
+    <ClInclude Include="..\..\GalaxyWarp.hpp" />
     <ClInclude Include="..\..\HeaderBar.hpp" />
     <ClInclude Include="..\..\Help.hpp" />
     <ClInclude Include="..\..\MessageView.hpp" />

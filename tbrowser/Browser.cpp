@@ -6,6 +6,7 @@
 #include "Browser.hpp"
 #include "Help.hpp"
 #include "GalaxyOpen.hpp"
+#include "GalaxyWarp.hpp"
 
 Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage, Galaxy* galaxy, const std::string& fn )
     : m_archive( std::move( archive ) )
@@ -22,6 +23,7 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     if( galaxy )
     {
         m_gopen = std::make_unique<GalaxyOpen>( this, m_bottom, *m_galaxy, m_storage );
+        m_gwarp = std::make_unique<GalaxyWarp>( this, m_bottom, *m_galaxy, m_storage );
     }
 
     auto& history = m_storage.GetArticleHistory();
@@ -385,6 +387,7 @@ void Browser::Resize()
     if( m_galaxy )
     {
         m_gopen->Resize();
+        m_gwarp->Resize();
     }
     doupdate();
 }

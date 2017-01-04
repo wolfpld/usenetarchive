@@ -14,6 +14,7 @@
 class Archive;
 class Galaxy;
 class GalaxyOpen;
+class GalaxyWarp;
 class PersistentStorage;
 
 class Browser
@@ -48,6 +49,7 @@ private:
     SearchView m_sview;
     TextView m_textview;
     std::unique_ptr<GalaxyOpen> m_gopen;
+    std::unique_ptr<GalaxyWarp> m_gwarp;
 
     std::string m_fn;
     int m_historyIdx;

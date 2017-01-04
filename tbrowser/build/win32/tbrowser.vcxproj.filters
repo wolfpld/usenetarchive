@@ -258,6 +258,9 @@
     <ClCompile Include="..\..\GalaxyOpen.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\GalaxyWarp.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -396,6 +399,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\GalaxyOpen.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GalaxyWarp.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
