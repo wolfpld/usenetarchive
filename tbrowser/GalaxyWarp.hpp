@@ -17,6 +17,7 @@ struct WarpEntry
     uint32_t id;
     bool available;
     bool current;
+    bool hasParent;
 };
 
 class GalaxyWarp : public View

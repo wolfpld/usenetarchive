@@ -38,7 +38,14 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
     for( int i=0; i<groups.size; i++ )
     {
         const auto idx = groups.ptr[i];
-        m_list.emplace_back( WarpEntry { idx, m_galaxy.IsArchiveAvailable( idx ), current == idx } );
+        if( m_galaxy.IsArchiveAvailable( idx ) )
+        {
+            m_list.emplace_back( WarpEntry { idx, true, current == idx, m_galaxy.HasParent( msgid, idx ) } );
+        }
+        else
+        {
+            m_list.emplace_back( WarpEntry { idx, false, current == idx } );
+        }
         if( current == idx )
         {
             m_cursor = i;
@@ -125,21 +132,21 @@ void GalaxyWarp::Draw()
 
     const int lenBase = w-2;
 
-    wattron( m_win, A_BOLD );
     int line = m_top;
-    for( int i=0; i<h-4; i++ )
+    for( int i=0; i<(h-4)/2; i++ )
     {
         if( line >= num ) break;
 
+        wattron( m_win, A_BOLD );
         if( m_cursor == line )
         {
-            wmove( m_win, 4+i, 0 );
+            wmove( m_win, 4+i*2, 0 );
             wattron( m_win, COLOR_PAIR( 2 ) );
             wprintw( m_win, "->" );
         }
         else
         {
-            wmove( m_win, 4+i, 2 );
+            wmove( m_win, 4+i*2, 2 );
         }
 
         auto name = m_galaxy.GetArchiveName( m_list[line].id );
@@ -169,7 +176,7 @@ void GalaxyWarp::Draw()
         {
             end = utfendcrlfl( desc, len );
             if( available ) wattron( m_win, COLOR_PAIR( 2 ) );
-            mvwprintw( m_win, 4+i, w-len-1, "%.*s", end - desc, desc );
+            mvwprintw( m_win, 4+i*2, w-len-1, "%.*s", end - desc, desc );
         }
         if( !available ) wattroff( m_win, COLOR_PAIR( 5 ) );
         if( m_cursor == line )
@@ -177,9 +184,25 @@ void GalaxyWarp::Draw()
             wattron( m_win, COLOR_PAIR( 2 ) );
             waddch( m_win, '<' );
         }
+
+        wmove( m_win, 5+i*2, 6 );
+        wattroff( m_win, A_BOLD );
+        if( !available )
+        {
+            wattron( m_win, COLOR_PAIR( 5 ) );
+            wprintw( m_win, "-- Archive not available --" );
+            wattroff( m_win, COLOR_PAIR( 5 ) );
+        }
+        else
+        {
+            wattron( m_win, COLOR_PAIR( 3 ) );
+            wprintw( m_win, "%s", m_list[line].hasParent ? "Reply to another message" : "Start of thread" );
+            wattroff( m_win, COLOR_PAIR( 3 ) );
+        }
+
         line++;
     }
-    wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+    wattroff( m_win, COLOR_PAIR( 2 ) );
 
     m_bottom = line;
 
