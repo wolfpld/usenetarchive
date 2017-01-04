@@ -127,6 +127,16 @@ void GalaxyOpen::Draw()
         if( !available ) wattron( m_win, COLOR_PAIR( 5 ) );
         wprintw( m_win, "%.*s", end - name, name );
 
+        if( available )
+        {
+            wattron( m_win, COLOR_PAIR( 8 ) );
+            char tmp[64];
+            sprintf( tmp, "  {%i msg, %i thr}", m_galaxy.NumberOfMessages( line ), m_galaxy.NumberOfTopLevel( line ) );
+            wprintw( m_win, "%s", tmp );
+            len += strlen( tmp );
+            wattroff( m_win, COLOR_PAIR( 8 ) );
+        }
+
         len = lenBase - len - 2;
         if( len > 0 )
         {
