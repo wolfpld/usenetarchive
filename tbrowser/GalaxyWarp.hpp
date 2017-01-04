@@ -1,6 +1,7 @@
 #ifndef __GALAXYWARP_HPP__
 #define __GALAXYWARP_HPP__
 
+#include <stdint.h>
 #include <vector>
 
 #include "GalaxyState.hpp"
@@ -11,12 +12,19 @@ class Browser;
 class Galaxy;
 class PersistentStorage;
 
+struct WarpEntry
+{
+    uint32_t id;
+    bool available;
+    bool current;
+};
+
 class GalaxyWarp : public View
 {
 public:
     GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage );
 
-    void Entry( int idx, GalaxyState state );
+    void Entry( const char* msgid, GalaxyState state );
 
     void Resize();
     void Draw();
@@ -29,10 +37,14 @@ private:
     Galaxy& m_galaxy;
     PersistentStorage& m_storage;
 
+    std::vector<WarpEntry> m_list;
+
     bool m_active;
 
     int m_cursor;
     int m_top, m_bottom;
+
+    const char* m_msgid;
 };
 
 #endif

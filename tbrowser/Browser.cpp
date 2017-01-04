@@ -378,7 +378,7 @@ void Browser::Entry()
                 else
                 {
                     m_bottom.SetHelp( HelpSet::GalaxyOpen );
-                    m_gwarp->Entry( m_tview.GetCursor(), state );
+                    m_gwarp->Entry( m_archive->GetMessageId( m_tview.GetCursor() ), state );
                     m_bottom.SetHelp( HelpSet::Default );
                     RestoreDefaultView();
                 }
