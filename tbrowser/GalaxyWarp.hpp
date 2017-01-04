@@ -18,6 +18,8 @@ struct WarpEntry
     bool available;
     bool current;
     int parent;
+    int children;
+    int totalchildren;
 };
 
 class GalaxyWarp : public View

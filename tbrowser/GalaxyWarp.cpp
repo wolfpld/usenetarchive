@@ -40,7 +40,10 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
         const auto idx = groups.ptr[i];
         if( m_galaxy.IsArchiveAvailable( idx ) )
         {
-            m_list.emplace_back( WarpEntry { idx, true, current == idx, m_galaxy.ParentDepth( msgid, idx ) } );
+            m_list.emplace_back( WarpEntry { idx, true, current == idx,
+                m_galaxy.ParentDepth( msgid, idx ),
+                m_galaxy.NumberOfChildren( msgid, idx ),
+                m_galaxy.TotalNumberOfChildren( msgid, idx ) - 1 } );
         }
         else
         {
@@ -203,6 +206,16 @@ void GalaxyWarp::Draw()
             else
             {
                 wprintw( m_win, "Start of thread" );
+            }
+            if( m_list[line].children == 0 )
+            {
+                wprintw( m_win, ", end of discussion." );
+            }
+            else
+            {
+                wprintw( m_win, ", with %i direct repl%s and %i repl%s total.",
+                    m_list[line].children, m_list[line].children == 1 ? "y" : "ies",
+                    m_list[line].totalchildren, m_list[line].totalchildren == 1 ? "y" : "ies" );
             }
             wattroff( m_win, COLOR_PAIR( 3 ) );
         }
