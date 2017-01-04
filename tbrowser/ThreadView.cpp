@@ -36,7 +36,7 @@ void ThreadView::Reset( const Archive& archive )
     m_archive = &archive;
     m_data = std::vector<ThreadData>( archive.NumberOfMessages() );
     m_tree = std::vector<BitSet>( archive.NumberOfMessages() );
-    m_top = m_cursor = m_fillPos = m_topLevelPos = 0;
+    m_top = m_bottom = m_cursor = m_fillPos = m_topLevelPos = 0;
 }
 
 void ThreadView::Resize()
