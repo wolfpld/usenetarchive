@@ -88,6 +88,7 @@ void SearchView::Entry()
             if( !m_result.results.empty() )
             {
                 m_parent->OpenMessage( m_result.results[m_cursor].postid );
+                m_active = false;
                 return;
             }
             break;
