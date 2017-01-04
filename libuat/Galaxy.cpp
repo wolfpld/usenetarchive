@@ -212,3 +212,12 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
     }
     return true;
 }
+
+ViewReference<uint32_t> Galaxy::GetGroups( const char* msgid ) const
+{
+    auto idx = GetMessageIndex( msgid );
+    assert( idx != -1 );
+    auto ptr = m_midgr[idx];
+    auto num = *ptr++;
+    return ViewReference<uint32_t> { ptr, num };
+}

@@ -9,6 +9,7 @@
 #include "../common/MetaView.hpp"
 
 #include "Archive.hpp"
+#include "ViewReference.hpp"
 
 class Galaxy
 {
@@ -38,6 +39,8 @@ public:
 
     bool AreParentsSame( uint32_t idx, const char* msgid ) const;
     bool AreParentsSame( const char* msgid ) const;
+
+    ViewReference<uint32_t> GetGroups( const char* msgid ) const;
 
 private:
     Galaxy( const std::string& dir );
