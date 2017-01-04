@@ -109,19 +109,22 @@ void GalaxyOpen::Draw()
 
         auto name = m_galaxy.GetArchiveName( line );
         auto desc = m_galaxy.GetArchiveDescription( line );
+        bool available = m_galaxy.IsArchiveAvailable( line );
 
         int len = lenBase;
         auto end = utfendl( name, len );
         wattroff( m_win, COLOR_PAIR( 2 ) );
+        if( !available ) wattron( m_win, COLOR_PAIR( 5 ) );
         wprintw( m_win, "%.*s", end - name, name );
 
         len = lenBase - len - 2;
         if( len > 0 )
         {
             end = utfendcrlfl( desc, len );
-            wattron( m_win, COLOR_PAIR( 2 ) );
+            if( available ) wattron( m_win, COLOR_PAIR( 2 ) );
             mvwprintw( m_win, 3+i, w-len-1, "%.*s", end - desc, desc );
         }
+        if( !available ) wattroff( m_win, COLOR_PAIR( 5 ) );
         if( m_cursor == line )
         {
             wattron( m_win, COLOR_PAIR( 2 ) );
