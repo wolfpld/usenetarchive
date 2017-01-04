@@ -472,6 +472,7 @@ void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::strin
     auto& history = m_storage.GetArticleHistory();
     if( m_storage.ReadArticleHistory( m_fn.c_str() ) )
     {
+        m_tview.Draw();
         SwitchToMessage( history.back() );
     }
     m_historyIdx = history.size() - 1;
