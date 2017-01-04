@@ -62,6 +62,11 @@ std::string Galaxy::GetArchiveFilename( int idx ) const
     return std::string( m_archives[idx*2], m_archives[idx*2+1] );
 }
 
+bool Galaxy::IsArchiveAvailable( int idx ) const
+{
+    return *std::lower_bound( m_available.begin(), m_available.end(), idx ) == idx;
+}
+
 const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
 {
     m_active = idx;

@@ -17,6 +17,7 @@ public:
 
     size_t GetNumberOfArchives() const { return m_arch.size(); }
     const std::vector<int>& GetAvailableArchives() const { return m_available; }
+    bool IsArchiveAvailable( int idx ) const;
     std::string GetArchiveFilename( int idx ) const;
     const std::shared_ptr<Archive>& GetArchive( int idx );
     const char* GetArchiveName( int idx ) const;
