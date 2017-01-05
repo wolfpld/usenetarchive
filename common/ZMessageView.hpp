@@ -18,29 +18,31 @@ public:
     ZMessageView( const std::string& meta, const std::string& data, const std::string& dict )
         : m_meta( meta )
         , m_data( data )
-        , m_ctx( ZSTD_createDCtx() )
+        , m_dictdata( dict )
+        , m_ctx( nullptr )
     {
-        const FileMap<char> dictdata( dict );
-        m_dict = ZSTD_createDDict_byReference( dictdata, dictdata.Size() );
     }
 
     ZMessageView( const FileMapPtrs& meta, const FileMapPtrs& data, const FileMapPtrs& dict )
         : m_meta( meta )
         , m_data( data )
-        , m_ctx( ZSTD_createDCtx() )
+        , m_dictdata( dict )
+        , m_ctx( nullptr )
     {
-        const FileMap<char> dictdata( dict );
-        m_dict = ZSTD_createDDict_byReference( dictdata, dictdata.Size() );
     }
 
     ~ZMessageView()
     {
-        ZSTD_freeDCtx( m_ctx );
-        ZSTD_freeDDict( m_dict );
+        if( m_ctx )
+        {
+            ZSTD_freeDCtx( m_ctx );
+            ZSTD_freeDDict( m_dict );
+        }
     }
 
     const char* operator[]( const size_t idx )
     {
+        if( !m_ctx ) InitZstd();
         assert( idx < m_meta.Size() );
         const auto meta = m_meta[idx];
         auto buf = m_eb.Request( meta.size + 1 );
@@ -81,8 +83,16 @@ public:
     }
 
 private:
+    void InitZstd()
+    {
+        assert( !m_ctx );
+        m_ctx = ZSTD_createDCtx();
+        m_dict = ZSTD_createDDict_byReference( m_dictdata, m_dictdata.Size() );
+    }
+
     const FileMap<RawImportMeta> m_meta;
     const FileMap<char> m_data;
+    const FileMap<char> m_dictdata;
 
     ZSTD_DCtx* m_ctx;
     ZSTD_DDict* m_dict;
