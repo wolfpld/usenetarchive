@@ -41,8 +41,7 @@ int main( int argc, char** argv )
             return 1;
         }
         auto galaxyLast = storage.ReadLastOpenGalaxyArchive();
-        auto it = std::lower_bound( available.begin(), available.end(), galaxyLast );
-        if( *it != galaxyLast )
+        if( !galaxy->IsArchiveAvailable( galaxyLast ) )
         {
             galaxyLast = available.front();
         }

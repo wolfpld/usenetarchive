@@ -125,7 +125,7 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     std::vector<Archive*> arch;
     for( int i=0; i<num; i++ )
     {
-        if( *std::lower_bound( m_available.begin(), m_available.end(), *ptr ) == *ptr )
+        if( IsArchiveAvailable( *ptr ) )
         {
             arch.emplace_back( m_arch[*ptr].get() );
         }
@@ -189,7 +189,7 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
     std::vector<Archive*> arch;
     for( int i=0; i<num; i++ )
     {
-        if( *std::lower_bound( m_available.begin(), m_available.end(), *ptr ) == *ptr )
+        if( IsArchiveAvailable( *ptr ) )
         {
             arch.emplace_back( m_arch[*ptr].get() );
         }
