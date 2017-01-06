@@ -56,7 +56,7 @@ int main( int argc, char** argv )
 
     if( !archive )
     {
-        fprintf( stderr, "%s is not an archive!\n", argv[1] );
+        fprintf( stderr, "%s is not an archive!\n", lastOpen.c_str() );
         return 1;
     }
 
@@ -69,7 +69,7 @@ int main( int argc, char** argv )
             ( children.size == 0 && toplevel.ptr[1] == 1 ) ||
             children.ptr[0] == 1 ) )
         {
-            fprintf( stderr, "%s is not a sorted archive!\n", argv[1] );
+            fprintf( stderr, "%s is not a sorted archive!\n", lastOpen.c_str() );
             return 1;
         }
     }
