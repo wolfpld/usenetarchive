@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <curses.h>
 
 #include "../libuat/Archive.hpp"
@@ -353,6 +354,16 @@ void Browser::Entry()
             {
                 m_bottom.Update();
                 doupdate();
+            }
+            break;
+        }
+        case '#':
+        {
+            auto msgid = m_bottom.Query( "Message index: " );
+            if( !msgid.empty() )
+            {
+                auto idx = atoi( msgid.c_str() );
+                SwitchToMessage( std::min<int>( std::max( 0, idx ), m_archive->NumberOfMessages() - 1 ) );
             }
             break;
         }

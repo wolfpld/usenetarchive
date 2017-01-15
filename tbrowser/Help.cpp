@@ -70,6 +70,7 @@ const char* HelpContents =
 "                 t: switch between abbreviated and full headers list\n"
 "                 r: enable/disable ROT13 encoding\n"
 "                 g: go to specified message id\n"
+"                 #: go to specified message index\n"
 "                 s: search messages for specified text\n"
 "                 o: open another archive\n"
 "                 w: follow crossposts\n"
