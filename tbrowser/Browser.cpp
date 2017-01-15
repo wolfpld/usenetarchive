@@ -364,6 +364,7 @@ void Browser::Entry()
             {
                 auto idx = atoi( msgid.c_str() );
                 SwitchToMessage( std::min<int>( std::max( 0, idx ), m_archive->NumberOfMessages() - 1 ) );
+                doupdate();
             }
             break;
         }
