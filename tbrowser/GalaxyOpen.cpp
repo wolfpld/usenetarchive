@@ -106,7 +106,7 @@ void GalaxyOpen::Draw()
     int line = m_top;
     for( int i=0; i<h-3; i++ )
     {
-        if( line > num ) break;
+        if( line >= num ) break;
 
         if( m_cursor == line )
         {
