@@ -2,6 +2,11 @@
 
 Usenet Archive Toolkit project aims to provide a set of tools to process various sources of usenet messages into a coherent, searchable archive.
 
+![](doc/tbrowser1.png)
+![](doc/tbrowser2.png)
+![](doc/galaxy1.png)
+![](doc/galaxy2.png)
+
 ## Motivation
 
 Usenet is dead. You may believe it's not, but it really is.
@@ -97,17 +102,12 @@ These tools provide access to archive data:
 
 ### End-user Utilities
 
-- browser --- Graphical browser of archives.
+- tbrowser --- Curses-based text mode browser of archives.
+- browser --- Graphical browser of archives (no support for galaxy mode).
 
 ![](doc/browser1.png)
 
 ![](doc/browser2.png)
-
-- tbrowser --- Curses-based text mode browser of archives.
-
-![](doc/tbrowser1.png)
-
-![](doc/tbrowser2.png)
 
 ## Future work ideas
 
