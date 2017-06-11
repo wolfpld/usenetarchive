@@ -1,10 +1,13 @@
 #include <chrono>
+#include <unordered_map>
 #include <memory>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 #include <time.h>
 
 #include "../common/Filesystem.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
 
 void PrintHelp()
@@ -27,6 +30,7 @@ void PrintHelp()
     printf( "  view msgid    - view message with given message id\n" );
     printf( "  viewi idx     - view message of given idx\n" );
     printf( "  idx msgid     - get index of given msgid\n" );
+    printf( "  xref [host]   - print last message number for each host\n" );
 }
 
 void Info( const Archive& archive )
@@ -283,6 +287,80 @@ int main( int argc, char** argv )
         else
         {
             printf( "No archive name.\n" );
+        }
+    }
+    else if( strcmp( argv[0], "xref" ) == 0 )
+    {
+        const auto desc = archive->GetArchiveName();
+        if( !desc.first )
+        {
+            fprintf( stderr, "Archive doesn't have embedded name.\n" );
+            exit( 1 );
+        }
+
+        const char* host = argc == 1 ? nullptr : argv[1];
+        const auto hlen = host ? strlen( host ) : 0;
+
+        const auto num = archive->NumberOfMessages();
+        std::unordered_map<std::string, int> latest;
+        for( int i=0; i<num; i++ )
+        {
+            auto post = archive->GetMessage( i );
+            auto ptr = FindOptionalHeader( post, "xref: ", 6 );
+            if( *ptr == '\n' ) continue;
+            ptr += 6;
+            auto end = ptr;
+            while( *end != ' ' ) end++;
+            if( host && ( end - ptr != hlen || strncmp( ptr, host, hlen ) != 0 ) ) continue;
+            std::string server( ptr, end );
+
+            while( *end != '\n' )
+            {
+                ptr = end = end + 1;
+                while( *end != ':' ) end++;
+                if( end - ptr == desc.second && strncmp( ptr, desc.first, desc.second ) == 0 )
+                {
+                    end++;
+                    const auto n = atoi( end );
+                    auto it = latest.find( server );
+                    if( it == latest.end() )
+                    {
+                        latest.emplace( std::move( server ), n );
+                    }
+                    else
+                    {
+                        if( it->second < n )
+                        {
+                            it->second = n;
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                    while( *end != '\n' && *end != ' ' ) end++;
+                }
+            }
+        }
+
+        if( host )
+        {
+            auto it = latest.find( host );
+            if( it == latest.end() )
+            {
+                printf( "Not found.\n" );
+            }
+            else
+            {
+                printf( "%i\n", it->second );
+            }
+        }
+        else
+        {
+            for( auto& v : latest )
+            {
+                printf( "%s %i\n", v.first.c_str(), v.second );
+            }
         }
     }
     else

@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c">
       <Filter>zstd\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\MessageLogic.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -147,6 +150,9 @@
       <Filter>libuat</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\ring_buffer.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MessageLogic.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
