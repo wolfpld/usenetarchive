@@ -12,6 +12,7 @@
 #include "../contrib/xxhash/xxhash.h"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
@@ -59,13 +60,7 @@ int main( int argc, char** argv )
         }
 
         auto post = mview[i];
-        auto buf = post;
-
-        while( strnicmpl( buf, "message-id: ", 12 ) != 0 )
-        {
-            buf++;
-            while( *buf++ != '\n' ) {}
-        }
+        auto buf = FindHeader( post, "message-id: ", 12 );
         buf += 12;
         while( *buf != '<' ) buf++;
         buf++;

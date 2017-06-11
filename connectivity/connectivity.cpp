@@ -13,6 +13,7 @@
 
 #include "../common/Filesystem.hpp"
 #include "../common/HashSearch.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
@@ -89,23 +90,13 @@ int main( int argc, char** argv )
         }
 
         auto post = mview[i];
-        auto buf = post;
 
         bool isReferences = true;
-        while( strnicmpl( buf, "references: ", 12 ) != 0 && *buf != '\n' )
-        {
-            buf++;
-            while( *buf++ != '\n' ) {}
-        }
+        auto buf = FindOptionalHeader( post, "references: ", 12 );
         if( *buf == '\n' )
         {
             isReferences = false;
-            buf = post;
-            while( strnicmpl( buf, "in-reply-to: ", 13 ) != 0 && *buf != '\n' )
-            {
-                buf++;
-                while( *buf++ != '\n' ) {}
-            }
+            buf = FindOptionalHeader( post, "in-reply-to: ", 13 );
         }
         if( *buf == '\n' )
         {

@@ -1,4 +1,5 @@
 #include "MessageLogic.hpp"
+#include "String.hpp"
 
 int QuotationLevel( const char*& ptr, const char* end )
 {
@@ -54,4 +55,24 @@ const char* NextQuotationLevel( const char* ptr )
             break;
         }
     }
+}
+
+const char* FindOptionalHeader( const char* msg, const char* header, int hlen )
+{
+    while( strnicmpl( msg, header, hlen ) != 0 && *msg != '\n' )
+    {
+        msg++;
+        while( *msg++ != '\n' ) {}
+    }
+    return msg;
+}
+
+const char* FindHeader( const char* msg, const char* header, int hlen )
+{
+    while( strnicmpl( msg, header, hlen ) != 0 )
+    {
+        msg++;
+        while( *msg++ != '\n' ) {}
+    }
+    return msg;
 }
