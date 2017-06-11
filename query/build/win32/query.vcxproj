@@ -22,9 +22,6 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
-    <ClCompile Include="..\..\..\contrib\linenoise-ng\ConvertUTF.cpp" />
-    <ClCompile Include="..\..\..\contrib\linenoise-ng\linenoise.cpp" />
-    <ClCompile Include="..\..\..\contrib\linenoise-ng\wcwidth.cpp" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
@@ -50,8 +47,6 @@
     <ClInclude Include="..\..\..\common\ring_buffer.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
-    <ClInclude Include="..\..\..\contrib\linenoise-ng\ConvertUTF.h" />
-    <ClInclude Include="..\..\..\contrib\linenoise-ng\linenoise.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_public.h" />

@@ -19,9 +19,6 @@
     <Filter Include="zstd\decompress">
       <UniqueIdentifier>{5d52ab30-8fac-409c-aad0-cd54309cc27c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="linenoise-ng">
-      <UniqueIdentifier>{ff9e0b71-def0-4f2d-8239-be7bfefe35d7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\query.cpp">
@@ -44,15 +41,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\common\mmap.cpp">
       <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\linenoise-ng\ConvertUTF.cpp">
-      <Filter>linenoise-ng</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\linenoise-ng\linenoise.cpp">
-      <Filter>linenoise-ng</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\linenoise-ng\wcwidth.cpp">
-      <Filter>linenoise-ng</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c">
       <Filter>zstd\decompress</Filter>
@@ -124,12 +112,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\mmap.hpp">
       <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\linenoise-ng\ConvertUTF.h">
-      <Filter>linenoise-ng</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\linenoise-ng\linenoise.h">
-      <Filter>linenoise-ng</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp">
       <Filter>libuat</Filter>
