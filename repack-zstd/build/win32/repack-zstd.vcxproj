@@ -27,11 +27,14 @@
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\pool.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\threading.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\fse_compress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\huf_compress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\zstd_compress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\cover.c" />
     <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\divsufsort.c" />
     <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\zdict.c" />
     <ClCompile Include="..\..\repack-zstd.cpp" />
@@ -53,6 +56,8 @@
     <ClInclude Include="..\..\..\contrib\zstd\common\fse.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\huf.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\mem.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\pool.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\threading.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
     <ClInclude Include="..\..\..\contrib\zstd\compress\zstd_opt.h" />

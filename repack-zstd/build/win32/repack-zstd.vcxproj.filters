@@ -72,6 +72,15 @@
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c">
       <Filter>zstd\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\pool.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\threading.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\cover.c">
+      <Filter>zstd\dictBuilder</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -139,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\zstd.h">
       <Filter>zstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\pool.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\threading.h">
+      <Filter>zstd\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
