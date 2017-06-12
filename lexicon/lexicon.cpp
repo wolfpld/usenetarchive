@@ -17,7 +17,8 @@
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
 
-#include "../contrib/sparsepp/sparsepp.h"
+#define SPP_INCLUDE_SPP_ALLOC 1
+#include "../contrib/sparsepp/spp.h"
 
 const char* AllowedHeaders[] = {
     "from",
