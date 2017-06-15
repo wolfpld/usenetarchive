@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "Filesystem.hpp"
 
 #ifdef _WIN32
@@ -111,4 +112,26 @@ std::vector<std::string> ListDirectory( const std::string& path )
 #endif
 
     return ret;
+}
+
+#ifdef CopyFile
+#  undef CopyFile
+#endif
+
+void CopyFile( const std::string& from, const std::string& to )
+{
+    assert( Exists( from ) );
+    FILE* src = fopen( from.c_str(), "rb" );
+    FILE* dst = fopen( to.c_str(), "wb" );
+    assert( src && dst );
+    enum { BlockSize = 16 * 1024 };
+    char buf[BlockSize];
+    for(;;)
+    {
+        auto read = fread( buf, 1, BlockSize, src );
+        fwrite( buf, 1, read, dst );
+        if( read != BlockSize ) break;
+    }
+    fclose( src );
+    fclose( dst );
 }

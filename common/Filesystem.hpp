@@ -8,6 +8,7 @@
 
 bool CreateDirStruct( const std::string& path );
 std::vector<std::string> ListDirectory( const std::string& path );
+void CopyFile( const std::string& from, const std::string& to );
 
 #ifdef _MSC_VER
 #  define stat64 _stat64
