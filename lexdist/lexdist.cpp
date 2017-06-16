@@ -91,7 +91,7 @@ void BuildHeuristicData( uint64_t& v, const char* str )
         if( cpl > 1 )
         {
             str += cpl;
-            v |= 0x1;
+            v |= ( 1LL << ( 40 + ( unsigned char( *(str-1) ) % 23 ) ) );
         }
         else
         {
