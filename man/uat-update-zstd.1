@@ -1,0 +1,53 @@
+.TH UAT 1 2016-11-24 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-update-zstd \- update archive in Zstandard format
+.SH SYNOPSIS
+.I uat-update-zstd
+[-z level]
+[-o]
+<source>
+<update>
+<destination>
+.SH DESCRIPTION
+In some cases it makes no sense to repack whole archive, as it would take
+too much time. For example, if already existing archive has 2 million
+messages and we only need to add 10 thousand new messages, there's no need
+to touch the already compressed data.
+
+To accomplish its task
+.I uat-update-zstd
+will use the already existing dictionary to compress new messages.
+
+Efficiency of compression might be slightly lower than
+.I uat-repack-zstd
+as the new message data was not taken into account when the original
+dictionary was computed.
+
+Compression is performed using all available CPU cores.
+.SH OPTIONS
+Control switches modify the compression performance. More compression equals
+more CPU and memory usage. Default values are appropriate for production
+archive deployment and are very resource exhausting.
+.TP
+.BR \-z\fI\ level
+Zstandard compression level. Consult https://github.com/facebook/zstd for
+more information.
+.TP
+.BR \-o
+Enable overwrite mode. By default
+.I uat-update-zstd
+will leave the original data as-is, only adding new content. If this flag is
+enabled, new messages will replace already existing messages with the same
+message id.
+.SH NOTES
+Source should be a zstd archive with
+.I uat-extract-msgid
+data available.
+
+Update should be a LZ4 archive with
+.I uat-extract-msgid
+data available.
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat-repack-zstd (1)
