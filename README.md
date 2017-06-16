@@ -62,6 +62,7 @@ Raw imported messages have to be processed to be of any use. We provide the foll
 - connectivity --- Calculate connectivity graph of messages. Also parses "Date" field, as it's required for chronological sorting.
 - threadify --- Some messages do not have connectivity data embedded in headers. Eg. it's a common artifact of using news-email gateways. This tool parses top-level messages, looking for quotations, then it searches other messages for these quotes and creates (not restores! it was never there!) missing connectivity between children and parents.
 - repack-zstd --- Builds a common dictionary for all messages and recompresses them to a zstd meta+payload+dict database.
+- update-zstd --- Updates already existing zstd archive with new data, without recalculation of dictionary.
 - repack-lz4 --- Converts zstd database to LZ4 database.
 - package --- Packages all databases into a single file. Supports unpacking.
 - sort --- Sort messages in a thread-chronological order.
@@ -137,6 +138,7 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *LZ4* → **utf8ize** → produces: *LZ4*  
 *LZ4* → **repack-zstd** → adds: *zstd*  
 *zstd* → **repack-lz4** → adds: *LZ4*  
+(*zstd*, *msgid*) + (*LZ4*, *msgid*) → **update-zstd** → produces: *zstd*  
 *LZ4*, *conn* → **lexicon** → adds: *lex*  
 *lex* → **lexopt** → modifies: *lex*  
 *lex* → **lexhash** → adds: *lexhash*  
