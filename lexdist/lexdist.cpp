@@ -120,9 +120,12 @@ uint64_t BuildHeuristicData( const char* str )
 
 struct CandidateData
 {
-    uint32_t count;
+    uint32_t distance : 2;  // max value is 3
+    uint32_t count : 30;
     uint32_t offset;
 };
+
+static_assert( sizeof( CandidateData ) == 2 * sizeof( uint32_t ), "CandidateData size overflow" );
 
 int main( int argc, char** argv )
 {
@@ -239,7 +242,7 @@ int main( int argc, char** argv )
                                     const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
                                     if( ld > 0 && ld <= maxld )
                                     {
-                                        candidates.emplace_back( CandidateData { cnt2, offsets[idx2] } );
+                                        candidates.emplace_back( CandidateData { uint32_t( ld ), cnt2, offsets[idx2] } );
                                         if( cnt2 > maxCount ) maxCount = cnt2;
                                     }
                                 }
