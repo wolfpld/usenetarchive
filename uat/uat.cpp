@@ -46,6 +46,7 @@ static const Tool tools[] = {
     { "sort", "Sort messages in thread-chronological order." },
     { "tbrowser", "Curses-based text mode archive browser." },
     { "threadify", "Find missing connections between messages." },
+    { "update-zstd", "Update zstd archive." },
     { "utf8ize", "Perform conversion to UTF-8." },
     { "verify", "Check archive for known problems." },
 };
