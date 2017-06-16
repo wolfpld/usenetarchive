@@ -82,9 +82,9 @@ static int GetMaxLD( int len )
     return 3;
 }
 
-void BuildHeuristicData( uint64_t& v, const char* str )
+uint64_t BuildHeuristicData( const char* str )
 {
-    v = 0;
+    uint64_t v = 0;
     while( *str != '\0' )
     {
         auto cpl = codepointlen( *str );
@@ -114,6 +114,7 @@ void BuildHeuristicData( uint64_t& v, const char* str )
             str++;
         }
     }
+    return v;
 }
 
 int main( int argc, char** argv )
@@ -167,7 +168,7 @@ int main( int argc, char** argv )
 
         counts[i] = mp->dataSize;
 
-        BuildHeuristicData( heurdata[i], s );
+        heurdata[i] = BuildHeuristicData( s );
     }
 
     printf( "\nWord length histogram\n" );
