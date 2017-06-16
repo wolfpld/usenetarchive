@@ -27,6 +27,7 @@ TOOLS := \
 	sort \
 	tbrowser \
 	threadify \
+	update-zstd \
 	utf8ize \
 	verify
 
