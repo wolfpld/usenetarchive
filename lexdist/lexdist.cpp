@@ -254,7 +254,8 @@ int main( int argc, char** argv )
                     {
                         if( v.count >= tmc )
                         {
-                            data[idx].emplace_back( v.offset );
+                            assert( v.offset & 0xC0000000 == 0 );
+                            data[idx].emplace_back( v.offset | ( v.distance << 30 ) );
                         }
                     }
                 }
