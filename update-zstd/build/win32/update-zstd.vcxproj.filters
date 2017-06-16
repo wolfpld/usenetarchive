@@ -22,6 +22,9 @@
     <Filter Include="zstd\dictBuilder">
       <UniqueIdentifier>{904bb09b-c7df-457c-93b4-98a701bf9f88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="zstd\decompress">
+      <UniqueIdentifier>{067830b7-13f6-4b43-806d-25fd653bff71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\update-zstd.cpp">
@@ -80,6 +83,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\zstd\dictBuilder\cover.c">
       <Filter>zstd\dictBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c">
+      <Filter>zstd\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
+      <Filter>zstd\decompress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +163,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\common\threading.h">
       <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\ZMessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\HashSearch.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MetaView.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
