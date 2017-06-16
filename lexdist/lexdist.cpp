@@ -1,5 +1,6 @@
-#include <assert.h>
 #include <algorithm>
+#include <assert.h>
+#include <atomic>
 #include <codecvt>
 #include <locale>
 #include <math.h>
@@ -180,7 +181,6 @@ int main( int argc, char** argv )
     const auto cpus = System::CPUCores();
     printf( "Working... (%i threads)\n", cpus );
 
-    std::mutex mtx;
     TaskDispatch tasks( cpus );
     const auto taskNum = cpus * 16;
 
@@ -192,23 +192,18 @@ int main( int argc, char** argv )
         const auto& byLen1 = byLen[i];
 
         const auto size = byLen1.size();
-        uint32_t start = 0;
-        uint32_t inPass = ( size + taskNum - 1 ) / taskNum;
-        uint32_t left = size;
-        uint32_t cnt = 0;
+        std::atomic<uint32_t> cnt( 0 );
         for( int t=0; t<taskNum; t++ )
         {
-            uint32_t todo = std::min( left, inPass );
-            tasks.Queue( [&stru32, &byLen1, &byLen, start, todo, size, &cnt, &mtx, i, counts, ldstart, ldend, maxld, offsets, &data, heurdata]() {
+            tasks.Queue( [&stru32, &byLen1, &byLen, size, &cnt, i, counts, ldstart, ldend, maxld, offsets, &data, heurdata]() {
                 std::vector<std::pair<unsigned int, uint32_t>> candidates;
-                for( int j=start; j<start+todo; j++ )
+                for(;;)
                 {
-                    mtx.lock();
-                    auto c = cnt++;
-                    mtx.unlock();
-                    if( ( c & 0x1FF ) == 0 )
+                    auto j = cnt.fetch_add( 1, std::memory_order_relaxed );
+                    if( j >= size ) break;
+                    if( ( j & 0x1FF ) == 0 )
                     {
-                        printf( "%2i: %i/%i\r", i, c, size );
+                        printf( "%2i: %i/%i\r", i, j, size );
                         fflush( stdout );
                     }
 
@@ -255,8 +250,6 @@ int main( int argc, char** argv )
                     }
                 }
             } );
-            start += todo;
-            left -= todo;
         }
         tasks.Sync();
         printf( "%2i: %i/%i\n", i, size, size );
