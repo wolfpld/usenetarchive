@@ -480,14 +480,28 @@ SearchData Archive::Search( const std::vector<std::string>& terms, int flags, in
                 const auto size = *ptr++;
                 for( uint32_t i=0; i<size; i++ )
                 {
-                    auto word = m_lexstr + *ptr++;
+                    const auto data = *ptr++;
+                    const auto offset = data & 0x3FFFFFFF;
+                    auto word = m_lexstr + offset;
                     auto res2 = m_lexhash.Search( word );
                     assert( res2 >= 0 );
                     if( wordset.find( res2 ) == wordset.end() )
                     {
                         words.emplace_back( res2 );
                         wordset.emplace( res2 );
-                        wordMod.emplace_back( 0.5f );
+                        const auto dist = data >> 30;
+                        switch( dist )
+                        {
+                        case 1:
+                            wordMod.emplace_back( 0.5f );
+                            break;
+                        case 2:
+                            wordMod.emplace_back( 0.25f );
+                            break;
+                        default:    // 3
+                            wordMod.emplace_back( 0.125f );
+                            break;
+                        }
                         matched.emplace_back( word );
                     }
                 }
