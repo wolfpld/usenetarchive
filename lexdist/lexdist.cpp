@@ -232,11 +232,11 @@ int main( int argc, char** argv )
                         for( int l=0; l<size2; l++ )
                         {
                             const auto idx2 = byLen2[l];
-                            const auto cnt2 = counts[idx2];
-                            if( cnt2 >= tcnt )
+                            const auto heur2 = heurdata[idx2];
+                            if( CountBits( heur1 ^ heur2 ) <= hld )
                             {
-                                const auto heur2 = heurdata[idx2];
-                                if( CountBits( heur1 ^ heur2 ) <= hld )
+                                const auto cnt2 = counts[idx2];
+                                if( cnt2 >= tcnt )
                                 {
                                     const auto& str2 = stru32[idx2];
                                     const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
