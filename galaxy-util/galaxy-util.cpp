@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <inttypes.h>
+#include <map>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +13,9 @@
 #include "../common/CharUtil.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
+#include "../common/HashSearchBig.hpp"
 #include "../common/MetaView.hpp"
+#include "../common/MessageLogic.hpp"
 #include "../common/MsgIdHash.hpp"
 
 #include "../libuat/Archive.hpp"
@@ -268,6 +271,16 @@ int main( int argc, char** argv )
         }
     };
 
+    struct IndirectData
+    {
+        std::vector<uint32_t> parent;
+        std::vector<uint32_t> child;
+    };
+
+    char tmp[1024];
+    std::map<uint32_t, IndirectData> indirect;
+    HashSearchBig midhash( base + "msgid.meta", base + "msgid", base + "midhash.meta", base + "midhash" );
+
     std::unordered_map<std::vector<int>, uint32_t, VectorHasher> mapdata;
     std::vector<int> groups;
     cnt = 0;
@@ -284,11 +297,50 @@ int main( int argc, char** argv )
 
         groups.clear();
         auto hash = XXH32( msgid[i], strlen( msgid[i] ), 0 );
+        bool indirectChecked = false;
         for( int j=0; j<arch.size(); j++ )
         {
-            if( arch[j]->GetMessageIndex( msgid[i], hash ) != -1 )
+            const auto idx = arch[j]->GetMessageIndex( msgid[i], hash );
+            if( idx != -1 )
             {
                 groups.emplace_back( j );
+
+                if( !indirectChecked )
+                {
+                    indirectChecked = true;
+                    if( arch[j]->GetParent( idx ) == -1 )
+                    {
+                        auto post = arch[j]->GetMessage( idx );
+                        auto buf = FindReferences( post );
+                        if( *buf != '\n' )
+                        {
+                            const auto terminate = buf;
+                            int valid = ValidateReferences( buf );
+                            if( valid == 0 && buf != terminate )
+                            {
+                                buf--;
+                                for(;;)
+                                {
+                                    while( *buf != '>' && buf != terminate ) buf--;
+                                    if( buf == terminate ) break;
+                                    auto end = buf;
+                                    while( *--buf != '<' ) {}
+                                    buf++;
+                                    assert( end - buf < 1024 );
+                                    ValidateMsgId( buf, end, tmp );
+                                    const auto parent = midhash.Search( tmp );
+                                    if( parent != -1 )
+                                    {
+                                        indirect[idx].parent.emplace_back( parent );
+                                        indirect[parent].child.emplace_back( idx );
+                                        break;
+                                    }
+                                    if( *buf == '>' ) buf--;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         auto it = mapdata.find( groups );
