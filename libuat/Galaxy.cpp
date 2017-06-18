@@ -100,6 +100,11 @@ int Galaxy::GetMessageIndex( const char* msgid ) const
     return m_midhash.Search( msgid );
 }
 
+const char* Galaxy::GetMessageId( uint32_t idx ) const
+{
+    return m_middb[idx];
+}
+
 int Galaxy::GetNumberOfGroups( const char* msgid ) const
 {
     return GetNumberOfGroups( GetMessageIndex( msgid ) );

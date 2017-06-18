@@ -30,6 +30,7 @@ public:
     int GetActiveArchive() const { return m_active; }
 
     int GetMessageIndex( const char* msgid ) const;
+    const char* GetMessageId( uint32_t idx ) const;
 
     int GetNumberOfGroups( uint32_t idx ) const;
     int GetNumberOfGroups( const char* msgid ) const;
