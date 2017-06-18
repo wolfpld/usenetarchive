@@ -56,6 +56,7 @@ private:
     const MetaView<uint32_t, char> m_archives;
     const MetaView<uint32_t, char> m_strings;
     const MetaView<uint32_t, uint32_t> m_midgr;
+    const MetaView<uint32_t, uint32_t> m_indirect;
 
     std::vector<std::shared_ptr<Archive>> m_arch;
     std::vector<int> m_available;
