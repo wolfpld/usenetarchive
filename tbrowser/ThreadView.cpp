@@ -677,14 +677,16 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
     const auto gidx  = m_galaxy->GetMessageIndex( msgid );
     const auto groups = m_galaxy->GetNumberOfGroups( gidx );
     assert( groups > 0 );
-    if( groups == 1 )
+    const auto ip = m_galaxy->GetIndirectParents( gidx );
+    const auto ic = m_galaxy->GetIndirectChildren( gidx );
+    if( groups == 1 && ip.size == 0 && ic.size == 0 )
     {
         return GalaxyState::Nothing;
     }
     else
     {
-        bool parents = !m_galaxy->AreParentsSame( gidx, msgid );
-        bool children = !m_galaxy->AreChildrenSame( gidx, msgid );
+        bool parents = !m_galaxy->AreParentsSame( gidx, msgid ) || ip.size != 0;
+        bool children = !m_galaxy->AreChildrenSame( gidx, msgid ) || ic.size != 0;
         if( parents )
         {
             if( children )
