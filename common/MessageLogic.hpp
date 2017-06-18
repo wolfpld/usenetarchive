@@ -8,4 +8,6 @@ const char* NextQuotationLevel( const char* ptr );
 const char* FindOptionalHeader( const char* msg, const char* header, int hlen );
 const char* FindHeader( const char* msg, const char* header, int hlen );
 
+const char* FindReferences( const char* msg );
+
 #endif

@@ -76,3 +76,12 @@ const char* FindHeader( const char* msg, const char* header, int hlen )
     }
     return msg;
 }
+
+const char* FindReferences( const char* msg )
+{
+    auto buf = FindOptionalHeader( msg, "references: ", 12 );
+    if( *buf != '\n' ) return buf + 12;
+    buf = FindOptionalHeader( msg, "in-reply-to: ", 13 );
+    if( *buf != '\n' ) return buf + 13;
+    return buf;
+}

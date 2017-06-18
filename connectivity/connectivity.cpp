@@ -91,19 +91,12 @@ int main( int argc, char** argv )
 
         auto post = mview[i];
 
-        bool isReferences = true;
-        auto buf = FindOptionalHeader( post, "references: ", 12 );
-        if( *buf == '\n' )
-        {
-            isReferences = false;
-            buf = FindOptionalHeader( post, "in-reply-to: ", 13 );
-        }
+        auto buf = FindReferences( post );
         if( *buf == '\n' )
         {
             toplevel.push_back( i );
             continue;
         }
-        buf += isReferences ? 12 : 13;
 
         const auto terminate = buf;
         int valid = 0;
