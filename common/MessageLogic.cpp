@@ -85,3 +85,15 @@ const char* FindReferences( const char* msg )
     if( *buf != '\n' ) return buf + 13;
     return buf;
 }
+
+int ValidateReferences( const char*& buf )
+{
+    int valid = 0;
+    while( *buf != '\n' )
+    {
+        if( *buf == '<' ) valid++;
+        else if( *buf == '>' ) valid--;
+        buf++;
+    }
+    return valid;
+}

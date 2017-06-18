@@ -60,6 +60,9 @@
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\MessageLogic.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -111,6 +114,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\MetaView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MessageLogic.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

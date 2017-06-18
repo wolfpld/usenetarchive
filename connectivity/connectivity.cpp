@@ -99,14 +99,7 @@ int main( int argc, char** argv )
         }
 
         const auto terminate = buf;
-        int valid = 0;
-        while( *buf != '\n' )
-        {
-            if( *buf == '<' ) valid++;
-            else if( *buf == '>' ) valid--;
-            buf++;
-        }
-
+        int valid = ValidateReferences( buf );
         if( valid == 0 && buf != terminate )
         {
             buf--;

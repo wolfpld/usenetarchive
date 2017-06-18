@@ -9,5 +9,6 @@ const char* FindOptionalHeader( const char* msg, const char* header, int hlen );
 const char* FindHeader( const char* msg, const char* header, int hlen );
 
 const char* FindReferences( const char* msg );
+int ValidateReferences( const char*& buf );
 
 #endif
