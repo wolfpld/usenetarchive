@@ -232,7 +232,7 @@ int main( int argc, char** argv )
     {
         if( ( cnt++ & 0x3FFFF ) == 0 )
         {
-            printf( "%i/%i\r", cnt, msgidsize );
+            printf( "%i/%i\r", cnt, hashsize );
             fflush( stdout );
         }
 
