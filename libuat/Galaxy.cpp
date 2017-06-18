@@ -228,6 +228,32 @@ ViewReference<uint32_t> Galaxy::GetGroups( const char* msgid ) const
     return GetGroups( GetMessageIndex( msgid ) );
 }
 
+ViewReference<uint32_t> Galaxy::GetIndirectParents( uint32_t idx ) const
+{
+    assert( idx != -1 );
+    auto ptr = m_indirect[idx*2];
+    auto num = *ptr++;
+    return ViewReference<uint32_t> { ptr, num };
+}
+
+ViewReference<uint32_t> Galaxy::GetIndirectParents( const char* msgid ) const
+{
+    return GetIndirectParents( GetMessageIndex( msgid ) );
+}
+
+ViewReference<uint32_t> Galaxy::GetIndirectChildren( uint32_t idx ) const
+{
+    assert( idx != -1 );
+    auto ptr = m_indirect[idx*2+1];
+    auto num = *ptr++;
+    return ViewReference<uint32_t> { ptr, num };
+}
+
+ViewReference<uint32_t> Galaxy::GetIndirectChildren( const char* msgid ) const
+{
+    return GetIndirectParents( GetMessageIndex( msgid ) );
+}
+
 int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
 {
     int num = -1;

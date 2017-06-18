@@ -43,6 +43,12 @@ public:
     ViewReference<uint32_t> GetGroups( uint32_t idx ) const;
     ViewReference<uint32_t> GetGroups( const char* msgid ) const;
 
+    ViewReference<uint32_t> GetIndirectParents( uint32_t idx ) const;
+    ViewReference<uint32_t> GetIndirectParents( const char* msgid ) const;
+
+    ViewReference<uint32_t> GetIndirectChildren( uint32_t idx ) const;
+    ViewReference<uint32_t> GetIndirectChildren( const char* msgid ) const;
+
     int ParentDepth( const char* msgid, uint32_t arch ) const;
     int NumberOfChildren( const char* msgid, uint32_t arch ) const;
     int TotalNumberOfChildren( const char* msgid, uint32_t arch ) const;
