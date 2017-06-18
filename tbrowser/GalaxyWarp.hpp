@@ -17,6 +17,8 @@ struct WarpEntry
     uint32_t id;
     bool available;
     bool current;
+    bool indirect;
+    const char* msgid;
     int parent;
     int children;
     int totalchildren;

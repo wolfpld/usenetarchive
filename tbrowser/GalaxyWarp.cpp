@@ -33,25 +33,70 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
     m_top = m_bottom = m_cursor = 0;
 
     m_list.clear();
-    const auto groups = m_galaxy.GetGroups( msgid );
+    const auto gidx = m_galaxy.GetMessageIndex( msgid );
+    const auto groups = m_galaxy.GetGroups( gidx );
     const auto current = m_galaxy.GetActiveArchive();
     for( int i=0; i<groups.size; i++ )
     {
         const auto idx = groups.ptr[i];
         if( m_galaxy.IsArchiveAvailable( idx ) )
         {
-            m_list.emplace_back( WarpEntry { idx, true, current == idx,
+            m_list.emplace_back( WarpEntry { idx, true, current == idx, false, msgid,
                 m_galaxy.ParentDepth( msgid, idx ),
                 m_galaxy.NumberOfChildren( msgid, idx ),
                 m_galaxy.TotalNumberOfChildren( msgid, idx ) - 1 } );
         }
         else
         {
-            m_list.emplace_back( WarpEntry { idx, false, current == idx } );
+            m_list.emplace_back( WarpEntry { idx, false, current == idx, false } );
         }
         if( current == idx )
         {
             m_cursor = i;
+        }
+    }
+
+    const auto ip = m_galaxy.GetIndirectParents( gidx );
+    for( int i=0; i<ip.size; i++ )
+    {
+        const auto imsgid = m_galaxy.GetMessageId( ip.ptr[i] );
+        const auto igroups = m_galaxy.GetGroups( ip.ptr[i] );
+        for( int j=0; j<igroups.size; j++ )
+        {
+            const auto idx = igroups.ptr[j];
+            if( m_galaxy.IsArchiveAvailable( idx ) )
+            {
+                m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
+                    m_galaxy.ParentDepth( imsgid, idx ),
+                    m_galaxy.NumberOfChildren( imsgid, idx ),
+                    m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
+            }
+            else
+            {
+                m_list.emplace_back( WarpEntry { idx, false, false, true } );
+            }
+        }
+    }
+
+    const auto ic = m_galaxy.GetIndirectChildren( gidx );
+    for( int i=0; i<ic.size; i++ )
+    {
+        const auto imsgid = m_galaxy.GetMessageId( ic.ptr[i] );
+        const auto igroups = m_galaxy.GetGroups( ic.ptr[i] );
+        for( int j=0; j<igroups.size; j++ )
+        {
+            const auto idx = igroups.ptr[j];
+            if( m_galaxy.IsArchiveAvailable( idx ) )
+            {
+                m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
+                    m_galaxy.ParentDepth( imsgid, idx ),
+                    m_galaxy.NumberOfChildren( imsgid, idx ),
+                    m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
+            }
+            else
+            {
+                m_list.emplace_back( WarpEntry { idx, false, false, true } );
+            }
         }
     }
 
@@ -94,7 +139,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
             {
                 auto archive = m_galaxy.GetArchive( m_list[m_cursor].id );
                 m_parent->SwitchArchive( archive, m_galaxy.GetArchiveFilename( m_list[m_cursor].id ) );
-                m_parent->SwitchToMessage( archive->GetMessageIndex( msgid ) );
+                m_parent->SwitchToMessage( archive->GetMessageIndex( m_list[m_cursor].msgid ) );
                 m_active = false;
                 return;
             }
@@ -198,14 +243,15 @@ void GalaxyWarp::Draw()
         }
         else
         {
+            bool indirect = m_list[line].indirect;
             wattron( m_win, COLOR_PAIR( 3 ) );
             if( m_list[line].parent > 0 )
             {
-                wprintw( m_win, "Reply at depth %i", m_list[line].parent );
+                wprintw( m_win, "%s at depth %i", indirect ? "Indirect parent" : "Reply", m_list[line].parent );
             }
             else
             {
-                wprintw( m_win, "Start of thread" );
+                wprintw( m_win, "%s of thread", indirect ? "Indirect continuation" : "Start" );
             }
             if( m_list[line].children == 0 )
             {
@@ -218,6 +264,22 @@ void GalaxyWarp::Draw()
                     m_list[line].totalchildren, m_list[line].totalchildren == 1 ? "y" : "ies" );
             }
             wattroff( m_win, COLOR_PAIR( 3 ) );
+            if( indirect )
+            {
+                int x, y;
+                getyx( m_win, y, x );
+
+                wattron( m_win, COLOR_PAIR( 7 ) );
+                if( strlen( m_list[line].msgid ) > w-x-3 )
+                {
+                    wprintw( m_win, " (%.*s...)", w-x-6, m_list[line].msgid );
+                }
+                else
+                {
+                    wprintw( m_win, " (%s)", m_list[line].msgid );
+                }
+                wattroff( m_win, COLOR_PAIR( 7 ) );
+            }
         }
 
         line++;
