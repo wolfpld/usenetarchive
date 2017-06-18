@@ -335,8 +335,8 @@ int main( int argc, char** argv )
                                         const auto parent = midhash.Search( tmp );
                                         if( parent != -1 )
                                         {
-                                            indirect[idx].parent.emplace_back( parent );
-                                            indirect[parent].child.emplace_back( idx );
+                                            indirect[i].parent.emplace_back( parent );
+                                            indirect[parent].child.emplace_back( i );
                                             break;
                                         }
                                         if( *buf == '>' ) buf--;
