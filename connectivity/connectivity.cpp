@@ -32,25 +32,6 @@ void Sort( std::vector<uint32_t>& vec, const Message* msg )
     std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
 }
 
-bool ValidateMsgId( const char* begin, const char* end, char* dst )
-{
-    bool broken = false;
-    while( begin != end )
-    {
-        if( *begin != ' ' && *begin != '\t' )
-        {
-            *dst++ = *begin;
-        }
-        else
-        {
-            broken = true;
-        }
-        begin++;
-    }
-    *dst++ = '\0';
-    return broken;
-}
-
 int main( int argc, char** argv )
 {
     if( argc < 2 )

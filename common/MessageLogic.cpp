@@ -97,3 +97,22 @@ int ValidateReferences( const char*& buf )
     }
     return valid;
 }
+
+bool ValidateMsgId( const char* begin, const char* end, char* dst )
+{
+    bool broken = false;
+    while( begin != end )
+    {
+        if( *begin != ' ' && *begin != '\t' )
+        {
+            *dst++ = *begin;
+        }
+        else
+        {
+            broken = true;
+        }
+        begin++;
+    }
+    *dst++ = '\0';
+    return broken;
+}
