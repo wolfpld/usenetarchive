@@ -365,5 +365,64 @@ int main( int argc, char** argv )
         fclose( meta );
     }
 
+    printf( "\n" );
+
+    {
+        uint32_t offset = 0;
+        uint32_t zero = 0;
+        cnt = 0;
+        FILE* data = fopen( ( base + "indirect" ).c_str(), "wb" );
+        FILE* meta = fopen( ( base + "indirect.meta" ).c_str(), "wb" );
+        offset += fwrite( &zero, 1, sizeof( uint32_t ), data );
+        for( auto& it : indirect )
+        {
+            while( cnt++ < it.first )
+            {
+                fwrite( &zero, 1, sizeof( uint32_t ), meta );
+                fwrite( &zero, 1, sizeof( uint32_t ), meta );
+            }
+
+            const auto& parent = it.second.parent;
+            const auto& child = it.second.child;
+            if( parent.empty() )
+            {
+                fwrite( &zero, 1, sizeof( uint32_t ), meta );
+            }
+            else
+            {
+                fwrite( &offset, 1, sizeof( uint32_t ), meta );
+                const uint32_t num = parent.size();
+                fwrite( &num, 1, sizeof( uint32_t ), data );
+                for( auto& v : parent )
+                {
+                    fwrite( &v, 1, sizeof( uint32_t ), data );
+                }
+                offset += sizeof( uint32_t ) * ( num + 1 );
+            }
+            if( child.empty() )
+            {
+                fwrite( &zero, 1, sizeof( uint32_t ), meta );
+            }
+            else
+            {
+                fwrite( &offset, 1, sizeof( uint32_t ), meta );
+                const uint32_t num = child.size();
+                offset += fwrite( &num, 1, sizeof( uint32_t ), data );
+                for( auto& v : child )
+                {
+                    fwrite( &v, 1, sizeof( uint32_t ), data );
+                }
+                sizeof( uint32_t ) * ( num + 1 );
+            }
+        }
+        while( cnt++ < msgidsize )
+        {
+            fwrite( &zero, 1, sizeof( uint32_t ), meta );
+            fwrite( &zero, 1, sizeof( uint32_t ), meta );
+        }
+        fclose( data );
+        fclose( meta );
+    }
+
     return 0;
 }
