@@ -226,50 +226,39 @@ int main( int argc, char** argv )
     }
     printf( "\n" );
 
-    uint64_t zero = 0;
-    FILE* data = fopen( ( base + "midhash" ).c_str(), "wb" );
-    FILE* meta = fopen( ( base + "midhash.meta" ).c_str(), "wb" );
-    uint64_t offset = fwrite( &zero, 1, sizeof( zero ), data );
-    cnt = 0;
-    for( size_t i=0; i<hashsize; i++ )
     {
-        if( ( cnt++ & 0x3FFFF ) == 0 )
+        uint64_t zero = 0;
+        FILE* data = fopen( ( base + "midhash" ).c_str(), "wb" );
+        FILE* meta = fopen( ( base + "midhash.meta" ).c_str(), "wb" );
+        uint64_t offset = fwrite( &zero, 1, sizeof( zero ), data );
+        cnt = 0;
+        for( size_t i=0; i<hashsize; i++ )
         {
-            printf( "%i/%i\r", cnt, hashsize );
-            fflush( stdout );
-        }
+            if( ( cnt++ & 0x3FFFF ) == 0 )
+            {
+                printf( "%i/%i\r", cnt, hashsize );
+                fflush( stdout );
+            }
 
-        std::sort( bucket[i].begin(), bucket[i].begin() + sizes[i] );
+            std::sort( bucket[i].begin(), bucket[i].begin() + sizes[i] );
 
-        uint32_t num = sizes[i];
-        if( num == 0 )
-        {
-            fwrite( &zero, 1, sizeof( zero ), meta );
+            uint32_t num = sizes[i];
+            if( num == 0 )
+            {
+                fwrite( &zero, 1, sizeof( zero ), meta );
+            }
+            else
+            {
+                fwrite( &offset, 1, sizeof( offset ), meta );
+                offset += fwrite( &num, 1, sizeof( num ), data );
+                offset += fwrite( bucket[i].data(), 1, sizeof( uint32_t ) * num, data );
+            }
         }
-        else
-        {
-            fwrite( &offset, 1, sizeof( offset ), meta );
-            offset += fwrite( &num, 1, sizeof( num ), data );
-            offset += fwrite( bucket[i].data(), 1, sizeof( uint32_t ) * num, data );
-        }
+        fclose( data );
+        fclose( meta );
     }
-    fclose( data );
-    fclose( meta );
 
     printf( "\n" );
-
-    struct VectorHasher
-    {
-        size_t operator()( const std::vector<int>& vec ) const
-        {
-            size_t ret = 0;
-            for( auto& i : vec )
-            {
-                ret ^= std::hash<uint32_t>()( i );
-            }
-            return ret;
-        }
-    };
 
     struct IndirectData
     {
@@ -277,88 +266,104 @@ int main( int argc, char** argv )
         std::vector<uint32_t> child;
     };
 
-    char tmp[1024];
     std::map<uint32_t, IndirectData> indirect;
-    HashSearchBig midhash( base + "msgid.meta", base + "msgid", base + "midhash.meta", base + "midhash" );
 
-    std::unordered_map<std::vector<int>, uint32_t, VectorHasher> mapdata;
-    std::vector<int> groups;
-    cnt = 0;
-    uint32_t offset32 = 0;
-    data = fopen( ( base + "midgr" ).c_str(), "wb" );
-    meta = fopen( ( base + "midgr.meta" ).c_str(), "wb" );
-    for( int i=0; i<msgidsize; i++ )
     {
-        if( ( cnt++ & 0x3FF ) == 0 )
-        {
-            printf( "%i/%i\r", cnt, msgidsize );
-            fflush( stdout );
-        }
+        char tmp[1024];
+        HashSearchBig midhash( base + "msgid.meta", base + "msgid", base + "midhash.meta", base + "midhash" );
 
-        groups.clear();
-        auto hash = XXH32( msgid[i], strlen( msgid[i] ), 0 );
-        bool indirectChecked = false;
-        for( int j=0; j<arch.size(); j++ )
+        struct VectorHasher
         {
-            const auto idx = arch[j]->GetMessageIndex( msgid[i], hash );
-            if( idx != -1 )
+            size_t operator()( const std::vector<int>& vec ) const
             {
-                groups.emplace_back( j );
-
-                if( !indirectChecked )
+                size_t ret = 0;
+                for( auto& i : vec )
                 {
-                    indirectChecked = true;
-                    if( arch[j]->GetParent( idx ) == -1 )
+                    ret ^= std::hash<uint32_t>()( i );
+                }
+                return ret;
+            }
+        };
+
+        std::unordered_map<std::vector<int>, uint32_t, VectorHasher> mapdata;
+        std::vector<int> groups;
+        cnt = 0;
+        uint32_t offset32 = 0;
+        FILE* data = fopen( ( base + "midgr" ).c_str(), "wb" );
+        FILE* meta = fopen( ( base + "midgr.meta" ).c_str(), "wb" );
+        for( int i=0; i<msgidsize; i++ )
+        {
+            if( ( cnt++ & 0x3FF ) == 0 )
+            {
+                printf( "%i/%i\r", cnt, msgidsize );
+                fflush( stdout );
+            }
+
+            groups.clear();
+            auto hash = XXH32( msgid[i], strlen( msgid[i] ), 0 );
+            bool indirectChecked = false;
+            for( int j=0; j<arch.size(); j++ )
+            {
+                const auto idx = arch[j]->GetMessageIndex( msgid[i], hash );
+                if( idx != -1 )
+                {
+                    groups.emplace_back( j );
+
+                    if( !indirectChecked )
                     {
-                        auto post = arch[j]->GetMessage( idx );
-                        auto buf = FindReferences( post );
-                        if( *buf != '\n' )
+                        indirectChecked = true;
+                        if( arch[j]->GetParent( idx ) == -1 )
                         {
-                            const auto terminate = buf;
-                            int valid = ValidateReferences( buf );
-                            if( valid == 0 && buf != terminate )
+                            auto post = arch[j]->GetMessage( idx );
+                            auto buf = FindReferences( post );
+                            if( *buf != '\n' )
                             {
-                                buf--;
-                                for(;;)
+                                const auto terminate = buf;
+                                int valid = ValidateReferences( buf );
+                                if( valid == 0 && buf != terminate )
                                 {
-                                    while( *buf != '>' && buf != terminate ) buf--;
-                                    if( buf == terminate ) break;
-                                    auto end = buf;
-                                    while( *--buf != '<' ) {}
-                                    buf++;
-                                    assert( end - buf < 1024 );
-                                    ValidateMsgId( buf, end, tmp );
-                                    const auto parent = midhash.Search( tmp );
-                                    if( parent != -1 )
+                                    buf--;
+                                    for(;;)
                                     {
-                                        indirect[idx].parent.emplace_back( parent );
-                                        indirect[parent].child.emplace_back( idx );
-                                        break;
+                                        while( *buf != '>' && buf != terminate ) buf--;
+                                        if( buf == terminate ) break;
+                                        auto end = buf;
+                                        while( *--buf != '<' ) {}
+                                        buf++;
+                                        assert( end - buf < 1024 );
+                                        ValidateMsgId( buf, end, tmp );
+                                        const auto parent = midhash.Search( tmp );
+                                        if( parent != -1 )
+                                        {
+                                            indirect[idx].parent.emplace_back( parent );
+                                            indirect[parent].child.emplace_back( idx );
+                                            break;
+                                        }
+                                        if( *buf == '>' ) buf--;
                                     }
-                                    if( *buf == '>' ) buf--;
                                 }
                             }
                         }
                     }
                 }
             }
+            auto it = mapdata.find( groups );
+            if( it == mapdata.end() )
+            {
+                it = mapdata.emplace( groups, offset32 ).first;
+                fwrite( &offset32, 1, sizeof( offset32 ), meta );
+                uint32_t num = groups.size();
+                offset32 += fwrite( &num, 1, sizeof( num ), data );
+                offset32 += fwrite( groups.data(), 1, sizeof( uint32_t ) * num, data );
+            }
+            else
+            {
+                fwrite( &it->second, 1, sizeof( uint32_t ), meta );
+            }
         }
-        auto it = mapdata.find( groups );
-        if( it == mapdata.end() )
-        {
-            it = mapdata.emplace( groups, offset32 ).first;
-            fwrite( &offset32, 1, sizeof( offset32 ), meta );
-            uint32_t num = groups.size();
-            offset32 += fwrite( &num, 1, sizeof( num ), data );
-            offset32 += fwrite( groups.data(), 1, sizeof( uint32_t ) * num, data );
-        }
-        else
-        {
-            fwrite( &it->second, 1, sizeof( uint32_t ), meta );
-        }
+        fclose( data );
+        fclose( meta );
     }
-    fclose( data );
-    fclose( meta );
 
     return 0;
 }
