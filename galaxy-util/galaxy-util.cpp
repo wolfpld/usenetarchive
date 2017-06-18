@@ -393,10 +393,7 @@ int main( int argc, char** argv )
                 fwrite( &offset, 1, sizeof( uint32_t ), meta );
                 const uint32_t num = parent.size();
                 fwrite( &num, 1, sizeof( uint32_t ), data );
-                for( auto& v : parent )
-                {
-                    fwrite( &v, 1, sizeof( uint32_t ), data );
-                }
+                fwrite( parent.data(), 1, sizeof( uint32_t ) * num, data );
                 offset += sizeof( uint32_t ) * ( num + 1 );
             }
             if( child.empty() )
@@ -407,12 +404,9 @@ int main( int argc, char** argv )
             {
                 fwrite( &offset, 1, sizeof( uint32_t ), meta );
                 const uint32_t num = child.size();
-                offset += fwrite( &num, 1, sizeof( uint32_t ), data );
-                for( auto& v : child )
-                {
-                    fwrite( &v, 1, sizeof( uint32_t ), data );
-                }
-                sizeof( uint32_t ) * ( num + 1 );
+                fwrite( &num, 1, sizeof( uint32_t ), data );
+                fwrite( child.data(), 1, sizeof( uint32_t ) * num, data );
+                offset += sizeof( uint32_t ) * ( num + 1 );
             }
         }
         while( cnt++ < msgidsize )
