@@ -191,7 +191,6 @@ int main( int argc, char** argv )
     printf( "Working... (%i threads)\n", cpus );
 
     TaskDispatch tasks( cpus );
-    const auto taskNum = cpus * 16;
 
     for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
     {
@@ -202,7 +201,7 @@ int main( int argc, char** argv )
 
         const auto size = byLen1.size();
         std::atomic<uint32_t> cnt( 0 );
-        for( int t=0; t<taskNum; t++ )
+        for( int t=0; t<cpus; t++ )
         {
             tasks.Queue( [&stru32, &byLen1, &byLen, size, &cnt, i, counts, ldstart, ldend, maxld, offsets, &data, heurdata]() {
                 std::vector<CandidateData> candidates;
