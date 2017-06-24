@@ -6,6 +6,7 @@
 #include <string>
 #include <time.h>
 
+#include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
@@ -73,6 +74,8 @@ int main( int argc, char** argv )
         return 0;
     }
 
+    ExpandingBuffer eb;
+
     argc -= 2;
     argv += 2;
 
@@ -80,7 +83,7 @@ int main( int argc, char** argv )
     {
         if( argc == 1 ) BadArg();
         int idx = atoi( argv[1] );
-        auto msg = archive->GetMessage( idx );
+        auto msg = archive->GetMessage( idx, eb );
         if( msg )
         {
             printf( "%s\n", msg );
@@ -105,7 +108,7 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "view" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto msg = archive->GetMessage( argv[1] );
+        auto msg = archive->GetMessage( argv[1], eb );
         if( msg )
         {
             printf( "%s\n", msg );
@@ -305,7 +308,7 @@ int main( int argc, char** argv )
         std::unordered_map<std::string, int> latest;
         for( int i=0; i<num; i++ )
         {
-            auto post = archive->GetMessage( i );
+            auto post = archive->GetMessage( i, eb );
             auto ptr = FindOptionalHeader( post, "xref: ", 6 );
             if( *ptr == '\n' ) continue;
             ptr += 6;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "../libuat/Archive.hpp"
+#include "../common/ExpandingBuffer.hpp"
 #include "../common/ICU.hpp"
 #include "../common/KillRe.hpp"
 #include "../common/MessageLogic.hpp"
@@ -145,6 +146,7 @@ int main( int argc, char** argv )
     int cntnew = 0, cntsure = 0, cntgood = 0, cntbad = 0;
     std::vector<std::pair<uint32_t, uint32_t>> found;
     std::map<uint32_t, float> hits;
+    ExpandingBuffer eb;
 
     for( int j=0; j<toplevel.size(); j++ )
     {
@@ -158,7 +160,7 @@ int main( int argc, char** argv )
         bool headers = true;
         bool wroteDone = false;
 
-        auto post = archive->GetMessage( i );
+        auto post = archive->GetMessage( i, eb );
         for(;;)
         {
             auto end = post;

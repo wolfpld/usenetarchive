@@ -91,15 +91,15 @@ Archive::Archive( const PackageAccess* pkg )
     }
 }
 
-const char* Archive::GetMessage( uint32_t idx )
+const char* Archive::GetMessage( uint32_t idx, ExpandingBuffer& eb )
 {
-    return idx >= m_mcnt ? nullptr : m_mview[idx];
+    return idx >= m_mcnt ? nullptr : m_mview.GetMessage( idx, eb );
 }
 
-const char* Archive::GetMessage( const char* msgid )
+const char* Archive::GetMessage( const char* msgid, ExpandingBuffer& eb )
 {
     auto idx = m_midhash.Search( msgid );
-    return idx >= 0 ? GetMessage( idx ) : nullptr;
+    return idx >= 0 ? GetMessage( idx, eb ) : nullptr;
 }
 
 int Archive::GetMessageIndex( const char* msgid ) const

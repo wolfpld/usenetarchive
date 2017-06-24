@@ -65,7 +65,7 @@ bool MessageView::Display( uint32_t idx, int move )
     if( idx != m_idx )
     {
         m_idx = idx;
-        m_text = m_archive->GetMessage( idx );
+        m_text = m_archive->GetMessage( idx, m_eb );
         PrepareLines();
         m_top = 0;
         // If view is not active, drawing will be performed during resize.

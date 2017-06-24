@@ -5,6 +5,8 @@
 
 #include "View.hpp"
 
+#include "../common/ExpandingBuffer.hpp"
+
 class Archive;
 class PersistentStorage;
 
@@ -55,6 +57,7 @@ private:
     void PrintRot13( const char* start, const char* end );
     void PrintQuotes( const char*& start, int& len, int level );
 
+    ExpandingBuffer m_eb;
     std::vector<Line> m_lines;
     Archive* m_archive;
     PersistentStorage& m_storage;

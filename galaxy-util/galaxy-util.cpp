@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "../common/CharUtil.hpp"
+#include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
 #include "../common/HashSearchBig.hpp"
@@ -291,6 +292,7 @@ int main( int argc, char** argv )
         uint32_t offset32 = 0;
         FILE* data = fopen( ( base + "midgr" ).c_str(), "wb" );
         FILE* meta = fopen( ( base + "midgr.meta" ).c_str(), "wb" );
+        ExpandingBuffer eb;
         for( int i=0; i<msgidsize; i++ )
         {
             if( ( cnt++ & 0x3FF ) == 0 )
@@ -314,7 +316,7 @@ int main( int argc, char** argv )
             const auto idx = refarch->GetMessageIndex( msgid[i], hash );
             if( refarch->GetParent( idx ) == -1 )
             {
-                auto post = refarch->GetMessage( idx );
+                auto post = refarch->GetMessage( idx, eb );
                 auto buf = FindReferences( post );
                 if( *buf != '\n' )
                 {

@@ -10,6 +10,7 @@
 #ifdef _WIN32
 #  include <direct.h>
 #  include <windows.h>
+#  undef GetMessage
 #else
 #  include <dirent.h>
 #endif
@@ -45,7 +46,7 @@ int main( int argc, char** argv )
     FILE* meta = fopen( metafn.c_str(), "wb" );
     FILE* data = fopen( datafn.c_str(), "wb" );
 
-    ExpandingBuffer eb;
+    ExpandingBuffer eb, eb_dec;
     uint64_t offset = 0;
     for( size_t idx=0; idx<size; idx++ )
     {
@@ -56,7 +57,7 @@ int main( int argc, char** argv )
         }
 
         auto raw = zview.Raw( idx );
-        auto buf = zview[idx];
+        auto buf = zview.GetMessage( idx, eb_dec );
 
         int maxSize = LZ4_compressBound( raw.size );
         char* compressed = eb.Request( maxSize );

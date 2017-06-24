@@ -29,6 +29,7 @@ struct SearchData
 };
 
 struct ScoreEntry;
+class ExpandingBuffer;
 
 class Archive
 {
@@ -43,8 +44,8 @@ public:
 
     static Archive* Open( const std::string& fn );
 
-    const char* GetMessage( uint32_t idx );
-    const char* GetMessage( const char* msgid );
+    const char* GetMessage( uint32_t idx, ExpandingBuffer& eb );
+    const char* GetMessage( const char* msgid, ExpandingBuffer& eb );
     size_t NumberOfMessages() const { return m_mcnt; }
 
     int GetMessageIndex( const char* msgid ) const;

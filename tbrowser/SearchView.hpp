@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../common/ExpandingBuffer.hpp"
 #include "../libuat/Archive.hpp"
 
 #include "View.hpp"
@@ -28,6 +29,7 @@ private:
     void FillPreview( int idx );
     void MoveCursor( int offset );
 
+    ExpandingBuffer m_eb;
     Browser* m_parent;
     BottomBar& m_bar;
     Archive* m_archive;

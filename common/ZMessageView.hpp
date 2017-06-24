@@ -40,12 +40,12 @@ public:
         }
     }
 
-    const char* operator[]( const size_t idx )
+    const char* GetMessage( const size_t idx, ExpandingBuffer& eb )
     {
         if( !m_ctx ) InitZstd();
         assert( idx < m_meta.Size() );
         const auto meta = m_meta[idx];
-        auto buf = m_eb.Request( meta.size + 1 );
+        auto buf = eb.Request( meta.size + 1 );
         const auto dec = ZSTD_decompress_usingDDict( m_ctx, buf, meta.size, m_data + meta.offset, meta.compressedSize, m_dict );
         assert( dec == meta.size );
         buf[meta.size] = '\0';
@@ -96,8 +96,6 @@ private:
 
     ZSTD_DCtx* m_ctx;
     ZSTD_DDict* m_dict;
-
-    ExpandingBuffer m_eb;
 };
 
 #endif
