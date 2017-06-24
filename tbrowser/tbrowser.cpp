@@ -41,7 +41,7 @@ int main( int argc, char** argv )
             return 1;
         }
         auto galaxyLast = storage.ReadLastOpenGalaxyArchive();
-        if( !galaxy->IsArchiveAvailable( galaxyLast ) )
+        if( galaxyLast >= galaxy->GetNumberOfArchives() || !galaxy->IsArchiveAvailable( galaxyLast ) )
         {
             galaxyLast = available.front();
         }
