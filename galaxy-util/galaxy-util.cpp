@@ -335,8 +335,28 @@ int main( int argc, char** argv )
                             const auto parent = midhash.Search( tmp );
                             if( parent != -1 )
                             {
-                                indirect[i].parent.emplace_back( parent );
-                                indirect[parent].child.emplace_back( i );
+                                bool ok = true;
+                                for( int g=1; g<groups.size(); g++ )
+                                {
+                                    const auto& currarch = arch[groups[g]];
+                                    const auto gmidx = currarch->GetMessageIndex( msgid[i] );
+                                    assert( gmidx != -1 );
+                                    const auto pmidx = currarch->GetParent( gmidx );
+                                    if( pmidx != -1 )
+                                    {
+                                        const auto pmid = currarch->GetMessageId( pmidx );
+                                        if( strcmp( pmid, tmp ) == 0 )
+                                        {
+                                            ok = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if( ok )
+                                {
+                                    indirect[i].parent.emplace_back( parent );
+                                    indirect[parent].child.emplace_back( i );
+                                }
                                 break;
                             }
                             if( *buf == '>' ) buf--;
