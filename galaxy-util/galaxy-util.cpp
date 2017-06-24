@@ -301,48 +301,45 @@ int main( int argc, char** argv )
 
             groups.clear();
             auto hash = XXH32( msgid[i], strlen( msgid[i] ), 0 );
-            bool indirectChecked = false;
             for( int j=0; j<arch.size(); j++ )
             {
                 const auto idx = arch[j]->GetMessageIndex( msgid[i], hash );
                 if( idx != -1 )
                 {
                     groups.emplace_back( j );
-
-                    if( !indirectChecked )
+                }
+            }
+            assert( !groups.empty() );
+            const auto& refarch = arch[groups[0]];
+            const auto idx = refarch->GetMessageIndex( msgid[i], hash );
+            if( refarch->GetParent( idx ) == -1 )
+            {
+                auto post = refarch->GetMessage( idx );
+                auto buf = FindReferences( post );
+                if( *buf != '\n' )
+                {
+                    const auto terminate = buf;
+                    int valid = ValidateReferences( buf );
+                    if( valid == 0 && buf != terminate )
                     {
-                        indirectChecked = true;
-                        if( arch[j]->GetParent( idx ) == -1 )
+                        buf--;
+                        for(;;)
                         {
-                            auto post = arch[j]->GetMessage( idx );
-                            auto buf = FindReferences( post );
-                            if( *buf != '\n' )
+                            while( *buf != '>' && buf != terminate ) buf--;
+                            if( buf == terminate ) break;
+                            auto end = buf;
+                            while( *--buf != '<' ) {}
+                            buf++;
+                            assert( end - buf < 1024 );
+                            ValidateMsgId( buf, end, tmp );
+                            const auto parent = midhash.Search( tmp );
+                            if( parent != -1 )
                             {
-                                const auto terminate = buf;
-                                int valid = ValidateReferences( buf );
-                                if( valid == 0 && buf != terminate )
-                                {
-                                    buf--;
-                                    for(;;)
-                                    {
-                                        while( *buf != '>' && buf != terminate ) buf--;
-                                        if( buf == terminate ) break;
-                                        auto end = buf;
-                                        while( *--buf != '<' ) {}
-                                        buf++;
-                                        assert( end - buf < 1024 );
-                                        ValidateMsgId( buf, end, tmp );
-                                        const auto parent = midhash.Search( tmp );
-                                        if( parent != -1 )
-                                        {
-                                            indirect[i].parent.emplace_back( parent );
-                                            indirect[parent].child.emplace_back( i );
-                                            break;
-                                        }
-                                        if( *buf == '>' ) buf--;
-                                    }
-                                }
+                                indirect[i].parent.emplace_back( parent );
+                                indirect[parent].child.emplace_back( i );
+                                break;
                             }
+                            if( *buf == '>' ) buf--;
                         }
                     }
                 }
