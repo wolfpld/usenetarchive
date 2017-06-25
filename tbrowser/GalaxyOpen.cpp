@@ -17,8 +17,9 @@ GalaxyOpen::GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy, Persist
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_bar( bar )
-    , m_storage( storage )
     , m_galaxy( galaxy )
+    , m_storage( storage )
+    , m_filter( galaxy.GetNumberOfArchives(), true )
     , m_active( false )
     , m_cursor( galaxy.GetActiveArchive() )
     , m_top( std::max( 0, m_cursor - 2 ) )
@@ -44,20 +45,20 @@ void GalaxyOpen::Entry()
             return;
         case KEY_DOWN:
         case 'j':
-            MoveCursor( 1 );
+            MoveCursor( CalcOffset( 1 ) );
             doupdate();
             break;
         case KEY_UP:
         case 'k':
-            MoveCursor( -1 );
+            MoveCursor( CalcOffset( -1 ) );
             doupdate();
             break;
         case KEY_NPAGE:
-            MoveCursor( m_bottom - m_top - 1 );
+            MoveCursor( CalcOffset( m_bottom - m_top - 1 ) );
             doupdate();
             break;
         case KEY_PPAGE:
-            MoveCursor( m_top - m_bottom + 1 );
+            MoveCursor( CalcOffset( m_top - m_bottom + 1 ) );
             doupdate();
             break;
         case KEY_HOME:
@@ -84,6 +85,11 @@ void GalaxyOpen::Entry()
                 m_bar.Status( "Archive unavailable!" );
                 doupdate();
             }
+            break;
+        case 's':
+        case '/':
+            FilterItems( "" );
+            FilterItems( m_bar.InteractiveQuery( "Search: ", [this]( const std::string& filter ) { FilterItems( filter ); } ) );
             break;
         default:
             break;
@@ -114,9 +120,15 @@ void GalaxyOpen::Draw()
 
     wattron( m_win, A_BOLD );
     int line = m_top;
-    for( int i=0; i<h-3; i++ )
+    int i=0;
+    while( i<h-3 )
     {
         if( line >= num ) break;
+        if( !m_filter[line] )
+        {
+            line++;
+            continue;
+        }
 
         if( m_cursor == line )
         {
@@ -165,6 +177,7 @@ void GalaxyOpen::Draw()
             waddch( m_win, '<' );
         }
         line++;
+        i++;
     }
     wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
 
@@ -198,4 +211,68 @@ void GalaxyOpen::MoveCursor( int offset )
         offset--;
     }
     Draw();
+}
+
+void GalaxyOpen::FilterItems( const std::string& filter )
+{
+    if( filter == "" )
+    {
+        for( auto& v : m_filter ) v = true;
+    }
+    else
+    {
+        const int flen = filter.size();
+        for( int i=0; i<m_filter.size(); i++ )
+        {
+            const char* name = m_galaxy.GetArchiveName( i );
+            const int mlen = strlen( name );
+            bool match = false;
+            for( int i=0; i<=mlen-flen; i++ )
+            {
+                if( strncmp( name+i, filter.c_str(), flen ) == 0 )
+                {
+                    match = true;
+                    break;
+                }
+            }
+            m_filter[i] = match;
+        }
+    }
+    Draw();
+    doupdate();
+}
+
+int GalaxyOpen::CalcOffset( int offset )
+{
+    int cursor = m_cursor;
+    if( offset > 0 )
+    {
+        while( offset > 0 && cursor < m_galaxy.GetNumberOfArchives() - 1 )
+        {
+            cursor++;
+            if( m_filter[cursor] ) offset--;
+        }
+        while( !m_filter[cursor] && cursor > m_cursor ) cursor--;
+        if( cursor > m_cursor )
+        {
+            return cursor - m_cursor;
+        }
+    }
+    else
+    {
+        while( offset < 0 && cursor > 0 )
+        {
+            cursor--;
+            if( m_filter[cursor] ) offset++;
+        }
+        if( offset < 0 )
+        {
+            while( !m_filter[cursor] && cursor < m_cursor ) cursor++;
+        }
+        if( cursor < m_cursor )
+        {
+            return cursor - m_cursor;
+        }
+    }
+    return 0;
 }

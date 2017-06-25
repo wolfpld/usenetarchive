@@ -22,11 +22,15 @@ public:
 
 private:
     void MoveCursor( int offset );
+    void FilterItems( const std::string& filter );
+
+    int CalcOffset( int offset );
 
     Browser* m_parent;
     BottomBar& m_bar;
     Galaxy& m_galaxy;
     PersistentStorage& m_storage;
+    std::vector<bool> m_filter;
 
     bool m_active;
 
