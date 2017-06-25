@@ -403,12 +403,24 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             }
         }
         std::vector<PostData*> list;
+        std::vector<uint8_t> hits;
+        std::vector<uint32_t> wordlist;
+        std::vector<uint32_t> idx;
         for( auto& entry : posts )
         {
+            hits.clear();
+            wordlist.clear();
+            idx.clear();
+
             float rank = 0;
             for( auto& v : entry.second )
             {
                 rank += HitRank( *v.data ) * wordMod[v.word];
+                for( int i=0; i<v.data->hitnum; i++ )
+                {
+                    wordlist.emplace_back( v.word );
+                    hits.emplace_back( v.data->hits[i] );
+                }
             }
             if( flags & SF_AdjacentWords )
             {
@@ -419,8 +431,23 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 }
                 rank /= GetWordDistance( list );
             }
-            // TODO
-            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), 0, nullptr, nullptr ) );
+            for( int i=0; i<hits.size(); i++ )
+            {
+                idx.emplace_back( i );
+            }
+
+            std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
+
+            uint8_t hdata[SearchResultMaxHits];
+            uint32_t wdata[SearchResultMaxHits];
+            const auto n = std::min<int>( hits.size(), SearchResultMaxHits );
+            for( int i=0; i<n; i++ )
+            {
+                hdata[i] = hits[idx[i]];
+                wdata[i] = words[wordlist[idx[i]]];
+            }
+
+            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), n, hdata, wdata ) );
         }
     }
     if( result.empty() ) return ret;
