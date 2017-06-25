@@ -368,6 +368,7 @@ void Browser::Entry()
             }
             break;
         }
+        case '/':
         case 's':
             m_bottom.SetHelp( HelpSet::Search );
             m_sview.Entry();
