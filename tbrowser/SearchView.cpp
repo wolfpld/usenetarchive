@@ -295,12 +295,14 @@ void SearchView::Reset( Archive& archive )
 void SearchView::FillPreview( int idx )
 {
     const auto& res = m_result.results[idx];
+    const auto& words = m_result.matched;
+
     auto msg = std::string( m_archive->GetMessage( res.postid, m_eb ) );
     auto lower = msg;
     std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
 
     std::vector<size_t> tpos;
-    for( auto& match : m_result.matched )
+    for( auto& match : words )
     {
         size_t pos = 0;
         while( ( pos = lower.find( match, pos+1 ) ) != std::string::npos ) tpos.emplace_back( pos );
