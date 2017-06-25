@@ -198,6 +198,11 @@ static float GetWordDistance( const std::vector<PostData*>& list )
     return min;
 }
 
+static SearchResult PrepareResults( uint32_t postid, float rank )
+{
+    return SearchResult { postid, rank };
+}
+
 SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
 {
     SearchData ret;
@@ -318,7 +323,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         result.reserve( wdata[0].size() );
         for( auto& v : wdata[0] )
         {
-            result.emplace_back( SearchResult { v.postid, PostRank( v ) * HitRank( v ) } );
+            result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ) ) );
         }
     }
     else if( flags & SF_RequireAllWords )
@@ -357,7 +362,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 {
                     rank /= GetWordDistance( list );
                 }
-                result.emplace_back( SearchResult { post.postid, rank * PostRank( post ) } );
+                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ) ) );
             }
         }
     }
@@ -402,7 +407,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 }
                 rank /= GetWordDistance( list );
             }
-            result.emplace_back( SearchResult { entry.first, rank * PostRank( *entry.second[0].data ) } );
+            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ) ) );
         }
     }
     if( result.empty() ) return ret;
