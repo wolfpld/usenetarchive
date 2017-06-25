@@ -223,7 +223,15 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         words.reserve( terms.size() );
         for( auto& v : terms )
         {
-            auto res = m_archive.m_lexhash.Search( v.c_str() );
+            const char* str = v.c_str();
+            std::string tmp;
+            if( v.size() > 2 && v[0] == '"' && v[v.size()-1] == '"' )
+            {
+                tmp = v.substr( 1, v.size() - 2 );
+                str = tmp.c_str();
+            }
+
+            auto res = m_archive.m_lexhash.Search( str );
             if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
                 words.emplace_back( res );
@@ -231,7 +239,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 wordMod.emplace_back( 1 );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
 
-                if( flags & SF_FuzzySearch )
+                if( flags & SF_FuzzySearch && tmp.empty() )
                 {
                     auto ptr = (*m_archive.m_lexdist)[res];
                     const auto size = *ptr++;

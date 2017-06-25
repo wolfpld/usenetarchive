@@ -145,6 +145,10 @@ void SearchView::Draw()
             mvwprintw( m_win, 2, 4, "No results for: %s", m_query.c_str() );
         }
         mvwprintw( m_win, 4, 4, "Press '/' to enter search query." );
+
+        wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+        mvwprintw( m_win, 6, 4, "Hint: quote words to disable fuzzy search." );
+        wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
     }
     else
     {
