@@ -60,6 +60,16 @@ void GalaxyOpen::Entry()
             MoveCursor( m_top - m_bottom + 1 );
             doupdate();
             break;
+        case KEY_HOME:
+            m_cursor = m_top;
+            Draw();
+            doupdate();
+            break;
+        case KEY_END:
+            m_cursor = m_bottom - 1;
+            Draw();
+            doupdate();
+            break;
         case KEY_ENTER:
         case '\n':
         case 459:   // numpad enter
