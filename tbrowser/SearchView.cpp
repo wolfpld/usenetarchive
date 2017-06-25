@@ -39,6 +39,8 @@ void SearchView::Entry()
         case KEY_RESIZE:
             m_parent->Resize();
             break;
+        case KEY_EXIT:
+        case 27:
         case 'q':
             m_active = false;
             return;
