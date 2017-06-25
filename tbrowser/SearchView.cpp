@@ -96,6 +96,27 @@ void SearchView::Entry()
                 return;
             }
             break;
+        case 'a':
+            std::sort( m_result.results.begin(), m_result.results.end(), [this]( const auto& l, const auto& r ) { return m_archive->GetDate( l.postid ) < m_archive->GetDate( r.postid ); } );
+            m_top = m_bottom = m_cursor = 0;
+            m_preview.clear();
+            Draw();
+            doupdate();
+            break;
+        case 'd':
+            std::sort( m_result.results.begin(), m_result.results.end(), [this]( const auto& l, const auto& r ) { return m_archive->GetDate( l.postid ) > m_archive->GetDate( r.postid ); } );
+            m_top = m_bottom = m_cursor = 0;
+            m_preview.clear();
+            Draw();
+            doupdate();
+            break;
+        case 'r':
+            std::sort( m_result.results.begin(), m_result.results.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
+            m_top = m_bottom = m_cursor = 0;
+            m_preview.clear();
+            Draw();
+            doupdate();
+            break;
         default:
             break;
         }
