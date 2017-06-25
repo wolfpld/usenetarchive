@@ -219,7 +219,10 @@ void GalaxyOpen::FilterItems( const std::string& filter )
 {
     if( filter == "" )
     {
-        for( auto& v : m_filter ) v = true;
+        for( int i=0; i<m_filter.size(); i++ )
+        {
+            m_filter[i] = true;
+        }
     }
     else
     {
