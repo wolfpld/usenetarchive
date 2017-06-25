@@ -50,6 +50,21 @@ static inline LexiconType LexiconDecodeType( uint8_t v )
     }
 }
 
+static inline LexiconType LexiconTypeFromQuotLevel( int level )
+{
+    switch( level )
+    {
+    case 0:
+        return T_Content;
+    case 1:
+        return T_Quote1;
+    case 2:
+        return T_Quote2;
+    default:
+        return T_Quote3;
+    }
+}
+
 struct LexiconMetaPacket
 {
     uint32_t str;

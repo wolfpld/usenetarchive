@@ -164,21 +164,7 @@ int main( int argc, char** argv )
                     }
                     else
                     {
-                        switch( quotLevel )
-                        {
-                        case 0:
-                            t = T_Content;
-                            break;
-                        case 1:
-                            t = T_Quote1;
-                            break;
-                        case 2:
-                            t = T_Quote2;
-                            break;
-                        default:
-                            t = T_Quote3;
-                            break;
-                        }
+                        t = LexiconTypeFromQuotLevel( quotLevel );
                     }
                     Add( data, wordbuf, i, t, basePos[t], children );
                     basePos[t] += wordbuf.size();
