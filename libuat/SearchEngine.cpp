@@ -328,8 +328,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     const auto wsize = wdata.size();
     if( wsize == 1 )
     {
-        uint32_t wordlist[SearchResultMaxHits];
-        std::fill( wordlist, wordlist + SearchResultMaxHits, words[0] );
+        uint32_t wordlist[SearchResultMaxHits] = {};
         result.reserve( wdata[0].size() );
         for( auto& v : wdata[0] )
         {
