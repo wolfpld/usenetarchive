@@ -238,6 +238,11 @@ void GalaxyOpen::FilterItems( const std::string& filter )
             m_filter[i] = match;
         }
     }
+    if( !m_filter[m_cursor] )
+    {
+        MoveCursor( CalcOffset( 1 ) );
+        m_top = std::max( 0, m_cursor - CalcOffset( 10 ) );
+    }
     Draw();
     doupdate();
 }
