@@ -444,7 +444,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             for( int i=0; i<n; i++ )
             {
                 hdata[i] = hits[idx[i]];
-                wdata[i] = words[wordlist[idx[i]]];
+                wdata[i] = wordlist[idx[i]];
             }
 
             result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), n, hdata, wdata ) );
