@@ -214,50 +214,53 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         }
     }
 
-    std::unordered_set<uint32_t> wordset;
     std::vector<const char*> matched;
     std::vector<uint32_t> words;
     std::vector<float> wordMod;
-    words.reserve( terms.size() );
-    for( auto& v : terms )
-    {
-        auto res = m_archive.m_lexhash.Search( v.c_str() );
-        if( res >= 0 && wordset.find( res ) == wordset.end() )
-        {
-            words.emplace_back( res );
-            wordset.emplace( res );
-            wordMod.emplace_back( 1 );
-            matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
 
-            if( flags & SF_FuzzySearch )
+    {
+        std::unordered_set<uint32_t> wordset;
+        words.reserve( terms.size() );
+        for( auto& v : terms )
+        {
+            auto res = m_archive.m_lexhash.Search( v.c_str() );
+            if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
-                auto ptr = (*m_archive.m_lexdist)[res];
-                const auto size = *ptr++;
-                for( uint32_t i=0; i<size; i++ )
+                words.emplace_back( res );
+                wordset.emplace( res );
+                wordMod.emplace_back( 1 );
+                matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
+
+                if( flags & SF_FuzzySearch )
                 {
-                    const auto data = *ptr++;
-                    const auto offset = data & 0x3FFFFFFF;
-                    auto word = m_archive.m_lexstr + offset;
-                    auto res2 = m_archive.m_lexhash.Search( word );
-                    assert( res2 >= 0 );
-                    if( wordset.find( res2 ) == wordset.end() )
+                    auto ptr = (*m_archive.m_lexdist)[res];
+                    const auto size = *ptr++;
+                    for( uint32_t i=0; i<size; i++ )
                     {
-                        words.emplace_back( res2 );
-                        wordset.emplace( res2 );
-                        const auto dist = data >> 30;
-                        switch( dist )
+                        const auto data = *ptr++;
+                        const auto offset = data & 0x3FFFFFFF;
+                        auto word = m_archive.m_lexstr + offset;
+                        auto res2 = m_archive.m_lexhash.Search( word );
+                        assert( res2 >= 0 );
+                        if( wordset.find( res2 ) == wordset.end() )
                         {
-                        case 1:
-                            wordMod.emplace_back( 0.5f );
-                            break;
-                        case 2:
-                            wordMod.emplace_back( 0.25f );
-                            break;
-                        default:    // 3
-                            wordMod.emplace_back( 0.125f );
-                            break;
+                            words.emplace_back( res2 );
+                            wordset.emplace( res2 );
+                            const auto dist = data >> 30;
+                            switch( dist )
+                            {
+                            case 1:
+                                wordMod.emplace_back( 0.5f );
+                                break;
+                            case 2:
+                                wordMod.emplace_back( 0.25f );
+                                break;
+                            default:    // 3
+                                wordMod.emplace_back( 0.125f );
+                                break;
+                            }
+                            matched.emplace_back( word );
                         }
-                        matched.emplace_back( word );
                     }
                 }
             }
