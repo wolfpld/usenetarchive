@@ -1,11 +1,12 @@
 #ifndef __SEARCHVIEW_HPP__
 #define __SEARCHVIEW_HPP__
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "../common/ExpandingBuffer.hpp"
-#include "../libuat/Archive.hpp"
+#include "../libuat/SearchEngine.hpp"
 
 #include "View.hpp"
 
@@ -33,6 +34,7 @@ private:
     Browser* m_parent;
     BottomBar& m_bar;
     Archive* m_archive;
+    std::unique_ptr<SearchEngine> m_search;
     PersistentStorage& m_storage;
     std::string m_query;
     float m_queryTime;

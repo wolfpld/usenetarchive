@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\libuat\SearchEngine.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageLogic.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\SearchEngine.hpp">
+      <Filter>libuat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

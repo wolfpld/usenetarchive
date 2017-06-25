@@ -7,6 +7,7 @@
 
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
+#include "../libuat/SearchEngine.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
@@ -18,6 +19,7 @@ SearchView::SearchView( Browser* parent, BottomBar& bar, Archive& archive, Persi
     , m_parent( parent )
     , m_bar( bar )
     , m_archive( &archive )
+    , m_search( std::make_unique<SearchEngine>( archive ) )
     , m_storage( storage )
     , m_active( false )
     , m_top( 0 )
@@ -52,7 +54,7 @@ void SearchView::Entry()
             {
                 std::swap( m_query, query );
                 auto start = std::chrono::high_resolution_clock::now();
-                m_result = m_archive->Search( m_query.c_str(), Archive::SF_AdjacentWords | Archive::SF_FuzzySearch );
+                m_result = m_search->Search( m_query.c_str(), SearchEngine::SF_AdjacentWords | SearchEngine::SF_FuzzySearch );
                 m_queryTime = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - start ).count() / 1000.f;
                 m_preview.clear();
                 m_preview.reserve( m_result.results.size() );
@@ -259,6 +261,7 @@ void SearchView::Draw()
 void SearchView::Reset( Archive& archive )
 {
     m_archive = &archive;
+    m_search = std::make_unique<SearchEngine>( archive );
     m_result.results.clear();
     m_query.clear();
     m_top = m_bottom = m_cursor = 0;

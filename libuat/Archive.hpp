@@ -16,32 +16,14 @@
 #include "PackageAccess.hpp"
 #include "ViewReference.hpp"
 
-struct SearchResult
-{
-    uint32_t postid;
-    float rank;
-};
-
-struct SearchData
-{
-    std::vector<SearchResult> results;
-    std::vector<const char*> matched;
-};
-
 struct ScoreEntry;
 class ExpandingBuffer;
 
 class Archive
 {
-public:
-    enum SearchFlags
-    {
-        SF_FlagsNone        = 0,
-        SF_AdjacentWords    = 1 << 0,   // Calculate words adjacency
-        SF_RequireAllWords  = 1 << 1,   // Require all words to be present
-        SF_FuzzySearch      = 1 << 2,   // Also search for similar words
-    };
+    friend class SearchEngine;
 
+public:
     static Archive* Open( const std::string& fn );
 
     const char* GetMessage( uint32_t idx, ExpandingBuffer& eb );
@@ -78,8 +60,6 @@ public:
 
     int GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& scoreList ) const;
 
-    SearchData Search( const char* query, int flags = SF_FlagsNone, int filter = T_All ) const;
-    SearchData Search( const std::vector<std::string>& terms, int flags = SF_FlagsNone, int filter = T_All ) const;
     std::map<std::string, uint32_t> TimeChart() const;
 
     std::pair<const char*, uint64_t> GetShortDescription() const;

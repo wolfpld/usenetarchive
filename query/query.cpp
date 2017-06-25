@@ -10,6 +10,7 @@
 #include "../common/Filesystem.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
+#include "../libuat/SearchEngine.hpp"
 
 void PrintHelp()
 {
@@ -236,8 +237,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "search" ) == 0 )
     {
         if( argc == 1 ) BadArg();
+        SearchEngine search( *archive );
         auto t0 = std::chrono::high_resolution_clock::now();
-        auto results = archive->Search( argv[1], Archive::SF_AdjacentWords );
+        auto results = search.Search( argv[1], SearchEngine::SF_AdjacentWords );
         auto& data = results.results;
         auto t1 = std::chrono::high_resolution_clock::now();
         printf( "Query time %fms.\n", std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );

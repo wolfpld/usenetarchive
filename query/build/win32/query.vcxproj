@@ -33,6 +33,7 @@
     <ClCompile Include="..\..\..\libuat\Archive.cpp" />
     <ClCompile Include="..\..\..\libuat\PackageAccess.cpp" />
     <ClCompile Include="..\..\..\libuat\PersistentStorage.cpp" />
+    <ClCompile Include="..\..\..\libuat\SearchEngine.cpp" />
     <ClCompile Include="..\..\query.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +65,7 @@
     <ClInclude Include="..\..\..\libuat\named_mutex.hpp" />
     <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
     <ClInclude Include="..\..\..\libuat\PersistentStorage.hpp" />
+    <ClInclude Include="..\..\..\libuat\SearchEngine.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

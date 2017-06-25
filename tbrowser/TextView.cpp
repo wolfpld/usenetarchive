@@ -3,6 +3,7 @@
 #include <chrono>
 #include <ctype.h>
 #include <sstream>
+#include <string.h>
 #include <vector>
 
 #include "Browser.hpp"

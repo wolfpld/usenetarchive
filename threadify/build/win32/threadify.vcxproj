@@ -33,6 +33,7 @@
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c" />
     <ClCompile Include="..\..\..\libuat\Archive.cpp" />
     <ClCompile Include="..\..\..\libuat\PackageAccess.cpp" />
+    <ClCompile Include="..\..\..\libuat\SearchEngine.cpp" />
     <ClCompile Include="..\..\threadify.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +60,7 @@
     <ClInclude Include="..\..\..\contrib\zstd\zstd.h" />
     <ClInclude Include="..\..\..\libuat\Archive.hpp" />
     <ClInclude Include="..\..\..\libuat\PackageAccess.hpp" />
+    <ClInclude Include="..\..\..\libuat\SearchEngine.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -261,6 +261,9 @@
     <ClCompile Include="..\..\GalaxyWarp.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\libuat\SearchEngine.cpp">
+      <Filter>libuat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -406,6 +409,9 @@
     </ClInclude>
     <ClInclude Include="..\..\GalaxyState.hpp">
       <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libuat\SearchEngine.hpp">
+      <Filter>libuat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

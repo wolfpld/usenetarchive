@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "../libuat/Archive.hpp"
+#include "../libuat/SearchEngine.hpp"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/ICU.hpp"
 #include "../common/KillRe.hpp"
@@ -66,6 +67,7 @@ int main( int argc, char** argv )
         return 1;
     }
     auto size = archive->NumberOfMessages();
+    SearchEngine search( *archive );
 
     while( argc > 2 )
     {
@@ -203,7 +205,7 @@ int main( int argc, char** argv )
                         SplitLine( line, end, wordbuf );
                         if( !wordbuf.empty() )
                         {
-                            auto results = archive->Search( wordbuf, Archive::SF_RequireAllWords, T_Content );
+                            auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords, T_Content );
                             auto& res = results.results;
                             if( !res.empty() )
                             {
