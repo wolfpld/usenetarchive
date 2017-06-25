@@ -133,6 +133,98 @@ std::string BottomBar::Query( const char* prompt, const char* entry, bool filesy
     }
 }
 
+std::string BottomBar::InteractiveQuery( const char* prompt, const std::function<void(const std::string&)>& cb, const char* entry )
+{
+    std::string ret;
+    int insert = 0;
+    m_reset = 2;
+    int plen = strlen( prompt );
+
+    if( entry && *entry )
+    {
+        ret = entry;
+        insert = ret.size();
+    }
+
+    for(;;)
+    {
+        PrintQuery( prompt, ret.c_str() );
+        int slen = utflen_relaxed( ret.c_str(), ret.c_str() + insert );
+        wmove( m_win, 0, plen + slen );
+        wrefresh( m_win );
+
+        auto key = GetKey();
+        switch( key )
+        {
+        case KEY_BACKSPACE:
+        case '\b':
+        case 127:
+            if( !ret.empty() && insert > 0 )
+            {
+                int cnt = 1;
+                insert--;
+                while( iscontinuationbyte( ret[insert] ) )
+                {
+                    insert--;
+                    cnt++;
+                }
+                ret.erase( insert, cnt );
+                cb( ret );
+            }
+            break;
+        case KEY_DC:
+            if( !ret.empty() && insert < ret.size() )
+            {
+                auto len = codepointlen( ret[insert] );
+                ret.erase( insert, len );
+                cb( ret );
+            }
+            break;
+        case KEY_ENTER:
+        case '\n':
+        case 459:   // numpad enter
+            return ret;
+            break;
+        case KEY_EXIT:
+        case 27:
+            PrintHelp();
+            wrefresh( m_win );
+            return "";
+            break;
+        case KEY_END:
+            insert = ret.size();
+            break;
+        case KEY_HOME:
+            insert = 0;
+            break;
+        case KEY_LEFT:
+            if( insert > 0 )
+            {
+                insert--;
+                while( iscontinuationbyte( ret[insert] ) )
+                {
+                    insert--;
+                }
+            }
+            break;
+        case KEY_RIGHT:
+            if( insert < ret.size() ) insert += codepointlen( ret[insert] );
+            break;
+        case KEY_DOWN:
+        case KEY_UP:
+            break;
+        case KEY_RESIZE:
+            m_parent->Resize();
+            break;
+        default:
+            ret.insert( ret.begin() + insert, key );
+            insert++;
+            cb( ret );
+            break;
+        }
+    }
+}
+
 int BottomBar::KeyQuery( const char* prompt )
 {
     const auto len = strlen( prompt );

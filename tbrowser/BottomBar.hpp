@@ -1,6 +1,7 @@
 #ifndef __BOTTOMBAR_HPP__
 #define __BOTTOMBAR_HPP__
 
+#include <functional>
 #include <string>
 
 #include "View.hpp"
@@ -24,6 +25,7 @@ public:
     void Resize() const;
 
     std::string Query( const char* prompt, const char* entry = nullptr, bool filesystem = false );
+    std::string InteractiveQuery( const char* prompt, const std::function<void(const std::string&)>& cb, const char* entry = nullptr );
     int KeyQuery( const char* prompt );
     void Status( const char* status, int timeout = 2 );
     void SetHelp( HelpSet set );
