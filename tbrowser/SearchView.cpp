@@ -294,7 +294,8 @@ void SearchView::Reset( Archive& archive )
 
 void SearchView::FillPreview( int idx )
 {
-    auto msg = std::string( m_archive->GetMessage( m_result.results[idx].postid, m_eb ) );
+    const auto& res = m_result.results[idx];
+    auto msg = std::string( m_archive->GetMessage( res.postid, m_eb ) );
     auto lower = msg;
     std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
 
