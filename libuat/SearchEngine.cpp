@@ -247,18 +247,9 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                             words.emplace_back( res2 );
                             wordset.emplace( res2 );
                             const auto dist = data >> 30;
-                            switch( dist )
-                            {
-                            case 1:
-                                wordMod.emplace_back( 0.5f );
-                                break;
-                            case 2:
-                                wordMod.emplace_back( 0.25f );
-                                break;
-                            default:    // 3
-                                wordMod.emplace_back( 0.125f );
-                                break;
-                            }
+                            assert( dist >= 0 && dist <= 3 );
+                            static const float DistMod[] = { 0.125f, 0.5f, 0.25f, 0.125f };
+                            wordMod.emplace_back( DistMod[dist] );
                             matched.emplace_back( word );
                         }
                     }
