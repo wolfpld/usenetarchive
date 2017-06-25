@@ -198,9 +198,16 @@ static float GetWordDistance( const std::vector<PostData*>& list )
     return min;
 }
 
-static SearchResult PrepareResults( uint32_t postid, float rank )
+static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize, const uint8_t* hitdata )
 {
-    return SearchResult { postid, rank };
+    SearchResult ret;
+    const auto num = std::min<int>( hitsize, SearchResultMaxHits );
+    ret.postid = postid;
+    ret.rank = rank;
+    ret.hitnum = num;
+    memcpy( ret.hits, hitdata, num );
+    for( int i=0; i<num-1; i++ ) assert( LexiconHitRank( i ) >= LexiconHitRank( i+1 ) );
+    return ret;
 }
 
 SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
@@ -323,7 +330,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         result.reserve( wdata[0].size() );
         for( auto& v : wdata[0] )
         {
-            result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ) ) );
+            // hits are already sorted
+            result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum, v.hits ) );
         }
     }
     else if( flags & SF_RequireAllWords )
@@ -362,7 +370,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 {
                     rank /= GetWordDistance( list );
                 }
-                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ) ) );
+                // only used in threadify, no need to output hit data
+                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr ) );
             }
         }
     }
@@ -407,7 +416,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 }
                 rank /= GetWordDistance( list );
             }
-            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ) ) );
+            // TODO
+            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), 0, nullptr ) );
         }
     }
     if( result.empty() ) return ret;

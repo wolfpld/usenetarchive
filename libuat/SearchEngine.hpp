@@ -8,10 +8,14 @@
 
 class Archive;
 
+enum { SearchResultMaxHits = 7 };
+
 struct SearchResult
 {
     uint32_t postid;
     float rank;
+    uint8_t hitnum;
+    uint8_t hits[SearchResultMaxHits];
 };
 
 struct SearchData
