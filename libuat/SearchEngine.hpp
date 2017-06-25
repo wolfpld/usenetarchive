@@ -16,6 +16,7 @@ struct SearchResult
     float rank;
     uint8_t hitnum;
     uint8_t hits[SearchResultMaxHits];
+    uint32_t words[SearchResultMaxHits];
 };
 
 struct SearchData

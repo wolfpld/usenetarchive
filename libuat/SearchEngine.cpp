@@ -198,7 +198,7 @@ static float GetWordDistance( const std::vector<PostData*>& list )
     return min;
 }
 
-static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize, const uint8_t* hitdata )
+static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize, const uint8_t* hitdata, const uint32_t* words )
 {
     SearchResult ret;
     const auto num = std::min<int>( hitsize, SearchResultMaxHits );
@@ -207,6 +207,7 @@ static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize, co
     ret.hitnum = num;
     memcpy( ret.hits, hitdata, num );
     for( int i=0; i<num-1; i++ ) assert( LexiconHitRank( i ) >= LexiconHitRank( i+1 ) );
+    memcpy( ret.words, words, num * sizeof( uint32_t ) );
     return ret;
 }
 
@@ -327,11 +328,13 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     const auto wsize = wdata.size();
     if( wsize == 1 )
     {
+        uint32_t wordlist[SearchResultMaxHits];
+        std::fill( wordlist, wordlist + SearchResultMaxHits, words[0] );
         result.reserve( wdata[0].size() );
         for( auto& v : wdata[0] )
         {
             // hits are already sorted
-            result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum, v.hits ) );
+            result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum, v.hits, wordlist ) );
         }
     }
     else if( flags & SF_RequireAllWords )
@@ -371,7 +374,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                     rank /= GetWordDistance( list );
                 }
                 // only used in threadify, no need to output hit data
-                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr ) );
+                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr, nullptr ) );
             }
         }
     }
@@ -417,7 +420,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 rank /= GetWordDistance( list );
             }
             // TODO
-            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), 0, nullptr ) );
+            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), 0, nullptr, nullptr ) );
         }
     }
     if( result.empty() ) return ret;
