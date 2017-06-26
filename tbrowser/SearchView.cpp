@@ -359,12 +359,30 @@ void SearchView::FillPreview( int idx )
                     auto wptr = ptr;
                     while( strncmp( wptr, word.c_str(), word.size() ) != 0 ) wptr++;
 
+                    if( !preview.empty() )
+                    {
+                        preview.emplace_back( PreviewData { std::string( " -*-" ), 0, true  } );
+                    }
+
                     if( wptr != line )
                     {
                         preview.emplace_back( PreviewData { std::string( line, wptr ), QuoteFlags[htype-2], false } );
                     }
                     preview.emplace_back( PreviewData { word, COLOR_PAIR( 16 ) | A_BOLD, false } );
                     preview.emplace_back( PreviewData { std::string( wptr+word.size(), end ), QuoteFlags[htype-2], true } );
+
+                    for( int i=0; i<2; i++ )
+                    {
+                        if( *end == '\0' ) break;
+                        line = end + 1;
+                        end = line;
+                        while( *end != '\n' && *end != '\0' ) end++;
+                        if( end == line ) break;
+                        if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;
+                        auto ptr = line;
+                        const auto quotLevel = QuotationLevel( ptr, end );
+                        preview.emplace_back( PreviewData { std::string( line, end ), QuoteFlags[LexiconTypeFromQuotLevel( quotLevel )-2], true } );
+                    }
                     break;
                 }
                 else
