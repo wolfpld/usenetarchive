@@ -264,6 +264,7 @@
     <ClInclude Include="..\..\GalaxyWarp.hpp" />
     <ClInclude Include="..\..\HeaderBar.hpp" />
     <ClInclude Include="..\..\Help.hpp" />
+    <ClInclude Include="..\..\LevelColors.hpp" />
     <ClInclude Include="..\..\MessageView.hpp" />
     <ClInclude Include="..\..\SearchView.hpp" />
     <ClInclude Include="..\..\TextView.hpp" />

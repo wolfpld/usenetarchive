@@ -419,6 +419,9 @@
     <ClInclude Include="..\..\..\common\ICU.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\LevelColors.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -6,16 +6,9 @@
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
+#include "LevelColors.hpp"
 #include "MessageView.hpp"
 #include "UTF8.hpp"
-
-static const chtype QuoteFlags[] = {
-    COLOR_PAIR( 5 ),
-    COLOR_PAIR( 3 ),
-    COLOR_PAIR( 6 ) | A_BOLD,
-    COLOR_PAIR( 2 ),
-    COLOR_PAIR( 4 )
-};
 
 MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     : View( 0, 0, 1, 1 )
