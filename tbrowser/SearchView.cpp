@@ -8,9 +8,11 @@
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
 #include "../libuat/SearchEngine.hpp"
+#include "../common/MessageLogic.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
+#include "LevelColors.hpp"
 #include "SearchView.hpp"
 #include "UTF8.hpp"
 
@@ -241,22 +243,35 @@ void SearchView::Draw()
             {
                 FillPreview( cnt );
             }
-            const char* preview = m_preview[cnt].c_str();
-            for( int i=0; i<3; i++ )
+
+            auto preview = m_preview[cnt];
+            auto it = preview.begin();
+            while( it != preview.end() )
             {
-                if( !*preview || line == h ) break;
+                if( line == h ) break;
+
                 wmove( m_win, line+1, 0 );
                 wattron( m_win, frameCol );
                 waddch( m_win, ACS_VLINE );
                 wattroff( m_win, frameCol );
-                len = w - 3;
-                auto end = utfendl( preview, len );
-                if( *end )
+                int len = w - 3;
+
+                bool newline;
+                do
                 {
-                    while( *end != ' ' ) end--;
+                    int l = len;
+                    auto end = utfendl( it->text.c_str(), l );
+                    len -= l;
+
+                    wattron( m_win, it->color );
+                    utfprint( m_win, it->text.c_str(), end );
+                    wattroff( m_win, it->color );
+
+                    newline = it->newline;
+                    ++it;
                 }
-                utfprint( m_win, preview, end );
-                preview = end;
+                while( !newline );
+
                 wmove( m_win, line+1, w-1 );
                 wattron( m_win, frameCol );
                 waddch( m_win, ACS_VLINE );
@@ -294,6 +309,8 @@ void SearchView::Reset( Archive& archive )
 
 void SearchView::FillPreview( int idx )
 {
+    static const char terminator[] = { '\0' };
+
     const auto& res = m_result.results[idx];
     const auto& words = m_result.matched;
 
@@ -301,13 +318,102 @@ void SearchView::FillPreview( int idx )
     auto lower = msg;
     std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
 
-    std::vector<size_t> tpos;
+    auto content = msg.c_str();
+    // skip headers
+    for(;;)
+    {
+        if( *content == '\n' ) break;
+        while( *content++ != '\n' ) {}
+    }
+    content++;
+
+    m_preview.emplace_back();
+    auto& preview = m_preview.back();
+
+    std::vector<std::string> wordbuf;
+    std::vector<std::pair<size_t, size_t>> tpos;
+    for( int i=0; i<res.hitnum; i++ )
+    {
+        const auto htype = LexiconDecodeType( res.hits[i] );
+        if( htype == T_Signature || htype == T_Header ) continue;
+        const auto hpos = LexiconHitPos( res.hits[i] );
+        uint8_t max = LexiconHitPosMask[htype];
+        const char* word = words[res.words[i]];
+
+        int basePos = 0;
+        auto line = content;
+        for(;;)
+        {
+            auto end = line;
+            while( *end != '\n' && *end != '\0' ) end++;
+            if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
+            auto ptr = line;
+            const auto quotLevel = QuotationLevel( ptr, end );
+            if( LexiconTypeFromQuotLevel( quotLevel ) == htype )
+            {
+                while( ptr != end )
+                {
+                    auto wordend = ptr;
+                    while( wordend < end && *wordend != ' ' && *wordend != '\t' ) wordend++;
+
+                    auto wordlen = utflen( ptr, wordend );
+                    if( wordlen >= LexiconMinLen && wordlen <= LexiconMaxLen )
+                    {
+                        while( *ptr == '_' )
+                        {
+                            ptr++;
+                            wordlen--;
+                        }
+                        while( wordlen > 0 && *(ptr+wordlen-1) == '_' )
+                        {
+                            wordlen--;
+                        }
+                        if( wordlen > 2 )
+                        {
+                            if( basePos < max )
+                            {
+                                if( basePos == hpos )
+                                {
+                                    if( ptr - line > 0 )
+                                    {
+                                        preview.emplace_back( PreviewData { std::string( line, ptr ), QuoteFlags[htype-2], false } );
+                                    }
+                                    bool atend = wordend == end;
+                                    preview.emplace_back( PreviewData { std::string( ptr, wordend ), COLOR_PAIR( 1 ) | A_BOLD, atend } );
+                                    if( !atend )
+                                    {
+                                        preview.emplace_back( PreviewData { std::string( wordend, end ), QuoteFlags[htype-2], true } );
+                                    }
+                                    end = terminator;
+                                    break;
+                                }
+                                else
+                                {
+                                    basePos++;
+                                }
+                            }
+                            else
+                            {
+                                // TODO;
+                                end = terminator;
+                                break;
+                            }
+                        }
+                    }
+                    ptr = wordend;
+                    while( *ptr == ' ' || *ptr == '\t' ) ptr++;
+                }
+            }
+            if( *end == '\0' ) break;
+            line = end + 1;
+        }
+    }
+    /*
     for( auto& match : words )
     {
         size_t pos = 0;
         while( ( pos = lower.find( match, pos+1 ) ) != std::string::npos ) tpos.emplace_back( pos );
     }
-    std::sort( tpos.begin(), tpos.end() );
 
     std::vector<std::pair<size_t, size_t>> ranges;
     int stop = std::min<int>( 6, tpos.size() );
@@ -359,6 +465,7 @@ void SearchView::FillPreview( int idx )
     s << " ...";
 
     m_preview.emplace_back( s.str() );
+    */
 }
 
 void SearchView::MoveCursor( int offset )

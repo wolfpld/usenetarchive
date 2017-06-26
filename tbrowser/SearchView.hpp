@@ -27,6 +27,13 @@ public:
     void Reset( Archive& archive );
 
 private:
+    struct PreviewData
+    {
+        std::string text;
+        chtype color;
+        bool newline;
+    };
+
     void FillPreview( int idx );
     void MoveCursor( int offset );
 
@@ -39,7 +46,7 @@ private:
     std::string m_query;
     float m_queryTime;
     SearchData m_result;
-    std::vector<std::string> m_preview;
+    std::vector<std::vector<PreviewData>> m_preview;
     bool m_active;
 
     int m_top, m_bottom;
