@@ -8,6 +8,7 @@
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
 #include "../libuat/SearchEngine.hpp"
+#include "../common/ICU.hpp"
 #include "../common/MessageLogic.hpp"
 
 #include "BottomBar.hpp"
@@ -338,7 +339,7 @@ void SearchView::FillPreview( int idx )
         if( htype == T_Signature || htype == T_Header ) continue;
         const auto hpos = LexiconHitPos( res.hits[i] );
         uint8_t max = LexiconHitPosMask[htype];
-        const char* word = words[res.words[i]];
+        if( hpos == max ) continue;
 
         int basePos = 0;
         auto line = content;
@@ -351,57 +352,32 @@ void SearchView::FillPreview( int idx )
             const auto quotLevel = QuotationLevel( ptr, end );
             if( LexiconTypeFromQuotLevel( quotLevel ) == htype )
             {
-                while( ptr != end )
+                SplitLine( ptr, end, wordbuf, false );
+                if( basePos + wordbuf.size() > hpos )
                 {
-                    auto wordend = ptr;
-                    while( wordend < end && *wordend != ' ' && *wordend != '\t' ) wordend++;
-
-                    auto wordlen = utflen( ptr, wordend );
-                    if( wordlen >= LexiconMinLen && wordlen <= LexiconMaxLen )
+                    if( ptr != line )
                     {
-                        while( *ptr == '_' )
-                        {
-                            ptr++;
-                            wordlen--;
-                        }
-                        while( wordlen > 0 && *(ptr+wordlen-1) == '_' )
-                        {
-                            wordlen--;
-                        }
-                        if( wordlen > 2 )
-                        {
-                            if( basePos < max )
-                            {
-                                if( basePos == hpos )
-                                {
-                                    if( ptr - line > 0 )
-                                    {
-                                        preview.emplace_back( PreviewData { std::string( line, ptr ), QuoteFlags[htype-2], false } );
-                                    }
-                                    bool atend = wordend == end;
-                                    preview.emplace_back( PreviewData { std::string( ptr, wordend ), COLOR_PAIR( 1 ) | A_BOLD, atend } );
-                                    if( !atend )
-                                    {
-                                        preview.emplace_back( PreviewData { std::string( wordend, end ), QuoteFlags[htype-2], true } );
-                                    }
-                                    end = terminator;
-                                    break;
-                                }
-                                else
-                                {
-                                    basePos++;
-                                }
-                            }
-                            else
-                            {
-                                // TODO;
-                                end = terminator;
-                                break;
-                            }
-                        }
+                        preview.emplace_back( PreviewData { std::string( line, ptr ), QuoteFlags[htype-2], false } );
                     }
-                    ptr = wordend;
-                    while( *ptr == ' ' || *ptr == '\t' ) ptr++;
+                    std::ostringstream s;
+                    int i;
+                    for( i=0; i<hpos-basePos; i++ )
+                    {
+                        s << wordbuf[i] << " ";
+                    }
+                    preview.emplace_back( PreviewData { s.str(), QuoteFlags[htype-2], false } );
+                    preview.emplace_back( PreviewData { wordbuf[i++], COLOR_PAIR( 16 ) | A_BOLD, false } );
+                    s.str( "" );
+                    while( i < wordbuf.size() )
+                    {
+                        s << " " << wordbuf[i++];
+                    }
+                    preview.emplace_back( PreviewData { s.str(), QuoteFlags[htype-2], true } );
+                    break;
+                }
+                else
+                {
+                    basePos += wordbuf.size();
                 }
             }
             if( *end == '\0' ) break;

@@ -97,6 +97,7 @@ int main( int argc, char** argv )
     init_pair( 13, COLOR_MAGENTA, COLOR_BLUE );
     init_pair( 14, COLOR_GREEN, COLOR_BLUE );
     init_pair( 15, COLOR_YELLOW, COLOR_BLUE );
+    init_pair( 16, COLOR_WHITE, COLOR_RED );
 
     Browser browser( std::move( archive ), storage, galaxy.get(), lastOpen );
     browser.Entry();
