@@ -355,24 +355,16 @@ void SearchView::FillPreview( int idx )
                 SplitLine( ptr, end, wordbuf, false );
                 if( basePos + wordbuf.size() > hpos )
                 {
-                    if( ptr != line )
+                    const auto& word = wordbuf[hpos - basePos];
+                    auto wptr = ptr;
+                    while( strncmp( wptr, word.c_str(), word.size() ) != 0 ) wptr++;
+
+                    if( wptr != line )
                     {
-                        preview.emplace_back( PreviewData { std::string( line, ptr ), QuoteFlags[htype-2], false } );
+                        preview.emplace_back( PreviewData { std::string( line, wptr ), QuoteFlags[htype-2], false } );
                     }
-                    std::ostringstream s;
-                    int i;
-                    for( i=0; i<hpos-basePos; i++ )
-                    {
-                        s << wordbuf[i] << " ";
-                    }
-                    preview.emplace_back( PreviewData { s.str(), QuoteFlags[htype-2], false } );
-                    preview.emplace_back( PreviewData { wordbuf[i++], COLOR_PAIR( 16 ) | A_BOLD, false } );
-                    s.str( "" );
-                    while( i < wordbuf.size() )
-                    {
-                        s << " " << wordbuf[i++];
-                    }
-                    preview.emplace_back( PreviewData { s.str(), QuoteFlags[htype-2], true } );
+                    preview.emplace_back( PreviewData { word, COLOR_PAIR( 16 ) | A_BOLD, false } );
+                    preview.emplace_back( PreviewData { std::string( wptr+word.size(), end ), QuoteFlags[htype-2], true } );
                     break;
                 }
                 else
