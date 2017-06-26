@@ -4,6 +4,6 @@
 #include <string>
 #include <vector>
 
-void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out );
+void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower = true );
 
 #endif

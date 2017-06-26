@@ -8,18 +8,29 @@
 UErrorCode wordItErr = U_ZERO_ERROR;
 auto wordIt = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), wordItErr );
 
-void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out )
+void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
     out.clear();
     auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
-    auto lower = us.toLower( icu::Locale::getEnglish() );
+    icu_58::UnicodeString lower;
 
-    wordIt->setText( lower );
+    if( toLower )
+    {
+        lower = us.toLower( icu::Locale::getEnglish() );
+        wordIt->setText( lower );
+    }
+    else
+    {
+        wordIt->setText( us );
+    }
+
+    icu_58::UnicodeString& data = toLower ? lower : us;
+
     int32_t p0 = 0;
     int32_t p1 = wordIt->first();
     while( p1 != icu::BreakIterator::DONE )
     {
-        auto part = lower.tempSubStringBetween( p0, p1 );
+        auto part = data.tempSubStringBetween( p0, p1 );
         auto len = part.length();
         if( len >= LexiconMinLen && len <= LexiconMaxLen )
         {
