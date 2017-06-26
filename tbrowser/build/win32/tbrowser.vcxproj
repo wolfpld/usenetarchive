@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
+    <ClCompile Include="..\..\..\common\ICU.cpp" />
     <ClCompile Include="..\..\..\common\KillRe.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\HashSearch.hpp" />
     <ClInclude Include="..\..\..\common\HashSearchBig.hpp" />
+    <ClInclude Include="..\..\..\common\ICU.hpp" />
     <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
     <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
@@ -269,7 +271,17 @@
     <ClInclude Include="..\..\UTF8.hpp" />
     <ClInclude Include="..\..\View.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets" Condition="Exists('packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets'))" />
+  </Target>
 </Project>

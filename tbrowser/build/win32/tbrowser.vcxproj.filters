@@ -264,6 +264,9 @@
     <ClCompile Include="..\..\..\libuat\SearchEngine.cpp">
       <Filter>libuat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\ICU.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -413,5 +416,11 @@
     <ClInclude Include="..\..\..\libuat\SearchEngine.hpp">
       <Filter>libuat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\ICU.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
