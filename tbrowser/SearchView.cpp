@@ -332,7 +332,6 @@ void SearchView::FillPreview( int idx )
     auto& preview = m_preview.back();
 
     std::vector<std::string> wordbuf;
-    std::vector<std::pair<size_t, size_t>> tpos;
     for( int i=0; i<res.hitnum; i++ )
     {
         const auto htype = LexiconDecodeType( res.hits[i] );
@@ -394,64 +393,6 @@ void SearchView::FillPreview( int idx )
             line = end + 1;
         }
     }
-    /*
-    for( auto& match : words )
-    {
-        size_t pos = 0;
-        while( ( pos = lower.find( match, pos+1 ) ) != std::string::npos ) tpos.emplace_back( pos );
-    }
-
-    std::vector<std::pair<size_t, size_t>> ranges;
-    int stop = std::min<int>( 6, tpos.size() );
-    for( int i=0; i<stop; i++ )
-    {
-        size_t start = tpos[i];
-        for( int j=0; j<10; j++ )
-        {
-            if( start == 0 ) break;
-            start--;
-            while( start > 0 && msg[start] != ' ' && msg[start] != '\n' ) start--;
-        }
-        size_t end = tpos[i];
-        for( int j=0; j<10; j++ )
-        {
-            if( end == msg.size() ) break;
-            end++;
-            while( end < msg.size() && msg[end] != ' ' && msg[end] != '\n' ) end++;
-        }
-        ranges.emplace_back( start, end );
-    }
-
-    for( int i=ranges.size()-1; i>0; i-- )
-    {
-        if( ranges[i].first <= ranges[i-1].second )
-        {
-            ranges[i-1].second = ranges[i].second;
-            ranges.erase( ranges.begin() + i );
-        }
-    }
-
-    std::ostringstream s;
-    for( auto& v : ranges )
-    {
-        s << " ...";
-        for( size_t i = v.first; i<v.second; i++ )
-        {
-            switch( msg[i] )
-            {
-            case '\n':
-                s.put( ' ' );
-                break;
-            default:
-                s.put( msg[i] );
-                break;
-            }
-        }
-    }
-    s << " ...";
-
-    m_preview.emplace_back( s.str() );
-    */
 }
 
 void SearchView::MoveCursor( int offset )
