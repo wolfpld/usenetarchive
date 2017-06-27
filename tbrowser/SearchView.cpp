@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <chrono>
 #include <ctype.h>
+#include <map>
 #include <sstream>
 #include <vector>
 
@@ -310,8 +311,6 @@ void SearchView::Reset( Archive& archive )
 
 void SearchView::FillPreview( int idx )
 {
-    static const char terminator[] = { '\0' };
-
     const auto& res = m_result.results[idx];
     const auto& words = m_result.matched;
 
@@ -325,8 +324,21 @@ void SearchView::FillPreview( int idx )
     }
     content++;
 
-    m_preview.emplace_back();
-    auto& preview = m_preview.back();
+    std::vector<std::vector<std::pair<const char*, const char*>>> wlmap;    // word-line map
+    std::vector<std::pair<const char*, const char*>> lines;  // start-end addresses of all lines
+    {
+        auto line = content;
+        for(;;)
+        {
+            auto end = line;
+            while( *end != '\n' && *end != '\0' ) end++;
+            if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
+            lines.emplace_back( line, end );
+            wlmap.emplace_back();
+            if( *end == '\0' ) break;
+            line = end + 1;
+        }
+    }
 
     std::vector<std::string> wordbuf;
     for( int i=0; i<res.hitnum; i++ )
@@ -338,12 +350,11 @@ void SearchView::FillPreview( int idx )
         if( hpos == max ) continue;
 
         int basePos = 0;
-        auto line = content;
-        for(;;)
+        for( int i=0; i<lines.size(); i++ )
         {
-            auto end = line;
-            while( *end != '\n' && *end != '\0' ) end++;
-            if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
+            auto line = lines[i].first;
+            auto end = lines[i].second;
+
             auto ptr = line;
             const auto quotLevel = QuotationLevel( ptr, end );
             if( LexiconTypeFromQuotLevel( quotLevel ) == htype )
@@ -354,31 +365,7 @@ void SearchView::FillPreview( int idx )
                     const auto& word = wordbuf[hpos - basePos];
                     auto wptr = ptr;
                     while( strncmp( wptr, word.c_str(), word.size() ) != 0 ) wptr++;
-
-                    if( !preview.empty() )
-                    {
-                        preview.emplace_back( PreviewData { std::string( " -*-" ), 0, true  } );
-                    }
-
-                    if( wptr != line )
-                    {
-                        preview.emplace_back( PreviewData { std::string( line, wptr ), QuoteFlags[htype-2], false } );
-                    }
-                    preview.emplace_back( PreviewData { word, COLOR_PAIR( 16 ) | A_BOLD, false } );
-                    preview.emplace_back( PreviewData { std::string( wptr+word.size(), end ), QuoteFlags[htype-2], true } );
-
-                    for( int i=0; i<2; i++ )
-                    {
-                        if( *end == '\0' ) break;
-                        line = end + 1;
-                        end = line;
-                        while( *end != '\n' && *end != '\0' ) end++;
-                        if( end == line ) break;
-                        if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;
-                        auto ptr = line;
-                        const auto quotLevel = QuotationLevel( ptr, end );
-                        preview.emplace_back( PreviewData { std::string( line, end ), QuoteFlags[LexiconTypeFromQuotLevel( quotLevel )-2], true } );
-                    }
+                    wlmap[i].emplace_back( wptr, wptr + word.size() );
                     break;
                 }
                 else
@@ -386,8 +373,40 @@ void SearchView::FillPreview( int idx )
                     basePos += wordbuf.size();
                 }
             }
-            if( *end == '\0' ) break;
-            line = end + 1;
+        }
+
+        for( auto& v : wlmap )
+        {
+            std::sort( v.begin(), v.end(), []( const auto& l, const auto& r ) { return l.first < l.first; } );
+        }
+
+        m_preview.emplace_back();
+        auto& preview = m_preview.back();
+
+        for( int i=0; i<lines.size(); i++ )
+        {
+            if( wlmap[i].size() == 0 ) continue;
+            auto ptr = lines[i].first;
+            auto end = lines[i].second;
+            auto tmp = ptr;
+            auto quotLevel = QuotationLevel( tmp, end );
+            auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
+            for( auto& v : wlmap[i] )
+            {
+                assert( v.first >= lines[i].first );
+                assert( v.first < lines[i].second );
+                assert( v.second > lines[i].first );
+                assert( v.second <= lines[i].second );
+                assert( v.first >= ptr );
+
+                if( v.first != ptr )
+                {
+                    preview.emplace_back( PreviewData { std::string( ptr, v.first ), color, false } );
+                }
+                preview.emplace_back( PreviewData { std::string( v.first, v.second ), COLOR_PAIR( 16 ) | A_BOLD, false } );
+                ptr = v.second;
+            }
+            preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
         }
     }
 }
