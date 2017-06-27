@@ -316,9 +316,6 @@ void SearchView::FillPreview( int idx )
     const auto& words = m_result.matched;
 
     auto msg = std::string( m_archive->GetMessage( res.postid, m_eb ) );
-    auto lower = msg;
-    std::transform( lower.begin(), lower.end(), lower.begin(), ::tolower );
-
     auto content = msg.c_str();
     // skip headers
     for(;;)
