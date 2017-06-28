@@ -374,61 +374,61 @@ void SearchView::FillPreview( int idx )
                 }
             }
         }
+    }
 
-        for( auto& v : wlmap )
+    for( auto& v : wlmap )
+    {
+        std::sort( v.begin(), v.end(), []( const auto& l, const auto& r ) { return l.first < l.first; } );
+    }
+
+    m_preview.emplace_back();
+    auto& preview = m_preview.back();
+
+    int context = -1;
+    for( int i=0; i<lines.size(); i++ )
+    {
+        auto ptr = lines[i].first;
+        auto end = lines[i].second;
+
+        if( wlmap[i].size() == 0 )
         {
-            std::sort( v.begin(), v.end(), []( const auto& l, const auto& r ) { return l.first < l.first; } );
-        }
-
-        m_preview.emplace_back();
-        auto& preview = m_preview.back();
-
-        int context = -1;
-        for( int i=0; i<lines.size(); i++ )
-        {
-            auto ptr = lines[i].first;
-            auto end = lines[i].second;
-
-            if( wlmap[i].size() == 0 )
-            {
-                if( context <= 0 ) continue;
-
-                auto tmp = ptr;
-                auto quotLevel = QuotationLevel( tmp, end );
-                if( tmp == end ) continue;
-
-                auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
-                preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
-                context--;
-
-                continue;
-            }
-            if( context == 0 )
-            {
-                preview.emplace_back( PreviewData { std::string( " -*-" ), COLOR_PAIR( 8 ) | A_BOLD, true } );
-            }
-            context = 2;
+            if( context <= 0 ) continue;
 
             auto tmp = ptr;
             auto quotLevel = QuotationLevel( tmp, end );
-            auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
-            for( auto& v : wlmap[i] )
-            {
-                assert( v.first >= lines[i].first );
-                assert( v.first < lines[i].second );
-                assert( v.second > lines[i].first );
-                assert( v.second <= lines[i].second );
-                assert( v.first >= ptr );
+            if( tmp == end ) continue;
 
-                if( v.first != ptr )
-                {
-                    preview.emplace_back( PreviewData { std::string( ptr, v.first ), color, false } );
-                }
-                preview.emplace_back( PreviewData { std::string( v.first, v.second ), COLOR_PAIR( 16 ) | A_BOLD, false } );
-                ptr = v.second;
-            }
+            auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
             preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
+            context--;
+
+            continue;
         }
+        if( context == 0 )
+        {
+            preview.emplace_back( PreviewData { std::string( " -*-" ), COLOR_PAIR( 8 ) | A_BOLD, true } );
+        }
+        context = 2;
+
+        auto tmp = ptr;
+        auto quotLevel = QuotationLevel( tmp, end );
+        auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
+        for( auto& v : wlmap[i] )
+        {
+            assert( v.first >= lines[i].first );
+            assert( v.first < lines[i].second );
+            assert( v.second > lines[i].first );
+            assert( v.second <= lines[i].second );
+            assert( v.first >= ptr );
+
+            if( v.first != ptr )
+            {
+                preview.emplace_back( PreviewData { std::string( ptr, v.first ), color, false } );
+            }
+            preview.emplace_back( PreviewData { std::string( v.first, v.second ), COLOR_PAIR( 16 ) | A_BOLD, false } );
+            ptr = v.second;
+        }
+        preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
     }
 }
 
