@@ -35,3 +35,9 @@ const uint8_t LexiconHitPosMask[] = {
     0x0F,   // 0000 1111
     0x0F    // 0000 1111
 };
+
+
+static_assert( sizeof( LexiconNames ) / sizeof( const char* ) == NUM_LEXICON_TYPES, "Bad table size" );
+static_assert( sizeof( LexiconWeights ) / sizeof( float ) == NUM_LEXICON_TYPES, "Bad table size" );
+static_assert( sizeof( LexiconHitTypeEncoding ) / sizeof( uint8_t ) == NUM_LEXICON_TYPES, "Bad table size" );
+static_assert( sizeof( LexiconHitPosMask ) / sizeof( uint8_t ) == NUM_LEXICON_TYPES, "Bad table size" );
