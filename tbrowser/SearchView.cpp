@@ -389,6 +389,7 @@ void SearchView::FillPreview( int idx )
     m_preview.emplace_back();
     auto& preview = m_preview.back();
 
+    int dist = 3;
     int context = -1;
     for( int i=0; i<lines.size(); i++ )
     {
@@ -397,6 +398,7 @@ void SearchView::FillPreview( int idx )
 
         if( wlmap[i].size() == 0 )
         {
+            dist++;
             if( context <= 0 ) continue;
 
             auto tmp = ptr;
@@ -413,6 +415,16 @@ void SearchView::FillPreview( int idx )
             preview.emplace_back( PreviewData { std::string( " -*-" ), COLOR_PAIR( 8 ) | A_BOLD, true } );
         }
         context = 2;
+        if( dist > context && i > 0 )
+        {
+            auto ptr = lines[i-1].first;
+            auto end = lines[i-1].second;
+            auto tmp = ptr;
+            auto quotLevel = QuotationLevel( tmp, end );
+            auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
+            preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
+        }
+        dist = 0;
 
         auto tmp = ptr;
         auto quotLevel = QuotationLevel( tmp, end );
