@@ -65,7 +65,8 @@ static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, i
         auto it = data.find( w );
         if( it == data.end() )
         {
-            data.emplace( std::move( w ), spp::sparse_hash_map<uint32_t, std::vector<uint8_t>> { std::make_pair( idx, std::vector<uint8_t> { uint8_t( enc | std::min<uint8_t>( max, basePos++ ) ) } ) } );
+            uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
+            data.emplace( std::move( w ), spp::sparse_hash_map<uint32_t, std::vector<uint8_t>> { std::make_pair( idx, std::vector<uint8_t> { hit } ) } );
         }
         else
         {
