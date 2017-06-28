@@ -109,7 +109,7 @@ int main( int argc, char** argv )
 
         bool headers = true;
         bool signature = false;
-        int basePos[5] = {};
+        int basePos[NUM_LEXICON_TYPES] = {};
 
         int children = conn[i][2] - 1;
         children = std::min<uint32_t>( MaxChildren, children );
