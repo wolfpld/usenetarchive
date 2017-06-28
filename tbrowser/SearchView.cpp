@@ -333,8 +333,13 @@ void SearchView::FillPreview( int idx )
             auto end = line;
             while( *end != '\n' && *end != '\0' ) end++;
             if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
-            lines.emplace_back( line, end );
-            wlmap.emplace_back();
+            auto tmp = line;
+            QuotationLevel( tmp, end ); // just walk tmp pointer
+            if( tmp != end )
+            {
+                lines.emplace_back( line, end );
+                wlmap.emplace_back();
+            }
             if( *end == '\0' ) break;
             line = end + 1;
         }
@@ -396,7 +401,6 @@ void SearchView::FillPreview( int idx )
 
             auto tmp = ptr;
             auto quotLevel = QuotationLevel( tmp, end );
-            if( tmp == end ) continue;
 
             auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
             preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
