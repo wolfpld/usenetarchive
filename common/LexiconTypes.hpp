@@ -11,6 +11,7 @@ enum LexiconType
     T_Quote2,
     T_Quote3,
     T_Header,
+    T_Wrote,
     NUM_LEXICON_TYPES
 };
 
@@ -46,7 +47,7 @@ static inline LexiconType LexiconDecodeType( uint8_t v )
         return T_Quote3;
     case 0x60:
     default:
-        return (v&0x10) == 0 ? T_Signature : T_Header;
+        return (v&0x10) == 0 ? T_Signature : ( (v&0x08) == 0 ? T_Header : T_Wrote );
     }
 }
 
