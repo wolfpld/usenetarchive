@@ -136,6 +136,8 @@ int main( int argc, char** argv )
                 if( *end == '\n' )
                 {
                     headers = false;
+                    while( *end == '\n' ) end++;
+                    post = end;
                     continue;
                 }
                 while( *end != ':' ) end++;
