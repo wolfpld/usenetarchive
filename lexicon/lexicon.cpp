@@ -73,8 +73,19 @@ static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, i
             auto& vec = it->second[idx];
             if( vec.size() < std::numeric_limits<uint8_t>::max() )
             {
-                uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
-                vec.emplace_back( hit );
+                if( basePos < max )
+                {
+                    uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
+                    vec.emplace_back( hit );
+                }
+                else
+                {
+                    uint8_t hit = enc | max;
+                    if( std::find( vec.begin(), vec.end(), hit ) == vec.end() )
+                    {
+                        vec.emplace_back( hit );
+                    }
+                }
             }
         }
     }
