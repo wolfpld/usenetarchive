@@ -118,31 +118,44 @@ bool ValidateMsgId( const char* begin, const char* end, char* dst )
 }
 
 // Returns number of lines in "wrote" context
-//   { content, quote } -> one line of context
-//   { content, content with "wrote:", quote } -> two lines of context
-//   anything else -> zero lines of context
 int DetectWrote( const char* ptr )
 {
+    // First line must be T_Content
+    while( *ptr == '\n' || *ptr == ' ' || *ptr == '\t' ) ptr++;
     auto end = ptr;
     while( *end != '\n' && *end != '\0' ) end++;
     if( *end == '\0' ) return 0;
     if( QuotationLevel( ptr, end ) != 0 ) return 0;
-    while( *end == '\n' ) end++;
+
+    // If second line is T_Quote -> wrote context
+    while( *end == '\n' || *end == ' ' || *end == '\t' ) end++;
     ptr = end;
     while( *end != '\n' && *end != '\0' ) end++;
     if( *end == '\0' ) return 0;
     if( QuotationLevel( ptr, end ) != 0 ) return 1;
-    bool found = false;
-    while( ptr < end - 6 )
+
+    // Check for typical "wrote:" markers
+    auto e = end - 1;
+    while( e > ptr && *e == ' ' || *e == '\t') e--;
+    e++;
+    if( e - ptr >= 1 )
     {
-        if( strncmp( ptr++, "wrote:", 6 ) == 0 )
-        {
-            found = true;
-            break;
-        }
+        if( *(e-1) == ':' ) goto found;     // "something something wrote:"
     }
-    if( !found ) return 0;
-    while( *end == '\n' ) end++;
+    if( e - ptr >= 2 )
+    {
+        if( *ptr == '[' && *(e-1) == ']' ) goto found;      // "[cut content]"
+        if( *ptr == '<' && *(e-1) == '>' ) goto found;      // "<cut content>"
+    }
+    if( e - ptr >= 3 )
+    {
+        if( strncmp( e - 3, "...", 3 ) == 0 ) goto found;   // "something something wrote..."
+    }
+    return 0;
+
+found:
+    // But only if next line is T_Quote
+    while( *end == '\n' || *end == ' ' || *end == '\t' ) end++;
     ptr = end;
     while( *end != '\n' && *end != '\0' ) end++;
     if( *end == '\0' ) return 0;
