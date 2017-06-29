@@ -324,8 +324,11 @@ void SearchView::FillPreview( int idx )
     }
     content++;
 
+    int wrote = DetectWrote( content );
+
     std::vector<std::vector<std::pair<const char*, const char*>>> wlmap;    // word-line map
     std::vector<std::pair<const char*, const char*>> lines;  // start-end addresses of all lines
+    std::vector<LexiconType> linetype;
     {
         auto line = content;
         for(;;)
@@ -334,11 +337,21 @@ void SearchView::FillPreview( int idx )
             while( *end != '\n' && *end != '\0' ) end++;
             if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
             auto tmp = line;
-            QuotationLevel( tmp, end ); // just walk tmp pointer
+            const auto quotLevel = QuotationLevel( tmp, end );
+            assert( wrote <= 0 || quotLevel == 0 );
             if( tmp != end )
             {
                 lines.emplace_back( line, end );
                 wlmap.emplace_back();
+                if( wrote > 0 )
+                {
+                    linetype.emplace_back( T_Wrote );
+                    wrote--;
+                }
+                else
+                {
+                    linetype.emplace_back( LexiconTypeFromQuotLevel( quotLevel ) );
+                }
             }
             if( *end == '\0' ) break;
             line = end + 1;
@@ -361,8 +374,8 @@ void SearchView::FillPreview( int idx )
             auto end = lines[i].second;
 
             auto ptr = line;
-            const auto quotLevel = QuotationLevel( ptr, end );
-            if( LexiconTypeFromQuotLevel( quotLevel ) == htype )
+            QuotationLevel( ptr, end ); // just to walk ptr
+            if( linetype[i] == htype )
             {
                 SplitLine( ptr, end, wordbuf, false );
                 if( basePos + wordbuf.size() > hpos )
