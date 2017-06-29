@@ -369,7 +369,12 @@ void SearchView::FillPreview( int idx )
                 {
                     const auto& word = wordbuf[hpos - basePos];
                     auto wptr = ptr;
-                    while( strncmp( wptr, word.c_str(), word.size() ) != 0 ) wptr++;
+                    for(;;)
+                    {
+                        while( strncmp( wptr, word.c_str(), word.size() ) != 0 ) wptr++;
+                        if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
+                        wptr++;
+                    }
                     wlmap[i].emplace_back( wptr, wptr + word.size() );
                     break;
                 }
