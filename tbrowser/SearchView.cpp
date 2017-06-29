@@ -384,7 +384,11 @@ void SearchView::FillPreview( int idx )
                     auto wptr = ptr;
                     for(;;)
                     {
-                        while( strncmp( wptr, word.c_str(), word.size() ) != 0 ) wptr++;
+                        while( strncmp( wptr, word.c_str(), word.size() ) != 0 )
+                        {
+                            wptr++;
+                            assert( wptr <= end - word.size() );
+                        }
                         if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
                         wptr++;
                     }
