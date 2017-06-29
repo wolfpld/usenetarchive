@@ -12,4 +12,6 @@ const char* FindReferences( const char* msg );
 int ValidateReferences( const char*& buf );
 bool ValidateMsgId( const char* begin, const char* end, char* dst );
 
+int DetectWrote( const char* ptr );
+
 #endif

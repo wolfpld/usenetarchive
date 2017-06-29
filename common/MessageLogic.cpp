@@ -116,3 +116,36 @@ bool ValidateMsgId( const char* begin, const char* end, char* dst )
     *dst++ = '\0';
     return broken;
 }
+
+// Returns number of lines in "wrote" context
+//   { content, quote } -> one line of context
+//   { content, content with "wrote:", quote } -> two lines of context
+//   anything else -> zero lines of context
+int DetectWrote( const char* ptr )
+{
+    auto end = ptr;
+    while( *end != '\n' && *end != '\0' ) end++;
+    if( *end == '\0' ) return 0;
+    if( QuotationLevel( ptr, end ) != 0 ) return 0;
+    while( *end == '\n' ) end++;
+    ptr = end;
+    while( *end != '\n' && *end != '\0' ) end++;
+    if( *end == '\0' ) return 0;
+    if( QuotationLevel( ptr, end ) != 0 ) return 1;
+    bool found = false;
+    while( ptr < end - 6 )
+    {
+        if( strncmp( ptr++, "wrote:", 6 ) == 0 )
+        {
+            found = true;
+            break;
+        }
+    }
+    if( !found ) return 0;
+    while( *end == '\n' ) end++;
+    ptr = end;
+    while( *end != '\n' && *end != '\0' ) end++;
+    if( *end == '\0' ) return 0;
+    if( QuotationLevel( ptr, end ) != 0 ) return 2;
+    return 0;
+}
