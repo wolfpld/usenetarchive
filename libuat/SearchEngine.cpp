@@ -392,37 +392,57 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             uint32_t word;
             PostData* data;
         };
-        std::unordered_map<uint32_t, std::vector<Posts>> posts;
+
+        int count = 0;
+        for( uint32_t word = 0; word < wsize; word++ )
+        {
+            count += wdata[word].size();
+        }
+
+        std::unordered_map<uint32_t, uint32_t> index;
+        std::vector<uint32_t> pnum( count );
+        std::vector<uint32_t> postid( count );
+        std::vector<Posts> pdata( count * wsize );
+
+        int next = 0;
         for( uint32_t word = 0; word < wsize; word++ )
         {
             for( auto& post : wdata[word] )
             {
                 auto pidx = post.postid;
-                auto it = posts.find( pidx );
-                if( it == posts.end() )
+                auto it = index.find( pidx );
+                int idx;
+                if( it == index.end() )
                 {
-                    posts.emplace( pidx, std::vector<Posts>( { Posts { word, &post } } ) );
+                    index.emplace( pidx, next );
+                    idx = next++;
+                    pnum[idx] = 0;
+                    postid[idx] = pidx;
                 }
                 else
                 {
-                    it->second.emplace_back( Posts { word, &post } );
+                    idx = it->second;
                 }
+                pdata[idx*wsize + pnum[idx]] = Posts { word, &post };
+                pnum[idx]++;
             }
         }
+
         std::vector<PostData*> list;
         std::vector<uint8_t> hits;
         std::vector<uint32_t> wordlist;
         std::vector<uint32_t> idx;
-        result.reserve( posts.size() );
-        for( auto& entry : posts )
+        result.reserve( next );
+        for( int k=0; k<next; k++ )
         {
             hits.clear();
             wordlist.clear();
             idx.clear();
 
             float rank = 0;
-            for( auto& v : entry.second )
+            for( int m=0; m<pnum[k]; m++ )
             {
+                auto& v = pdata[k*wsize + m];
                 rank += HitRank( *v.data ) * wordMod[v.word];
                 for( int i=0; i<v.data->hitnum; i++ )
                 {
@@ -432,13 +452,13 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             }
             if( flags & SF_AdjacentWords )
             {
-                if( entry.second.size() != 1 )
+                if( pnum[k] != 1 )
                 {
                     list.clear();
-                    list.reserve( entry.second.size() );
-                    for( auto& v : entry.second )
+                    list.reserve( pnum[k] );
+                    for( int m=0; m<pnum[k]; m++ )
                     {
-                        list.emplace_back( v.data );
+                        list.emplace_back( pdata[k*wsize + m].data );
                     }
                     rank /= GetWordDistance( list );
                 }
@@ -467,7 +487,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 wdata[i] = wordlist[idx[i]];
             }
 
-            result.emplace_back( PrepareResults( entry.first, rank * PostRank( *entry.second[0].data ), n, hdata, wdata ) );
+            result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n, hdata, wdata ) );
         }
     }
     if( result.empty() ) return ret;
