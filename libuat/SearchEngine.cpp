@@ -449,7 +449,10 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 idx.emplace_back( i );
             }
 
-            std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
+            if( idx.size() > 1 )
+            {
+                std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
+            }
 
             uint8_t hdata[SearchResultMaxHits];
             uint32_t wdata[SearchResultMaxHits];
