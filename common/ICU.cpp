@@ -68,3 +68,12 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
         p1 = wordIt->next();
     }
 }
+
+std::string ToLower( const char* ptr, const char* end )
+{
+    std::string ret;
+    auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
+    icu_58::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
+    lower.toUTF8String( ret );
+    return ret;
+}
