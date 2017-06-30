@@ -30,12 +30,6 @@ void Sort( std::vector<uint32_t>& vec, const Message* msg )
     std::sort( vec.begin(), vec.end(), [msg]( const uint32_t l, const uint32_t r ) { return msg[l].epoch < msg[r].epoch; } );
 }
 
-static const char* WroteList[] = {
-    "wrote",
-    u8"napisa\u0142",
-    nullptr
-};
-
 uint32_t* root;
 Message* msgdata;
 
@@ -184,23 +178,8 @@ int main( int argc, char** argv )
                 int quotLevel = QuotationLevel( line, end );
                 if( line != end && quotLevel == 1 )
                 {
-                    bool ok = true;
-                    if( !wroteDone )
-                    {
-                        std::string test( line, end );
-                        auto ptr = WroteList;
-                        while( *ptr )
-                        {
-                            if( test.find( *ptr ) != std::string::npos )
-                            {
-                                wroteDone = true;
-                                ok = false;
-                                break;
-                            }
-                            ptr++;
-                        }
-                    }
-                    if( ok )
+                    auto wrote = DetectWroteEnd( line, 1 );
+                    if( wrote == line )
                     {
                         SplitLine( line, end, wordbuf );
                         if( !wordbuf.empty() )
@@ -217,6 +196,11 @@ int main( int argc, char** argv )
                             }
                             wordbuf.clear();
                         }
+                    }
+                    else
+                    {
+                        end = wrote;
+                        while( *end != '\n' ) end--;
                     }
                 }
                 if( *end == '\0' ) break;

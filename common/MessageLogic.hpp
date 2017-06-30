@@ -13,5 +13,6 @@ int ValidateReferences( const char*& buf );
 bool ValidateMsgId( const char* begin, const char* end, char* dst );
 
 int DetectWrote( const char* ptr );
+const char* DetectWroteEnd( const char* ptr, int baseLevel );
 
 #endif

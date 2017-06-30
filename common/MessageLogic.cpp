@@ -164,3 +164,50 @@ found:
     if( QuotationLevel( ptr, end ) != 0 ) return 2;
     return 0;
 }
+
+const char* DetectWroteEnd( const char* ptr, int baseLevel )
+{
+    const char* orig = ptr;
+
+    // First line must be baseLevel
+    while( *ptr == '\n' || *ptr == ' ' || *ptr == '\t' ) ptr++;
+    auto end = ptr;
+    while( *end != '\n' && *end != '\0' ) end++;
+    if( *end == '\0' ) return orig;
+    if( QuotationLevel( ptr, end ) != baseLevel ) return orig;
+
+    // If second line is baseLevel+1 -> wrote context
+    while( *end == '\n' || *end == ' ' || *end == '\t' ) end++;
+    ptr = end;
+    while( *end != '\n' && *end != '\0' ) end++;
+    if( *end == '\0' ) return orig;
+    if( QuotationLevel( ptr, end ) == baseLevel+1 ) return ptr;
+
+    // Check for typical "wrote:" markers
+    auto e = end - 1;
+    while( e > ptr && *e == ' ' || *e == '\t') e--;
+    e++;
+    if( e - ptr >= 1 )
+    {
+        if( *(e-1) == ':' ) goto found;     // "something something wrote:"
+    }
+    if( e - ptr >= 2 )
+    {
+        if( *ptr == '[' && *(e-1) == ']' ) goto found;      // "[cut content]"
+        if( *ptr == '<' && *(e-1) == '>' ) goto found;      // "<cut content>"
+    }
+    if( e - ptr >= 3 )
+    {
+        if( strncmp( e - 3, "...", 3 ) == 0 ) goto found;   // "something something wrote..."
+    }
+    return orig;
+
+found:
+    // But only if next line is baseLevel+1
+    while( *end == '\n' || *end == ' ' || *end == '\t' ) end++;
+    ptr = end;
+    while( *end != '\n' && *end != '\0' ) end++;
+    if( *end == '\0' ) return orig;
+    if( QuotationLevel( ptr, end ) == baseLevel+1 ) return ptr;
+    return orig;
+}
