@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "MessageLogic.hpp"
 #include "String.hpp"
 
