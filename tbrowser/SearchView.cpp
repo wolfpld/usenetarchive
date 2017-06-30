@@ -359,13 +359,12 @@ void SearchView::FillPreview( int idx )
     }
 
     std::vector<std::string> wordbuf;
-    for( int i=0; i<res.hitnum; i++ )
+    for( int h=0; h<res.hitnum; h++ )
     {
-        const auto htype = LexiconDecodeType( res.hits[i] );
+        const auto htype = LexiconDecodeType( res.hits[h] );
         if( htype == T_Signature || htype == T_Header ) continue;
-        const auto hpos = LexiconHitPos( res.hits[i] );
+        const auto hpos = LexiconHitPos( res.hits[h] );
         uint8_t max = LexiconHitPosMask[htype];
-        if( hpos == max ) continue;
 
         int basePos = 0;
         for( int i=0; i<lines.size(); i++ )
@@ -377,23 +376,59 @@ void SearchView::FillPreview( int idx )
             QuotationLevel( ptr, end ); // just to walk ptr
             if( linetype[i] == htype )
             {
-                SplitLine( ptr, end, wordbuf, false );
+                SplitLine( ptr, end, wordbuf, hpos == max );
                 if( basePos + wordbuf.size() > hpos )
                 {
-                    const auto& word = wordbuf[hpos - basePos];
                     auto wptr = ptr;
-                    for(;;)
+                    if( hpos < max )
                     {
-                        while( strncmp( wptr, word.c_str(), word.size() ) != 0 )
+                        const auto& word = wordbuf[hpos - basePos];
+                        for(;;)
                         {
+                            while( strncmp( wptr, word.c_str(), word.size() ) != 0 )
+                            {
+                                wptr++;
+                                assert( wptr <= end - word.size() );
+                            }
+                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
                             wptr++;
-                            assert( wptr <= end - word.size() );
                         }
-                        if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
-                        wptr++;
+                        wlmap[i].emplace_back( wptr, wptr + word.size() );
+                        break;
                     }
-                    wlmap[i].emplace_back( wptr, wptr + word.size() );
-                    break;
+                    else
+                    {
+                        const auto& word = m_result.matched[res.words[h]];
+                        const auto wlen = strlen( word );
+
+                        auto lower = ToLower( ptr, end );
+                        auto lptr = lower.c_str();
+                        auto lend = lptr + lower.size();
+                        auto lstart = lptr;
+
+                        bool next = false;
+                        for(;;)
+                        {
+                            while( strncmp( lptr, word, wlen ) != 0 )
+                            {
+                                lptr++;
+                                if( lptr > lend - wlen )
+                                {
+                                    next = true;
+                                    break;
+                                }
+                            }
+                            if( next ) break;
+                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [lptr] ( const auto& v ) { return v.first == lptr; } ) == wlmap[i].end() ) break;
+                            lptr++;
+                        }
+                        if( !next )
+                        {
+                            wptr = ptr + ( lptr - lstart );
+                            wlmap[i].emplace_back( wptr, wptr + wlen );
+                            break;
+                        }
+                    }
                 }
                 else
                 {
