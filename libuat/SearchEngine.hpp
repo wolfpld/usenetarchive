@@ -8,7 +8,7 @@
 
 class Archive;
 
-enum { SearchResultMaxHits = 7 };
+enum { SearchResultMaxHits = 4 };
 
 struct SearchResult
 {
