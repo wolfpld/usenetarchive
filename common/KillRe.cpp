@@ -1,21 +1,20 @@
+#include <ctype.h>
 #include <string>
 #include <vector>
 
 #include "KillRe.hpp"
 
 std::vector<std::string> ReList = {
-    "Re:",
-    "RE:",
     "re:",
-    "Odp:",
-    "Re[2]:",
-    "Re[3]:",
-    "Re[4]:",
-    "Re[5]:",
-    "Re[6]:",
-    "Re[7]:",
-    "Re[8]:",
-    "Re[9]:"
+    "odp:",
+    "re[2]:",
+    "re[3]:",
+    "re[4]:",
+    "re[5]:",
+    "re[6]:",
+    "re[7]:",
+    "re[8]:",
+    "re[9]:"
 };
 
 const char* KillRe( const char* str )
@@ -38,7 +37,7 @@ const char* KillRe( const char* str )
                     stop = true;
                     break;
                 }
-                if( str[idx] != matchstr[idx] ) break;
+                if( tolower( str[idx] ) != matchstr[idx] ) break;
                 idx++;
             }
             if( !stop )
