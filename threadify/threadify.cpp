@@ -178,7 +178,12 @@ int main( int argc, char** argv )
                 int quotLevel = QuotationLevel( line, end );
                 if( line != end && quotLevel == 1 )
                 {
-                    auto wrote = DetectWroteEnd( line, 1 );
+                    const char* wrote = line;
+                    if( !wroteDone )
+                    {
+                        wrote = DetectWroteEnd( line, 1 );
+                        wroteDone = true;
+                    }
                     if( wrote == line )
                     {
                         SplitLine( line, end, wordbuf );
