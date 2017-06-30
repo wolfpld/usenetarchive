@@ -139,7 +139,7 @@ int main( int argc, char** argv )
     printf( "\nMatching messages...\n" );
 
     std::vector<std::string> wordbuf;
-    int cntnew = 0, cntsure = 0, cntgood = 0, cntbad = 0;
+    int cntnew = 0, cntsure = 0, cntbad = 0;
     std::vector<std::pair<uint32_t, uint32_t>> found;
     std::map<uint32_t, float> hits;
     ExpandingBuffer eb;
@@ -317,7 +317,7 @@ int main( int argc, char** argv )
         fclose( cmeta );
     }
 
-    printf( "\nFound %i new threads.\nSurely matched %i messages (same thread line), also %i good and %i guesses.\n", cntnew, cntsure, cntgood, cntbad );
+    printf( "\nFound %i new threads.\nSurely matched %i messages (same subject line). %i wrong guesses.\n", cntnew, cntsure, cntbad );
 
     return 0;
 }
