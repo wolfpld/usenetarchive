@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <unordered_map>
 #include <unordered_set>
 
 #include "Archive.hpp"
@@ -399,7 +398,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             count += wdata[word].size();
         }
 
-        std::unordered_map<uint32_t, uint32_t> index;
+        std::vector<int32_t> index( m_archive.NumberOfMessages() );
+        memset( index.data(), 0xFF, sizeof( uint32_t ) * m_archive.NumberOfMessages() );
         std::vector<uint32_t> pnum( count );
         std::vector<uint32_t> postid( count );
         std::vector<Posts> pdata( count * wsize );
@@ -410,18 +410,17 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             for( auto& post : wdata[word] )
             {
                 auto pidx = post.postid;
-                auto it = index.find( pidx );
                 int idx;
-                if( it == index.end() )
+                if( index[pidx] == -1 )
                 {
-                    index.emplace( pidx, next );
+                    index[pidx] = next;
                     idx = next++;
                     pnum[idx] = 0;
                     postid[idx] = pidx;
                 }
                 else
                 {
-                    idx = it->second;
+                    idx = index[pidx];
                 }
                 pdata[idx*wsize + pnum[idx]] = Posts { word, &post };
                 pnum[idx]++;
