@@ -340,6 +340,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         std::vector<PostData*> list;
         list.reserve( words.size() );
+        result.reserve( wdata[0].size() );
 
         auto& vec = *wdata.begin();
         for( auto& post : vec )
@@ -412,6 +413,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         std::vector<uint8_t> hits;
         std::vector<uint32_t> wordlist;
         std::vector<uint32_t> idx;
+        result.reserve( posts.size() );
         for( auto& entry : posts )
         {
             hits.clear();
