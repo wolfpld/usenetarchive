@@ -435,6 +435,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 if( entry.second.size() != 1 )
                 {
                     list.clear();
+                    list.reserve( entry.second.size() );
                     for( auto& v : entry.second )
                     {
                         list.emplace_back( v.data );
@@ -446,6 +447,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                     rank /= 127;
                 }
             }
+            idx.reserve( hits.size() );
             for( int i=0; i<hits.size(); i++ )
             {
                 idx.emplace_back( i );
