@@ -12,7 +12,7 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
 {
     out.clear();
     auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
-    icu_58::UnicodeString lower;
+    icu::UnicodeString lower;
 
     if( toLower )
     {
@@ -24,7 +24,7 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
         wordIt->setText( us );
     }
 
-    icu_58::UnicodeString& data = toLower ? lower : us;
+    icu::UnicodeString& data = toLower ? lower : us;
 
     int32_t p0 = 0;
     int32_t p1 = wordIt->first();
@@ -73,7 +73,7 @@ std::string ToLower( const char* ptr, const char* end )
 {
     std::string ret;
     auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
-    icu_58::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
+    icu::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
     lower.toUTF8String( ret );
     return ret;
 }
