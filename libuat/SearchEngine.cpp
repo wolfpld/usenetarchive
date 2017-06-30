@@ -370,7 +370,14 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                 }
                 if( flags & SF_AdjacentWords )
                 {
-                    rank /= GetWordDistance( list );
+                    if( list.size() != 1 )
+                    {
+                        rank /= GetWordDistance( list );
+                    }
+                    else
+                    {
+                        rank /= 127;
+                    }
                 }
                 // only used in threadify, no need to output hit data
                 result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr, nullptr ) );
@@ -423,12 +430,19 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             }
             if( flags & SF_AdjacentWords )
             {
-                list.clear();
-                for( auto& v : entry.second )
+                if( entry.second.size() != 1 )
                 {
-                    list.emplace_back( v.data );
+                    list.clear();
+                    for( auto& v : entry.second )
+                    {
+                        list.emplace_back( v.data );
+                    }
+                    rank /= GetWordDistance( list );
                 }
-                rank /= GetWordDistance( list );
+                else
+                {
+                    rank /= 127;
+                }
             }
             for( int i=0; i<hits.size(); i++ )
             {
