@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\..\common\ExpandingBuffer.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h" />
   </ItemGroup>

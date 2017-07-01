@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <ctype.h>
+#include <stdio.h>
 #include <string>
 
 static inline int strnicmpl( const char* l, const char* r, int n )
@@ -41,6 +42,25 @@ static inline void split( const char* s, T o )
         }
 
         i = j;
+    }
+}
+
+static inline bool ReadLine( FILE* f, std::string& out )
+{
+    out.clear();
+
+    for(;;)
+    {
+        char c;
+        const size_t read = fread( &c, 1, 1, f );
+        if( read == 0 || c == '\n' )
+        {
+            return read > 0 || !out.empty();
+        }
+        if( c != '\r' )
+        {
+            out += c;
+        }
     }
 }
 

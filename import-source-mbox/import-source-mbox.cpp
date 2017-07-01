@@ -14,25 +14,7 @@
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/RawImportMeta.hpp"
-
-static bool ReadLine( FILE* f, std::string& out )
-{
-    out.clear();
-
-    for(;;)
-    {
-        char c;
-        const size_t read = fread( &c, 1, 1, f );
-        if( read == 0 || c == '\n' )
-        {
-            return read > 0 || !out.empty();
-        }
-        if( c != '\r' )
-        {
-            out += c;
-        }
-    }
-}
+#include "../common/String.hpp"
 
 int main( int argc, char** argv )
 {
