@@ -29,22 +29,23 @@ static void Demangle( FILE* f, const char* buf, int size )
 static bool ReceiveMessage( Socket& sock, const char* dir, int article )
 {
     auto ptr = buf;
+    auto size = sock.Recv( ptr, BufSize - ( ptr - buf ) );
+    if( strncmp( buf, "220", 3 ) != 0 )
+    {
+        return false;
+    }
     for(;;)
     {
-        auto size = sock.Recv( ptr, BufSize - ( ptr - buf ) );
         auto test = ptr;
         ptr += size;
         if( memcmp( test + size - 5, "\r\n.\r\n", 5 ) == 0 ) break;
+        size = sock.Recv( ptr, BufSize - ( ptr - buf ) );
     }
     int len = ptr - buf;
     if( len == BufSize )
     {
         fprintf( stderr, "Message size greater than %i! Aborting.\n", BufSize );
         exit( 1 );
-    }
-    if( strncmp( buf, "220", 3 ) != 0 )
-    {
-        return false;
     }
 
     static bool dirDone = false;
