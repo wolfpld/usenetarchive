@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.12
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract-msgid", "..\extract-msgid\build\win32\extract-msgid.vcxproj", "{F4589BE3-DB05-4D70-9C97-EE1DD099D807}"
 EndProject
@@ -64,6 +64,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "galaxy-util", "..\galaxy-util\build\win32\galaxy-util.vcxproj", "{5DE34E2F-AF19-4F00-9BF7-2BD1E9DCDCAD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "update-zstd", "..\update-zstd\build\win32\update-zstd.vcxproj", "{0362A7C9-92E4-4D0B-9AC7-375A23F8CEE5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nntp-get", "..\nntp-get\build\win32\nntp-get.vcxproj", "{F10C4F89-AD3D-4BC8-A45D-4B5CE5474C79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -195,6 +197,10 @@ Global
 		{0362A7C9-92E4-4D0B-9AC7-375A23F8CEE5}.Debug|x64.Build.0 = Debug|x64
 		{0362A7C9-92E4-4D0B-9AC7-375A23F8CEE5}.Release|x64.ActiveCfg = Release|x64
 		{0362A7C9-92E4-4D0B-9AC7-375A23F8CEE5}.Release|x64.Build.0 = Release|x64
+		{F10C4F89-AD3D-4BC8-A45D-4B5CE5474C79}.Debug|x64.ActiveCfg = Debug|x64
+		{F10C4F89-AD3D-4BC8-A45D-4B5CE5474C79}.Debug|x64.Build.0 = Debug|x64
+		{F10C4F89-AD3D-4BC8-A45D-4B5CE5474C79}.Release|x64.ActiveCfg = Release|x64
+		{F10C4F89-AD3D-4BC8-A45D-4B5CE5474C79}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
