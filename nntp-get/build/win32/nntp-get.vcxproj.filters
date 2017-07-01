@@ -15,10 +15,16 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Socket.cpp">
+      <Filter>nntp-get</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Socket.hpp">
+      <Filter>nntp-get</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
