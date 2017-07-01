@@ -155,6 +155,7 @@ int main( int argc, char** argv )
         auto i = toplevel[j];
         bool headers = true;
         bool wroteDone = false;
+        int remaining = 16;
 
         auto post = archive->GetMessage( i, eb );
         for(;;)
@@ -201,6 +202,7 @@ int main( int argc, char** argv )
                             }
                             wordbuf.clear();
                         }
+                        if( --remaining == 0 ) break;
                     }
                     else
                     {
