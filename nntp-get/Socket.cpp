@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include "Socket.hpp"
@@ -11,6 +12,7 @@
 #else
 #  include <sys/socket.h>
 #  include <netdb.h>
+#  include <unistd.h>
 #endif
 
 Socket::Socket()
