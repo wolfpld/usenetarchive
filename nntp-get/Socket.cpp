@@ -98,6 +98,11 @@ int Socket::Send( const char* buf, int len )
 int Socket::Recv( char* buf, int len )
 {
     assert( m_sock != -1 );
-    auto size = recv( m_sock, buf, len, 0 );
+    int size;
+    do
+    {
+        size = recv( m_sock, buf, len, 0 );
+    }
+    while( size == -1 );
     return size;
 }
