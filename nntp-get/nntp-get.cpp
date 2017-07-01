@@ -67,6 +67,14 @@ static bool ReceiveMessage( Socket& sock, const char* dir, int article )
     return true;
 }
 
+static void die( Socket& sock )
+{
+    sock.Send( "QUIT\r\n", 6 );
+    sock.Recv( buf, BufSize );
+    sock.Close();
+    exit( 1 );
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 4 )
@@ -90,7 +98,7 @@ int main( int argc, char** argv )
     if( strncmp( buf, "200", 3 ) != 0 && strncmp( buf, "201", 3 ) != 0 )
     {
         fprintf( stderr, "%.*s", len, buf );
-        exit( 1 );
+        die( sock );
     }
 
     sprintf( tmp, "GROUP %s\r\n", argv[2] );
@@ -99,7 +107,7 @@ int main( int argc, char** argv )
     if( strncmp( buf, "211", 3 ) != 0 )
     {
         fprintf( stderr, "%.*s", len, buf );
-        exit( 1 );
+        die( sock );
     }
 
     int article = atoi( argv[3] ) + 1;
@@ -110,7 +118,7 @@ int main( int argc, char** argv )
     if( !ReceiveMessage( sock, argv[2], article ) )
     {
         fprintf( stderr, "No such article\n" );
-        exit( 1 );
+        die( sock );
     }
 
     for(;;)
