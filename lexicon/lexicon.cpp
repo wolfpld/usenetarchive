@@ -197,6 +197,19 @@ int main( int argc, char** argv )
         }
     }
 
+    auto it = data.begin();
+    while( it != data.end() )
+    {
+        if( it->second.size() == 1 )
+        {
+            it = data.erase( it );
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
     printf( "\nSaving...\n" );
     fflush( stdout );
 
