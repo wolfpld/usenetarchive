@@ -26,5 +26,8 @@
     <ClInclude Include="..\..\Socket.hpp">
       <Filter>nntp-get</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\String.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

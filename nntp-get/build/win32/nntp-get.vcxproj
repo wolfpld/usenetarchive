@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\Socket.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

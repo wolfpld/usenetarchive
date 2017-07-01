@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 #include "Socket.hpp"
 
 #include "../common/Filesystem.hpp"
+#include "../common/String.hpp"
 
 enum { BufSize = 1024 * 1024 };
 char buf[BufSize];
@@ -26,7 +28,7 @@ static void Demangle( FILE* f, const char* buf, int size )
     }
 }
 
-static bool ReceiveMessage( Socket& sock, const char* dir, int article )
+static bool ReceiveMessage( Socket& sock, const std::string& dir, int article )
 {
     auto ptr = buf;
     auto size = sock.Recv( ptr, BufSize - ( ptr - buf ) );
@@ -48,18 +50,16 @@ static bool ReceiveMessage( Socket& sock, const char* dir, int article )
         exit( 1 );
     }
 
-    static bool dirDone = false;
-    if( !dirDone )
-    {
-        dirDone = true;
-        CreateDirStruct( dir );
-    }
-
     ptr = buf;
     while( *ptr++ != '\n' ) {}
 
+    if( !Exists( dir ) )
+    {
+        CreateDirStruct( dir );
+    }
+
     char tmp[1024];
-    sprintf( tmp, "%s/%i", dir, article );
+    sprintf( tmp, "%s/%i", dir.c_str(), article );
     FILE* f = fopen( tmp, "wb" );
     Demangle( f, ptr, len - ( ptr - buf ) );
     fclose( f );
@@ -77,17 +77,30 @@ static void die( Socket& sock )
 
 int main( int argc, char** argv )
 {
-    if( argc != 4 )
+    if( argc != 3 )
     {
-        fprintf( stderr, "USAGE: %s server group lastarticle\n\n", argv[0] );
+        fprintf( stderr, "USAGE: %s server input\n\n", argv[0] );
+        fprintf( stderr, "  Note: input should be a text file with one {group lastarticle} entry per line.\n" );
         fprintf( stderr, "  Note: The first downloaded article will be lastarticle+1.\n" );
         exit( 1 );
     }
-    if( Exists( argv[2] ) )
+
+    FILE* in = fopen( argv[2], "r" );
+    if( !in )
     {
-        fprintf( stderr, "Destination directory already exists.\n" );
+        fprintf( stderr, "Cannot open %s!", argv[2] );
         exit( 1 );
     }
+    std::vector<std::pair<std::string, int>> groups;
+    std::string tmpstr;
+    while( ReadLine( in, tmpstr ) )
+    {
+        auto s = tmpstr.c_str();
+        auto ptr = s;
+        while( *ptr != ' ' ) ptr++;
+        groups.emplace_back( std::string( s, ptr ), atoi( ptr+1 ) );
+    }
+    fclose( in );
 
     Socket sock;
     sock.Connect( argv[1] );
@@ -101,47 +114,51 @@ int main( int argc, char** argv )
         die( sock );
     }
 
-    sprintf( tmp, "GROUP %s\r\n", argv[2] );
-    sock.Send( tmp, strlen( tmp ) );
-    len = sock.Recv( buf, BufSize );
-    if( strncmp( buf, "211", 3 ) != 0 )
+    for( auto& v : groups )
     {
-        fprintf( stderr, "%.*s", len, buf );
-        die( sock );
-    }
+        sprintf( tmp, "GROUP %s\r\n", v.first.c_str() );
+        sock.Send( tmp, strlen( tmp ) );
+        len = sock.Recv( buf, BufSize );
+        if( strncmp( buf, "211", 3 ) != 0 )
+        {
+            fprintf( stderr, "%.*s", len, buf );
+            die( sock );
+        }
 
-    int article = atoi( argv[3] ) + 1;
-    printf( "%i\r", article );
-    fflush( stdout );
-    sprintf( tmp, "ARTICLE %i\r\n", article );
-    sock.Send( tmp, strlen( tmp ) );
-    if( !ReceiveMessage( sock, argv[2], article ) )
-    {
-        fprintf( stderr, "No such article\n" );
-        die( sock );
-    }
-
-    for(;;)
-    {
-        article++;
-        printf( "%i\r", article );
+        bool ok = true;
+        int article = v.second + 1;
+        printf( "%s %i\r", v.first.c_str(), article );
         fflush( stdout );
-        sock.Send( "NEXT\r\n", 6 );
-        sock.Recv( buf, BufSize );
-        if( strncmp( buf, "223", 3 ) != 0 )
+        sprintf( tmp, "ARTICLE %i\r\n", article );
+        sock.Send( tmp, strlen( tmp ) );
+        if( !ReceiveMessage( sock, v.first.c_str(), article ) )
         {
-            break;
+            printf( "%s no new messages", v.first.c_str() );
+            ok = false;
         }
-        sock.Send( "ARTICLE\r\n", 9 );
-        if( !ReceiveMessage( sock, argv[2], article ) )
+
+        while( ok )
         {
-            break;
+            article++;
+            printf( "%s %i\r", v.first.c_str(), article );
+            fflush( stdout );
+            sock.Send( "NEXT\r\n", 6 );
+            sock.Recv( buf, BufSize );
+            if( strncmp( buf, "223", 3 ) != 0 )
+            {
+                break;
+            }
+            sock.Send( "ARTICLE\r\n", 9 );
+            if( !ReceiveMessage( sock, v.first, article ) )
+            {
+                break;
+            }
         }
+
+        printf( "\n" );
     }
 
     sock.Send( "QUIT\r\n", 6 );
     sock.Recv( buf, BufSize );
     sock.Close();
-
-    printf( "\n" );
 }

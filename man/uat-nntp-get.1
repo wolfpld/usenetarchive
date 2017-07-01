@@ -4,8 +4,7 @@ uat-nntp-get \- get messages from NNTP server
 .SH SYNOPSIS
 .I uat-nntp-get
 <server>
-<group>
-<lastarticle>
+<input>
 .SH DESCRIPTION
 This utility retrieves messages from NNTP server.
 .SH OPTIONS
@@ -13,12 +12,13 @@ This utility retrieves messages from NNTP server.
 .BR server
 NNTP server.
 .TP
-.BR group
-Newsgroup to retrieve.
-.TP
-.BR lastarticle
-Last article from the newsgroup that you have. Newer ones will be retrieved,
-excluding this one.
+.BR input
+Text file with one
+.I group lastarticle
+entry per line.
+.SH NOTES
+Last article in a newsgroup indicates the last message which you have. Only
+newer ones will be retrieved, excluding this one.
 .SH "SEE ALSO"
 .ad l
 .nh
