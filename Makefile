@@ -18,6 +18,7 @@ TOOLS := \
 	lexsort \
 	lexstats \
 	merge-raw \
+	nntp-get \
 	package \
 	query \
 	query-raw \

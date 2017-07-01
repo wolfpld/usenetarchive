@@ -37,6 +37,7 @@ static const Tool tools[] = {
     { "lexsort", "Sort lexicon data." },
     { "lexstats", "Show lexicon statistics." },
     { "merge-raw", "Merge two data sets into one." },
+    { "nntp-get", "Get messages from NNTP server." },
     { "package", "Pack (or unpack) archive files into single file package." },
     { "query", "Perform queries on a final zstd data." },
     { "query-raw", "Perform queries on a LZ4 workset data." },
