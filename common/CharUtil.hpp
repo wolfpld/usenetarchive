@@ -25,6 +25,14 @@ namespace CharUtil
         }
     };
 
+    struct LessComparator
+    {
+        bool operator()( const char* lhs, const char* rhs ) const
+        {
+            return strcmp( lhs, rhs ) < 0;
+        }
+    };
+
 }
 
 #endif

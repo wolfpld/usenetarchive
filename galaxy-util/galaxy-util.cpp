@@ -2,6 +2,7 @@
 #include <array>
 #include <inttypes.h>
 #include <map>
+#include <set>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,8 +162,7 @@ int main( int argc, char** argv )
     uint64_t cnt = 0;
     uint64_t unique;
     {
-        std::unordered_set<const char*, CharUtil::Hasher, CharUtil::Comparator> msgidset;
-        msgidset.reserve( count );
+        std::set<const char*, CharUtil::LessComparator> msgidset;
         for( int i=0; i<arch.size(); i++ )
         {
             const auto& a = *arch[i];
