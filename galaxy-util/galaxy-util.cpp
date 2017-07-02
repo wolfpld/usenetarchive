@@ -428,7 +428,7 @@ int main( int argc, char** argv )
         }
         fclose( data );
 
-        std::sort( dense.begin(), dense.end(), [&msgid] ( const auto& l, const auto& r ) { return strcmp( msgid[l.msgid], msgid[r.msgid] ) < 0; } );
+        std::sort( dense.begin(), dense.end(), [] ( const auto& l, const auto& r ) { return l.msgid < r.msgid; } );
 
         FILE* meta = fopen( ( base + "indirect.dense" ).c_str(), "wb" );
         FILE* off = fopen( ( base + "indirect.offset" ).c_str(), "wb" );
