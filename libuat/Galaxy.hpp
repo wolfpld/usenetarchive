@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "../common/FileMap.hpp"
 #include "../common/HashSearchBig.hpp"
 #include "../common/MetaView.hpp"
 
@@ -44,11 +45,11 @@ public:
     ViewReference<uint32_t> GetGroups( uint32_t idx ) const;
     ViewReference<uint32_t> GetGroups( const char* msgid ) const;
 
-    ViewReference<uint32_t> GetIndirectParents( uint32_t idx ) const;
-    ViewReference<uint32_t> GetIndirectParents( const char* msgid ) const;
+    int32_t GetIndirectIndex( uint32_t idx ) const;
+    int32_t GetIndirectIndex( const char* msgid ) const;
 
-    ViewReference<uint32_t> GetIndirectChildren( uint32_t idx ) const;
-    ViewReference<uint32_t> GetIndirectChildren( const char* msgid ) const;
+    ViewReference<uint32_t> GetIndirectParents( uint32_t indirect_idx ) const;
+    ViewReference<uint32_t> GetIndirectChildren( uint32_t indirect_idx ) const;
 
     int ParentDepth( const char* msgid, uint32_t arch ) const;
     int NumberOfChildren( const char* msgid, uint32_t arch ) const;
@@ -64,6 +65,7 @@ private:
     const MetaView<uint32_t, char> m_strings;
     const MetaView<uint32_t, uint32_t> m_midgr;
     const MetaView<uint32_t, uint32_t> m_indirect;
+    const FileMap<uint64_t> m_indirectDense;
 
     std::vector<std::shared_ptr<Archive>> m_arch;
     std::vector<int> m_available;

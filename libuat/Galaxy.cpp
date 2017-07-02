@@ -15,7 +15,7 @@ Galaxy* Galaxy::Open( const std::string& fn )
         !Exists( base + "midhash" ) || !Exists( base + "midhash.meta" ) ||
         !Exists( base + "msgid" ) || !Exists( base + "msgid.meta" ) ||
         !Exists( base + "str" ) || !Exists( base + "str.meta" ) ||
-        !Exists( base + "indirect" ) || !Exists( base + "indirect.meta" ) )
+        !Exists( base + "indirect" ) || !Exists( base + "indirect.offset" ) || !Exists( base + "indirect.dense" ) )
     {
         return nullptr;
     }
@@ -32,7 +32,8 @@ Galaxy::Galaxy( const std::string& fn )
     , m_archives( fn + "archives.meta", fn + "archives" )
     , m_strings( fn + "str.meta", fn + "str" )
     , m_midgr( fn + "midgr.meta", fn + "midgr" )
-    , m_indirect( fn + "indirect.meta", fn + "indirect" )
+    , m_indirect( fn + "indirect.offset", fn + "indirect" )
+    , m_indirectDense( fn + "indirect.dense" )
 {
     const auto size = m_archives.Size() / 2;
     for( int i=0; i<size; i++ )
@@ -233,6 +234,28 @@ ViewReference<uint32_t> Galaxy::GetGroups( const char* msgid ) const
     return GetGroups( GetMessageIndex( msgid ) );
 }
 
+int32_t Galaxy::GetIndirectIndex( uint32_t idx ) const
+{
+    auto size = m_indirectDense.DataSize();
+    const uint64_t* begin = m_indirectDense;
+    auto end = begin + size;
+
+    auto it = std::lower_bound( begin, end, idx );
+    if( it == end || *it != idx )
+    {
+        return -1;
+    }
+    else
+    {
+        return it - begin;
+    }
+}
+
+int32_t Galaxy::GetIndirectIndex( const char* msgid ) const
+{
+    return GetIndirectIndex( GetMessageIndex( msgid ) );
+}
+
 ViewReference<uint32_t> Galaxy::GetIndirectParents( uint32_t idx ) const
 {
     assert( idx != -1 );
@@ -241,22 +264,12 @@ ViewReference<uint32_t> Galaxy::GetIndirectParents( uint32_t idx ) const
     return ViewReference<uint32_t> { ptr, num };
 }
 
-ViewReference<uint32_t> Galaxy::GetIndirectParents( const char* msgid ) const
-{
-    return GetIndirectParents( GetMessageIndex( msgid ) );
-}
-
 ViewReference<uint32_t> Galaxy::GetIndirectChildren( uint32_t idx ) const
 {
     assert( idx != -1 );
     auto ptr = m_indirect[idx*2+1];
     auto num = *ptr++;
     return ViewReference<uint32_t> { ptr, num };
-}
-
-ViewReference<uint32_t> Galaxy::GetIndirectChildren( const char* msgid ) const
-{
-    return GetIndirectParents( GetMessageIndex( msgid ) );
 }
 
 int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const

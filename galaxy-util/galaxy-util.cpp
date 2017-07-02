@@ -387,54 +387,59 @@ int main( int argc, char** argv )
     printf( "\nIndirect links: %i\n", indirect.size() );
 
     {
+        struct DenseData
+        {
+            uint64_t msgid;
+            uint32_t parent;
+            uint32_t children;
+        };
+        std::vector<DenseData> dense;
+        dense.reserve( indirect.size() );
+
         uint32_t offset = 0;
         uint32_t zero = 0;
         cnt = 0;
         FILE* data = fopen( ( base + "indirect" ).c_str(), "wb" );
-        FILE* meta = fopen( ( base + "indirect.meta" ).c_str(), "wb" );
         offset += fwrite( &zero, 1, sizeof( uint32_t ), data );
         for( auto& it : indirect )
         {
-            while( cnt++ < it.first )
-            {
-                fwrite( &zero, 1, sizeof( uint32_t ), meta );
-                fwrite( &zero, 1, sizeof( uint32_t ), meta );
-            }
+            DenseData dd = { it.first };
 
             const auto& parent = it.second.parent;
             const auto& child = it.second.child;
-            if( parent.empty() )
+            if( !parent.empty() )
             {
-                fwrite( &zero, 1, sizeof( uint32_t ), meta );
-            }
-            else
-            {
-                fwrite( &offset, 1, sizeof( uint32_t ), meta );
+                dd.parent = offset;
                 const uint32_t num = parent.size();
                 fwrite( &num, 1, sizeof( uint32_t ), data );
                 fwrite( parent.data(), 1, sizeof( uint32_t ) * num, data );
                 offset += sizeof( uint32_t ) * ( num + 1 );
             }
-            if( child.empty() )
+            if( !child.empty() )
             {
-                fwrite( &zero, 1, sizeof( uint32_t ), meta );
-            }
-            else
-            {
-                fwrite( &offset, 1, sizeof( uint32_t ), meta );
+                dd.children = offset;
                 const uint32_t num = child.size();
                 fwrite( &num, 1, sizeof( uint32_t ), data );
                 fwrite( child.data(), 1, sizeof( uint32_t ) * num, data );
                 offset += sizeof( uint32_t ) * ( num + 1 );
             }
-        }
-        while( cnt++ < msgidsize )
-        {
-            fwrite( &zero, 1, sizeof( uint32_t ), meta );
-            fwrite( &zero, 1, sizeof( uint32_t ), meta );
+
+            dense.emplace_back( dd );
         }
         fclose( data );
+
+        std::sort( dense.begin(), dense.end(), [&msgid] ( const auto& l, const auto& r ) { return strcmp( msgid[l.msgid], msgid[r.msgid] ) < 0; } );
+
+        FILE* meta = fopen( ( base + "indirect.dense" ).c_str(), "wb" );
+        FILE* off = fopen( ( base + "indirect.offset" ).c_str(), "wb" );
+        for( auto& v : dense )
+        {
+            fwrite( &v.msgid, 1, sizeof( v.msgid ), meta );
+            fwrite( &v.parent, 1, sizeof( v.parent ), off );
+            fwrite( &v.children, 1, sizeof( v.children ), off );
+        }
         fclose( meta );
+        fclose( off );
     }
 
     return 0;

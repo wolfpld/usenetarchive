@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Alloc.hpp" />
+    <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\HashSearch.hpp" />
     <ClInclude Include="..\..\..\common\HashSearchBig.hpp" />

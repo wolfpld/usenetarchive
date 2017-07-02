@@ -422,6 +422,9 @@
     <ClInclude Include="..\..\LevelColors.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\FileMap.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
