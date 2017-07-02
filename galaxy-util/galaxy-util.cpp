@@ -384,7 +384,7 @@ int main( int argc, char** argv )
         fclose( meta );
     }
 
-    printf( "\n" );
+    printf( "\nIndirect links: %i\n", indirect.size() );
 
     {
         uint32_t offset = 0;
