@@ -65,6 +65,7 @@ public:
     std::pair<const char*, uint64_t> GetShortDescription() const;
     std::pair<const char*, uint64_t> GetLongDescription() const;
     std::pair<const char*, uint64_t> GetArchiveName() const;
+    std::pair<const char*, uint64_t> GetPrefixList() const;
 
 private:
     Archive( const std::string& dir );
@@ -87,6 +88,7 @@ private:
     const FileMap<char> m_descShort;
     const FileMap<char> m_descLong;
     const FileMap<char> m_name;
+    const FileMap<char> m_prefix;
     std::unique_ptr<MetaView<uint32_t, uint32_t>> m_lexdist;
 };
 

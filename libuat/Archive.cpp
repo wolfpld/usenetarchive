@@ -58,6 +58,7 @@ Archive::Archive( const std::string& dir )
     , m_descShort( dir + "desc_short", true )
     , m_descLong( dir + "desc_long", true )
     , m_name( dir + "name", true )
+    , m_prefix( dir + "prefix", true )
 {
     if( Exists( dir + "lexdist" ) && Exists( dir + "lexdistmeta" ) )
     {
@@ -82,6 +83,7 @@ Archive::Archive( const PackageAccess* pkg )
     , m_descShort( pkg->Get( PackageFile::desc_short ) )
     , m_descLong( pkg->Get( PackageFile::desc_long ) )
     , m_name( pkg->Get( PackageFile::name ) )
+    , m_prefix( pkg->Get( PackageFile::prefix ) )
 {
     const auto lexdist = pkg->Get( PackageFile::lexdist );
     const auto lexdistmeta = pkg->Get( PackageFile::lexdistmeta );
@@ -287,4 +289,9 @@ std::pair<const char*, uint64_t> Archive::GetLongDescription() const
 std::pair<const char*, uint64_t> Archive::GetArchiveName() const
 {
     return std::make_pair( ( const char*)m_name, m_name.Size() );
+}
+
+std::pair<const char*, uint64_t> Archive::GetPrefixList() const
+{
+    return std::make_pair( ( const char*)m_prefix, m_prefix.Size() );
 }

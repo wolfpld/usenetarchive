@@ -57,7 +57,11 @@ int main( int argc, char** argv )
         }
 
         int numfiles = PackageFiles;
-        if( version == 0 )
+        if( version < 2 )
+        {
+            numfiles -= AdditionalFilesV2;
+        }
+        if( version < 1 )
         {
             numfiles -= AdditionalFilesV1;
         }

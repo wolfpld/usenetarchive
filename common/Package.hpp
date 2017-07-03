@@ -32,7 +32,8 @@ static const PackMeta PackageContents[] = {
     { "zmeta", false },
     { "zdict", false },
     { "lexdist", true },
-    { "lexdistmeta", true }
+    { "lexdistmeta", true },
+    { "prefix", true }
 };
 
 struct PackageFile
@@ -60,18 +61,24 @@ struct PackageFile
         zmeta,
         zdict,
         lexdist,
-        lexdistmeta
+        lexdistmeta,
+        prefix,
+        NUM_PACKAGE_FILE_TYPES
     };
 };
 
 enum { PackageFiles = sizeof( PackageContents ) / sizeof( PackMeta ) };
 enum { AdditionalFilesV1 = 2 };
+enum { AdditionalFilesV2 = 1 };
 
-enum : char { PackageVersion = 1 };
+enum : char { PackageVersion = 2 };
 enum { PackageHeaderSize = 8 };
 enum { PackageMagicSize = PackageHeaderSize - 1 };
 static const char PackageHeader[PackageHeaderSize] = { '\0', 'U', 's', 'e', 'n', 'e', 't', PackageVersion };
 
 static inline uint64_t PackageAlign( uint64_t offset ) { return ( ( offset + 7 ) / 8 ) * 8; }
+
+
+static_assert( PackageFiles == PackageFile::NUM_PACKAGE_FILE_TYPES, "Package tables mismatch." );
 
 #endif
