@@ -56,3 +56,8 @@ void AddToReList( const char* str )
 {
     ReList.emplace_back( str );
 }
+
+void AddToReList( const char* begin, const char* end )
+{
+    ReList.emplace_back( begin, end );
+}

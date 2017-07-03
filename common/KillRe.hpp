@@ -3,5 +3,6 @@
 
 const char* KillRe( const char* str );
 void AddToReList( const char* str );
+void AddToReList( const char* begin, const char* end );
 
 #endif
