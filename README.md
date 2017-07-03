@@ -159,6 +159,7 @@ Additional, optional information files, not created by any of the above utilitie
 - name --- Group name.
 - desc\_short --- A short description about the purpose of the group ([per 7.6.6 in RFC 3977](https://tools.ietf.org/html/rfc3977#section-7.6.6)).
 - desc\_long --- Group charter. (*Some newsgroups regularly post a description to the group that describes its intention. These descriptions are posted by the people involved with the newsgroup creation and/or administration. If the group has such a description, it almost always includes the word "charter", so you can quickly find it by searching the newsgroup for that word. A charter is the "set of rules and guidelines" which supposedly govern the users of that group.*)
+- prefix --- List of *Subject:* header prefixes that should be ignored when determining whether two subjects are the same. One lowercase entry per line.
 
 ## Typical Workflow
 
