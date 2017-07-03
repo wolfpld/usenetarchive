@@ -124,6 +124,7 @@ int main( int argc, char** argv )
 
     std::vector<const char*> received;
     unsigned int baddate = 0;
+    unsigned int recdate = 0;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
@@ -175,14 +176,21 @@ int main( int argc, char** argv )
         if( date == -1 )
         {
             baddate++;
-            struct tm tm = {};
-            if( sscanf( buf, "%d/%d/%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday ) == 3 )
+            if( recvdate == -1 )
             {
-                if( tm.tm_year >= 1970 && tm.tm_mon <= 12 && tm.tm_mday <= 31 )
+                struct tm tm = {};
+                if( sscanf( buf, "%d/%d/%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday ) == 3 )
                 {
-                    tm.tm_year -= 1900;
-                    tm.tm_mon--;
-                    date = mktime( &tm );
+                    if( tm.tm_year >= 1970 && tm.tm_mon <= 12 && tm.tm_mday <= 31 )
+                    {
+                        tm.tm_year -= 1900;
+                        tm.tm_mon--;
+                        date = mktime( &tm );
+                    }
+                    else
+                    {
+                        date = 0;
+                    }
                 }
                 else
                 {
@@ -191,7 +199,8 @@ int main( int argc, char** argv )
             }
             else
             {
-                date = 0;
+                recdate++;
+                date = recvdate;
             }
         }
         data[i].epoch = date;
@@ -230,7 +239,7 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i\nReference loops: %i\n", toplevel.size(), missing.size(), broken, baddate, loopcnt );
+    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nReference loops: %i\n", toplevel.size(), missing.size(), broken, baddate, recdate, loopcnt );
 
     printf( "Sorting top level...\n" );
     fflush( stdout );
