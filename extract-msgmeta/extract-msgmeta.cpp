@@ -17,6 +17,8 @@
 
 #include "tin.hpp"
 
+static const char* EmptySubject = "(no subject)\n";
+
 struct Offsets
 {
     uint32_t from;
@@ -81,7 +83,14 @@ int main( int argc, char** argv )
                 }
             }
             while( *buf++ != '\n' ) {};
+            if( *buf == '\n' ) break;
         }
+
+        if( !sdone )
+        {
+            sptr = EmptySubject;
+        }
+        assert( fdone );
 
         auto fend = fptr;
         while( *++fend != '\n' ) {};
