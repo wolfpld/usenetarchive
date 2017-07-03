@@ -122,6 +122,7 @@ int main( int argc, char** argv )
     printf( "\nRetrieving timestamps...\n" );
     fflush( stdout );
 
+    std::vector<const char*> received;
     unsigned int baddate = 0;
     for( uint32_t i=0; i<size; i++ )
     {
@@ -133,7 +134,32 @@ int main( int argc, char** argv )
 
         auto post = mview[i];
         auto buf = post;
+        received.clear();
 
+        while( *buf != '\n' )
+        {
+            if( strnicmpl( buf, "received: ", 10 ) == 0 )
+            {
+                buf += 10;
+                while( *buf != ';' && *buf != '\n' ) buf++;
+                if( *buf == ';' )
+                {
+                    buf++;
+                    while( *buf == ' ' || *buf == '\t' ) buf++;
+                    received.emplace_back( buf );
+                }
+            }
+            while( *buf++ != '\n' ) {}
+        }
+
+        time_t recvdate = -1;
+        for( int i=received.size()-1; i>=0; i-- )
+        {
+            recvdate = parsedate_rfc5322_lax( received[i] );
+            if( recvdate != -1 ) break;
+        }
+
+        buf = post;
         while( strnicmpl( buf, "date: ", 6 ) != 0 && strnicmpl( buf, "date:\t", 6 ) != 0 )
         {
             while( *buf != '\n' ) buf++;
