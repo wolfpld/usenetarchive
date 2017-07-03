@@ -139,7 +139,7 @@ int main( int argc, char** argv )
     printf( "\nMatching messages...\n" );
 
     std::vector<std::string> wordbuf;
-    int cntnew = 0, cntsure = 0, cntbad = 0;
+    int cntnew = 0, cntsure = 0, cntbad = 0, cnttime = 0;
     std::vector<std::pair<uint32_t, uint32_t>> found;
     std::map<uint32_t, float> hits;
     ExpandingBuffer eb;
@@ -239,17 +239,27 @@ int main( int argc, char** argv )
             }
             else
             {
-                auto s1 = KillRe( archive->GetSubject( i ) );
-                auto s2 = KillRe( archive->GetSubject( best ) );
-                if( strcmp( s1, s2 ) == 0 )
+                time_t t1 = archive->GetDate( i );
+                time_t t2 = archive->GetDate( best );
+                if( ( t1 > t2 + 60 * 60 * 24 * 365 ) ||     // child message is year+ younger than parent
+                    ( t1 < t2 - 60 * 60 * 24 * 30 ) )       // child message is month+ older than parent
                 {
-                    cntsure++;
-                    found.emplace_back( i, best );
-                    SetRootTo( i, root[best] );
+                    cnttime++;
                 }
                 else
                 {
-                    cntbad++;
+                    auto s1 = KillRe( archive->GetSubject( i ) );
+                    auto s2 = KillRe( archive->GetSubject( best ) );
+                    if( strcmp( s1, s2 ) == 0 )
+                    {
+                        cntsure++;
+                        found.emplace_back( i, best );
+                        SetRootTo( i, root[best] );
+                    }
+                    else
+                    {
+                        cntbad++;
+                    }
                 }
             }
         }
@@ -326,7 +336,7 @@ int main( int argc, char** argv )
         fclose( cmeta );
     }
 
-    printf( "\nFound %i new threads.\nSurely matched %i messages (same subject line). %i wrong guesses.\n", cntnew, cntsure, cntbad );
+    printf( "\nFound %i new threads.\nSurely matched %i messages (same subject line). Wrong guesses: %i due to different subject + %i non-chronological\n", cntnew, cntsure, cntbad, cnttime );
 
     return 0;
 }
