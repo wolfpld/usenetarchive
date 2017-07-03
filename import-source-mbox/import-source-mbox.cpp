@@ -75,24 +75,37 @@ int main( int argc, char** argv )
                     post.append( line );
                     post.append( "\n" );
                 }
-
-                int maxSize = LZ4_compressBound( post.size() );
-                char* compressed = eb2.Request( maxSize );
-                int csize = LZ4_compress_HC( post.data(), compressed, post.size(), maxSize, 16 );
-
-                fwrite( compressed, 1, csize, data );
-
-                RawImportMeta metaPacket = { offset, post.size(), csize };
-                fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
-                offset += csize;
-
-                if( ( idx & 0x3FF ) == 0 )
-                {
-                    printf( "%i\r", idx );
-                    fflush( stdout );
-                }
-                idx++;
             }
+            else
+            {
+                while( ReadLine( in, line ) )
+                {
+                    if( line.size() > 5 && strncmp( line.data(), "From ", 5 ) == 0 )
+                    {
+                        fseek( in, -(line.size()+1), SEEK_CUR );
+                        break;
+                    }
+                    post.append( line );
+                    post.append( "\n" );
+                }
+            }
+
+            int maxSize = LZ4_compressBound( post.size() );
+            char* compressed = eb2.Request( maxSize );
+            int csize = LZ4_compress_HC( post.data(), compressed, post.size(), maxSize, 16 );
+
+            fwrite( compressed, 1, csize, data );
+
+            RawImportMeta metaPacket = { offset, post.size(), csize };
+            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
+            offset += csize;
+
+            if( ( idx & 0x3FF ) == 0 )
+            {
+                printf( "%i\r", idx );
+                fflush( stdout );
+            }
+            idx++;
         }
     }
     printf( "%i files processed.\n", idx );
