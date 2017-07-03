@@ -125,6 +125,7 @@ int main( int argc, char** argv )
     std::vector<const char*> received;
     unsigned int baddate = 0;
     unsigned int recdate = 0;
+    unsigned int timetravel = 0;
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
@@ -203,6 +204,14 @@ int main( int argc, char** argv )
                 date = recvdate;
             }
         }
+        else if( recvdate != -1 )
+        {
+            if( abs( date - recvdate ) > 60*60*24*7 )       // one week
+            {
+                timetravel++;
+                date = recvdate;
+            }
+        }
         data[i].epoch = date;
     }
 
@@ -239,7 +248,7 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nReference loops: %i\n", toplevel.size(), missing.size(), broken, baddate, recdate, loopcnt );
+    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nTime traveling mesages: %i\nReference loops: %i\n", toplevel.size(), missing.size(), broken, baddate, recdate, timetravel, loopcnt );
 
     printf( "Sorting top level...\n" );
     fflush( stdout );
