@@ -194,7 +194,7 @@ int main( int argc, char** argv )
                             auto& res = results.results;
                             if( !res.empty() )
                             {
-                                auto terminate = res[0].rank * 0.1;
+                                auto terminate = res[0].rank * 0.02;
                                 auto matched = results.matched.size();
                                 for( auto& r : res )
                                 {
