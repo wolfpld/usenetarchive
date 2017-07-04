@@ -449,65 +449,86 @@ void SearchView::FillPreview( int idx )
         std::sort( v.begin(), v.end(), []( const auto& l, const auto& r ) { return l.first < l.first; } );
     }
 
+    enum class Print : uint8_t
+    {
+        False,
+        True,
+        Separator
+    };
+
+    std::vector<Print> print( lines.size(), Print::False );
+    int remove = -1;
+    for( int i=0; i<lines.size(); i++ )
+    {
+        if( !wlmap[i].empty() )
+        {
+            int start = std::max( 0, i - 2 );
+            int end = std::min<int>( lines.size(), i + 3 );
+            for( int j=start; j<end; j++ )
+            {
+                print[j] = Print::True;
+            }
+            if( end < lines.size() )
+            {
+                print[end] = Print::Separator;
+                remove = end;
+            }
+            else
+            {
+                remove = -1;
+            }
+        }
+    }
+    if( remove != -1 )
+    {
+        print[remove] = Print::False;
+    }
+
     m_preview.emplace_back();
     auto& preview = m_preview.back();
 
-    int dist = 3;
-    int context = -1;
     for( int i=0; i<lines.size(); i++ )
     {
+        if( print[i] == Print::False ) continue;
+        if( print[i] == Print::Separator )
+        {
+            preview.emplace_back( PreviewData { std::string( " -*-" ), COLOR_PAIR( 8 ) | A_BOLD, true } );
+            continue;
+        }
+
         auto ptr = lines[i].first;
         auto end = lines[i].second;
 
-        if( wlmap[i].size() == 0 )
+        if( wlmap[i].empty() )
         {
-            dist++;
-            if( context <= 0 ) continue;
-
             auto tmp = ptr;
             auto quotLevel = QuotationLevel( tmp, end );
 
             auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
             preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
-            context--;
-
-            continue;
         }
-        if( context == 0 )
+        else
         {
-            preview.emplace_back( PreviewData { std::string( " -*-" ), COLOR_PAIR( 8 ) | A_BOLD, true } );
-        }
-        context = 2;
-        if( dist > context && i > 0 )
-        {
-            auto ptr = lines[i-1].first;
-            auto end = lines[i-1].second;
             auto tmp = ptr;
             auto quotLevel = QuotationLevel( tmp, end );
             auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
-            preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
-        }
-        dist = 0;
-
-        auto tmp = ptr;
-        auto quotLevel = QuotationLevel( tmp, end );
-        auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
-        for( auto& v : wlmap[i] )
-        {
-            assert( v.first >= lines[i].first );
-            assert( v.first < lines[i].second );
-            assert( v.second > lines[i].first );
-            assert( v.second <= lines[i].second );
-            assert( v.first >= ptr );
-
-            if( v.first != ptr )
+            for( auto& v : wlmap[i] )
             {
-                preview.emplace_back( PreviewData { std::string( ptr, v.first ), color, false } );
+                assert( v.first >= lines[i].first );
+                assert( v.first < lines[i].second );
+                assert( v.second > lines[i].first );
+                assert( v.second <= lines[i].second );
+                assert( v.first >= ptr );
+
+                if( v.first != ptr )
+                {
+                    preview.emplace_back( PreviewData { std::string( ptr, v.first ), color, false } );
+                }
+                preview.emplace_back( PreviewData { std::string( v.first, v.second ), COLOR_PAIR( 16 ) | A_BOLD, false } );
+                ptr = v.second;
             }
-            preview.emplace_back( PreviewData { std::string( v.first, v.second ), COLOR_PAIR( 16 ) | A_BOLD, false } );
-            ptr = v.second;
+            preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
         }
-        preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
     }
 }
 
