@@ -29,7 +29,7 @@ class GalaxyWarp : public View
 public:
     GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage );
 
-    void Entry( const char* msgid, GalaxyState state );
+    void Entry( const char* msgid, GalaxyState state, bool showIndirect );
 
     void Resize();
     void Draw();

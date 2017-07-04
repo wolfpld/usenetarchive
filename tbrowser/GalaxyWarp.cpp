@@ -27,7 +27,7 @@ GalaxyWarp::GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, Persist
 {
 }
 
-void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
+void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect )
 {
     m_msgid = msgid;
     m_top = m_bottom = m_cursor = 0;
@@ -56,49 +56,52 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state )
         }
     }
 
-    const auto ind_idx = m_galaxy.GetIndirectIndex( gidx );
-    if( ind_idx != -1 )
+    if( showIndirect )
     {
-        const auto ip = m_galaxy.GetIndirectParents( ind_idx );
-        for( int i=0; i<ip.size; i++ )
+        const auto ind_idx = m_galaxy.GetIndirectIndex( gidx );
+        if( ind_idx != -1 )
         {
-            const auto imsgid = m_galaxy.GetMessageId( ip.ptr[i] );
-            const auto igroups = m_galaxy.GetGroups( ip.ptr[i] );
-            for( int j=0; j<igroups.size; j++ )
+            const auto ip = m_galaxy.GetIndirectParents( ind_idx );
+            for( int i=0; i<ip.size; i++ )
             {
-                const auto idx = igroups.ptr[j];
-                if( m_galaxy.IsArchiveAvailable( idx ) )
+                const auto imsgid = m_galaxy.GetMessageId( ip.ptr[i] );
+                const auto igroups = m_galaxy.GetGroups( ip.ptr[i] );
+                for( int j=0; j<igroups.size; j++ )
                 {
-                    m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
-                        m_galaxy.ParentDepth( imsgid, idx ),
-                        m_galaxy.NumberOfChildren( imsgid, idx ),
-                        m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
-                }
-                else
-                {
-                    m_list.emplace_back( WarpEntry { idx, false, false, true } );
+                    const auto idx = igroups.ptr[j];
+                    if( m_galaxy.IsArchiveAvailable( idx ) )
+                    {
+                        m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
+                            m_galaxy.ParentDepth( imsgid, idx ),
+                            m_galaxy.NumberOfChildren( imsgid, idx ),
+                            m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
+                    }
+                    else
+                    {
+                        m_list.emplace_back( WarpEntry { idx, false, false, true } );
+                    }
                 }
             }
-        }
 
-        const auto ic = m_galaxy.GetIndirectChildren( ind_idx );
-        for( int i=0; i<ic.size; i++ )
-        {
-            const auto imsgid = m_galaxy.GetMessageId( ic.ptr[i] );
-            const auto igroups = m_galaxy.GetGroups( ic.ptr[i] );
-            for( int j=0; j<igroups.size; j++ )
+            const auto ic = m_galaxy.GetIndirectChildren( ind_idx );
+            for( int i=0; i<ic.size; i++ )
             {
-                const auto idx = igroups.ptr[j];
-                if( m_galaxy.IsArchiveAvailable( idx ) )
+                const auto imsgid = m_galaxy.GetMessageId( ic.ptr[i] );
+                const auto igroups = m_galaxy.GetGroups( ic.ptr[i] );
+                for( int j=0; j<igroups.size; j++ )
                 {
-                    m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
-                        m_galaxy.ParentDepth( imsgid, idx ),
-                        m_galaxy.NumberOfChildren( imsgid, idx ),
-                        m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
-                }
-                else
-                {
-                    m_list.emplace_back( WarpEntry { idx, false, false, true } );
+                    const auto idx = igroups.ptr[j];
+                    if( m_galaxy.IsArchiveAvailable( idx ) )
+                    {
+                        m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
+                            m_galaxy.ParentDepth( imsgid, idx ),
+                            m_galaxy.NumberOfChildren( imsgid, idx ),
+                            m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
+                    }
+                    else
+                    {
+                        m_list.emplace_back( WarpEntry { idx, false, false, true } );
+                    }
                 }
             }
         }
