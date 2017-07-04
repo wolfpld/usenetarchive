@@ -8,7 +8,9 @@ static const chtype QuoteFlags[] = {
     COLOR_PAIR( 3 ),
     COLOR_PAIR( 6 ) | A_BOLD,
     COLOR_PAIR( 2 ),
-    COLOR_PAIR( 4 )
+    COLOR_PAIR( 4 ),
 };
+
+enum { NumQuoteFlags = sizeof( QuoteFlags ) / sizeof( chtype ) };
 
 #endif

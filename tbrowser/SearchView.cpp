@@ -504,14 +504,14 @@ void SearchView::FillPreview( int idx )
             auto tmp = ptr;
             auto quotLevel = QuotationLevel( tmp, end );
 
-            auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
+            auto color = quotLevel == 0 ? 0 : QuoteFlags[std::min( quotLevel-1, NumQuoteFlags-1 )];
             preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
         }
         else
         {
             auto tmp = ptr;
             auto quotLevel = QuotationLevel( tmp, end );
-            auto color = quotLevel == 0 ? 0 : QuoteFlags[quotLevel - 1];
+            auto color = quotLevel == 0 ? 0 : QuoteFlags[std::min( quotLevel-1, NumQuoteFlags-1 )];
             for( auto& v : wlmap[i] )
             {
                 assert( v.first >= lines[i].first );
