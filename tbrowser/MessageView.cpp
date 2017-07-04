@@ -314,7 +314,8 @@ void MessageView::PrepareLines()
                     strnicmpl( txt, "from: ", 6 ) == 0 ||
                     strnicmpl( txt, "newsgroups: ", 12 ) == 0 ||
                     strnicmpl( txt, "subject: ", 9 ) == 0 ||
-                    strnicmpl( txt, "date: ", 6 ) == 0 )
+                    strnicmpl( txt, "date: ", 6 ) == 0 ||
+                    strnicmpl( txt, "to: ", 3 ) == 0 )
                 {
                     BreakLine( offset, len, L_Header );
                 }
