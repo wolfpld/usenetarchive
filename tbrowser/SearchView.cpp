@@ -358,6 +358,12 @@ void SearchView::FillPreview( int idx )
         }
     }
 
+    if( lines.size() == 0 )
+    {
+        m_preview.emplace_back();
+        return;
+    }
+
     std::vector<std::string> wordbuf;
     for( int h=0; h<res.hitnum; h++ )
     {
