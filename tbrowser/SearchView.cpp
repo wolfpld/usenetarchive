@@ -285,7 +285,7 @@ void SearchView::Draw()
                 waddch( m_win, ACS_LLCORNER );
                 for( int i=0; i<w-2; i++ )
                 {
-                    waddch( m_win, ACS_HLINE );
+                    waddch( m_win, '-' );
                 }
                 waddch( m_win, ACS_LRCORNER );
                 wattroff( m_win, frameCol );
