@@ -249,10 +249,8 @@ void SearchView::Draw()
             const auto& preview = m_preview[cnt];
             auto it = preview.begin();
             auto itend = preview.end();
-            while( it != itend )
+            while( it != itend && line != h )
             {
-                if( line == h ) break;
-
                 wmove( m_win, line+1, 0 );
                 wattron( m_win, frameCol );
                 waddch( m_win, ACS_VLINE );
