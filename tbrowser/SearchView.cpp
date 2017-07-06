@@ -246,7 +246,7 @@ void SearchView::Draw()
                 FillPreview( cnt );
             }
 
-            auto preview = m_preview[cnt];
+            const auto preview = m_preview[cnt];
             auto it = preview.begin();
             while( it != preview.end() )
             {
