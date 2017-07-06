@@ -248,7 +248,8 @@ void SearchView::Draw()
 
             const auto& preview = m_preview[cnt];
             auto it = preview.begin();
-            while( it != preview.end() )
+            auto itend = preview.end();
+            while( it != itend )
             {
                 if( line == h ) break;
 
