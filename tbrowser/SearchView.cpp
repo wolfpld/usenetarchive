@@ -500,11 +500,18 @@ void SearchView::FillPreview( int idx )
 
         if( wlmap[i].empty() )
         {
-            auto tmp = ptr;
-            auto quotLevel = QuotationLevel( tmp, end );
+            if( ptr == end )
+            {
+                preview.back().newline = true;
+            }
+            else
+            {
+                auto tmp = ptr;
+                auto quotLevel = QuotationLevel( tmp, end );
 
-            auto color = quotLevel == 0 ? 0 : QuoteFlags[std::min( quotLevel-1, NumQuoteFlags-1 )];
-            preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
+                auto color = quotLevel == 0 ? 0 : QuoteFlags[std::min( quotLevel-1, NumQuoteFlags-1 )];
+                preview.emplace_back( PreviewData { std::string( ptr, end ), color, true } );
+            }
         }
         else
         {
