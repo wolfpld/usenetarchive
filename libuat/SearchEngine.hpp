@@ -46,7 +46,7 @@ public:
 
 private:
     bool ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<uint32_t>& words, std::vector<int>& wordFlags, std::vector<float>& wordMod, std::vector<const char*>& matched ) const;
-    std::vector<std::vector<PostData>> GetPostsForWords( const std::vector<uint32_t>& words, int filter ) const;
+    std::vector<std::vector<PostData>> GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const;
     int FixupFlags( int flags ) const;
 
     std::vector<SearchResult> GetSingleResult( const std::vector<std::vector<PostData>>& wdata ) const;

@@ -305,13 +305,16 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
     return !words.empty();
 }
 
-std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::vector<uint32_t>& words, int filter ) const
+std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const
 {
     std::vector<std::vector<PostData>> wdata;
     wdata.reserve( words.size() );
 
-    for( auto& v : words )
+    for( int w=0; w<words.size(); w++ )
     {
+        const auto v = words[w];
+        const auto wf = wordFlags[w];
+
         auto meta = m_archive.m_lexmeta[v];
         auto data = m_archive.m_lexdata + ( meta.data / sizeof( LexiconDataPacket ) );
 
@@ -337,6 +340,17 @@ std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::ve
                 for( int j=0; j<hitnum; j++ )
                 {
                     if( LexiconDecodeType( hits[j] ) == filter )
+                    {
+                        vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+                        break;
+                    }
+                }
+            }
+            else if( wf & WF_Header )
+            {
+                for( int j=0; j<hitnum; j++ )
+                {
+                    if( LexiconDecodeType( hits[j] ) == T_Header )
                     {
                         vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
                         break;
@@ -571,7 +585,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     if( !ExtractWords( terms, flags, words, wordFlags, wordMod, matched ) ) return ret;
     if( wordFlags.size() == 1 && wordFlags[0] & WF_Cant ) return ret;
 
-    const auto wdata = GetPostsForWords( words, filter );
+    const auto wdata = GetPostsForWords( words, wordFlags, filter );
 
     std::vector<SearchResult> result;
 
