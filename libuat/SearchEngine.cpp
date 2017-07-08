@@ -28,13 +28,9 @@ SearchData SearchEngine::Search( const char* query, int flags, int filter ) cons
 
 static float HitRank( const PostData& data )
 {
-    float rank = 0;
     auto ptr = data.hits;
-    for( int i=0; i<data.hitnum; i++ )
-    {
-        auto test = LexiconHitRank( *ptr++ );
-        if( test > rank ) rank = test;
-    }
+    float rank = LexiconHitRank( *ptr );
+    for( int i=1; i<data.hitnum; i++ ) assert( LexiconHitRank( *ptr++ ) <= rank );
     return rank;
 }
 
