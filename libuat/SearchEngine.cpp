@@ -202,16 +202,14 @@ static float GetWordDistance( const std::vector<const PostData*>& list )
     return min;
 }
 
-static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize, const uint8_t* hitdata, const uint32_t* words )
+static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize )
 {
     SearchResult ret;
     const auto num = std::min<int>( hitsize, SearchResultMaxHits );
     ret.postid = postid;
     ret.rank = rank;
     ret.hitnum = num;
-    memcpy( ret.hits, hitdata, num );
     for( int i=0; i<num-1; i++ ) assert( LexiconHitRank( i ) >= LexiconHitRank( i+1 ) );
-    memcpy( ret.words, words, num * sizeof( uint32_t ) );
     return ret;
 }
 
@@ -394,12 +392,13 @@ std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<std::
 
     assert( wdata.size() == 1 );
 
-    uint32_t wordlist[SearchResultMaxHits] = {};
     result.reserve( wdata[0].size() );
     for( auto& v : wdata[0] )
     {
         // hits are already sorted
-        result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum, v.hits, wordlist ) );
+        result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum ) );
+        memcpy( result.back().hits, v.hits, v.hitnum );
+        memset( result.back().words, 0, v.hitnum * sizeof( uint32_t ) );
     }
 
     return result;
@@ -453,7 +452,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<std:
                 }
             }
             // only used in threadify, no need to output hit data
-            result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr, nullptr ) );
+            result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0 ) );
         }
     }
 
@@ -559,16 +558,14 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
             std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
         }
 
-        uint8_t hdata[SearchResultMaxHits];
-        uint32_t wdata[SearchResultMaxHits];
         const auto n = std::min<int>( hits.size(), SearchResultMaxHits );
+        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n ) );
+        auto& sr = result.back();
         for( int i=0; i<n; i++ )
         {
-            hdata[i] = hits[idx[i]];
-            wdata[i] = wordlist[idx[i]];
+            sr.hits[i] = hits[idx[i]];
+            sr.words[i] = wordlist[idx[i]];
         }
-
-        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n, hdata, wdata ) );
     }
 
     delete[] pnum;
