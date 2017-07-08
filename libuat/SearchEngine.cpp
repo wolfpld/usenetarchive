@@ -477,11 +477,12 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
         count += wdata[word].size();
     }
 
-    std::vector<int32_t> index( m_archive.NumberOfMessages() );
-    memset( index.data(), 0xFF, sizeof( uint32_t ) * m_archive.NumberOfMessages() );
-    std::vector<uint32_t> pnum( count );
-    std::vector<uint32_t> postid( count );
-    std::vector<Posts> pdata( count * wsize );
+    auto index = new int32_t[m_archive.NumberOfMessages()];
+    memset( index, 0xFF, sizeof( int32_t ) * m_archive.NumberOfMessages() );
+
+    auto pnum = new uint32_t[count];
+    auto postid = new uint32_t[count];
+    auto pdata = new Posts[count*wsize];
 
     int next = 0;
     for( uint32_t word = 0; word < wsize; word++ )
@@ -505,6 +506,8 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
             pnum[idx]++;
         }
     }
+
+    delete[] index;
 
     std::vector<const PostData*> list;
     std::vector<uint8_t> hits;
@@ -567,6 +570,10 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
 
         result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n, hdata, wdata ) );
     }
+
+    delete[] pnum;
+    delete[] postid;
+    delete[] pdata;
 
     return result;
 }
