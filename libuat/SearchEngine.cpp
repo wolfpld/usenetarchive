@@ -349,10 +349,8 @@ std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::ve
     return wdata;
 }
 
-SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
+int SearchEngine::FixupFlags( int flags ) const
 {
-    SearchData ret;
-
     if( flags & SF_FuzzySearch )
     {
         if( m_archive.m_lexdist )
@@ -368,6 +366,14 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         flags &= ~SF_SetLogic;
     }
+    return flags;
+}
+
+SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
+{
+    SearchData ret;
+
+    flags = FixupFlags( flags );
 
     std::vector<uint32_t> words;
     std::vector<int> wordFlags;
