@@ -6,6 +6,14 @@
 
 #include "../common/String.hpp"
 
+enum WordFlags
+{
+    WF_None     = 0,
+    WF_Must     = 1 << 0,
+    WF_Cant     = 1 << 1,
+    WF_Header   = 1 << 2
+};
+
 SearchEngine::SearchEngine( const Archive& archive )
     : m_archive( archive )
 {
@@ -210,6 +218,96 @@ static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize, co
     return ret;
 }
 
+bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<uint32_t>& words, std::vector<int>& wordFlags, std::vector<float>& wordMod, std::vector<const char*>& matched ) const
+{
+    std::unordered_set<uint32_t> wordset;
+    words.reserve( terms.size() );
+    wordFlags.reserve( terms.size() );
+    for( auto& v : terms )
+    {
+        int wf = WF_None;
+        const char* str = v.c_str();
+        const char* strend = str + v.size();
+        bool strictMatch = false;
+        std::string tmp;
+        if( flags & SF_SetLogic )
+        {
+            if( strend - str > 1 )
+            {
+                if( *str == '+' )
+                {
+                    wf |= WF_Must;
+                    strictMatch = true;
+                    str++;
+                }
+                else if( *str == '-' )
+                {
+                    wf |= WF_Cant;
+                    strictMatch = true;
+                    str++;
+                }
+            }
+            if( strend - str > 4 )
+            {
+                if( strncmp( str, "hdr:", 4 ) == 0 )
+                {
+                    wf |= WF_Header;
+                    str += 4;
+                }
+            }
+            if( strend - str > 2 && *str == '"' && *(strend-1) == '"' )
+            {
+                str++;
+                strend--;
+                strictMatch = true;
+            }
+            if( strend - str != v.size() )
+            {
+                tmp = std::string( str, strend );
+                str = tmp.c_str();
+            }
+        }
+
+        auto res = m_archive.m_lexhash.Search( str );
+        if( res >= 0 && wordset.find( res ) == wordset.end() )
+        {
+            words.emplace_back( res );
+            wordFlags.emplace_back( wf );
+            wordset.emplace( res );
+            wordMod.emplace_back( 1 );
+            matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
+
+            if( flags & SF_FuzzySearch && !strictMatch && !( wf & ( WF_Must | WF_Cant ) ) )
+            {
+                auto ptr = (*m_archive.m_lexdist)[res];
+                const auto size = *ptr++;
+                for( uint32_t i=0; i<size; i++ )
+                {
+                    const auto data = *ptr++;
+                    const auto offset = data & 0x3FFFFFFF;
+                    auto word = m_archive.m_lexstr + offset;
+                    auto res2 = m_archive.m_lexhash.Search( word );
+                    assert( res2 >= 0 );
+                    if( wordset.find( res2 ) == wordset.end() )
+                    {
+                        assert( !( wf & ( WF_Must | WF_Cant ) ) );
+                        words.emplace_back( res2 );
+                        wordFlags.emplace_back( wf );
+                        wordset.emplace( res2 );
+                        const auto dist = data >> 30;
+                        assert( dist >= 0 && dist <= 3 );
+                        static const float DistMod[] = { 0.125f, 0.5f, 0.25f, 0.125f };
+                        wordMod.emplace_back( DistMod[dist] );
+                        matched.emplace_back( word );
+                    }
+                }
+            }
+        }
+    }
+
+    return !words.empty();
+}
+
 SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
 {
     SearchData ret;
@@ -226,106 +324,12 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         }
     }
 
-    enum WordFlags
-    {
-        WF_None     = 0,
-        WF_Must     = 1 << 0,
-        WF_Cant     = 1 << 1,
-        WF_Header   = 1 << 2
-    };
-
-    std::vector<const char*> matched;
     std::vector<uint32_t> words;
     std::vector<int> wordFlags;
     std::vector<float> wordMod;
+    std::vector<const char*> matched;
 
-    {
-        std::unordered_set<uint32_t> wordset;
-        words.reserve( terms.size() );
-        wordFlags.reserve( terms.size() );
-        for( auto& v : terms )
-        {
-            int wf = WF_None;
-            const char* str = v.c_str();
-            const char* strend = str + v.size();
-            bool strictMatch = false;
-            std::string tmp;
-            if( flags & SF_SetLogic )
-            {
-                if( strend - str > 1 )
-                {
-                    if( *str == '+' )
-                    {
-                        wf |= WF_Must;
-                        strictMatch = true;
-                        str++;
-                    }
-                    else if( *str == '-' )
-                    {
-                        wf |= WF_Cant;
-                        strictMatch = true;
-                        str++;
-                    }
-                }
-                if( strend - str > 4 )
-                {
-                    if( strncmp( str, "hdr:", 4 ) == 0 )
-                    {
-                        wf |= WF_Header;
-                        str += 4;
-                    }
-                }
-                if( strend - str > 2 && *str == '"' && *(strend-1) == '"' )
-                {
-                    str++;
-                    strend--;
-                    strictMatch = true;
-                }
-                if( strend - str != v.size() )
-                {
-                    tmp = std::string( str, strend );
-                    str = tmp.c_str();
-                }
-            }
-
-            auto res = m_archive.m_lexhash.Search( str );
-            if( res >= 0 && wordset.find( res ) == wordset.end() )
-            {
-                words.emplace_back( res );
-                wordFlags.emplace_back( wf );
-                wordset.emplace( res );
-                wordMod.emplace_back( 1 );
-                matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
-
-                if( flags & SF_FuzzySearch && !strictMatch && !( wf & ( WF_Must | WF_Cant ) ) )
-                {
-                    auto ptr = (*m_archive.m_lexdist)[res];
-                    const auto size = *ptr++;
-                    for( uint32_t i=0; i<size; i++ )
-                    {
-                        const auto data = *ptr++;
-                        const auto offset = data & 0x3FFFFFFF;
-                        auto word = m_archive.m_lexstr + offset;
-                        auto res2 = m_archive.m_lexhash.Search( word );
-                        assert( res2 >= 0 );
-                        if( wordset.find( res2 ) == wordset.end() )
-                        {
-                            assert( !( wf & ( WF_Must | WF_Cant ) ) );
-                            words.emplace_back( res2 );
-                            wordFlags.emplace_back( wf );
-                            wordset.emplace( res2 );
-                            const auto dist = data >> 30;
-                            assert( dist >= 0 && dist <= 3 );
-                            static const float DistMod[] = { 0.125f, 0.5f, 0.25f, 0.125f };
-                            wordMod.emplace_back( DistMod[dist] );
-                            matched.emplace_back( word );
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if( words.empty() ) return ret;
+    if( !ExtractWords( terms, flags, words, wordFlags, wordMod, matched ) ) return ret;
 
     std::vector<std::vector<PostData>> wdata;
     wdata.reserve( words.size() );

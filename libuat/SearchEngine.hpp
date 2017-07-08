@@ -43,6 +43,8 @@ public:
     SearchData Search( const std::vector<std::string>& terms, int flags = SF_FlagsNone, int filter = T_All ) const;
 
 private:
+    bool ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<uint32_t>& words, std::vector<int>& wordFlags, std::vector<float>& wordMod, std::vector<const char*>& matched ) const;
+
     const Archive& m_archive;
 };
 
