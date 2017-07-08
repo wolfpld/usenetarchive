@@ -364,6 +364,10 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             flags &= ~SF_FuzzySearch;
         }
     }
+    if( flags & SF_RequireAllWords )
+    {
+        flags &= ~SF_SetLogic;
+    }
 
     std::vector<uint32_t> words;
     std::vector<int> wordFlags;
