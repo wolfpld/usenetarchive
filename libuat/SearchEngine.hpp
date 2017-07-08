@@ -25,13 +25,7 @@ struct SearchData
     std::vector<const char*> matched;
 };
 
-struct PostData
-{
-    uint32_t postid;
-    uint8_t hitnum;
-    uint8_t children;
-    const uint8_t* hits;
-};
+struct PostData;
 
 class SearchEngine
 {

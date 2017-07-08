@@ -14,6 +14,15 @@ enum WordFlags
     WF_Header   = 1 << 2
 };
 
+struct PostData
+{
+    uint32_t postid;
+    uint8_t hitnum;
+    uint8_t children;
+    const uint8_t* hits;
+};
+
+
 SearchEngine::SearchEngine( const Archive& archive )
     : m_archive( archive )
 {
