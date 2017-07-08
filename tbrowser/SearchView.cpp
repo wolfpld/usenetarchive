@@ -152,6 +152,7 @@ void SearchView::Draw()
 
         wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
         mvwprintw( m_win, 6, 4, "Hint: quote words to disable fuzzy search." );
+        mvwprintw( m_win, 7, 4, "Hint: prepend word with hdr: to search only in headers." );
         wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
     }
     else
