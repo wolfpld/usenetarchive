@@ -456,11 +456,13 @@ void SearchView::FillPreview( int idx )
     };
 
     std::vector<Print> print( lines.size(), Print::False );
+    bool contentPresent = false;
     int remove = -1;
     for( int i=0; i<lines.size(); i++ )
     {
         if( !wlmap[i].empty() )
         {
+            contentPresent = true;
             int start = std::max( 0, i - 2 );
             int end = std::min<int>( lines.size(), i + 3 );
             for( int j=start; j<end; j++ )
@@ -481,6 +483,23 @@ void SearchView::FillPreview( int idx )
     if( remove != -1 )
     {
         print[remove] = Print::False;
+    }
+
+    if( !contentPresent )
+    {
+        for( int i=0; i<lines.size(); i++ )
+        {
+            if( linetype[i] == T_Content )
+            {
+                int start = std::max( 0, i-1 );
+                int end = std::min<int>( i+3, lines.size() );
+                while( start != end )
+                {
+                    print[start++] = Print::True;
+                }
+                break;
+            }
+        }
     }
 
     m_preview.emplace_back();
