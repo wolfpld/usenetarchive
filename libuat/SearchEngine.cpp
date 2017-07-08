@@ -396,6 +396,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     }
     else if( flags & SF_RequireAllWords )
     {
+        assert( !( flags & SF_SetLogic ) );
         std::vector<const PostData*> list;
         list.reserve( words.size() );
         result.reserve( wdata[0].size() );
