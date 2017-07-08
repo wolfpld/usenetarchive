@@ -226,6 +226,14 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         }
     }
 
+    enum WordFlags
+    {
+        WF_None     = 0,
+        WF_Must     = 1 << 0,
+        WF_Cant     = 1 << 1,
+        WF_Header   = 1 << 2
+    };
+
     std::vector<const char*> matched;
     std::vector<uint32_t> words;
     std::vector<float> wordMod;
@@ -235,13 +243,45 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         words.reserve( terms.size() );
         for( auto& v : terms )
         {
+            int wf = WF_None;
             const char* str = v.c_str();
+            const char* strend = str + v.size();
+            bool strictMatch = false;
             std::string tmp;
             if( flags & SF_SetLogic )
             {
-                if( v.size() > 2 && v[0] == '"' && v[v.size()-1] == '"' )
+                if( strend - str > 1 )
                 {
-                    tmp = v.substr( 1, v.size() - 2 );
+                    if( *str == '+' )
+                    {
+                        wf |= WF_Must;
+                        strictMatch = true;
+                        str++;
+                    }
+                    else if( *str == '-' )
+                    {
+                        wf |= WF_Cant;
+                        strictMatch = true;
+                        str++;
+                    }
+                }
+                if( strend - str > 4 )
+                {
+                    if( strncmp( str, "hdr:", 4 ) == 0 )
+                    {
+                        wf |= WF_Header;
+                        str += 4;
+                    }
+                }
+                if( strend - str > 2 && *str == '"' && *(strend-1) == '"' )
+                {
+                    str++;
+                    strend--;
+                    strictMatch = true;
+                }
+                if( strend - str != v.size() )
+                {
+                    tmp = std::string( str, strend );
                     str = tmp.c_str();
                 }
             }
