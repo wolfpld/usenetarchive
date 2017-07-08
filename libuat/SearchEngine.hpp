@@ -25,6 +25,14 @@ struct SearchData
     std::vector<const char*> matched;
 };
 
+struct PostData
+{
+    uint32_t postid;
+    uint8_t hitnum;
+    uint8_t children;
+    const uint8_t* hits;
+};
+
 class SearchEngine
 {
 public:
@@ -44,6 +52,7 @@ public:
 
 private:
     bool ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<uint32_t>& words, std::vector<int>& wordFlags, std::vector<float>& wordMod, std::vector<const char*>& matched ) const;
+    std::vector<std::vector<PostData>> GetPostsForWords( const std::vector<uint32_t>& words, int filter ) const;
 
     const Archive& m_archive;
 };

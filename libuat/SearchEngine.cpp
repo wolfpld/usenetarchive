@@ -26,14 +26,6 @@ SearchData SearchEngine::Search( const char* query, int flags, int filter ) cons
     return Search( terms, flags, filter );
 }
 
-struct PostData
-{
-    uint32_t postid;
-    uint8_t hitnum;
-    uint8_t children;
-    const uint8_t* hits;
-};
-
 static float HitRank( const PostData& data )
 {
     float rank = 0;
@@ -51,7 +43,7 @@ static float PostRank( const PostData& data )
     return ( float( data.children ) / LexiconChildMax ) * 0.9f + 0.1f;
 }
 
-static float GetWordDistance( const std::vector<PostData*>& list )
+static float GetWordDistance( const std::vector<const PostData*>& list )
 {
     const auto listsize = list.size();
 
@@ -308,31 +300,11 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
     return !words.empty();
 }
 
-SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
+std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::vector<uint32_t>& words, int filter ) const
 {
-    SearchData ret;
-
-    if( flags & SF_FuzzySearch )
-    {
-        if( m_archive.m_lexdist )
-        {
-            flags &= ~SF_RequireAllWords;
-        }
-        else
-        {
-            flags &= ~SF_FuzzySearch;
-        }
-    }
-
-    std::vector<uint32_t> words;
-    std::vector<int> wordFlags;
-    std::vector<float> wordMod;
-    std::vector<const char*> matched;
-
-    if( !ExtractWords( terms, flags, words, wordFlags, wordMod, matched ) ) return ret;
-
     std::vector<std::vector<PostData>> wdata;
     wdata.reserve( words.size() );
+
     for( auto& v : words )
     {
         auto meta = m_archive.m_lexmeta[v];
@@ -374,6 +346,33 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         }
     }
 
+    return wdata;
+}
+
+SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
+{
+    SearchData ret;
+
+    if( flags & SF_FuzzySearch )
+    {
+        if( m_archive.m_lexdist )
+        {
+            flags &= ~SF_RequireAllWords;
+        }
+        else
+        {
+            flags &= ~SF_FuzzySearch;
+        }
+    }
+
+    std::vector<uint32_t> words;
+    std::vector<int> wordFlags;
+    std::vector<float> wordMod;
+    std::vector<const char*> matched;
+
+    if( !ExtractWords( terms, flags, words, wordFlags, wordMod, matched ) ) return ret;
+    const auto wdata = GetPostsForWords( words, filter );
+
     std::vector<SearchResult> result;
 
     const auto wsize = wdata.size();
@@ -389,7 +388,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     }
     else if( flags & SF_RequireAllWords )
     {
-        std::vector<PostData*> list;
+        std::vector<const PostData*> list;
         list.reserve( words.size() );
         result.reserve( wdata[0].size() );
 
@@ -441,7 +440,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         struct Posts
         {
             uint32_t word;
-            PostData* data;
+            const PostData* data;
         };
 
         int count = 0;
@@ -479,7 +478,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             }
         }
 
-        std::vector<PostData*> list;
+        std::vector<const PostData*> list;
         std::vector<uint8_t> hits;
         std::vector<uint32_t> wordlist;
         std::vector<uint32_t> idx;
