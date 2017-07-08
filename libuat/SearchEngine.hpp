@@ -34,6 +34,7 @@ public:
         SF_AdjacentWords    = 1 << 0,   // Calculate words adjacency
         SF_RequireAllWords  = 1 << 1,   // Require all words to be present
         SF_FuzzySearch      = 1 << 2,   // Also search for similar words
+        SF_SetLogic         = 1 << 3,   // Parse set logic functions (search in headers, search for exact words, etc.)
     };
 
     SearchEngine( const Archive& archive );

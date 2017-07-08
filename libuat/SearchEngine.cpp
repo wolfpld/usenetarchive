@@ -237,10 +237,13 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
         {
             const char* str = v.c_str();
             std::string tmp;
-            if( v.size() > 2 && v[0] == '"' && v[v.size()-1] == '"' )
+            if( flags & SF_SetLogic )
             {
-                tmp = v.substr( 1, v.size() - 2 );
-                str = tmp.c_str();
+                if( v.size() > 2 && v[0] == '"' && v[v.size()-1] == '"' )
+                {
+                    tmp = v.substr( 1, v.size() - 2 );
+                    str = tmp.c_str();
+                }
             }
 
             auto res = m_archive.m_lexhash.Search( str );
