@@ -236,11 +236,13 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
 
     std::vector<const char*> matched;
     std::vector<uint32_t> words;
+    std::vector<int> wordFlags;
     std::vector<float> wordMod;
 
     {
         std::unordered_set<uint32_t> wordset;
         words.reserve( terms.size() );
+        wordFlags.reserve( terms.size() );
         for( auto& v : terms )
         {
             int wf = WF_None;
@@ -290,11 +292,12 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
             if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
                 words.emplace_back( res );
+                wordFlags.emplace_back( wf );
                 wordset.emplace( res );
                 wordMod.emplace_back( 1 );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
 
-                if( flags & SF_FuzzySearch && tmp.empty() )
+                if( flags & SF_FuzzySearch && !strictMatch && !( wf & ( WF_Must | WF_Cant ) ) )
                 {
                     auto ptr = (*m_archive.m_lexdist)[res];
                     const auto size = *ptr++;
@@ -307,7 +310,9 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
                         assert( res2 >= 0 );
                         if( wordset.find( res2 ) == wordset.end() )
                         {
+                            assert( !( wf & ( WF_Must | WF_Cant ) ) );
                             words.emplace_back( res2 );
+                            wordFlags.emplace_back( wf );
                             wordset.emplace( res2 );
                             const auto dist = data >> 30;
                             assert( dist >= 0 && dist <= 3 );
