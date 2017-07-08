@@ -377,6 +377,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     std::vector<const char*> matched;
 
     if( !ExtractWords( terms, flags, words, wordFlags, wordMod, matched ) ) return ret;
+    if( wordFlags.size() == 1 && wordFlags[0] & WF_Cant ) return ret;
+
     const auto wdata = GetPostsForWords( words, filter );
 
     std::vector<SearchResult> result;
