@@ -55,6 +55,10 @@ private:
     std::vector<std::vector<PostData>> GetPostsForWords( const std::vector<uint32_t>& words, int filter ) const;
     int FixupFlags( int flags ) const;
 
+    std::vector<SearchResult> GetSingleResult( const std::vector<std::vector<PostData>>& wdata ) const;
+    std::vector<SearchResult> GetAllWordResult( const std::vector<std::vector<PostData>>& wdata, int flags ) const;
+    std::vector<SearchResult> GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, int flags ) const;
+
     const Archive& m_archive;
 };
 

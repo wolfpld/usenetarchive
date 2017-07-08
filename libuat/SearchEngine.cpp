@@ -365,6 +365,189 @@ int SearchEngine::FixupFlags( int flags ) const
     return flags;
 }
 
+std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<std::vector<PostData>>& wdata ) const
+{
+    std::vector<SearchResult> result;
+
+    assert( wdata.size() == 1 );
+
+    uint32_t wordlist[SearchResultMaxHits] = {};
+    result.reserve( wdata[0].size() );
+    for( auto& v : wdata[0] )
+    {
+        // hits are already sorted
+        result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum, v.hits, wordlist ) );
+    }
+
+    return result;
+}
+
+std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<std::vector<PostData>>& wdata, int flags ) const
+{
+    std::vector<SearchResult> result;
+    const auto wsize = wdata.size();
+
+    std::vector<const PostData*> list;
+    list.reserve( 32 );
+    result.reserve( wdata[0].size() );
+
+    auto& vec = *wdata.begin();
+    for( auto& post : vec )
+    {
+        list.clear();
+        bool ok = true;
+        for( size_t i=1; i<wsize; i++ )
+        {
+            auto& vtest = wdata[i];
+            auto it = std::lower_bound( vtest.begin(), vtest.end(), post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } );
+            if( it == vtest.end() || it->postid != post.postid )
+            {
+                ok = false;
+                break;
+            }
+            else
+            {
+                list.emplace_back( &*it );
+            }
+        }
+        if( ok )
+        {
+            list.emplace_back( &post );
+            float rank = 0;
+            for( auto& v : list )
+            {
+                rank += HitRank( *v );
+            }
+            if( flags & SF_AdjacentWords )
+            {
+                if( list.size() != 1 )
+                {
+                    rank /= GetWordDistance( list );
+                }
+                else
+                {
+                    rank /= 127;
+                }
+            }
+            // only used in threadify, no need to output hit data
+            result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr, nullptr ) );
+        }
+    }
+
+    return result;
+}
+
+std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, int flags ) const
+{
+    std::vector<SearchResult> result;
+    const auto wsize = wdata.size();
+
+    struct Posts
+    {
+        uint32_t word;
+        const PostData* data;
+    };
+
+    int count = 0;
+    for( uint32_t word = 0; word < wsize; word++ )
+    {
+        count += wdata[word].size();
+    }
+
+    std::vector<int32_t> index( m_archive.NumberOfMessages() );
+    memset( index.data(), 0xFF, sizeof( uint32_t ) * m_archive.NumberOfMessages() );
+    std::vector<uint32_t> pnum( count );
+    std::vector<uint32_t> postid( count );
+    std::vector<Posts> pdata( count * wsize );
+
+    int next = 0;
+    for( uint32_t word = 0; word < wsize; word++ )
+    {
+        for( auto& post : wdata[word] )
+        {
+            auto pidx = post.postid;
+            int idx;
+            if( index[pidx] == -1 )
+            {
+                index[pidx] = next;
+                idx = next++;
+                pnum[idx] = 0;
+                postid[idx] = pidx;
+            }
+            else
+            {
+                idx = index[pidx];
+            }
+            pdata[idx*wsize + pnum[idx]] = Posts { word, &post };
+            pnum[idx]++;
+        }
+    }
+
+    std::vector<const PostData*> list;
+    std::vector<uint8_t> hits;
+    std::vector<uint32_t> wordlist;
+    std::vector<uint32_t> idx;
+    result.reserve( next );
+    for( int k=0; k<next; k++ )
+    {
+        hits.clear();
+        wordlist.clear();
+        idx.clear();
+
+        float rank = 0;
+        for( int m=0; m<pnum[k]; m++ )
+        {
+            auto& v = pdata[k*wsize + m];
+            rank += HitRank( *v.data ) * wordMod[v.word];
+            for( int i=0; i<v.data->hitnum; i++ )
+            {
+                wordlist.emplace_back( v.word );
+                hits.emplace_back( v.data->hits[i] );
+            }
+        }
+        if( flags & SF_AdjacentWords )
+        {
+            if( pnum[k] != 1 )
+            {
+                list.clear();
+                list.reserve( pnum[k] );
+                for( int m=0; m<pnum[k]; m++ )
+                {
+                    list.emplace_back( pdata[k*wsize + m].data );
+                }
+                rank /= GetWordDistance( list );
+            }
+            else
+            {
+                rank /= 127;
+            }
+        }
+        idx.reserve( hits.size() );
+        for( int i=0; i<hits.size(); i++ )
+        {
+            idx.emplace_back( i );
+        }
+
+        if( idx.size() > 1 )
+        {
+            std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
+        }
+
+        uint8_t hdata[SearchResultMaxHits];
+        uint32_t wdata[SearchResultMaxHits];
+        const auto n = std::min<int>( hits.size(), SearchResultMaxHits );
+        for( int i=0; i<n; i++ )
+        {
+            hdata[i] = hits[idx[i]];
+            wdata[i] = wordlist[idx[i]];
+        }
+
+        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n, hdata, wdata ) );
+    }
+
+    return result;
+}
+
 SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flags, int filter ) const
 {
     SearchData ret;
@@ -383,172 +566,20 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
 
     std::vector<SearchResult> result;
 
-    const auto wsize = wdata.size();
-    if( wsize == 1 )
+    if( wdata.size() == 1 )
     {
-        uint32_t wordlist[SearchResultMaxHits] = {};
-        result.reserve( wdata[0].size() );
-        for( auto& v : wdata[0] )
-        {
-            // hits are already sorted
-            result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum, v.hits, wordlist ) );
-        }
+        result = GetSingleResult( wdata );
     }
     else if( flags & SF_RequireAllWords )
     {
         assert( !( flags & SF_SetLogic ) );
-        std::vector<const PostData*> list;
-        list.reserve( words.size() );
-        result.reserve( wdata[0].size() );
-
-        auto& vec = *wdata.begin();
-        for( auto& post : vec )
-        {
-            list.clear();
-            bool ok = true;
-            for( size_t i=1; i<wsize; i++ )
-            {
-                auto& vtest = wdata[i];
-                auto it = std::lower_bound( vtest.begin(), vtest.end(), post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } );
-                if( it == vtest.end() || it->postid != post.postid )
-                {
-                    ok = false;
-                    break;
-                }
-                else
-                {
-                    list.emplace_back( &*it );
-                }
-            }
-            if( ok )
-            {
-                list.emplace_back( &post );
-                float rank = 0;
-                for( auto& v : list )
-                {
-                    rank += HitRank( *v );
-                }
-                if( flags & SF_AdjacentWords )
-                {
-                    if( list.size() != 1 )
-                    {
-                        rank /= GetWordDistance( list );
-                    }
-                    else
-                    {
-                        rank /= 127;
-                    }
-                }
-                // only used in threadify, no need to output hit data
-                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0, nullptr, nullptr ) );
-            }
-        }
+        result = GetAllWordResult( wdata, flags );
     }
     else
     {
-        struct Posts
-        {
-            uint32_t word;
-            const PostData* data;
-        };
-
-        int count = 0;
-        for( uint32_t word = 0; word < wsize; word++ )
-        {
-            count += wdata[word].size();
-        }
-
-        std::vector<int32_t> index( m_archive.NumberOfMessages() );
-        memset( index.data(), 0xFF, sizeof( uint32_t ) * m_archive.NumberOfMessages() );
-        std::vector<uint32_t> pnum( count );
-        std::vector<uint32_t> postid( count );
-        std::vector<Posts> pdata( count * wsize );
-
-        int next = 0;
-        for( uint32_t word = 0; word < wsize; word++ )
-        {
-            for( auto& post : wdata[word] )
-            {
-                auto pidx = post.postid;
-                int idx;
-                if( index[pidx] == -1 )
-                {
-                    index[pidx] = next;
-                    idx = next++;
-                    pnum[idx] = 0;
-                    postid[idx] = pidx;
-                }
-                else
-                {
-                    idx = index[pidx];
-                }
-                pdata[idx*wsize + pnum[idx]] = Posts { word, &post };
-                pnum[idx]++;
-            }
-        }
-
-        std::vector<const PostData*> list;
-        std::vector<uint8_t> hits;
-        std::vector<uint32_t> wordlist;
-        std::vector<uint32_t> idx;
-        result.reserve( next );
-        for( int k=0; k<next; k++ )
-        {
-            hits.clear();
-            wordlist.clear();
-            idx.clear();
-
-            float rank = 0;
-            for( int m=0; m<pnum[k]; m++ )
-            {
-                auto& v = pdata[k*wsize + m];
-                rank += HitRank( *v.data ) * wordMod[v.word];
-                for( int i=0; i<v.data->hitnum; i++ )
-                {
-                    wordlist.emplace_back( v.word );
-                    hits.emplace_back( v.data->hits[i] );
-                }
-            }
-            if( flags & SF_AdjacentWords )
-            {
-                if( pnum[k] != 1 )
-                {
-                    list.clear();
-                    list.reserve( pnum[k] );
-                    for( int m=0; m<pnum[k]; m++ )
-                    {
-                        list.emplace_back( pdata[k*wsize + m].data );
-                    }
-                    rank /= GetWordDistance( list );
-                }
-                else
-                {
-                    rank /= 127;
-                }
-            }
-            idx.reserve( hits.size() );
-            for( int i=0; i<hits.size(); i++ )
-            {
-                idx.emplace_back( i );
-            }
-
-            if( idx.size() > 1 )
-            {
-                std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
-            }
-
-            uint8_t hdata[SearchResultMaxHits];
-            uint32_t wdata[SearchResultMaxHits];
-            const auto n = std::min<int>( hits.size(), SearchResultMaxHits );
-            for( int i=0; i<n; i++ )
-            {
-                hdata[i] = hits[idx[i]];
-                wdata[i] = wordlist[idx[i]];
-            }
-
-            result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n, hdata, wdata ) );
-        }
+        result = GetFullResult( wdata, wordMod, flags );
     }
+
     if( result.empty() ) return ret;
 
     std::sort( result.begin(), result.end(), []( const auto& l, const auto& r ) { return l.rank > r.rank; } );
