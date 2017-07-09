@@ -425,6 +425,9 @@
     <ClInclude Include="..\..\..\common\FileMap.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ThreadData.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

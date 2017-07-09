@@ -269,6 +269,7 @@
     <ClInclude Include="..\..\MessageView.hpp" />
     <ClInclude Include="..\..\SearchView.hpp" />
     <ClInclude Include="..\..\TextView.hpp" />
+    <ClInclude Include="..\..\ThreadData.hpp" />
     <ClInclude Include="..\..\ThreadView.hpp" />
     <ClInclude Include="..\..\UTF8.hpp" />
     <ClInclude Include="..\..\View.hpp" />
