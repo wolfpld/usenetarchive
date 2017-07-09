@@ -156,6 +156,7 @@ void SearchView::Draw()
         mvwprintw( m_win, 8, 6, "- Prepend word with hdr: to search only in headers." );
         mvwprintw( m_win, 9, 6, "- Prepend word with + to require this word." );
         mvwprintw( m_win, 10, 6, "- Prepend word with - to exclude this word." );
+        mvwprintw( m_win, 11, 6, "- Append word with * to search for any word with such beginning." );
         wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
     }
     else
