@@ -448,7 +448,7 @@ void SearchView::FillPreview( int idx )
 
     for( auto& v : wlmap )
     {
-        std::sort( v.begin(), v.end(), []( const auto& l, const auto& r ) { return l.first < l.first; } );
+        std::sort( v.begin(), v.end(), []( const auto& l, const auto& r ) { return l.first < r.first; } );
     }
 
     enum class Print : uint8_t
