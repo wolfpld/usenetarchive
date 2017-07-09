@@ -151,10 +151,11 @@ void SearchView::Draw()
         mvwprintw( m_win, 4, 4, "Press '/' to enter search query." );
 
         wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
-        mvwprintw( m_win, 6, 4, "Hint: quote words to disable fuzzy search." );
-        mvwprintw( m_win, 7, 4, "Hint: prepend word with hdr: to search only in headers." );
-        mvwprintw( m_win, 8, 4, "Hint: prepend word with + to require this word." );
-        mvwprintw( m_win, 9, 4, "Hint: prepend word with - to exclude this word." );
+        mvwprintw( m_win, 6, 4, "Search hints:" );
+        mvwprintw( m_win, 7, 6, "- Quote words to disable fuzzy search." );
+        mvwprintw( m_win, 8, 6, "- Prepend word with hdr: to search only in headers." );
+        mvwprintw( m_win, 9, 6, "- Prepend word with + to require this word." );
+        mvwprintw( m_win, 10, 6, "- Prepend word with - to exclude this word." );
         wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
     }
     else
