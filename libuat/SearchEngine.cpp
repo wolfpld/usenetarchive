@@ -489,7 +489,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<std:
 std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const
 {
     std::vector<SearchResult> result;
-    const auto wsize = wdata.size();
+    const auto wsize = std::min<size_t>( 1024, wdata.size() );
 
     bool checkInclude = false;
     std::unordered_set<uint32_t> include;
