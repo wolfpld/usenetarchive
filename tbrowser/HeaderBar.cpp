@@ -55,9 +55,9 @@ void HeaderBar::Redraw() const
 
     if( m_galaxy )
     {
-        wmove( m_win, 0, getmaxx( m_win ) - 7 );
+        wmove( m_win, 0, getmaxx( m_win ) - 8 );
         wattron( m_win, COLOR_PAIR( 14 ) );
-        wprintw( m_win, "Galaxy" );
+        wprintw( m_win, " Galaxy " );
     }
 
     wnoutrefresh( m_win );
