@@ -224,7 +224,7 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
         const char* str = v.c_str();
         const char* strend = str + v.size();
         bool strictMatch = false;
-        std::string tmp;
+        bool matchAll = false;
         if( flags & SF_SetLogic )
         {
             if( strend - str > 1 )
@@ -256,44 +256,71 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                 strend--;
                 strictMatch = true;
             }
-            if( strend - str != v.size() )
+            if( !( wf & ( WF_Must | WF_Cant ) ) )
             {
-                tmp = std::string( str, strend );
-                str = tmp.c_str();
+                if( *(strend-1) == '*' )
+                {
+                    matchAll = true;
+                    strend--;
+                }
             }
         }
 
-        auto res = m_archive.m_lexhash.Search( str );
-        if( res >= 0 && wordset.find( res ) == wordset.end() )
+        std::vector<std::string> processed;
+        if( !matchAll )
         {
-            words.emplace_back( res );
-            wordFlags.emplace_back( wf );
-            wordset.emplace( res );
-            wordMod.emplace_back( 1 );
-            matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
-
-            if( flags & SF_FuzzySearch && !strictMatch && !( wf & ( WF_Must | WF_Cant ) ) )
+            processed.emplace_back( str, strend );
+        }
+        else
+        {
+            auto& meta = m_archive.m_lexmeta;
+            auto& data = m_archive.m_lexstr;
+            const auto dataSize = meta.DataSize();
+            for( uint32_t i=0; i<dataSize; i++ )
             {
-                auto ptr = (*m_archive.m_lexdist)[res];
-                const auto size = *ptr++;
-                for( uint32_t i=0; i<size; i++ )
+                auto mp = meta + i;
+                auto s = data + mp->str;
+                if( strncmp( s, str, strend - str ) == 0 )
                 {
-                    const auto data = *ptr++;
-                    const auto offset = data & 0x3FFFFFFF;
-                    auto word = m_archive.m_lexstr + offset;
-                    auto res2 = m_archive.m_lexhash.Search( word );
-                    assert( res2 >= 0 );
-                    if( wordset.find( res2 ) == wordset.end() )
+                    processed.emplace_back( s );
+                }
+            }
+        }
+
+        for( auto& word : processed )
+        {
+            auto res = m_archive.m_lexhash.Search( word.c_str() );
+            if( res >= 0 && wordset.find( res ) == wordset.end() )
+            {
+                words.emplace_back( res );
+                wordFlags.emplace_back( wf );
+                wordset.emplace( res );
+                wordMod.emplace_back( 1 );
+                matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
+
+                if( flags & SF_FuzzySearch && !strictMatch && !( wf & ( WF_Must | WF_Cant ) ) )
+                {
+                    auto ptr = (*m_archive.m_lexdist)[res];
+                    const auto size = *ptr++;
+                    for( uint32_t i=0; i<size; i++ )
                     {
-                        assert( !( wf & ( WF_Must | WF_Cant ) ) );
-                        words.emplace_back( res2 );
-                        wordFlags.emplace_back( wf );
-                        wordset.emplace( res2 );
-                        const auto dist = data >> 30;
-                        assert( dist >= 0 && dist <= 3 );
-                        static const float DistMod[] = { 0.125f, 0.5f, 0.25f, 0.125f };
-                        wordMod.emplace_back( DistMod[dist] );
-                        matched.emplace_back( word );
+                        const auto data = *ptr++;
+                        const auto offset = data & 0x3FFFFFFF;
+                        auto word = m_archive.m_lexstr + offset;
+                        auto res2 = m_archive.m_lexhash.Search( word );
+                        assert( res2 >= 0 );
+                        if( wordset.find( res2 ) == wordset.end() )
+                        {
+                            assert( !( wf & ( WF_Must | WF_Cant ) ) );
+                            words.emplace_back( res2 );
+                            wordFlags.emplace_back( wf );
+                            wordset.emplace( res2 );
+                            const auto dist = data >> 30;
+                            assert( dist >= 0 && dist <= 3 );
+                            static const float DistMod[] = { 0.125f, 0.5f, 0.25f, 0.125f };
+                            wordMod.emplace_back( DistMod[dist] );
+                            matched.emplace_back( word );
+                        }
                     }
                 }
             }
