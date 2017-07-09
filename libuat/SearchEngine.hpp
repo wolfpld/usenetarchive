@@ -51,7 +51,7 @@ private:
 
     std::vector<SearchResult> GetSingleResult( const std::vector<std::vector<PostData>>& wdata ) const;
     std::vector<SearchResult> GetAllWordResult( const std::vector<std::vector<PostData>>& wdata, int flags ) const;
-    std::vector<SearchResult> GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, int flags ) const;
+    std::vector<SearchResult> GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const;
 
     const Archive& m_archive;
 };

@@ -459,10 +459,107 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<std:
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, int flags ) const
+std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = wdata.size();
+
+    bool checkInclude = false;
+    std::unordered_set<uint32_t> include;
+    if( flags & SF_SetLogic )
+    {
+        bool hasMust = false;
+        bool hasCant = false;
+
+        for( auto& flag : wordFlags )
+        {
+            if( flag & ( WF_Must | WF_Cant ) )
+            {
+                checkInclude = true;
+
+                if( flag & WF_Must )
+                {
+                    hasMust = true;
+                }
+                else
+                {
+                    hasCant = true;
+                }
+            }
+        }
+        if( checkInclude )
+        {
+            if( hasMust )
+            {
+                int i;
+                for( i=0; i<wdata.size(); i++ )
+                {
+                    if( wordFlags[i] & WF_Must )
+                    {
+                        for( auto& v : wdata[i] )
+                        {
+                            include.emplace( v.postid );
+                        }
+                        break;
+                    }
+                }
+                for( i=i+1; i<wdata.size(); i++ )
+                {
+                    if( wordFlags[i] & WF_Must )
+                    {
+                        auto& vtest = wdata[i];
+                        auto it = include.begin();
+                        while( it != include.end() )
+                        {
+                            auto vit = std::lower_bound( vtest.begin(), vtest.end(), *it, [] ( const auto& l, const auto& r ) { return l.postid < r; } );
+                            if( vit == vtest.end() || vit->postid != *it )
+                            {
+                                it = include.erase( it );
+                            }
+                            else
+                            {
+                                ++it;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for( int i=0; i<wdata.size(); i++ )
+                {
+                    if( !( wordFlags[i] & WF_Cant ) )
+                    {
+                        assert( !( wordFlags[i] & WF_Must ) );
+                        for( auto& v : wdata[i] )
+                        {
+                            include.emplace( v.postid );
+                        }
+                    }
+                }
+            }
+            if( include.empty() ) return result;
+
+            if( hasCant )
+            {
+                for( int i=0; i<wdata.size(); i++ )
+                {
+                    if( wordFlags[i] & WF_Cant )
+                    {
+                        for( auto& v : wdata[i] )
+                        {
+                            auto it = include.find( v.postid );
+                            if( it != include.end() )
+                            {
+                                include.erase( it );
+                            }
+                        }
+                    }
+                }
+                if( include.empty() ) return result;
+            }
+        }
+    }
 
     struct Posts
     {
@@ -604,7 +701,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     }
     else
     {
-        result = GetFullResult( wdata, wordMod, flags );
+        result = GetFullResult( wdata, wordMod, wordFlags, flags );
     }
 
     if( result.empty() ) return ret;
