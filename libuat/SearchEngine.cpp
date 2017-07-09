@@ -586,20 +586,23 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
         for( auto& post : wdata[word] )
         {
             auto pidx = post.postid;
-            int idx;
-            if( index[pidx] == -1 )
+            if( !checkInclude || include.find( pidx ) != include.end() )
             {
-                index[pidx] = next;
-                idx = next++;
-                pnum[idx] = 0;
-                postid[idx] = pidx;
+                int idx;
+                if( index[pidx] == -1 )
+                {
+                    index[pidx] = next;
+                    idx = next++;
+                    pnum[idx] = 0;
+                    postid[idx] = pidx;
+                }
+                else
+                {
+                    idx = index[pidx];
+                }
+                pdata[idx*wsize + pnum[idx]] = Posts { word, &post };
+                pnum[idx]++;
             }
-            else
-            {
-                idx = index[pidx];
-            }
-            pdata[idx*wsize + pnum[idx]] = Posts { word, &post };
-            pnum[idx]++;
         }
     }
 
