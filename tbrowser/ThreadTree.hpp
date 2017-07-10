@@ -1,6 +1,7 @@
 #ifndef __THREADTREE_HPP__
 #define __THREADTREE_HPP__
 
+#include <curses.h>
 #include <vector>
 
 #include "BitSet.hpp"
@@ -18,27 +19,25 @@ public:
     void Reset( const Archive& archive, size_t size );
 
     GalaxyState CheckGalaxyState( int idx ) const;
-    GalaxyState GetGalaxyState( int idx );
-    ScoreState GetScoreState( int idx );
     bool WasVisited( int idx );
-    bool WasAllVisited( int idx );
     int GetRoot( int idx ) const;
     bool CanExpand( int idx ) const;
     void Expand( int idx, bool recursive );
     void Collapse( int idx );
-    void ExpandFill( int idx );
 
     bool IsExpanded( int idx ) const { return m_data[idx].expanded; }
+
+    void DrawLine( WINDOW* win, int line, int idx, bool hilite, int colorBase, int cursor, const char*& prev );
+
+private:
+    GalaxyState GetGalaxyState( int idx );
+    ScoreState GetScoreState( int idx );
+    bool IsValid( int idx ) const { return m_data[idx].valid; }
+    bool WasVisitedRaw( int idx ) const { return m_data[idx].visited; }
+    bool WasAllVisited( int idx );
     int GetCondensedValue( int idx ) const { return m_data[idx].condensed; }
     int GetTreeLine( int idx, int line ) const { return m_tree[idx].Get( line ); }
     int GetTreeLineSize( int idx ) const { return m_tree[idx].Size(); }
-
-private:
-    GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
-    ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }
-    bool IsValid( int idx ) const { return m_data[idx].valid; }
-    bool WasVisitedRaw( int idx ) const { return m_data[idx].visited; }
-    bool WasAllVisitedRaw( int idx ) const { return m_data[idx].visall; }
 
     void SetValid( int idx, bool val ) { m_data[idx].valid = val; }
     void SetExpanded( int idx, bool val ) { m_data[idx].expanded = val; }
@@ -51,6 +50,11 @@ private:
 
     int ExpandImpl( int idx, bool recursive );
     void MarkTreeCondensed( int idx, int depth );
+    void ExpandFill( int idx );
+
+    GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
+    ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }
+    bool WasAllVisitedRaw( int idx ) const { return m_data[idx].visall; }
 
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;

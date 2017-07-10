@@ -1,16 +1,12 @@
 #include <assert.h>
-#include <limits>
 #include <stdlib.h>
-#include <time.h>
 
 #include "../common/Alloc.hpp"
-#include "../common/KillRe.hpp"
 
 #include "../libuat/Archive.hpp"
 
 #include "MessageView.hpp"
 #include "ThreadView.hpp"
-#include "UTF8.hpp"
 
 ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, const MessageView& mview )
     : View( 0, 1, 0, -2 )
@@ -81,7 +77,7 @@ void ThreadView::Draw()
     {
         if( m_archive->GetParent( idx ) == -1 ) prev = nullptr;
         if( idx == m_cursor ) cursorLine = i;
-        DrawLine( i, idx, displayed == idx, displayed, prev );
+        m_tree.DrawLine( m_win, i, idx, displayed == idx, displayed, m_cursor, prev );
         idx = GetNext( idx );
         if( idx >= m_archive->NumberOfMessages() ) break;
     }
@@ -176,240 +172,6 @@ void ThreadView::FocusOn( int cursor )
         m_bottom = GetNext( m_bottom );
     }
     Draw();
-}
-
-static bool SameSubject( const char* subject, const char*& prev )
-{
-    if( subject == prev ) return true;
-    if( prev == nullptr )
-    {
-        prev = KillRe( subject );
-        return false;
-    }
-    auto oldprev = prev;
-    prev = KillRe( subject );
-    if( prev == oldprev ) return true;
-    return strcmp( prev, oldprev ) == 0;
-}
-
-void ThreadView::DrawLine( int line, int idx, bool hilite, int colorBase, const char*& prev )
-{
-    bool wasVisited = m_tree.WasVisited( idx );
-
-    if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
-    if( m_cursor == idx )
-    {
-        if( !hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
-        wmove( m_win, line, 0 );
-        wprintw( m_win, "->" );
-        if( !hilite ) wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
-    }
-    else
-    {
-        wmove( m_win, line, 2 );
-    }
-
-    if( m_galaxy )
-    {
-        switch( m_tree.GetGalaxyState( idx ) )
-        {
-        case GalaxyState::Crosspost:
-            if( !hilite ) wattron( m_win, COLOR_PAIR( 3 ) );
-            waddch( m_win, 'x' );
-            if( !hilite ) wattroff( m_win, COLOR_PAIR( 3 ) );
-            break;
-        case GalaxyState::ParentDifferent:
-            if( !hilite ) wattron( m_win, COLOR_PAIR( 7 ) );
-            waddch( m_win, 'F' );
-            if( !hilite ) wattroff( m_win, COLOR_PAIR( 7 ) );
-            break;
-        case GalaxyState::ChildrenDifferent:
-            if( !hilite ) wattron( m_win, COLOR_PAIR( 2 ) );
-            waddch( m_win, '!' );
-            if( !hilite ) wattroff( m_win, COLOR_PAIR( 2 ) );
-            break;
-        case GalaxyState::BothDifferent:
-            if( !hilite ) wattron( m_win, COLOR_PAIR( 4 ) );
-            waddch( m_win, '&' );
-            if( !hilite ) wattroff( m_win, COLOR_PAIR( 4 ) );
-            break;
-        default:
-            waddch( m_win, ' ' );
-            break;
-        }
-    }
-    if( wasVisited )
-    {
-        if( m_tree.WasAllVisited( idx ) )
-        {
-            waddch( m_win, 'R' );
-        }
-        else
-        {
-            waddch( m_win, 'r' );
-        }
-    }
-    else
-    {
-        waddch( m_win, '-' );
-    }
-
-    const auto children = m_archive->GetTotalChildrenCount( idx );
-    if( children > 9999 )
-    {
-        wprintw( m_win, "++++ [" );
-    }
-    else
-    {
-        wprintw( m_win, "%4i [", children );
-    }
-
-    auto realname = m_archive->GetRealName( idx );
-    ScoreState ss;
-    if( !hilite )
-    {
-        ss = m_tree.GetScoreState( idx );
-        switch( ss )
-        {
-        case ScoreState::Neutral:
-            wattron( m_win, COLOR_PAIR(3) | A_BOLD );
-            break;
-        case ScoreState::Negative:
-            wattron( m_win, COLOR_PAIR(5) );
-            break;
-        case ScoreState::Positive:
-            wattron( m_win, COLOR_PAIR(7) | A_BOLD );
-            break;
-        default:
-            assert( false );
-            break;
-        }
-    }
-    const int lenBase = m_galaxy ? 17 : 18;
-    int len = lenBase;
-    auto end = utfendl( realname, len );
-    utfprint( m_win, realname, end );
-    if( len < lenBase )
-    {
-        wmove( m_win, line, 27 );
-    }
-    if( !hilite )
-    {
-        switch( ss )
-        {
-        case ScoreState::Neutral:
-            wattroff( m_win, COLOR_PAIR(3) | A_BOLD );
-            break;
-        case ScoreState::Negative:
-            wattroff( m_win, COLOR_PAIR(5) );
-            break;
-        case ScoreState::Positive:
-            wattroff( m_win, COLOR_PAIR(7) | A_BOLD );
-            break;
-        default:
-            assert( false );
-            break;
-        }
-    }
-    waddch( m_win, ']' );
-
-    if( children > 1 )
-    {
-        if( !hilite ) wattron( m_win, COLOR_PAIR(4) );
-        wmove( m_win, line, 29 );
-        waddch( m_win, IsExpanded( idx ) ? '-' : '+' );
-        if( !hilite ) wattroff( m_win, COLOR_PAIR(4) );
-    }
-
-    time_t date = m_archive->GetDate( idx );
-    auto lt = localtime( &date );
-    char buf[64];
-    auto dlen = strftime( buf, 64, "%F %R", lt );
-
-    wmove( m_win, line, 31 );
-    auto w = getmaxx( m_win );
-    auto subject = m_archive->GetSubject( idx );
-    auto treecnt = m_tree.GetTreeLineSize( idx );
-    len = w - 33 - dlen;
-    if( treecnt > 0 )
-    {
-        auto cval = m_tree.GetCondensedValue( idx );
-        const bool condensed = cval == CondensedMax || ( cval * CondensedStep + CondensedDepthThreshold ) * 2 > len;
-        int childline = std::numeric_limits<int>::max();
-        if( colorBase != -1 && idx > colorBase && idx < colorBase + m_archive->GetTotalChildrenCount( colorBase ) )
-        {
-            childline = m_tree.GetTreeLineSize( colorBase );
-        }
-
-        const int lw = condensed ? 1 : 2;
-        len -= lw;
-        if( !hilite ) wattron( m_win, COLOR_PAIR(5) );
-        int i;
-        for( i=0; i<treecnt-1 && len > 1; i++ )
-        {
-            if( childline == i )
-            {
-                wattroff( m_win, COLOR_PAIR(5) );
-                wattron( m_win, COLOR_PAIR(4) );
-            }
-            if( m_tree.GetTreeLine( idx, i ) )
-            {
-                wmove( m_win, line, 31 + i*lw );
-                waddch( m_win, ACS_VLINE );
-            }
-            len -= lw;
-        }
-        wmove( m_win, line, 31 + i*lw );
-        if( treecnt-1 == childline )
-        {
-            wattroff( m_win, COLOR_PAIR(5) );
-            wattron( m_win, COLOR_PAIR(4) );
-        }
-        if( m_tree.GetTreeLine( idx, treecnt-1 ) )
-        {
-            waddch( m_win, ACS_LTEE );
-        }
-        else
-        {
-            waddch( m_win, ACS_LLCORNER );
-        }
-        if( children > 1 && ( condensed || !IsExpanded( idx ) ) )
-        {
-            waddch( m_win, ACS_TTEE );
-        }
-        else
-        {
-            waddch( m_win, ACS_HLINE );
-        }
-        if( !hilite )
-        {
-            wattroff( m_win, COLOR_PAIR(5) );
-            wattroff( m_win, COLOR_PAIR(4) );
-        }
-    }
-    if( len > 0 )
-    {
-        auto target = len;
-        if( !hilite && wasVisited ) wattron( m_win, COLOR_PAIR(8) | A_BOLD );
-        if( SameSubject( subject, prev ) )
-        {
-            len = 1;
-            waddch( m_win, '>' );
-        }
-        else
-        {
-            end = utfendl( subject, len );
-            utfprint( m_win, subject, end );
-        }
-        if( !hilite && wasVisited ) wattroff( m_win, COLOR_PAIR(8) | A_BOLD );
-    }
-    wmove( m_win, line, w-dlen-2 );
-    waddch( m_win, '[' );
-    if( !hilite ) wattron( m_win, COLOR_PAIR(2) );
-    wprintw( m_win, "%s", buf );
-    if( !hilite ) wattroff( m_win, COLOR_PAIR(2) );
-    waddch( m_win, (m_cursor == idx) ? '<' : ']' );
-    if( hilite ) wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
 }
 
 void ThreadView::MoveCursor( int offset )
