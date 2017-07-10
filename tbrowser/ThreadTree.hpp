@@ -27,22 +27,22 @@ public:
     void Collapse( int idx );
     void ExpandFill( int idx );
 
-    bool IsValid( int idx ) const { return m_data[idx].valid; }
     bool IsExpanded( int idx ) const { return m_data[idx].expanded; }
     bool WasAllVisited( int idx ) const { return m_data[idx].visall; }
     int GetCondensedValue( int idx ) const { return m_data[idx].condensed; }
     int GetTreeLine( int idx, int line ) const { return m_tree[idx].Get( line ); }
     int GetTreeLineSize( int idx ) const { return m_tree[idx].Size(); }
 
-    void SetValid( int idx, bool val ) { m_data[idx].valid = val; }
-    void SetExpanded( int idx, bool val ) { m_data[idx].expanded = val; }
     void SetAllVisited( int idx, bool val ) { m_data[idx].visall = val; }
 
 private:
     GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
     ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }
+    bool IsValid( int idx ) const { return m_data[idx].valid; }
     bool WasVisited( int idx ) const { return m_data[idx].visited; }
 
+    void SetValid( int idx, bool val ) { m_data[idx].valid = val; }
+    void SetExpanded( int idx, bool val ) { m_data[idx].expanded = val; }
     void SetGalaxyState( int idx, GalaxyState state ) { m_data[idx].galaxy = (uint8_t)state; }
     void SetScoreState( int idx, ScoreState state ) { m_tree[idx].SetScoreData( (int)state ); }
     void SetVisited( int idx, bool val ) { m_data[idx].visited = val; }
