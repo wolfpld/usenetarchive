@@ -34,56 +34,57 @@ GalaxyState ThreadTree::CheckGalaxyState( int idx ) const
 GalaxyState ThreadTree::GetGalaxyState( int idx )
 {
     assert( m_galaxy );
-    auto current = GetGalaxyStateRaw( idx );
-    if( current != GalaxyState::Unknown ) return current;
-
-    const auto msgid = m_archive->GetMessageId( idx );
-    const auto gidx  = m_galaxy->GetMessageIndex( msgid );
-    const auto groups = m_galaxy->GetNumberOfGroups( gidx );
-    assert( groups > 0 );
-
-    ViewReference<uint32_t> ip = {};
-    ViewReference<uint32_t> ic = {};
-    const auto ind_idx = m_galaxy->GetIndirectIndex( gidx );
-    if( ind_idx != -1 )
+    auto state = GetGalaxyStateRaw( idx );
+    if( state == GalaxyState::Unknown )
     {
-        ip = m_galaxy->GetIndirectParents( ind_idx );
-        ic = m_galaxy->GetIndirectChildren( ind_idx );
-    }
+        const auto msgid = m_archive->GetMessageId( idx );
+        const auto gidx  = m_galaxy->GetMessageIndex( msgid );
+        const auto groups = m_galaxy->GetNumberOfGroups( gidx );
+        assert( groups > 0 );
 
-    if( groups == 1 && ip.size == 0 && ic.size == 0 )
-    {
-        SetGalaxyState( idx, GalaxyState::Nothing );
-    }
-    else
-    {
-        bool parents = !m_galaxy->AreParentsSame( gidx, msgid ) || ip.size != 0;
-        bool children = !m_galaxy->AreChildrenSame( gidx, msgid ) || ic.size != 0;
-        if( parents )
+        ViewReference<uint32_t> ip = {};
+        ViewReference<uint32_t> ic = {};
+        const auto ind_idx = m_galaxy->GetIndirectIndex( gidx );
+        if( ind_idx != -1 )
         {
-            if( children )
-            {
-                SetGalaxyState( idx, GalaxyState::BothDifferent );
-            }
-            else
-            {
-                SetGalaxyState( idx, GalaxyState::ParentDifferent );
-            }
+            ip = m_galaxy->GetIndirectParents( ind_idx );
+            ic = m_galaxy->GetIndirectChildren( ind_idx );
+        }
+
+        if( groups == 1 && ip.size == 0 && ic.size == 0 )
+        {
+            state = GalaxyState::Nothing;
         }
         else
         {
-            if( children )
+            bool parents = !m_galaxy->AreParentsSame( gidx, msgid ) || ip.size != 0;
+            bool children = !m_galaxy->AreChildrenSame( gidx, msgid ) || ic.size != 0;
+            if( parents )
             {
-                SetGalaxyState( idx, GalaxyState::ChildrenDifferent );
+                if( children )
+                {
+                    state = GalaxyState::BothDifferent;
+                }
+                else
+                {
+                    state = GalaxyState::ParentDifferent;
+                }
             }
             else
             {
-                SetGalaxyState( idx, GalaxyState::Crosspost );
+                if( children )
+                {
+                    state = GalaxyState::ChildrenDifferent;
+                }
+                else
+                {
+                    state = GalaxyState::Crosspost;
+                }
             }
         }
+        SetGalaxyState( idx, state );
     }
-
-    return GetGalaxyStateRaw( idx );
+    return state;
 }
 
 ScoreState ThreadTree::GetScoreState( int idx )
