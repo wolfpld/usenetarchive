@@ -30,12 +30,12 @@ public:
     GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage );
 
     void Entry( const char* msgid, GalaxyState state, bool showIndirect );
-
     void Resize();
-    void Draw();
 
 private:
     void MoveCursor( int offset );
+
+    void Draw();
 
     Browser* m_parent;
     BottomBar& m_bar;
