@@ -61,11 +61,7 @@ bool Browser::MoveOrEnterAction( int move )
             !m_tview.IsExpanded( cursor ) &&
             m_archive->GetParent( m_tview.GetCursor() ) == -1 )
         {
-            const auto depth = m_tview.Expand( cursor, true );
-            if( depth > CondensedDepthThreshold )
-            {
-                m_tview.MarkTreeCondensed( cursor, depth );
-            }
+            m_tview.Expand( cursor, true );
         }
         m_tview.Draw();
         m_tview.FocusOn( cursor );
@@ -190,11 +186,7 @@ void Browser::Entry()
             }
             else
             {
-                const auto depth = m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
-                if( depth > CondensedDepthThreshold )
-                {
-                    m_tview.MarkTreeCondensed( cursor, depth );
-                }
+                m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
             }
             m_tview.Draw();
             doupdate();
@@ -239,11 +231,7 @@ void Browser::Entry()
             auto cursor = m_tview.GetCursor();
             if( m_tview.CanExpand( cursor ) && !m_tview.IsExpanded( cursor ) )
             {
-                const auto depth = m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
-                if( depth > CondensedDepthThreshold )
-                {
-                    m_tview.MarkTreeCondensed( cursor, depth );
-                }
+                m_tview.Expand( cursor, m_archive->GetParent( cursor ) == -1 );
                 m_tview.Draw();
                 doupdate();
             }
@@ -483,11 +471,7 @@ void Browser::SwitchToMessage( int msgidx )
     auto root = m_tview.GetRoot( msgidx );
     if( msgidx != root && m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
     {
-        const auto depth = m_tview.Expand( root, true );
-        if( depth > CondensedDepthThreshold )
-        {
-            m_tview.MarkTreeCondensed( root, depth );
-        }
+        m_tview.Expand( root, true );
         m_tview.Draw();
     }
     m_tview.SetCursor( msgidx );

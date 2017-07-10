@@ -130,7 +130,30 @@ bool ThreadTree::CanExpand( int idx ) const
     return m_archive->GetTotalChildrenCount( idx ) > 1;
 }
 
-int ThreadTree::Expand( int idx, bool recursive )
+void ThreadTree::Expand( int idx, bool recursive )
+{
+    auto depth = ExpandImpl( idx, recursive );
+    if( depth > CondensedDepthThreshold )
+    {
+        MarkTreeCondensed( idx, depth );
+    }
+}
+
+void ThreadTree::MarkTreeCondensed( int idx, int depth )
+{
+    assert( GetRoot( idx ) == idx );
+    if( GetCondensedValue( idx ) > 0 ) return;
+    depth = std::min<int>( CondensedMax, ( depth - CondensedDepthThreshold + CondensedStep - 1 ) / CondensedStep );
+    assert( depth > 0 );
+    auto cnt = m_archive->GetTotalChildrenCount( idx );
+    do
+    {
+        SetCondensedValue( idx++, depth );
+    }
+    while( --cnt );
+}
+
+int ThreadTree::ExpandImpl( int idx, bool recursive )
 {
     SetValid( idx, true );
     SetExpanded( idx, true );
@@ -153,7 +176,7 @@ int ThreadTree::Expand( int idx, bool recursive )
         }
         if( recursive )
         {
-            depth = std::max( depth, Expand( idx, true ) );
+            depth = std::max( depth, ExpandImpl( idx, true ) );
         }
         idx += skip;
     }

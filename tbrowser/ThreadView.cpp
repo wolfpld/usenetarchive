@@ -181,20 +181,6 @@ void ThreadView::FocusOn( int cursor )
     Draw();
 }
 
-void ThreadView::MarkTreeCondensed( int cursor, int depth )
-{
-    assert( GetRoot( cursor ) == cursor );
-    if( m_tree.GetCondensedValue( cursor ) > 0 ) return;
-    depth = std::min<int>( CondensedMax, ( depth - CondensedDepthThreshold + CondensedStep - 1 ) / CondensedStep );
-    assert( depth > 0 );
-    auto cnt = m_archive->GetTotalChildrenCount( cursor );
-    do
-    {
-        m_tree.SetCondensedValue( cursor++, depth );
-    }
-    while( --cnt );
-}
-
 static bool SameSubject( const char* subject, const char*& prev )
 {
     if( subject == prev ) return true;
