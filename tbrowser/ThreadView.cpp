@@ -244,38 +244,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     }
     if( wasVisited )
     {
-        bool complete = m_tree.WasAllVisited( idx );
-        if( !complete )
-        {
-            m_tree.ExpandFill( idx );
-            complete = true;
-            std::vector<uint32_t> stack;
-            stack.reserve( 4 * 1024 );
-            stack.push_back( idx );
-            while( !stack.empty() )
-            {
-                const auto id = stack.back();
-                if( !m_tree.WasVisited( id ) )
-                {
-                    complete = false;
-                    break;
-                }
-                stack.pop_back();
-                const auto children = m_archive->GetChildren( id );
-                for( int i=0; i<children.size; i++ )
-                {
-                    if( !m_tree.WasAllVisited( children.ptr[i] ) )
-                    {
-                        stack.emplace_back( children.ptr[i] );
-                    }
-                }
-            }
-            if( complete )
-            {
-                m_tree.SetAllVisited( idx, true );
-            }
-        }
-        if( complete )
+        if( m_tree.WasAllVisited( idx ) )
         {
             waddch( m_win, 'R' );
         }

@@ -119,6 +119,42 @@ bool ThreadTree::WasVisited( int idx )
     return ret;
 }
 
+bool ThreadTree::WasAllVisited( int idx )
+{
+    bool complete = WasAllVisitedRaw( idx );
+    if( !complete )
+    {
+        ExpandFill( idx );
+        complete = true;
+        std::vector<uint32_t> stack;
+        stack.reserve( 4 * 1024 );
+        stack.push_back( idx );
+        while( !stack.empty() )
+        {
+            const auto id = stack.back();
+            if( !WasVisited( id ) )
+            {
+                complete = false;
+                break;
+            }
+            stack.pop_back();
+            const auto children = m_archive->GetChildren( id );
+            for( int i=0; i<children.size; i++ )
+            {
+                if( !WasAllVisitedRaw( children.ptr[i] ) )
+                {
+                    stack.emplace_back( children.ptr[i] );
+                }
+            }
+        }
+        if( complete )
+        {
+            SetAllVisited( idx, true );
+        }
+    }
+    return complete;
+}
+
 int ThreadTree::GetRoot( int idx ) const
 {
     while( m_archive->GetParent( idx ) != -1 ) idx = m_archive->GetParent( idx );
