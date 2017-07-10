@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <assert.h>
 #include <limits>
 #include <stdlib.h>
@@ -8,7 +7,6 @@
 #include "../common/KillRe.hpp"
 
 #include "../libuat/Archive.hpp"
-#include "../libuat/Galaxy.hpp"
 
 #include "MessageView.hpp"
 #include "ThreadView.hpp"

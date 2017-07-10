@@ -1,9 +1,6 @@
 #ifndef __THREADVIEW_HPP__
 #define __THREADVIEW_HPP__
 
-#include <stdint.h>
-#include <vector>
-
 #include "GalaxyState.hpp"
 #include "ThreadTree.hpp"
 #include "View.hpp"
