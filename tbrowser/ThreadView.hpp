@@ -25,16 +25,16 @@ public:
 
     void MoveCursor( int offset );
     void GoNextUnread();
-    bool CanExpand( int cursor );
-    int Expand( int cursor, bool recursive );
-    void Collapse( int cursor );
+    bool CanExpand( int cursor ) const { return m_tree.CanExpand( cursor ); }
+    int Expand( int cursor, bool recursive ) { return m_tree.Expand( cursor, recursive ); }
+    void Collapse( int cursor ) { m_tree.Collapse( cursor ); }
     bool IsExpanded( int cursor ) const { return m_tree.IsExpanded( cursor ); }
     void FocusOn( int cursor );
     void MarkTreeCondensed( int cursor, int depth );
 
     int GetCursor() const { return m_cursor; }
     void SetCursor( int cursor ) { m_cursor = cursor; }
-    int GetRoot( int cursor ) const;
+    int GetRoot( int cursor ) const { return m_tree.GetRoot( cursor ); }
 
     void PageForward();
     void PageBackward();

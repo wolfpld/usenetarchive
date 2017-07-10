@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <algorithm>
 
 #include "../libuat/Archive.hpp"
 #include "../libuat/Galaxy.hpp"
@@ -116,4 +117,50 @@ bool ThreadTree::CheckVisited( int idx )
     auto ret = m_storage.WasVisited( m_archive->GetMessageId( idx ) );
     if( ret ) SetVisited( idx, true );
     return ret;
+}
+
+int ThreadTree::GetRoot( int idx ) const
+{
+    while( m_archive->GetParent( idx ) != -1 ) idx = m_archive->GetParent( idx );
+    return idx;
+}
+
+bool ThreadTree::CanExpand( int idx ) const
+{
+    return m_archive->GetTotalChildrenCount( idx ) > 1;
+}
+
+int ThreadTree::Expand( int idx, bool recursive )
+{
+    SetValid( idx, true );
+    SetExpanded( idx, true );
+
+    auto children = m_archive->GetChildren( idx );
+    int parent = idx;
+    idx++;
+    int depth = 0;
+    for( int i=0; i<children.size; i++ )
+    {
+        auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
+        if( !IsValid( idx ) )
+        {
+            SetValid( idx, true );
+            bool line = i != children.size - 1;
+            for( int j=0; j<skip; j++ )
+            {
+                SetTreeLine( idx+j, line );
+            }
+        }
+        if( recursive )
+        {
+            depth = std::max( depth, Expand( idx, true ) );
+        }
+        idx += skip;
+    }
+    return depth + 1;
+}
+
+void ThreadTree::Collapse( int idx )
+{
+    SetExpanded( idx, false );
 }

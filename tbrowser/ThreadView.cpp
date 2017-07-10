@@ -121,47 +121,6 @@ void ThreadView::Draw()
     wnoutrefresh( m_win );
 }
 
-bool ThreadView::CanExpand( int cursor )
-{
-    return m_archive->GetTotalChildrenCount( cursor ) > 1;
-}
-
-int ThreadView::Expand( int cursor, bool recursive )
-{
-    m_tree.SetValid( cursor, true );
-    m_tree.SetExpanded( cursor, true );
-
-    auto children = m_archive->GetChildren( cursor );
-    int parent = cursor;
-    cursor++;
-    int depth = 0;
-    for( int i=0; i<children.size; i++ )
-    {
-        auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
-        if( !m_tree.IsValid( cursor ) )
-        {
-            m_tree.SetValid( cursor, true );
-            bool line = i != children.size - 1;
-            for( int j=0; j<skip; j++ )
-            {
-                m_tree.SetTreeLine( cursor+j, line );
-            }
-        }
-        if( recursive )
-        {
-            depth = std::max( depth, Expand( cursor, true ) );
-        }
-        cursor += skip;
-    }
-    return depth + 1;
-}
-
-int ThreadView::GetRoot( int cursor ) const
-{
-    while( m_archive->GetParent( cursor ) != -1 ) cursor = m_archive->GetParent( cursor );
-    return cursor;
-}
-
 void ThreadView::PageForward()
 {
     auto cnt = getmaxy( m_win ) - 2;
@@ -213,11 +172,6 @@ void ThreadView::ExpandFill( int cursor )
         ExpandFill( cursor );
         cursor += skip;
     }
-}
-
-void ThreadView::Collapse( int cursor )
-{
-    m_tree.SetExpanded( cursor, false );
 }
 
 void ThreadView::FocusOn( int cursor )

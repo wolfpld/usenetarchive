@@ -21,6 +21,10 @@ public:
     GalaxyState GetGalaxyState( int idx );
     ScoreState GetScoreState( int idx );
     bool CheckVisited( int idx );
+    int GetRoot( int idx ) const;
+    bool CanExpand( int idx ) const;
+    int Expand( int idx, bool recursive );
+    void Collapse( int idx );
 
     bool IsValid( int idx ) const { return m_data[idx].valid; }
     bool IsExpanded( int idx ) const { return m_data[idx].expanded; }
