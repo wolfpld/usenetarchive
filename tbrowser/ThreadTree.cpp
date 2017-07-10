@@ -109,3 +109,11 @@ ScoreState ThreadTree::GetScoreState( int idx )
     }
     return state;
 }
+
+bool ThreadTree::CheckVisited( int idx )
+{
+    if( WasVisited( idx ) ) return true;
+    auto ret = m_storage.WasVisited( m_archive->GetMessageId( idx ) );
+    if( ret ) SetVisited( idx, true );
+    return ret;
+}

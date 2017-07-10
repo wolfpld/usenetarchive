@@ -20,10 +20,10 @@ public:
     GalaxyState CheckGalaxyState( int idx ) const;
     GalaxyState GetGalaxyState( int idx );
     ScoreState GetScoreState( int idx );
+    bool CheckVisited( int idx );
 
     bool IsValid( int idx ) const { return m_data[idx].valid; }
     bool IsExpanded( int idx ) const { return m_data[idx].expanded; }
-    bool WasVisited( int idx ) const { return m_data[idx].visited; }
     bool WasAllVisited( int idx ) const { return m_data[idx].visall; }
     int GetCondensedValue( int idx ) const { return m_data[idx].condensed; }
     int GetTreeLine( int idx, int line ) const { return m_tree[idx].Get( line ); }
@@ -31,7 +31,6 @@ public:
 
     void SetValid( int idx, bool val ) { m_data[idx].valid = val; }
     void SetExpanded( int idx, bool val ) { m_data[idx].expanded = val; }
-    void SetVisited( int idx, bool val ) { m_data[idx].visited = val; }
     void SetAllVisited( int idx, bool val ) { m_data[idx].visall = val; }
     void SetCondensedValue( int idx, int val ) { m_data[idx].condensed = val; }
     void SetTreeLine( int idx, bool line ) { m_tree[idx].Set( line ); }
@@ -39,9 +38,11 @@ public:
 private:
     GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
     ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }
+    bool WasVisited( int idx ) const { return m_data[idx].visited; }
 
     void SetGalaxyState( int idx, GalaxyState state ) { m_data[idx].galaxy = (uint8_t)state; }
     void SetScoreState( int idx, ScoreState state ) { m_tree[idx].SetScoreData( (int)state ); }
+    void SetVisited( int idx, bool val ) { m_data[idx].visited = val; }
 
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;

@@ -9,7 +9,6 @@
 
 #include "../libuat/Archive.hpp"
 #include "../libuat/Galaxy.hpp"
-#include "../libuat/PersistentStorage.hpp"
 
 #include "MessageView.hpp"
 #include "ThreadView.hpp"
@@ -18,7 +17,6 @@
 ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, const MessageView& mview )
     : View( 0, 1, 0, -2 )
     , m_archive( &archive )
-    , m_storage( storage )
     , m_mview( mview )
     , m_tree( archive, storage, galaxy, archive.NumberOfMessages() )
     , m_top( 0 )
@@ -281,7 +279,7 @@ static bool SameSubject( const char* subject, const char*& prev )
 bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
-    bool wasVisited = CheckVisited( idx );
+    bool wasVisited = m_tree.CheckVisited( idx );
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     if( m_cursor == idx )
@@ -338,7 +336,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             while( !stack.empty() )
             {
                 const auto id = stack.back();
-                if( !CheckVisited( id ) )
+                if( !m_tree.CheckVisited( id ) )
                 {
                     complete = false;
                     break;
@@ -593,7 +591,7 @@ void ThreadView::GoNextUnread()
     {
         m_cursor = GetNext( m_cursor );
     }
-    while( m_cursor != m_archive->NumberOfMessages() && CheckVisited( m_cursor ) );
+    while( m_cursor != m_archive->NumberOfMessages() && m_tree.CheckVisited( m_cursor ) );
     if( m_cursor == m_archive->NumberOfMessages() )
     {
         m_cursor = GetPrev( m_cursor );
@@ -630,12 +628,4 @@ int ThreadView::GetPrev( int idx ) const
         parent = m_archive->GetParent( parent );
     }
     return idx;
-}
-
-bool ThreadView::CheckVisited( int idx )
-{
-    if( m_tree.WasVisited( idx ) ) return true;
-    auto ret = m_storage.WasVisited( m_archive->GetMessageId( idx ) );
-    if( ret ) m_tree.SetVisited( idx, true );
-    return ret;
 }

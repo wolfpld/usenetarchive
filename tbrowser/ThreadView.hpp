@@ -50,10 +50,7 @@ private:
     int GetNext( int idx );
     int GetPrev( int idx ) const;
 
-    bool CheckVisited( int idx );
-
     const Archive* m_archive;
-    PersistentStorage& m_storage;
 
     const MessageView& m_mview;
     ThreadTree m_tree;
