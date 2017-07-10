@@ -51,7 +51,6 @@ private:
     int GetPrev( int idx ) const;
 
     bool CheckVisited( int idx );
-    ScoreState GetScoreState( int idx );
 
     const Archive* m_archive;
     PersistentStorage& m_storage;

@@ -20,7 +20,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_archive( &archive )
     , m_storage( storage )
     , m_mview( mview )
-    , m_tree( archive, galaxy, archive.NumberOfMessages() )
+    , m_tree( archive, storage, galaxy, archive.NumberOfMessages() )
     , m_top( 0 )
     , m_cursor( 0 )
     , m_fillPos( 0 )
@@ -386,7 +386,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     ScoreState ss;
     if( !hilite )
     {
-        ss = GetScoreState( idx );
+        ss = m_tree.GetScoreState( idx );
         switch( ss )
         {
         case ScoreState::Neutral:
@@ -638,27 +638,4 @@ bool ThreadView::CheckVisited( int idx )
     auto ret = m_storage.WasVisited( m_archive->GetMessageId( idx ) );
     if( ret ) m_tree.SetVisited( idx, true );
     return ret;
-}
-
-ScoreState ThreadView::GetScoreState( int idx )
-{
-    auto state = m_tree.GetScoreState( idx );
-    if( state == ScoreState::Unknown )
-    {
-        int score = m_archive->GetMessageScore( idx, m_storage.GetScoreList() );
-        if( score == 0 )
-        {
-            state = ScoreState::Neutral;
-        }
-        else if( score < 0 )
-        {
-            state = ScoreState::Negative;
-        }
-        else
-        {
-            state = ScoreState::Positive;
-        }
-        m_tree.SetScoreState( idx, state );
-    }
-    return state;
 }

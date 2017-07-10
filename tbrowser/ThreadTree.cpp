@@ -2,14 +2,16 @@
 
 #include "../libuat/Archive.hpp"
 #include "../libuat/Galaxy.hpp"
+#include "../libuat/PersistentStorage.hpp"
 #include "../libuat/ViewReference.hpp"
 
 #include "ThreadTree.hpp"
 
-ThreadTree::ThreadTree( const Archive& archive, const Galaxy* galaxy, size_t size )
+ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, size_t size )
     : m_data( size )
     , m_tree( size )
     , m_archive( &archive )
+    , m_storage( storage )
     , m_galaxy( galaxy )
 {
 }
@@ -82,4 +84,27 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
     }
 
     return GetGalaxyStateRaw( idx );
+}
+
+ScoreState ThreadTree::GetScoreState( int idx )
+{
+    auto state = GetScoreStateRaw( idx );
+    if( state == ScoreState::Unknown )
+    {
+        int score = m_archive->GetMessageScore( idx, m_storage.GetScoreList() );
+        if( score == 0 )
+        {
+            state = ScoreState::Neutral;
+        }
+        else if( score < 0 )
+        {
+            state = ScoreState::Negative;
+        }
+        else
+        {
+            state = ScoreState::Positive;
+        }
+        SetScoreState( idx, state );
+    }
+    return state;
 }
