@@ -41,7 +41,7 @@ public:
     void MoveCursorTop();
     void MoveCursorBottom();
 
-    GalaxyState CheckGalaxyState( int cursor ) const;
+    GalaxyState CheckGalaxyState( int cursor ) const { return m_tree.CheckGalaxyState( cursor ); }
 
 private:
     void ExpandFill( int cursor );
@@ -52,17 +52,16 @@ private:
 
     bool CheckVisited( int idx );
     ScoreState GetScoreState( int idx );
-    GalaxyState GetGalaxyState( int idx );
 
     const Archive* m_archive;
     PersistentStorage& m_storage;
-    const Galaxy* m_galaxy;
 
     const MessageView& m_mview;
     ThreadTree m_tree;
     int m_top, m_bottom;
     int m_cursor;
     int m_fillPos, m_topLevelPos;
+    bool m_galaxy;
 };
 
 #endif

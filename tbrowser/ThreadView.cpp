@@ -19,13 +19,13 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     : View( 0, 1, 0, -2 )
     , m_archive( &archive )
     , m_storage( storage )
-    , m_galaxy( galaxy )
     , m_mview( mview )
-    , m_tree( archive.NumberOfMessages() )
+    , m_tree( archive, galaxy, archive.NumberOfMessages() )
     , m_top( 0 )
     , m_cursor( 0 )
     , m_fillPos( 0 )
     , m_topLevelPos( 0 )
+    , m_galaxy( galaxy != nullptr )
 {
     Draw();
 }
@@ -33,7 +33,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
 void ThreadView::Reset( const Archive& archive )
 {
     m_archive = &archive;
-    m_tree.Reset( archive.NumberOfMessages() );
+    m_tree.Reset( archive, archive.NumberOfMessages() );
     m_top = m_bottom = m_cursor = m_fillPos = m_topLevelPos = 0;
 }
 
@@ -282,10 +282,6 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
-    if( m_galaxy && m_tree.GetGalaxyState( idx ) == GalaxyState::Unknown )
-    {
-        m_tree.SetGalaxyState( idx, GetGalaxyState( idx ) );
-    }
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     if( m_cursor == idx )
@@ -665,62 +661,4 @@ ScoreState ThreadView::GetScoreState( int idx )
         m_tree.SetScoreState( idx, state );
     }
     return state;
-}
-
-GalaxyState ThreadView::GetGalaxyState( int idx )
-{
-    assert( m_galaxy );
-    assert( m_tree.GetGalaxyState( idx ) == GalaxyState::Unknown );
-    const auto msgid = m_archive->GetMessageId( idx );
-    const auto gidx  = m_galaxy->GetMessageIndex( msgid );
-    const auto groups = m_galaxy->GetNumberOfGroups( gidx );
-    assert( groups > 0 );
-
-    ViewReference<uint32_t> ip = {};
-    ViewReference<uint32_t> ic = {};
-    const auto ind_idx = m_galaxy->GetIndirectIndex( gidx );
-    if( ind_idx != -1 )
-    {
-        ip = m_galaxy->GetIndirectParents( ind_idx );
-        ic = m_galaxy->GetIndirectChildren( ind_idx );
-    }
-
-    if( groups == 1 && ip.size == 0 && ic.size == 0 )
-    {
-        return GalaxyState::Nothing;
-    }
-    else
-    {
-        bool parents = !m_galaxy->AreParentsSame( gidx, msgid ) || ip.size != 0;
-        bool children = !m_galaxy->AreChildrenSame( gidx, msgid ) || ic.size != 0;
-        if( parents )
-        {
-            if( children )
-            {
-                return GalaxyState::BothDifferent;
-            }
-            else
-            {
-                return GalaxyState::ParentDifferent;
-            }
-        }
-        else
-        {
-            if( children )
-            {
-                return GalaxyState::ChildrenDifferent;
-            }
-            else
-            {
-                return GalaxyState::Crosspost;
-            }
-        }
-    }
-}
-
-GalaxyState ThreadView::CheckGalaxyState( int cursor ) const
-{
-    assert( m_galaxy );
-    assert( m_tree.GetGalaxyState( cursor ) != GalaxyState::Unknown );
-    return m_tree.GetGalaxyState( cursor );
 }
