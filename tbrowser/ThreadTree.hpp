@@ -20,7 +20,7 @@ public:
     GalaxyState CheckGalaxyState( int idx ) const;
     GalaxyState GetGalaxyState( int idx );
     ScoreState GetScoreState( int idx );
-    bool CheckVisited( int idx );
+    bool WasVisited( int idx );
     int GetRoot( int idx ) const;
     bool CanExpand( int idx ) const;
     void Expand( int idx, bool recursive );
@@ -39,7 +39,7 @@ private:
     GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
     ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }
     bool IsValid( int idx ) const { return m_data[idx].valid; }
-    bool WasVisited( int idx ) const { return m_data[idx].visited; }
+    bool WasVisitedRaw( int idx ) const { return m_data[idx].visited; }
 
     void SetValid( int idx, bool val ) { m_data[idx].valid = val; }
     void SetExpanded( int idx, bool val ) { m_data[idx].expanded = val; }

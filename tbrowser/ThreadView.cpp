@@ -198,7 +198,7 @@ static bool SameSubject( const char* subject, const char*& prev )
 bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
-    bool wasVisited = m_tree.CheckVisited( idx );
+    bool wasVisited = m_tree.WasVisited( idx );
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
     if( m_cursor == idx )
@@ -255,7 +255,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             while( !stack.empty() )
             {
                 const auto id = stack.back();
-                if( !m_tree.CheckVisited( id ) )
+                if( !m_tree.WasVisited( id ) )
                 {
                     complete = false;
                     break;
@@ -510,7 +510,7 @@ void ThreadView::GoNextUnread()
     {
         m_cursor = GetNext( m_cursor );
     }
-    while( m_cursor != m_archive->NumberOfMessages() && m_tree.CheckVisited( m_cursor ) );
+    while( m_cursor != m_archive->NumberOfMessages() && m_tree.WasVisited( m_cursor ) );
     if( m_cursor == m_archive->NumberOfMessages() )
     {
         m_cursor = GetPrev( m_cursor );
