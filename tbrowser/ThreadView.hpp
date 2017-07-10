@@ -4,9 +4,8 @@
 #include <stdint.h>
 #include <vector>
 
-#include "BitSet.hpp"
 #include "GalaxyState.hpp"
-#include "ThreadData.hpp"
+#include "ThreadTree.hpp"
 #include "View.hpp"
 
 class Archive;
@@ -29,7 +28,7 @@ public:
     bool CanExpand( int cursor );
     int Expand( int cursor, bool recursive );
     void Collapse( int cursor );
-    bool IsExpanded( int cursor ) const { return m_data[cursor].expanded; }
+    bool IsExpanded( int cursor ) const { return m_tree.IsExpanded( cursor ); }
     void FocusOn( int cursor );
     void MarkTreeCondensed( int cursor, int depth );
 
@@ -60,8 +59,7 @@ private:
     const Galaxy* m_galaxy;
 
     const MessageView& m_mview;
-    std::vector<ThreadData> m_data;
-    std::vector<BitSet> m_tree;
+    ThreadTree m_tree;
     int m_top, m_bottom;
     int m_cursor;
     int m_fillPos, m_topLevelPos;

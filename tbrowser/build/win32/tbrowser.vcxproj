@@ -215,6 +215,7 @@
     <ClCompile Include="..\..\SearchView.cpp" />
     <ClCompile Include="..\..\tbrowser.cpp" />
     <ClCompile Include="..\..\TextView.cpp" />
+    <ClCompile Include="..\..\ThreadTree.cpp" />
     <ClCompile Include="..\..\ThreadView.cpp" />
     <ClCompile Include="..\..\UTF8.cpp" />
     <ClCompile Include="..\..\View.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="..\..\SearchView.hpp" />
     <ClInclude Include="..\..\TextView.hpp" />
     <ClInclude Include="..\..\ThreadData.hpp" />
+    <ClInclude Include="..\..\ThreadTree.hpp" />
     <ClInclude Include="..\..\ThreadView.hpp" />
     <ClInclude Include="..\..\UTF8.hpp" />
     <ClInclude Include="..\..\View.hpp" />

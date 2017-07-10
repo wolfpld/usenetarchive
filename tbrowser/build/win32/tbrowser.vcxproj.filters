@@ -267,6 +267,9 @@
     <ClCompile Include="..\..\..\common\ICU.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ThreadTree.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -426,6 +429,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ThreadData.hpp">
+      <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThreadTree.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>

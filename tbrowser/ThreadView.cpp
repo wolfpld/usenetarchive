@@ -21,7 +21,6 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_storage( storage )
     , m_galaxy( galaxy )
     , m_mview( mview )
-    , m_data( archive.NumberOfMessages() )
     , m_tree( archive.NumberOfMessages() )
     , m_top( 0 )
     , m_cursor( 0 )
@@ -34,8 +33,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
 void ThreadView::Reset( const Archive& archive )
 {
     m_archive = &archive;
-    m_data = std::vector<ThreadData>( archive.NumberOfMessages() );
-    m_tree = std::vector<BitSet>( archive.NumberOfMessages() );
+    m_tree.Reset( archive.NumberOfMessages() );
     m_top = m_bottom = m_cursor = m_fillPos = m_topLevelPos = 0;
 }
 
@@ -132,8 +130,8 @@ bool ThreadView::CanExpand( int cursor )
 
 int ThreadView::Expand( int cursor, bool recursive )
 {
-    m_data[cursor].valid = 1;
-    m_data[cursor].expanded = 1;
+    m_tree.SetValid( cursor, true );
+    m_tree.SetExpanded( cursor, true );
 
     auto children = m_archive->GetChildren( cursor );
     int parent = cursor;
@@ -142,13 +140,13 @@ int ThreadView::Expand( int cursor, bool recursive )
     for( int i=0; i<children.size; i++ )
     {
         auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
-        if( !m_data[cursor].valid )
+        if( !m_tree.IsValid( cursor ) )
         {
-            m_data[cursor].valid = 1;
+            m_tree.SetValid( cursor, true );
             bool line = i != children.size - 1;
             for( int j=0; j<skip; j++ )
             {
-                m_tree[cursor+j].Set( line );
+                m_tree.SetTreeLine( cursor+j, line );
             }
         }
         if( recursive )
@@ -200,19 +198,19 @@ void ThreadView::MoveCursorBottom()
 
 void ThreadView::ExpandFill( int cursor )
 {
-    if( cursor == m_archive->NumberOfMessages()-1 || m_data[cursor+1].valid ) return;
+    if( cursor == m_archive->NumberOfMessages()-1 || m_tree.IsValid( cursor+1 ) ) return;
     auto children = m_archive->GetChildren( cursor );
     int parent = cursor;
     cursor++;
     for( int i=0; i<children.size; i++ )
     {
         auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
-        assert( !m_data[cursor].valid );
-        m_data[cursor].valid = true;
+        assert( !m_tree.IsValid( cursor ) );
+        m_tree.SetValid( cursor, true );
         bool line = i != children.size - 1;
         for( int j=0; j<skip; j++ )
         {
-            m_tree[cursor+j].Set( line );
+            m_tree.SetTreeLine( cursor+j, line );
         }
         ExpandFill( cursor );
         cursor += skip;
@@ -221,7 +219,7 @@ void ThreadView::ExpandFill( int cursor )
 
 void ThreadView::Collapse( int cursor )
 {
-    m_data[cursor].expanded = 0;
+    m_tree.SetExpanded( cursor, false );
 }
 
 void ThreadView::FocusOn( int cursor )
@@ -255,13 +253,13 @@ void ThreadView::FocusOn( int cursor )
 void ThreadView::MarkTreeCondensed( int cursor, int depth )
 {
     assert( GetRoot( cursor ) == cursor );
-    if( m_data[cursor].condensed > 0 ) return;
+    if( m_tree.GetCondensedValue( cursor ) > 0 ) return;
     depth = std::min<int>( CondensedMax, ( depth - CondensedDepthThreshold + CondensedStep - 1 ) / CondensedStep );
     assert( depth > 0 );
     auto cnt = m_archive->GetTotalChildrenCount( cursor );
     do
     {
-        m_data[cursor++].condensed = depth;
+        m_tree.SetCondensedValue( cursor++, depth );
     }
     while( --cnt );
 }
@@ -284,9 +282,9 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = CheckVisited( idx );
-    if( m_galaxy && (GalaxyState)m_data[idx].galaxy == GalaxyState::Unknown )
+    if( m_galaxy && m_tree.GetGalaxyState( idx ) == GalaxyState::Unknown )
     {
-        m_data[idx].galaxy = (uint8_t)GetGalaxyState( idx );
+        m_tree.SetGalaxyState( idx, GetGalaxyState( idx ) );
     }
 
     if( hilite ) wattron( m_win, COLOR_PAIR(2) | A_BOLD );
@@ -304,7 +302,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
 
     if( m_galaxy )
     {
-        switch( (GalaxyState)m_data[idx].galaxy )
+        switch( m_tree.GetGalaxyState( idx ) )
         {
         case GalaxyState::Crosspost:
             if( !hilite ) wattron( m_win, COLOR_PAIR( 3 ) );
@@ -333,7 +331,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     }
     if( wasVisited )
     {
-        bool complete = m_data[idx].visall;
+        bool complete = m_tree.WasAllVisited( idx );
         if( !complete )
         {
             ExpandFill( idx );
@@ -353,7 +351,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
                 const auto children = m_archive->GetChildren( id );
                 for( int i=0; i<children.size; i++ )
                 {
-                    if( !m_data[children.ptr[i]].visall )
+                    if( !m_tree.WasAllVisited( children.ptr[i] ) )
                     {
                         stack.emplace_back( children.ptr[i] );
                     }
@@ -361,7 +359,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             }
             if( complete )
             {
-                m_data[idx].visall = true;
+                m_tree.SetAllVisited( idx, true );
             }
         }
         if( complete )
@@ -441,7 +439,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     {
         if( !hilite ) wattron( m_win, COLOR_PAIR(4) );
         wmove( m_win, line, 29 );
-        waddch( m_win, m_data[idx].expanded ? '-' : '+' );
+        waddch( m_win, IsExpanded( idx ) ? '-' : '+' );
         if( !hilite ) wattroff( m_win, COLOR_PAIR(4) );
     }
 
@@ -453,12 +451,12 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     wmove( m_win, line, 31 );
     auto w = getmaxx( m_win );
     auto subject = m_archive->GetSubject( idx );
-    auto& tree = m_tree[idx];
-    auto treecnt = tree.Size();
+    auto treecnt = m_tree.GetTreeLineSize( idx );
     len = w - 33 - dlen;
     if( treecnt > 0 )
     {
-        const bool condensed = m_data[idx].condensed == CondensedMax || ( m_data[idx].condensed * CondensedStep + CondensedDepthThreshold ) * 2 > len;
+        auto cval = m_tree.GetCondensedValue( idx );
+        const bool condensed = cval == CondensedMax || ( cval * CondensedStep + CondensedDepthThreshold ) * 2 > len;
         int childline = std::numeric_limits<int>::max();
         if( m_mview.IsActive() && !hilite )
         {
@@ -487,7 +485,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
                 wattroff( m_win, COLOR_PAIR(5) );
                 wattron( m_win, COLOR_PAIR(4) );
             }
-            if( tree.Get( i ) )
+            if( m_tree.GetTreeLine( idx, i ) )
             {
                 wmove( m_win, line, 31 + i*lw );
                 waddch( m_win, ACS_VLINE );
@@ -500,7 +498,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
             wattroff( m_win, COLOR_PAIR(5) );
             wattron( m_win, COLOR_PAIR(4) );
         }
-        if( tree.Get( treecnt-1 ) )
+        if( m_tree.GetTreeLine( idx, treecnt-1 ) )
         {
             waddch( m_win, ACS_LTEE );
         }
@@ -508,7 +506,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
         {
             waddch( m_win, ACS_LLCORNER );
         }
-        if( children > 1 && ( condensed || !m_data[idx].expanded ) )
+        if( children > 1 && ( condensed || !IsExpanded( idx ) ) )
         {
             waddch( m_win, ACS_TTEE );
         }
@@ -611,7 +609,7 @@ void ThreadView::GoNextUnread()
 int ThreadView::GetNext( int idx )
 {
     assert( idx < m_archive->NumberOfMessages() );
-    if( m_data[idx].expanded )
+    if( IsExpanded( idx ) )
     {
         idx++;
     }
@@ -629,7 +627,7 @@ int ThreadView::GetPrev( int idx ) const
     auto parent = m_archive->GetParent( idx );
     while( parent != -1 )
     {
-        if( !m_data[parent].expanded )
+        if( !IsExpanded( parent ) )
         {
             idx = parent;
         }
@@ -640,15 +638,15 @@ int ThreadView::GetPrev( int idx ) const
 
 bool ThreadView::CheckVisited( int idx )
 {
-    if( m_data[idx].visited ) return true;
+    if( m_tree.WasVisited( idx ) ) return true;
     auto ret = m_storage.WasVisited( m_archive->GetMessageId( idx ) );
-    if( ret ) m_data[idx].visited = true;
+    if( ret ) m_tree.SetVisited( idx, true );
     return ret;
 }
 
 ScoreState ThreadView::GetScoreState( int idx )
 {
-    auto state = (ScoreState)m_tree[idx].GetScoreData();
+    auto state = m_tree.GetScoreState( idx );
     if( state == ScoreState::Unknown )
     {
         int score = m_archive->GetMessageScore( idx, m_storage.GetScoreList() );
@@ -664,7 +662,7 @@ ScoreState ThreadView::GetScoreState( int idx )
         {
             state = ScoreState::Positive;
         }
-        m_tree[idx].SetScoreData( (int)state );
+        m_tree.SetScoreState( idx, state );
     }
     return state;
 }
@@ -672,7 +670,7 @@ ScoreState ThreadView::GetScoreState( int idx )
 GalaxyState ThreadView::GetGalaxyState( int idx )
 {
     assert( m_galaxy );
-    assert( (GalaxyState)m_data[idx].galaxy == GalaxyState::Unknown );
+    assert( m_tree.GetGalaxyState( idx ) == GalaxyState::Unknown );
     const auto msgid = m_archive->GetMessageId( idx );
     const auto gidx  = m_galaxy->GetMessageIndex( msgid );
     const auto groups = m_galaxy->GetNumberOfGroups( gidx );
@@ -723,6 +721,6 @@ GalaxyState ThreadView::GetGalaxyState( int idx )
 GalaxyState ThreadView::CheckGalaxyState( int cursor ) const
 {
     assert( m_galaxy );
-    assert( (GalaxyState)m_data[cursor].galaxy != GalaxyState::Unknown );
-    return (GalaxyState)m_data[cursor].galaxy;
+    assert( m_tree.GetGalaxyState( cursor ) != GalaxyState::Unknown );
+    return m_tree.GetGalaxyState( cursor );
 }
