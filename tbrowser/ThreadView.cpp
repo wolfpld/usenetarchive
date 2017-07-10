@@ -76,12 +76,12 @@ void ThreadView::Draw()
     int cursorLine = -1;
     const char* prev = nullptr;
     auto idx = m_top;
-    const int hilite = m_mview.IsActive() ? m_mview.DisplayedMessage() : -1;
+    const int displayed = m_mview.IsActive() ? m_mview.DisplayedMessage() : -1;
     for( int i=0; i<h-1; i++ )
     {
         if( m_archive->GetParent( idx ) == -1 ) prev = nullptr;
         if( idx == m_cursor ) cursorLine = i;
-        DrawLine( i, idx, hilite == idx, prev );
+        DrawLine( i, idx, displayed == idx, displayed, prev );
         idx = GetNext( idx );
         if( idx >= m_archive->NumberOfMessages() ) break;
     }
@@ -192,7 +192,7 @@ static bool SameSubject( const char* subject, const char*& prev )
     return strcmp( prev, oldprev ) == 0;
 }
 
-void ThreadView::DrawLine( int line, int idx, bool hilite, const char*& prev )
+void ThreadView::DrawLine( int line, int idx, bool hilite, int colorBase, const char*& prev )
 {
     bool wasVisited = m_tree.WasVisited( idx );
 
@@ -336,13 +336,13 @@ void ThreadView::DrawLine( int line, int idx, bool hilite, const char*& prev )
         auto cval = m_tree.GetCondensedValue( idx );
         const bool condensed = cval == CondensedMax || ( cval * CondensedStep + CondensedDepthThreshold ) * 2 > len;
         int childline = std::numeric_limits<int>::max();
-        if( m_mview.IsActive() && !hilite )
+        if( !hilite && colorBase != -1 )
         {
             int parent = m_archive->GetParent( idx );
             int cnt = 1;
             while( parent != -1 )
             {
-                if( parent == m_mview.DisplayedMessage() )
+                if( parent == colorBase )
                 {
                     childline = treecnt - cnt;
                     break;
