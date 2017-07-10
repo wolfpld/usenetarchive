@@ -153,27 +153,6 @@ void ThreadView::MoveCursorBottom()
     m_cursor = GetPrev( m_bottom );
 }
 
-void ThreadView::ExpandFill( int cursor )
-{
-    if( cursor == m_archive->NumberOfMessages()-1 || m_tree.IsValid( cursor+1 ) ) return;
-    auto children = m_archive->GetChildren( cursor );
-    int parent = cursor;
-    cursor++;
-    for( int i=0; i<children.size; i++ )
-    {
-        auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
-        assert( !m_tree.IsValid( cursor ) );
-        m_tree.SetValid( cursor, true );
-        bool line = i != children.size - 1;
-        for( int j=0; j<skip; j++ )
-        {
-            m_tree.SetTreeLine( cursor+j, line );
-        }
-        ExpandFill( cursor );
-        cursor += skip;
-    }
-}
-
 void ThreadView::FocusOn( int cursor )
 {
     while( cursor >= m_bottom )
@@ -282,7 +261,7 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
         bool complete = m_tree.WasAllVisited( idx );
         if( !complete )
         {
-            ExpandFill( idx );
+            m_tree.ExpandFill( idx );
             complete = true;
             std::vector<uint32_t> stack;
             stack.reserve( 4 * 1024 );

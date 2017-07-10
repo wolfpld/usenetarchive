@@ -44,7 +44,6 @@ public:
     GalaxyState CheckGalaxyState( int cursor ) const { return m_tree.CheckGalaxyState( cursor ); }
 
 private:
-    void ExpandFill( int cursor );
     bool DrawLine( int line, int idx, const char*& prev );
 
     int GetNext( int idx );

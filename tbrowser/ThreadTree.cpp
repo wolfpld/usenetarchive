@@ -164,3 +164,24 @@ void ThreadTree::Collapse( int idx )
 {
     SetExpanded( idx, false );
 }
+
+void ThreadTree::ExpandFill( int cursor )
+{
+    if( cursor == m_archive->NumberOfMessages()-1 || IsValid( cursor+1 ) ) return;
+    auto children = m_archive->GetChildren( cursor );
+    int parent = cursor;
+    cursor++;
+    for( int i=0; i<children.size; i++ )
+    {
+        auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
+        assert( !IsValid( cursor ) );
+        SetValid( cursor, true );
+        bool line = i != children.size - 1;
+        for( int j=0; j<skip; j++ )
+        {
+            SetTreeLine( cursor+j, line );
+        }
+        ExpandFill( cursor );
+        cursor += skip;
+    }
+}

@@ -25,6 +25,7 @@ public:
     bool CanExpand( int idx ) const;
     int Expand( int idx, bool recursive );
     void Collapse( int idx );
+    void ExpandFill( int idx );
 
     bool IsValid( int idx ) const { return m_data[idx].valid; }
     bool IsExpanded( int idx ) const { return m_data[idx].expanded; }
@@ -37,7 +38,6 @@ public:
     void SetExpanded( int idx, bool val ) { m_data[idx].expanded = val; }
     void SetAllVisited( int idx, bool val ) { m_data[idx].visall = val; }
     void SetCondensedValue( int idx, int val ) { m_data[idx].condensed = val; }
-    void SetTreeLine( int idx, bool line ) { m_tree[idx].Set( line ); }
 
 private:
     GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
@@ -47,6 +47,7 @@ private:
     void SetGalaxyState( int idx, GalaxyState state ) { m_data[idx].galaxy = (uint8_t)state; }
     void SetScoreState( int idx, ScoreState state ) { m_tree[idx].SetScoreData( (int)state ); }
     void SetVisited( int idx, bool val ) { m_data[idx].visited = val; }
+    void SetTreeLine( int idx, bool line ) { m_tree[idx].Set( line ); }
 
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;
