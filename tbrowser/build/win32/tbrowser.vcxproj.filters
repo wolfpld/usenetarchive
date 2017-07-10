@@ -434,6 +434,9 @@
     <ClInclude Include="..\..\ThreadTree.hpp">
       <Filter>tbrowser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\Package.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
