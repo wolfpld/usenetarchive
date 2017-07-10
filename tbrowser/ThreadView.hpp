@@ -40,7 +40,7 @@ public:
     GalaxyState CheckGalaxyState( int cursor ) const { return m_tree.CheckGalaxyState( cursor ); }
 
 private:
-    void DrawLine( int line, int idx, const char*& prev );
+    void DrawLine( int line, int idx, bool hilite, const char*& prev );
 
     int GetNext( int idx );
     int GetPrev( int idx ) const;
