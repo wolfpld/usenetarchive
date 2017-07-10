@@ -79,10 +79,8 @@ void ThreadView::Draw()
     for( int i=0; i<h-1; i++ )
     {
         if( m_archive->GetParent( idx ) == -1 ) prev = nullptr;
-        if( DrawLine( i, idx, prev ) )
-        {
-            cursorLine = i;
-        }
+        if( idx == m_cursor ) cursorLine = i;
+        DrawLine( i, idx, prev );
         idx = GetNext( idx );
         if( idx >= m_archive->NumberOfMessages() ) break;
     }
@@ -193,7 +191,7 @@ static bool SameSubject( const char* subject, const char*& prev )
     return strcmp( prev, oldprev ) == 0;
 }
 
-bool ThreadView::DrawLine( int line, int idx, const char*& prev )
+void ThreadView::DrawLine( int line, int idx, const char*& prev )
 {
     bool hilite = m_mview.IsActive() && m_mview.DisplayedMessage() == idx;
     bool wasVisited = m_tree.WasVisited( idx );
@@ -423,8 +421,6 @@ bool ThreadView::DrawLine( int line, int idx, const char*& prev )
     if( !hilite ) wattroff( m_win, COLOR_PAIR(2) );
     waddch( m_win, (m_cursor == idx) ? '<' : ']' );
     if( hilite ) wattroff( m_win, COLOR_PAIR(2) | A_BOLD );
-
-    return m_cursor == idx;
 }
 
 void ThreadView::MoveCursor( int offset )
