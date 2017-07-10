@@ -336,20 +336,9 @@ void ThreadView::DrawLine( int line, int idx, bool hilite, int colorBase, const 
         auto cval = m_tree.GetCondensedValue( idx );
         const bool condensed = cval == CondensedMax || ( cval * CondensedStep + CondensedDepthThreshold ) * 2 > len;
         int childline = std::numeric_limits<int>::max();
-        if( !hilite && colorBase != -1 )
+        if( colorBase != -1 && idx > colorBase && idx < colorBase + m_archive->GetTotalChildrenCount( colorBase ) )
         {
-            int parent = m_archive->GetParent( idx );
-            int cnt = 1;
-            while( parent != -1 )
-            {
-                if( parent == colorBase )
-                {
-                    childline = treecnt - cnt;
-                    break;
-                }
-                cnt++;
-                parent = m_archive->GetParent( parent );
-            }
+            childline = m_tree.GetTreeLineSize( colorBase );
         }
 
         const int lw = condensed ? 1 : 2;
