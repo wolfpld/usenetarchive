@@ -321,7 +321,7 @@ void Browser::Entry()
                             else
                             {
                                 m_bottom.SetHelp( HelpSet::GalaxyOpen );
-                                m_gwarp->Entry( msgid.c_str(), GalaxyState::Unknown, false );
+                                m_gwarp->Entry( msgid.c_str(), GalaxyState::Unknown, false, m_tview.GetThreadTree() );
                                 m_bottom.SetHelp( HelpSet::Default );
                                 RestoreDefaultView();
                             }
@@ -424,7 +424,7 @@ void Browser::Entry()
                 else
                 {
                     m_bottom.SetHelp( HelpSet::GalaxyOpen );
-                    m_gwarp->Entry( m_archive->GetMessageId( m_tview.GetCursor() ), state, true );
+                    m_gwarp->Entry( m_archive->GetMessageId( m_tview.GetCursor() ), state, true, m_tview.GetThreadTree() );
                     m_bottom.SetHelp( HelpSet::Default );
                     RestoreDefaultView();
                 }

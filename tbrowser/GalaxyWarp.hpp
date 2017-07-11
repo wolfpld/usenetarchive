@@ -40,7 +40,7 @@ class GalaxyWarp : public View
 public:
     GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage );
 
-    void Entry( const char* msgid, GalaxyState state, bool showIndirect );
+    void Entry( const char* msgid, GalaxyState state, bool showIndirect, const ThreadTree& currentTree );
     void Resize();
 
 private:

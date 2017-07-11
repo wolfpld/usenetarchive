@@ -28,10 +28,12 @@ GalaxyWarp::GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, Persist
 {
 }
 
-void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect )
+void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect, const ThreadTree& currentTree )
 {
     m_msgid = msgid;
     m_top = m_bottom = m_cursor = 0;
+
+    bool needCurrent = false;
 
     assert( m_list.empty() );
     const auto gidx = m_galaxy.GetMessageIndex( msgid );
@@ -54,6 +56,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
         if( current == idx )
         {
             m_cursor = i;
+            needCurrent = true;
         }
         m_preview.emplace_back( PreviewEntry {} );
     }
@@ -82,6 +85,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
                     {
                         m_list.emplace_back( WarpEntry { idx, false, false, true } );
                     }
+                    if( current == idx ) needCurrent = true;
                     m_preview.emplace_back( PreviewEntry {} );
                 }
             }
@@ -105,10 +109,18 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
                     {
                         m_list.emplace_back( WarpEntry { idx, false, false, true } );
                     }
+                    if( current == idx ) needCurrent = true;
                     m_preview.emplace_back( PreviewEntry {} );
                 }
             }
         }
+    }
+
+    if( needCurrent )
+    {
+        assert( m_treeCache.empty() );
+        m_treeCacheMap.emplace( current, 0 );
+        m_treeCache.emplace_back( std::make_unique<ThreadTree>( currentTree ) );
     }
 
     m_active = true;
