@@ -70,9 +70,12 @@ bool Galaxy::IsArchiveAvailable( int idx ) const
     return bool( m_arch[idx] );
 }
 
-const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx )
+const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )
 {
-    m_active = idx;
+    if( change )
+    {
+        m_active = idx;
+    }
     return m_arch[idx];
 }
 
