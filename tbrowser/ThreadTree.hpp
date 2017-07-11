@@ -16,6 +16,9 @@ class ThreadTree
 {
 public:
     ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy );
+    ThreadTree( const ThreadTree& ) = delete;
+    ThreadTree( ThreadTree&& ) = delete;
+
     ~ThreadTree();
     void Reset( const Archive& archive );
     void Cleanup();
@@ -30,6 +33,9 @@ public:
     bool IsExpanded( int idx ) const { return m_data[idx].expanded; }
 
     void DrawLine( WINDOW* win, int line, int idx, bool hilite, int colorBase, int cursor, const char*& prev );
+
+    ThreadTree& operator=( const ThreadTree& ) = delete;
+    ThreadTree& operator=( ThreadTree&& ) = delete;
 
 private:
     GalaxyState GetGalaxyState( int idx );
