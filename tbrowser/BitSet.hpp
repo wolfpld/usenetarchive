@@ -9,14 +9,15 @@ class BitSet
 {
 public:
     BitSet() : asNumber( 1 ) {}
-    ~BitSet() { if( !inplace ) delete GetPtr(); }
 
-    void Set( bool enabled );
+    bool Set( bool enabled );
     bool Get( int pos ) const;
     int Size() const;
 
     void SetScoreData( int val ) { scoredata = val; }
     int GetScoreData() const { return scoredata; }
+
+    std::vector<bool>* Convert();
 
 private:
     enum { SizeBits = 6 };

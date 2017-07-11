@@ -2,7 +2,7 @@
 
 #include "BitSet.hpp"
 
-void BitSet::Set( bool enabled )
+bool BitSet::Set( bool enabled )
 {
     if( inplace )
     {
@@ -13,22 +13,29 @@ void BitSet::Set( bool enabled )
         }
         else
         {
-            auto v = new std::vector<bool>();
-            v->reserve( size+1 );
-            for( int i=0; i<size; i++ )
-            {
-                v->emplace_back( ( data >> i ) & 0x1 );
-            }
-            v->emplace_back( enabled );
-            auto score = scoredata;
-            ptr = (std::vector<bool>*)((size_t)v | ( score << 1 ));
-            assert( !inplace );
+            return false;
         }
     }
     else
     {
         GetPtr()->emplace_back( enabled );
     }
+    return true;
+}
+
+std::vector<bool>* BitSet::Convert()
+{
+    assert( inplace && size == InPlaceBits-1 );
+    auto v = new std::vector<bool>();
+    v->reserve( size+1 );
+    for( int i=0; i<size; i++ )
+    {
+        v->emplace_back( ( data >> i ) & 0x1 );
+    }
+    auto score = scoredata;
+    ptr = (std::vector<bool>*)((size_t)v | ( score << 1 ));
+    assert( !inplace );
+    return v;
 }
 
 bool BitSet::Get( int pos ) const

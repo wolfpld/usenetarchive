@@ -23,11 +23,26 @@ ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, cons
 {
 }
 
+ThreadTree::~ThreadTree()
+{
+    Cleanup();
+}
+
 void ThreadTree::Reset( const Archive& archive )
 {
+    Cleanup();
     m_data = std::vector<ThreadData>( archive.NumberOfMessages() );
     m_tree = std::vector<BitSet>( archive.NumberOfMessages() );
     m_archive = &archive;
+}
+
+void ThreadTree::Cleanup()
+{
+    for( auto& v : m_bitsetCleanup )
+    {
+        delete v;
+    }
+    m_bitsetCleanup.clear();
 }
 
 GalaxyState ThreadTree::CheckGalaxyState( int idx ) const
@@ -483,4 +498,14 @@ void ThreadTree::DrawLine( WINDOW* win, int line, int idx, bool hilite, int colo
     if( !hilite ) wattroff( win, COLOR_PAIR(2) );
     waddch( win, (cursor == idx) ? '<' : ']' );
     if( hilite ) wattroff( win, COLOR_PAIR(2) | A_BOLD );
+}
+
+void ThreadTree::SetTreeLine( int idx, bool line )
+{
+    if( !m_tree[idx].Set( line ) )
+    {
+        m_bitsetCleanup.emplace_back( m_tree[idx].Convert() );
+        auto success = m_tree[idx].Set( line );
+        assert( success );
+    }
 }

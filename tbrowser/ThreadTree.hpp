@@ -16,7 +16,9 @@ class ThreadTree
 {
 public:
     ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy );
+    ~ThreadTree();
     void Reset( const Archive& archive );
+    void Cleanup();
 
     GalaxyState CheckGalaxyState( int idx ) const;
     bool WasVisited( int idx );
@@ -46,7 +48,7 @@ private:
     void SetVisited( int idx, bool val ) { m_data[idx].visited = val; }
     void SetAllVisited( int idx, bool val ) { m_data[idx].visall = val; }
     void SetCondensedValue( int idx, int val ) { m_data[idx].condensed = val; }
-    void SetTreeLine( int idx, bool line ) { m_tree[idx].Set( line ); }
+    void SetTreeLine( int idx, bool line );
 
     int ExpandImpl( int idx, bool recursive );
     void MarkTreeCondensed( int idx, int depth );
@@ -58,6 +60,7 @@ private:
 
     std::vector<ThreadData> m_data;
     std::vector<BitSet> m_tree;
+    std::vector<std::vector<bool>*> m_bitsetCleanup;
 
     const Archive* m_archive;
     PersistentStorage& m_storage;
