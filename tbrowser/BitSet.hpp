@@ -8,8 +8,6 @@
 class BitSet
 {
 public:
-    BitSet() : asNumber( 1 ) {}
-
     bool Set( bool enabled );
     bool Get( int pos ) const;
     int Size() const;
@@ -28,7 +26,7 @@ private:
     {
         struct
         {
-            uint64_t inplace : 1;
+            uint64_t external : 1;
             uint64_t scoredata : 2;
             uint64_t data : InPlaceBits;
             uint64_t size : SizeBits;

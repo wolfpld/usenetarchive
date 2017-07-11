@@ -21,6 +21,7 @@ ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, cons
     , m_storage( storage )
     , m_galaxy( galaxy )
 {
+    memset( m_tree.data(), 0, m_tree.size() * sizeof( BitSet ) );
 }
 
 ThreadTree::~ThreadTree()
@@ -33,6 +34,7 @@ void ThreadTree::Reset( const Archive& archive )
     Cleanup();
     m_data = std::vector<ThreadData>( archive.NumberOfMessages() );
     m_tree = std::vector<BitSet>( archive.NumberOfMessages() );
+    memset( m_tree.data(), 0, m_tree.size() * sizeof( BitSet ) );
     m_archive = &archive;
 }
 

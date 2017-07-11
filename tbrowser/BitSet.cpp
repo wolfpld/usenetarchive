@@ -4,7 +4,7 @@
 
 bool BitSet::Set( bool enabled )
 {
-    if( inplace )
+    if( !external )
     {
         if( size < InPlaceBits-1 )
         {
@@ -25,7 +25,7 @@ bool BitSet::Set( bool enabled )
 
 std::vector<bool>* BitSet::Convert()
 {
-    assert( inplace && size == InPlaceBits-1 );
+    assert( !external && size == InPlaceBits-1 );
     auto v = new std::vector<bool>();
     v->reserve( size+1 );
     for( int i=0; i<size; i++ )
@@ -33,14 +33,14 @@ std::vector<bool>* BitSet::Convert()
         v->emplace_back( ( data >> i ) & 0x1 );
     }
     auto score = scoredata;
-    ptr = (std::vector<bool>*)((size_t)v | ( score << 1 ));
-    assert( !inplace );
+    ptr = (std::vector<bool>*)((size_t)v | ( score << 1 ) | 1);
+    assert( external );
     return v;
 }
 
 bool BitSet::Get( int pos ) const
 {
-    if( inplace )
+    if( !external )
     {
         assert( pos < size );
         return ( data >> pos ) & 0x1;
@@ -54,7 +54,7 @@ bool BitSet::Get( int pos ) const
 
 int BitSet::Size() const
 {
-    if( inplace )
+    if( !external )
     {
         return size;
     }
