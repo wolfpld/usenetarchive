@@ -342,7 +342,7 @@ void GalaxyWarp::DrawPreview( int size )
     auto idx = m_preview[m_cursor].idx;
     auto begin = m_preview[m_cursor].begin;
     auto end = m_preview[m_cursor].end;
-    auto& tree = m_treeCache[m_preview[m_cursor].treeid];
+    auto tree = m_treeCache[m_preview[m_cursor].treeid].get();
 
     const int mid = size / 2;
     int start = idx;
@@ -355,7 +355,7 @@ void GalaxyWarp::DrawPreview( int size )
     const char* prev = nullptr;
     for( int i=start; i<stop; i++ )
     {
-        tree.DrawLine( m_win, ++line, i, i == idx, idx, idx, prev );
+        tree->DrawLine( m_win, ++line, i, i == idx, idx, idx, prev );
     }
 }
 
@@ -372,13 +372,13 @@ void GalaxyWarp::PreparePreview( int cursor )
     {
         treeid = m_treeCache.size();
         m_treeCacheMap.emplace( aid, treeid );
-        m_treeCache.emplace_back( *archive, m_storage, &m_galaxy );
+        m_treeCache.emplace_back( std::make_unique<ThreadTree>( *archive, m_storage, &m_galaxy ) );
     }
     else
     {
         treeid = it->second;
     }
-    tree = &m_treeCache[treeid];
+    tree = m_treeCache[treeid].get();
 
     auto begin = tree->GetRoot( idx );
     auto end = begin + archive->GetTotalChildrenCount( begin );

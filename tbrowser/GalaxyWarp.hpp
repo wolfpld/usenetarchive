@@ -2,6 +2,7 @@
 #define __GALAXYWARP_HPP__
 
 #include <map>
+#include <memory>
 #include <stdint.h>
 #include <vector>
 
@@ -58,7 +59,7 @@ private:
 
     std::vector<WarpEntry> m_list;
     std::vector<PreviewEntry> m_preview;
-    std::vector<ThreadTree> m_treeCache;
+    std::vector<std::unique_ptr<ThreadTree>> m_treeCache;
     std::map<uint32_t, uint32_t> m_treeCacheMap;
 
     bool m_active;
