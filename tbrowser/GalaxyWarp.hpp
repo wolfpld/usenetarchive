@@ -1,6 +1,7 @@
 #ifndef __GALAXYWARP_HPP__
 #define __GALAXYWARP_HPP__
 
+#include <map>
 #include <stdint.h>
 #include <vector>
 
@@ -11,6 +12,7 @@ class BottomBar;
 class Browser;
 class Galaxy;
 class PersistentStorage;
+class ThreadTree;
 
 struct WarpEntry
 {
@@ -22,6 +24,14 @@ struct WarpEntry
     int parent;
     int children;
     int totalchildren;
+};
+
+struct PreviewEntry
+{
+    int treeid;
+    int begin;
+    int end;
+    int idx;
 };
 
 class GalaxyWarp : public View
@@ -39,6 +49,7 @@ private:
     void DrawPreview( int size );
 
     void Cleanup();
+    void PreparePreview( int cursor );
 
     Browser* m_parent;
     BottomBar& m_bar;
@@ -46,6 +57,9 @@ private:
     PersistentStorage& m_storage;
 
     std::vector<WarpEntry> m_list;
+    std::vector<PreviewEntry> m_preview;
+    std::vector<ThreadTree> m_treeCache;
+    std::map<uint32_t, uint32_t> m_treeCacheMap;
 
     bool m_active;
 

@@ -55,6 +55,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
         {
             m_cursor = i;
         }
+        m_preview.emplace_back( PreviewEntry {} );
     }
 
     if( showIndirect )
@@ -81,6 +82,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
                     {
                         m_list.emplace_back( WarpEntry { idx, false, false, true } );
                     }
+                    m_preview.emplace_back( PreviewEntry {} );
                 }
             }
 
@@ -103,6 +105,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
                     {
                         m_list.emplace_back( WarpEntry { idx, false, false, true } );
                     }
+                    m_preview.emplace_back( PreviewEntry {} );
                 }
             }
         }
@@ -169,6 +172,9 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
 void GalaxyWarp::Cleanup()
 {
     m_list.clear();
+    m_preview.clear();
+    m_treeCache.clear();
+    m_treeCacheMap.clear();
 }
 
 void GalaxyWarp::Resize()
@@ -328,27 +334,22 @@ void GalaxyWarp::DrawPreview( int size )
     size--;
 
     if( !m_list[m_cursor].available ) return;
-
-    auto& archive = m_galaxy.GetArchive( m_list[m_cursor].id, false );
-    auto idx = archive->GetMessageIndex( m_list[m_cursor].msgid );
-
-    ThreadTree tree( *archive, m_storage, &m_galaxy );
-    auto begin = tree.GetRoot( idx );
-    auto end = begin + archive->GetTotalChildrenCount( begin );
-
-    if( tree.CanExpand( begin ) )
+    if( m_preview[m_cursor].end == 0 )
     {
-        tree.Expand( begin, true );
+        PreparePreview( m_cursor );
     }
 
-    const int mid = size / 2;
+    auto idx = m_preview[m_cursor].idx;
+    auto begin = m_preview[m_cursor].begin;
+    auto end = m_preview[m_cursor].end;
+    auto& tree = m_treeCache[m_preview[m_cursor].treeid];
 
+    const int mid = size / 2;
     int start = idx;
     while( start > begin && idx - start < mid )
     {
         start--;
     }
-
     const auto stop = start + std::min<int>( size, end - begin );
 
     const char* prev = nullptr;
@@ -356,6 +357,38 @@ void GalaxyWarp::DrawPreview( int size )
     {
         tree.DrawLine( m_win, ++line, i, i == idx, idx, idx, prev );
     }
+}
+
+void GalaxyWarp::PreparePreview( int cursor )
+{
+    const auto aid = m_list[cursor].id;
+    auto& archive = m_galaxy.GetArchive( aid, false );
+    auto idx = archive->GetMessageIndex( m_list[cursor].msgid );
+
+    int treeid;
+    ThreadTree* tree;
+    auto it = m_treeCacheMap.find( aid );
+    if( it == m_treeCacheMap.end() )
+    {
+        treeid = m_treeCache.size();
+        m_treeCacheMap.emplace( aid, treeid );
+        m_treeCache.emplace_back( *archive, m_storage, &m_galaxy );
+    }
+    else
+    {
+        treeid = it->second;
+    }
+    tree = &m_treeCache[treeid];
+
+    auto begin = tree->GetRoot( idx );
+    auto end = begin + archive->GetTotalChildrenCount( begin );
+
+    if( tree->CanExpand( begin ) )
+    {
+        tree->Expand( begin, true );
+    }
+
+    m_preview[cursor] = PreviewEntry { treeid, begin, (int)end, idx };
 }
 
 void GalaxyWarp::MoveCursor( int offset )
