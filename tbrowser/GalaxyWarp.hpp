@@ -36,6 +36,7 @@ private:
     void MoveCursor( int offset );
 
     void Draw();
+    void DrawPreview( int size );
 
     Browser* m_parent;
     BottomBar& m_bar;

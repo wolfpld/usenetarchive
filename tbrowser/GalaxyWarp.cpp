@@ -11,6 +11,7 @@
 #include "BottomBar.hpp"
 #include "Browser.hpp"
 #include "GalaxyWarp.hpp"
+#include "ThreadTree.hpp"
 #include "UTF8.hpp"
 
 GalaxyWarp::GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage )
@@ -177,6 +178,9 @@ void GalaxyWarp::Draw()
     const int num = m_list.size();
     int w, h;
     getmaxyx( m_win, h, w );
+    h = h - 4;  // header
+    int psize = (h+1) / 2;
+    h = h - psize;
 
     werase( m_win );
     mvwprintw( m_win, 1, 2, "Message ID: " );
@@ -295,7 +299,56 @@ void GalaxyWarp::Draw()
 
     m_bottom = line;
 
+    DrawPreview( psize );
+
     wnoutrefresh( m_win );
+}
+
+void GalaxyWarp::DrawPreview( int size )
+{
+    int w, h;
+    getmaxyx( m_win, h, w );
+
+    int line = h - size;
+    wmove( m_win, line, 0 );
+    wattron( m_win, COLOR_PAIR( 1 ) );
+    wprintw( m_win, " Thread preview" );
+    for( int i=0; i<w-15; i++ )
+    {
+        waddch( m_win, ' ' );
+    }
+    wattroff( m_win, COLOR_PAIR( 1 ) );
+    size--;
+
+    if( !m_list[m_cursor].available ) return;
+
+    auto& archive = m_galaxy.GetArchive( m_list[m_cursor].id, false );
+    auto idx = archive->GetMessageIndex( m_list[m_cursor].msgid );
+
+    ThreadTree tree( *archive, m_storage, &m_galaxy, archive->NumberOfMessages() );
+    auto begin = tree.GetRoot( idx );
+    auto end = begin + archive->GetTotalChildrenCount( begin );
+
+    if( tree.CanExpand( begin ) )
+    {
+        tree.Expand( begin, true );
+    }
+
+    const int mid = size / 2;
+
+    int start = idx;
+    while( start > begin && idx - start < mid )
+    {
+        start--;
+    }
+
+    const auto stop = start + std::min<int>( size, end - begin );
+
+    const char* prev = nullptr;
+    for( int i=start; i<stop; i++ )
+    {
+        tree.DrawLine( m_win, ++line, i, i == idx, idx, idx, prev );
+    }
 }
 
 void GalaxyWarp::MoveCursor( int offset )
