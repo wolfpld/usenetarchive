@@ -311,13 +311,13 @@ void GalaxyWarp::DrawPreview( int size )
 
     int line = h - size;
     wmove( m_win, line, 0 );
-    wattron( m_win, COLOR_PAIR( 1 ) );
+    wattron( m_win, COLOR_PAIR( 15 ) | A_BOLD );
     wprintw( m_win, " Thread preview" );
     for( int i=0; i<w-15; i++ )
     {
         waddch( m_win, ' ' );
     }
-    wattroff( m_win, COLOR_PAIR( 1 ) );
+    wattroff( m_win, COLOR_PAIR( 15 ) | A_BOLD );
     size--;
 
     if( !m_list[m_cursor].available ) return;
