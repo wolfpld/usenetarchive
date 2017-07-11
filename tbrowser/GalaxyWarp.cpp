@@ -33,7 +33,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
     m_msgid = msgid;
     m_top = m_bottom = m_cursor = 0;
 
-    m_list.clear();
+    assert( m_list.empty() );
     const auto gidx = m_galaxy.GetMessageIndex( msgid );
     const auto groups = m_galaxy.GetGroups( gidx );
     const auto current = m_galaxy.GetActiveArchive();
@@ -121,6 +121,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
             break;
         case 'q':
             m_active = false;
+            Cleanup();
             return;
         case KEY_DOWN:
         case 'j':
@@ -149,6 +150,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
                 m_parent->SwitchArchive( archive, m_galaxy.GetArchiveFilename( m_list[m_cursor].id ) );
                 m_parent->SwitchToMessage( archive->GetMessageIndex( m_list[m_cursor].msgid ) );
                 m_active = false;
+                Cleanup();
                 return;
             }
             else
@@ -162,6 +164,11 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect 
         }
         m_bar.Update();
     }
+}
+
+void GalaxyWarp::Cleanup()
+{
+    m_list.clear();
 }
 
 void GalaxyWarp::Resize()

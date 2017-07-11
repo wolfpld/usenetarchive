@@ -38,6 +38,8 @@ private:
     void Draw();
     void DrawPreview( int size );
 
+    void Cleanup();
+
     Browser* m_parent;
     BottomBar& m_bar;
     Galaxy& m_galaxy;
