@@ -38,6 +38,7 @@ public:
     void MoveCursorBottom();
 
     GalaxyState CheckGalaxyState( int cursor ) const { return m_tree.CheckGalaxyState( cursor ); }
+    const ThreadTree& GetThreadTree() const { return m_tree; }
 
 private:
     int GetNext( int idx );
