@@ -14,19 +14,19 @@
 #include "ThreadTree.hpp"
 #include "UTF8.hpp"
 
-ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, size_t size )
-    : m_data( size )
-    , m_tree( size )
+ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy )
+    : m_data( archive.NumberOfMessages() )
+    , m_tree( archive.NumberOfMessages() )
     , m_archive( &archive )
     , m_storage( storage )
     , m_galaxy( galaxy )
 {
 }
 
-void ThreadTree::Reset( const Archive& archive, size_t size )
+void ThreadTree::Reset( const Archive& archive )
 {
-    m_data = std::vector<ThreadData>( size );
-    m_tree = std::vector<BitSet>( size );
+    m_data = std::vector<ThreadData>( archive.NumberOfMessages() );
+    m_tree = std::vector<BitSet>( archive.NumberOfMessages() );
     m_archive = &archive;
 }
 

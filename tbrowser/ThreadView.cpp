@@ -12,7 +12,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     : View( 0, 1, 0, -2 )
     , m_archive( &archive )
     , m_mview( mview )
-    , m_tree( archive, storage, galaxy, archive.NumberOfMessages() )
+    , m_tree( archive, storage, galaxy )
     , m_top( 0 )
     , m_cursor( 0 )
     , m_fillPos( 0 )
@@ -25,7 +25,7 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
 void ThreadView::Reset( const Archive& archive )
 {
     m_archive = &archive;
-    m_tree.Reset( archive, archive.NumberOfMessages() );
+    m_tree.Reset( archive );
     m_top = m_bottom = m_cursor = m_fillPos = m_topLevelPos = 0;
 }
 

@@ -15,8 +15,8 @@ class PersistentStorage;
 class ThreadTree
 {
 public:
-    ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy, size_t size );
-    void Reset( const Archive& archive, size_t size );
+    ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy );
+    void Reset( const Archive& archive );
 
     GalaxyState CheckGalaxyState( int idx ) const;
     bool WasVisited( int idx );

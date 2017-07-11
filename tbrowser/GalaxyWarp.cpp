@@ -325,7 +325,7 @@ void GalaxyWarp::DrawPreview( int size )
     auto& archive = m_galaxy.GetArchive( m_list[m_cursor].id, false );
     auto idx = archive->GetMessageIndex( m_list[m_cursor].msgid );
 
-    ThreadTree tree( *archive, m_storage, &m_galaxy, archive->NumberOfMessages() );
+    ThreadTree tree( *archive, m_storage, &m_galaxy );
     auto begin = tree.GetRoot( idx );
     auto end = begin + archive->GetTotalChildrenCount( begin );
 
