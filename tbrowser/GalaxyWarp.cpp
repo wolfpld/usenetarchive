@@ -350,7 +350,7 @@ void GalaxyWarp::DrawPreview( int size )
     {
         start--;
     }
-    const auto stop = start + std::min<int>( size, end - begin );
+    const auto stop = std::min( start + std::min<int>( size, end - begin ), end );
 
     const char* prev = nullptr;
     for( int i=start; i<stop; i++ )
