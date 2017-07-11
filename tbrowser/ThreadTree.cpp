@@ -26,6 +26,18 @@ ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, cons
     memset( m_tree, 0, size * sizeof( BitSet ) );
 }
 
+ThreadTree::ThreadTree( const ThreadTree& ref )
+    : m_archive( ref.m_archive )
+    , m_storage( ref.m_storage )
+    , m_galaxy( ref.m_galaxy )
+{
+    const auto size = m_archive->NumberOfMessages();
+    m_data = new ThreadData[size];
+    m_tree = new BitSet[size];
+    memcpy( m_data, ref.m_data, size * sizeof( ThreadData ) );
+    memcpy( m_tree, ref.m_tree, size * sizeof( BitSet ) );
+}
+
 ThreadTree::~ThreadTree()
 {
     Cleanup();

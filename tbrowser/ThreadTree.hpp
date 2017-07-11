@@ -16,7 +16,7 @@ class ThreadTree
 {
 public:
     ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy );
-    ThreadTree( const ThreadTree& ) = delete;
+    explicit ThreadTree( const ThreadTree& ref );
     ThreadTree( ThreadTree&& ) = delete;
 
     ~ThreadTree();
