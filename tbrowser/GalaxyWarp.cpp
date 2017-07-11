@@ -203,6 +203,7 @@ void GalaxyWarp::Draw()
     mvwprintw( m_win, 2, 2, "Select archive to open: (%i/%i)", m_cursor+1, num );
 
     const int lenBase = w-2;
+    int cursorLine = -1;
 
     int line = m_top;
     for( int i=0; i<(h-4)/2; i++ )
@@ -215,6 +216,7 @@ void GalaxyWarp::Draw()
             wmove( m_win, 4+i*2, 0 );
             wattron( m_win, COLOR_PAIR( 2 ) );
             wprintw( m_win, "->" );
+            cursorLine = i;
         }
         else
         {
@@ -313,6 +315,11 @@ void GalaxyWarp::Draw()
     m_bottom = line;
 
     DrawPreview( psize );
+
+    if( cursorLine != -1 )
+    {
+        wmove( m_win, 4+cursorLine*2, 1 );
+    }
 
     wnoutrefresh( m_win );
 }
