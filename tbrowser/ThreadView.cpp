@@ -230,7 +230,6 @@ void ThreadView::GoNextUnread()
         m_cursor = GetPrev( m_cursor );
     }
     FocusOn( m_cursor );
-    Draw();
 }
 
 int ThreadView::GetNext( int idx )
