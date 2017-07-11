@@ -64,8 +64,8 @@ private:
     ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }
     bool WasAllVisitedRaw( int idx ) const { return m_data[idx].visall; }
 
-    std::vector<ThreadData> m_data;
-    std::vector<BitSet> m_tree;
+    ThreadData* m_data;
+    BitSet* m_tree;
     std::vector<std::vector<bool>*> m_bitsetCleanup;
 
     const Archive* m_archive;

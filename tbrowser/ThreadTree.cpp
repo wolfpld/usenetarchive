@@ -15,13 +15,15 @@
 #include "UTF8.hpp"
 
 ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy )
-    : m_data( archive.NumberOfMessages() )
-    , m_tree( archive.NumberOfMessages() )
-    , m_archive( &archive )
+    : m_archive( &archive )
     , m_storage( storage )
     , m_galaxy( galaxy )
 {
-    memset( m_tree.data(), 0, m_tree.size() * sizeof( BitSet ) );
+    const auto size = archive.NumberOfMessages();
+    m_data = new ThreadData[size];
+    m_tree = new BitSet[size];
+    memset( m_data, 0, size * sizeof( ThreadData ) );
+    memset( m_tree, 0, size * sizeof( BitSet ) );
 }
 
 ThreadTree::~ThreadTree()
@@ -32,14 +34,18 @@ ThreadTree::~ThreadTree()
 void ThreadTree::Reset( const Archive& archive )
 {
     Cleanup();
-    m_data = std::vector<ThreadData>( archive.NumberOfMessages() );
-    m_tree = std::vector<BitSet>( archive.NumberOfMessages() );
-    memset( m_tree.data(), 0, m_tree.size() * sizeof( BitSet ) );
+    const auto size = archive.NumberOfMessages();
+    m_data = new ThreadData[size];
+    m_tree = new BitSet[size];
+    memset( m_data, 0, size * sizeof( ThreadData ) );
+    memset( m_tree, 0, size * sizeof( BitSet ) );
     m_archive = &archive;
 }
 
 void ThreadTree::Cleanup()
 {
+    delete[] m_data;
+    delete[] m_tree;
     for( auto& v : m_bitsetCleanup )
     {
         delete v;
