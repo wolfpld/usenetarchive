@@ -22,7 +22,7 @@ public:
     BottomBar( Browser* parent );
 
     void Update();
-    void Resize() const;
+    void Resize();
 
     std::string Query( const char* prompt, const char* entry = nullptr, bool filesystem = false );
     std::string InteractiveQuery( const char* prompt, const std::function<void(const std::string&)>& cb, const char* entry = nullptr );
@@ -31,7 +31,7 @@ public:
     void SetHelp( HelpSet set );
 
 private:
-    void PrintHelp() const;
+    void PrintHelp();
     void PrintQuery( const char* prompt, const char* str ) const;
     void SuggestFiles( std::string& str, int& pos ) const;
 

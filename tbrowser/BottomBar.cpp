@@ -30,7 +30,7 @@ void BottomBar::Update()
     }
 }
 
-void BottomBar::Resize() const
+void BottomBar::Resize()
 {
     ResizeView( 0, LINES-1, 0, 1 );
     werase( m_win );
@@ -264,8 +264,9 @@ void BottomBar::SetHelp( HelpSet set )
     wnoutrefresh( m_win );
 }
 
-void BottomBar::PrintHelp() const
+void BottomBar::PrintHelp()
 {
+    m_reset = 0;
     werase( m_win );
     switch( m_help )
     {
