@@ -92,4 +92,10 @@ static inline uint8_t LexiconHitPos( uint8_t v )
     return v & LexiconHitPosMask[type];
 }
 
+static inline bool LexiconHitIsMaxPos( uint8_t v )
+{
+    auto type = LexiconDecodeType( v );
+    return ( v & LexiconHitPosMask[type] ) == LexiconHitPosMask[type];
+}
+
 #endif
