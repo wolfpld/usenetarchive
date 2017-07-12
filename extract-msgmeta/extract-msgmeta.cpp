@@ -211,6 +211,7 @@ int main( int argc, char** argv )
     fclose( out );
 
     delete[] data;
+    delete[] buf;
 
     return 0;
 }
