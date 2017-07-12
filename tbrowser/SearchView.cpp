@@ -429,7 +429,8 @@ void SearchView::FillPreview( int idx )
                                 }
                             }
                             if( next ) break;
-                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [lptr] ( const auto& v ) { return v.first == lptr; } ) == wlmap[i].end() ) break;
+                            wptr = ptr + ( lptr - lstart );
+                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
                             lptr++;
                         }
                         if( !next )
