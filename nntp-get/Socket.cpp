@@ -70,6 +70,7 @@ bool Socket::Connect( const char* addr )
     if( !ptr ) return false;
 
     m_sock = sock;
+    return true;
 }
 
 void Socket::Close()
