@@ -681,12 +681,38 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
             idx.emplace_back( i );
         }
 
-        if( idx.size() > 1 )
+        int idxsize = idx.size();
+        if( idxsize > 1 )
         {
             std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
+
+            bool hitmask[256];
+            memset( &hitmask, 0, sizeof( hitmask ) );
+            int i=0;
+            while( i<idxsize )
+            {
+                const auto hit = hits[idx[i]];
+                if( !LexiconHitIsMaxPos( hit ) )
+                {
+                    if( !hitmask[hit] )
+                    {
+                        hitmask[hit] = true;
+                        i++;
+                    }
+                    else
+                    {
+                        idx.erase( idx.begin() + i );
+                        idxsize--;
+                    }
+                }
+                else
+                {
+                    i++;
+                }
+            }
         }
 
-        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), hits.size() ) );
+        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), idxsize ) );
         auto& sr = result.back();
         const auto n = sr.hitnum;
         for( int i=0; i<n; i++ )
