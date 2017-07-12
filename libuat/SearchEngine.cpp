@@ -424,8 +424,9 @@ std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<std::
     {
         // hits are already sorted
         result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum ) );
-        memcpy( result.back().hits, v.hits, v.hitnum );
-        memset( result.back().words, 0, v.hitnum * sizeof( uint32_t ) );
+        auto& sr = result.back();
+        memcpy( sr.hits, v.hits, sr.hitnum );
+        memset( sr.words, 0, sr.hitnum * sizeof( uint32_t ) );
     }
 
     return result;
@@ -685,9 +686,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
             std::sort( idx.begin(), idx.end(), [&hits]( const auto& l, const auto& r ) { return LexiconHitRank( hits[l] ) > LexiconHitRank( hits[r] ); } );
         }
 
-        const auto n = std::min<int>( hits.size(), SearchResultMaxHits );
-        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), n ) );
+        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), hits.size() ) );
         auto& sr = result.back();
+        const auto n = sr.hitnum;
         for( int i=0; i<n; i++ )
         {
             sr.hits[i] = hits[idx[i]];
