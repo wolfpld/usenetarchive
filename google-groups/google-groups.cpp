@@ -1,5 +1,8 @@
 // Based on https://github.com/henryk/gggd
 
+#ifdef __CYGWIN__
+#  include <sys/select.h>
+#endif
 #include <algorithm>
 #include <assert.h>
 #include <curl/curl.h>
