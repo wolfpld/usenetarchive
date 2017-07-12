@@ -1,6 +1,6 @@
-CFLAGS += -DZDICT_STATIC_LINKING_ONLY
+CFLAGS +=
 CXXFLAGS := $(CFLAGS) -std=c++14
-DEFINES +=
+DEFINES += -DZDICT_STATIC_LINKING_ONLY
 INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS := -lpthread
 IMAGE := update-zstd

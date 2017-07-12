@@ -1,7 +1,7 @@
-CFLAGS += $(shell pkg-config --cflags gmime-2.6)
+CFLAGS +=
 CXXFLAGS := $(CFLAGS) -std=gnu++14
 DEFINES +=
-INCLUDES :=
+INCLUDES := $(shell pkg-config --cflags gmime-2.6)
 LIBS := $(shell pkg-config --libs gmime-2.6)
 IMAGE := utf8ize
 
