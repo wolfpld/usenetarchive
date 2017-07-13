@@ -313,6 +313,11 @@ void SearchView::Reset( Archive& archive )
     m_top = m_bottom = m_cursor = 0;
 }
 
+static inline bool CheckOverlap( const char* w1s, const char* w1e, const char* w2s, const char* w2e )
+{
+    return w1s < w2e && w1e > w2s;
+}
+
 void SearchView::FillPreview( int idx )
 {
     const auto& res = m_result.results[idx];
@@ -400,7 +405,8 @@ void SearchView::FillPreview( int idx )
                                 wptr++;
                                 assert( wptr <= end - word.size() );
                             }
-                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
+                            auto wend = wptr + word.size();
+                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr, wend] ( const auto& v ) { return CheckOverlap( wptr, wend, v.first, v.second ); } ) == wlmap[i].end() ) break;
                             wptr++;
                         }
                         wlmap[i].emplace_back( wptr, wptr + word.size() );
@@ -430,7 +436,8 @@ void SearchView::FillPreview( int idx )
                             }
                             if( next ) break;
                             wptr = ptr + ( lptr - lstart );
-                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr] ( const auto& v ) { return v.first == wptr; } ) == wlmap[i].end() ) break;
+                            auto wend = wptr + wlen;
+                            if( std::find_if( wlmap[i].begin(), wlmap[i].end(), [wptr, wend] ( const auto& v ) { return CheckOverlap( wptr, wend, v.first, v.second ); } ) == wlmap[i].end() ) break;
                             lptr++;
                         }
                         if( !next )
