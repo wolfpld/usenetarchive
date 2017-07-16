@@ -60,16 +60,6 @@ Galaxy::Galaxy( const std::string& fn )
     }
 }
 
-std::string Galaxy::GetArchiveFilename( int idx ) const
-{
-    return std::string( m_archives[idx*2], m_archives[idx*2+1] );
-}
-
-bool Galaxy::IsArchiveAvailable( int idx ) const
-{
-    return bool( m_arch[idx] );
-}
-
 const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )
 {
     if( change )
@@ -77,55 +67,6 @@ const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )
         m_active = idx;
     }
     return m_arch[idx];
-}
-
-const char* Galaxy::GetArchiveName( int idx ) const
-{
-    return m_strings[idx*2];
-}
-
-const char* Galaxy::GetArchiveDescription( int idx ) const
-{
-    return m_strings[idx*2+1];
-}
-
-int Galaxy::NumberOfMessages( int idx ) const
-{
-    return m_arch[idx]->NumberOfMessages();
-}
-
-int Galaxy::NumberOfTopLevel( int idx ) const
-{
-    return m_arch[idx]->NumberOfTopLevel();
-}
-
-int Galaxy::GetMessageIndex( const char* msgid ) const
-{
-    return m_midhash.Search( msgid );
-}
-
-const char* Galaxy::GetMessageId( uint32_t idx ) const
-{
-    return m_middb[idx];
-}
-
-int Galaxy::GetNumberOfGroups( const char* msgid ) const
-{
-    return GetNumberOfGroups( GetMessageIndex( msgid ) );
-}
-
-int Galaxy::GetNumberOfGroups( uint32_t idx ) const
-{
-    if( idx == -1 ) return 0;
-    auto ptr = m_midgr[idx];
-    return *ptr;
-}
-
-bool Galaxy::AreChildrenSame( const char* msgid ) const
-{
-    auto idx = GetMessageIndex( msgid );
-    assert( idx != -1 );
-    return AreChildrenSame( idx, msgid );
 }
 
 bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
@@ -185,13 +126,6 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     return true;
 }
 
-bool Galaxy::AreParentsSame( const char* msgid ) const
-{
-    auto idx = GetMessageIndex( msgid );
-    assert( idx != -1 );
-    return AreParentsSame( idx, msgid );
-}
-
 bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
 {
     auto ptr = m_midgr[idx];
@@ -224,19 +158,6 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
     return true;
 }
 
-ViewReference<uint32_t> Galaxy::GetGroups( uint32_t idx ) const
-{
-    assert( idx != -1 );
-    auto ptr = m_midgr[idx];
-    auto num = *ptr++;
-    return ViewReference<uint32_t> { ptr, num };
-}
-
-ViewReference<uint32_t> Galaxy::GetGroups( const char* msgid ) const
-{
-    return GetGroups( GetMessageIndex( msgid ) );
-}
-
 int32_t Galaxy::GetIndirectIndex( uint32_t idx ) const
 {
     auto size = m_indirectDense.DataSize();
@@ -254,27 +175,6 @@ int32_t Galaxy::GetIndirectIndex( uint32_t idx ) const
     }
 }
 
-int32_t Galaxy::GetIndirectIndex( const char* msgid ) const
-{
-    return GetIndirectIndex( GetMessageIndex( msgid ) );
-}
-
-ViewReference<uint32_t> Galaxy::GetIndirectParents( uint32_t idx ) const
-{
-    assert( idx != -1 );
-    auto ptr = m_indirect[idx*2];
-    auto num = *ptr++;
-    return ViewReference<uint32_t> { ptr, num };
-}
-
-ViewReference<uint32_t> Galaxy::GetIndirectChildren( uint32_t idx ) const
-{
-    assert( idx != -1 );
-    auto ptr = m_indirect[idx*2+1];
-    auto num = *ptr++;
-    return ViewReference<uint32_t> { ptr, num };
-}
-
 int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
 {
     int num = -1;
@@ -286,14 +186,4 @@ int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
     }
     while( idx != -1 );
     return num;
-}
-
-int Galaxy::NumberOfChildren( const char* msgid, uint32_t arch ) const
-{
-    return m_arch[arch]->GetChildren( msgid ).size;
-}
-
-int Galaxy::TotalNumberOfChildren( const char* msgid, uint32_t arch ) const
-{
-    return m_arch[arch]->GetTotalChildrenCount( msgid );
 }
