@@ -1,20 +1,4 @@
-#include <assert.h>
-
 #include "UTF8.hpp"
-
-bool iscontinuationbyte( char c )
-{
-    return ( c & 0xC0 ) == 0x80;
-}
-
-int codepointlen( char c )
-{
-    if( ( c & 0x80 ) == 0 ) return 1;
-    if( ( c & 0x20 ) == 0 ) return 2;
-    if( ( c & 0x10 ) == 0 ) return 3;
-    assert( ( c & 0x08 ) == 0 );
-    return 4;
-}
 
 size_t utflen( const char* str )
 {
