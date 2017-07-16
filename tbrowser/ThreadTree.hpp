@@ -58,7 +58,6 @@ private:
 
     int ExpandImpl( int idx, bool recursive );
     void MarkTreeCondensed( int idx, int depth );
-    void ExpandFill( int idx );
 
     GalaxyState GetGalaxyStateRaw( int idx ) const { return (GalaxyState)m_data[idx].galaxy; }
     ScoreState GetScoreStateRaw( int idx ) const { return (ScoreState)m_tree[idx].GetScoreData(); }

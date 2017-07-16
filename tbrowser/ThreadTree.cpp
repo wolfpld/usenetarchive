@@ -165,7 +165,6 @@ bool ThreadTree::WasAllVisited( int idx )
     bool complete = WasAllVisitedRaw( idx );
     if( !complete )
     {
-        ExpandFill( idx );
         complete = true;
         std::vector<uint32_t> stack;
         stack.reserve( 4 * 1024 );
@@ -263,27 +262,6 @@ int ThreadTree::ExpandImpl( int idx, bool recursive )
 void ThreadTree::Collapse( int idx )
 {
     SetExpanded( idx, false );
-}
-
-void ThreadTree::ExpandFill( int idx )
-{
-    if( idx == m_archive->NumberOfMessages()-1 || IsValid( idx+1 ) ) return;
-    auto children = m_archive->GetChildren( idx );
-    int parent = idx;
-    idx++;
-    for( int i=0; i<children.size; i++ )
-    {
-        auto skip = m_archive->GetTotalChildrenCount( children.ptr[i] );
-        assert( !IsValid( idx ) );
-        SetValid( idx, true );
-        bool line = i != children.size - 1;
-        for( int j=0; j<skip; j++ )
-        {
-            SetTreeLine( idx+j, line );
-        }
-        ExpandFill( idx );
-        idx += skip;
-    }
 }
 
 static bool SameSubject( const char* subject, const char*& prev )
