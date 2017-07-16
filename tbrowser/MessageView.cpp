@@ -379,7 +379,22 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
         auto w = m_linesWidth;
         while( ptr != end )
         {
-            auto e = utfendcrlf( ptr, w );
+            if( br )
+            {
+                while( ptr < end && *ptr == ' ' ) ptr++;
+                if( ptr == end ) return;
+            }
+
+            auto lw = w;
+            auto e = utfendcrlfl( ptr, lw );
+
+            if( lw == w && *e != ' ' && *(e-1) != ' ' )
+            {
+                const auto original = e;
+                while( --e > ptr && *e != ' ' ) {}
+                if( e == ptr ) e = original;
+            }
+
             m_lines.emplace_back( Line { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
             ptr = e;
             if( !br )
