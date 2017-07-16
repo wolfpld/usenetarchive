@@ -8,7 +8,10 @@ bool BitSet::Set( bool enabled )
     {
         if( size < InPlaceBits-1 )
         {
-            data |= uint64_t( enabled ) << size;
+            if( enabled )
+            {
+                data |= uint64_t( enabled ) << size;
+            }
             size++;
         }
         else
