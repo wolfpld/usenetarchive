@@ -26,46 +26,46 @@ class Archive
 public:
     static Archive* Open( const std::string& fn );
 
-    const char* GetMessage( uint32_t idx, ExpandingBuffer& eb );
-    const char* GetMessage( const char* msgid, ExpandingBuffer& eb );
+    const char* GetMessage( uint32_t idx, ExpandingBuffer& eb ) { return idx >= m_mcnt ? nullptr : m_mview.GetMessage( idx, eb ); }
+    const char* GetMessage( const char* msgid, ExpandingBuffer& eb ) { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetMessage( idx, eb ) : nullptr; }
     size_t NumberOfMessages() const { return m_mcnt; }
 
-    int GetMessageIndex( const char* msgid ) const;
-    int GetMessageIndex( const char* msgid, XXH32_hash_t hash ) const;
-    const char* GetMessageId( uint32_t idx ) const;
+    int GetMessageIndex( const char* msgid ) const { return m_midhash.Search( msgid ); }
+    int GetMessageIndex( const char* msgid, XXH32_hash_t hash ) const { return m_midhash.Search( msgid, hash ); }
+    const char* GetMessageId( uint32_t idx ) const { return m_middb[idx]; }
 
-    ViewReference<uint32_t> GetTopLevel() const;
+    ViewReference<uint32_t> GetTopLevel() const { return ViewReference<uint32_t> { m_toplevel, m_toplevel.DataSize() }; }
     size_t NumberOfTopLevel() const { return m_toplevel.DataSize(); }
 
-    int32_t GetParent( uint32_t idx ) const;
-    int32_t GetParent( const char* msgid ) const;
+    int32_t GetParent( uint32_t idx ) const { auto data = m_connectivity[idx]; return (int32_t)*(data+1); }
+    int32_t GetParent( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetParent( idx ) : -1; }
 
-    ViewReference<uint32_t> GetChildren( uint32_t idx ) const;
-    ViewReference<uint32_t> GetChildren( const char* msgid ) const;
+    ViewReference<uint32_t> GetChildren( uint32_t idx ) const { auto data = ( m_connectivity[idx] ) + 3; auto num = *data++; return ViewReference<uint32_t> { data, num }; }
+    ViewReference<uint32_t> GetChildren( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetChildren( idx ) : ViewReference<uint32_t> { nullptr, 0 }; }
 
-    uint32_t GetTotalChildrenCount( uint32_t idx ) const;
-    uint32_t GetTotalChildrenCount( const char* msgid ) const;
+    uint32_t GetTotalChildrenCount( uint32_t idx ) const { auto data = m_connectivity[idx]; return data[2]; }
+    uint32_t GetTotalChildrenCount( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetTotalChildrenCount( idx ) : 0; }
 
-    uint32_t GetDate( uint32_t idx ) const;
-    uint32_t GetDate( const char* msgid ) const;
+    uint32_t GetDate( uint32_t idx ) const { auto data = m_connectivity[idx]; return *data; }
+    uint32_t GetDate( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetDate( idx ) : 0; }
 
-    const char* GetFrom( uint32_t idx ) const;
-    const char* GetFrom( const char* msgid ) const;
+    const char* GetFrom( uint32_t idx ) const { return m_strings[idx*3]; }
+    const char* GetFrom( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetFrom( idx ) : nullptr; }
 
-    const char* GetSubject( uint32_t idx ) const;
-    const char* GetSubject( const char* msgid ) const;
+    const char* GetSubject( uint32_t idx ) const { return m_strings[idx*3+1]; }
+    const char* GetSubject( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetSubject( idx ) : nullptr; }
 
-    const char* GetRealName( uint32_t idx ) const;
-    const char* GetRealName( const char* msgid ) const;
+    const char* GetRealName( uint32_t idx ) const { return m_strings[idx*3+2]; }
+    const char* GetRealName( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetSubject( idx ) : nullptr; }
 
     int GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& scoreList ) const;
 
     std::map<std::string, uint32_t> TimeChart() const;
 
-    std::pair<const char*, uint64_t> GetShortDescription() const;
-    std::pair<const char*, uint64_t> GetLongDescription() const;
-    std::pair<const char*, uint64_t> GetArchiveName() const;
-    std::pair<const char*, uint64_t> GetPrefixList() const;
+    std::pair<const char*, uint64_t> GetShortDescription() const { return std::make_pair( (const char*)m_descShort, m_descShort.Size() ); }
+    std::pair<const char*, uint64_t> GetLongDescription() const { return std::make_pair( (const char*)m_descLong, m_descLong.Size() ); }
+    std::pair<const char*, uint64_t> GetArchiveName() const { return std::make_pair( ( const char*)m_name, m_name.Size() ); }
+    std::pair<const char*, uint64_t> GetPrefixList() const { return std::make_pair( ( const char*)m_prefix, m_prefix.Size() ); }
 
 private:
     Archive( const std::string& dir );
