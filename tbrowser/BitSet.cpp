@@ -10,7 +10,7 @@ bool BitSet::Set( bool enabled )
         {
             if( enabled )
             {
-                data |= uint64_t( enabled ) << size;
+                data |= uint64_t( 1 ) << size;
             }
             size++;
         }
