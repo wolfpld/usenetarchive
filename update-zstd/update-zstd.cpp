@@ -178,6 +178,7 @@ int main( int argc, char** argv )
     if( Exists( source + "name" ) ) CopyFile( source + "name", target + "name" );
     if( Exists( source + "desc_long" ) ) CopyFile( source + "desc_long", target + "desc_long" );
     if( Exists( source + "desc_short" ) ) CopyFile( source + "desc_short", target + "desc_short" );
+    if( Exists( source + "prefix" ) ) CopyFile( source + "prefix", target + "prefix" );
 
     FILE* zmeta = fopen( zmetafn.c_str(), "wb" );
     FILE* zdata = fopen( zdatafn.c_str(), "wb" );
