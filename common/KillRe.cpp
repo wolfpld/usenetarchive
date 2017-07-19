@@ -8,24 +8,18 @@
 
 KillRe::KillRe()
 {
-    Add( "re:" );
-    Add( "odp:" );
-    Add( "re[2]:" );
-    Add( "re[3]:" );
-    Add( "re[4]:" );
-    Add( "re[5]:" );
-    Add( "re[6]:" );
-    Add( "re[7]:" );
-    Add( "re[8]:" );
-    Add( "re[9]:" );
+    AddDefault();
 }
 
 KillRe::~KillRe()
 {
-    for( auto& v : m_prefix )
-    {
-        delete[] v;
-    }
+    Clear();
+}
+
+void KillRe::Reset()
+{
+    Clear();
+    AddDefault();
 }
 
 const char* KillRe::Kill( const char* str ) const
@@ -96,4 +90,27 @@ void KillRe::LoadPrefixList( const Archive& archive )
             ptr = end;
         }
     }
+}
+
+void KillRe::AddDefault()
+{
+    Add( "re:" );
+    Add( "odp:" );
+    Add( "re[2]:" );
+    Add( "re[3]:" );
+    Add( "re[4]:" );
+    Add( "re[5]:" );
+    Add( "re[6]:" );
+    Add( "re[7]:" );
+    Add( "re[8]:" );
+    Add( "re[9]:" );
+}
+
+void KillRe::Clear()
+{
+    for( auto& v : m_prefix )
+    {
+        delete[] v;
+    }
+    m_prefix.clear();
 }

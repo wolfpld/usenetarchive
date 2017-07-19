@@ -11,6 +11,8 @@ public:
     KillRe();
     ~KillRe();
 
+    void Reset();
+
     const char* Kill( const char* str ) const;
 
     void Add( const char* str );
@@ -19,6 +21,9 @@ public:
     void LoadPrefixList( const Archive& archive );
 
 private:
+    void AddDefault();
+    void Clear();
+
     KillRe( const KillRe& ) = delete;
     KillRe( KillRe&& ) = delete;
 
