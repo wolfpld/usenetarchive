@@ -4,8 +4,6 @@
 #include <limits>
 #include <time.h>
 
-#include "../common/KillRe.hpp"
-
 #include "../libuat/Archive.hpp"
 #include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
@@ -264,16 +262,16 @@ void ThreadTree::Collapse( int idx )
     SetExpanded( idx, false );
 }
 
-static bool SameSubject( const char* subject, const char*& prev )
+static bool SameSubject( const KillRe& kr,const char* subject, const char*& prev )
 {
     if( subject == prev ) return true;
     if( prev == nullptr )
     {
-        prev = KillRe( subject );
+        prev = kr.Kill( subject );
         return false;
     }
     auto oldprev = prev;
-    prev = KillRe( subject );
+    prev = kr.Kill( subject );
     if( prev == oldprev ) return true;
     return strcmp( prev, oldprev ) == 0;
 }
@@ -477,7 +475,7 @@ void ThreadTree::DrawLine( WINDOW* win, int line, int idx, bool hilite, int colo
     {
         auto target = len;
         if( !hilite && wasVisited ) wattron( win, COLOR_PAIR(8) | A_BOLD );
-        if( SameSubject( subject, prev ) )
+        if( SameSubject( m_killre, subject, prev ) )
         {
             len = 1;
             waddch( win, '>' );

@@ -1,29 +1,38 @@
 #include <ctype.h>
-#include <string>
+#include <string.h>
 #include <vector>
 
 #include "KillRe.hpp"
 
-std::vector<std::string> ReList = {
-    "re:",
-    "odp:",
-    "re[2]:",
-    "re[3]:",
-    "re[4]:",
-    "re[5]:",
-    "re[6]:",
-    "re[7]:",
-    "re[8]:",
-    "re[9]:"
-};
+KillRe::KillRe()
+{
+    Add( "re:" );
+    Add( "odp:" );
+    Add( "re[2]:" );
+    Add( "re[3]:" );
+    Add( "re[4]:" );
+    Add( "re[5]:" );
+    Add( "re[6]:" );
+    Add( "re[7]:" );
+    Add( "re[8]:" );
+    Add( "re[9]:" );
+}
 
-const char* KillRe( const char* str )
+KillRe::~KillRe()
+{
+    for( auto& v : m_prefix )
+    {
+        delete[] v;
+    }
+}
+
+const char* KillRe::Kill( const char* str ) const
 {
     for(;;)
     {
         if( *str == '\0' ) return str;
         while( *str == ' ' ) str++;
-        auto match = ReList.begin();
+        auto match = m_prefix.begin();
         bool stop = false;
         while( !stop )
         {
@@ -43,7 +52,7 @@ const char* KillRe( const char* str )
             if( !stop )
             {
                 ++match;
-                if( match == ReList.end() )
+                if( match == m_prefix.end() )
                 {
                     return str;
                 }
@@ -52,12 +61,16 @@ const char* KillRe( const char* str )
     }
 }
 
-void AddToReList( const char* str )
+void KillRe::Add( const char* str )
 {
-    ReList.emplace_back( str );
+    Add( str, str + strlen( str ) );
 }
 
-void AddToReList( const char* begin, const char* end )
+void KillRe::Add( const char* begin, const char* end )
 {
-    ReList.emplace_back( begin, end );
+    const auto len = end - begin;
+    auto str = new char[len+1];
+    memcpy( str, begin, len );
+    str[len] = '\0';
+    m_prefix.emplace_back( str );
 }

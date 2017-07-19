@@ -62,6 +62,7 @@ int main( int argc, char** argv )
     }
     auto size = archive->NumberOfMessages();
     SearchEngine search( *archive );
+    KillRe kr;
 
     while( argc > 2 )
     {
@@ -72,7 +73,7 @@ int main( int argc, char** argv )
         }
         else
         {
-            AddToReList( argv[3] );
+            kr.Add( argv[3] );
             argv += 2;
             argc -= 2;
         }
@@ -89,7 +90,7 @@ int main( int argc, char** argv )
             while( end < fileend && *end != '\n' && *end != '\r' ) end++;
             if( ptr != end )
             {
-                AddToReList( ptr, end );
+                kr.Add( ptr, end );
             }
             while( end < fileend && ( *end == '\n' || *end == '\r' ) ) end++;
             ptr = end;
@@ -266,8 +267,8 @@ int main( int argc, char** argv )
                 }
                 else
                 {
-                    auto s1 = KillRe( archive->GetSubject( i ) );
-                    auto s2 = KillRe( archive->GetSubject( best ) );
+                    auto s1 = kr.Kill( archive->GetSubject( i ) );
+                    auto s2 = kr.Kill( archive->GetSubject( best ) );
                     if( strcmp( s1, s2 ) == 0 )
                     {
                         cntsure++;

@@ -4,6 +4,8 @@
 #include <curses.h>
 #include <vector>
 
+#include "../common/KillRe.hpp"
+
 #include "BitSet.hpp"
 #include "GalaxyState.hpp"
 #include "ThreadData.hpp"
@@ -67,9 +69,12 @@ private:
     BitSet* m_tree;
     std::vector<std::vector<bool>*> m_bitsetCleanup;
 
+    KillRe m_killre;
+
     const Archive* m_archive;
     PersistentStorage& m_storage;
     const Galaxy* m_galaxy;
+
 };
 
 #endif
