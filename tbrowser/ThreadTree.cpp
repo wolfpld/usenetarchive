@@ -22,6 +22,7 @@ ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, cons
     m_tree = new BitSet[size];
     memset( m_data, 0, size * sizeof( ThreadData ) );
     memset( m_tree, 0, size * sizeof( BitSet ) );
+    m_killre.LoadPrefixList( archive );
 }
 
 ThreadTree::ThreadTree( const ThreadTree& ref )
@@ -34,6 +35,7 @@ ThreadTree::ThreadTree( const ThreadTree& ref )
     m_tree = new BitSet[size];
     memcpy( m_data, ref.m_data, size * sizeof( ThreadData ) );
     memcpy( m_tree, ref.m_tree, size * sizeof( BitSet ) );
+    m_killre.LoadPrefixList( *m_archive );
 }
 
 ThreadTree::~ThreadTree()
@@ -50,6 +52,8 @@ void ThreadTree::Reset( const Archive& archive )
     memset( m_data, 0, size * sizeof( ThreadData ) );
     memset( m_tree, 0, size * sizeof( BitSet ) );
     m_archive = &archive;
+    m_killre.Reset();
+    m_killre.LoadPrefixList( archive );
 }
 
 void ThreadTree::Cleanup()
