@@ -2,6 +2,8 @@
 #include <string.h>
 #include <vector>
 
+#include "../libuat/Archive.hpp"
+
 #include "KillRe.hpp"
 
 KillRe::KillRe()
@@ -73,4 +75,25 @@ void KillRe::Add( const char* begin, const char* end )
     memcpy( str, begin, len );
     str[len] = '\0';
     m_prefix.emplace_back( str );
+}
+
+void KillRe::LoadPrefixList( const Archive& archive )
+{
+    auto prefix = archive.GetPrefixList();
+    if( prefix.second != 0 )
+    {
+        auto ptr = prefix.first;
+        auto fileend = ptr + prefix.second;
+        while( ptr < fileend )
+        {
+            auto end = ptr;
+            while( end < fileend && *end != '\n' && *end != '\r' ) end++;
+            if( ptr != end )
+            {
+                Add( ptr, end );
+            }
+            while( end < fileend && ( *end == '\n' || *end == '\r' ) ) end++;
+            ptr = end;
+        }
+    }
 }

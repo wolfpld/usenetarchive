@@ -3,6 +3,8 @@
 
 #include <vector>
 
+class Archive;
+
 class KillRe
 {
 public:
@@ -13,6 +15,8 @@ public:
 
     void Add( const char* str );
     void Add( const char* begin, const char* end );
+
+    void LoadPrefixList( const Archive& archive );
 
 private:
     KillRe( const KillRe& ) = delete;

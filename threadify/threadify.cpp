@@ -63,6 +63,7 @@ int main( int argc, char** argv )
     auto size = archive->NumberOfMessages();
     SearchEngine search( *archive );
     KillRe kr;
+    kr.LoadPrefixList( *archive );
 
     while( argc > 2 )
     {
@@ -76,24 +77,6 @@ int main( int argc, char** argv )
             kr.Add( argv[3] );
             argv += 2;
             argc -= 2;
-        }
-    }
-
-    auto prefix = archive->GetPrefixList();
-    if( prefix.second != 0 )
-    {
-        auto ptr = prefix.first;
-        auto fileend = ptr + prefix.second;
-        while( ptr < fileend )
-        {
-            auto end = ptr;
-            while( end < fileend && *end != '\n' && *end != '\r' ) end++;
-            if( ptr != end )
-            {
-                kr.Add( ptr, end );
-            }
-            while( end < fileend && ( *end == '\n' || *end == '\r' ) ) end++;
-            ptr = end;
         }
     }
 
