@@ -159,6 +159,7 @@ int main( int argc, char** argv )
         fclose( meta );
     }
 
+    // list of unique msg id
     uint64_t cnt = 0;
     uint64_t unique;
     {
@@ -198,6 +199,7 @@ int main( int argc, char** argv )
         fclose( meta );
     }
 
+    // create hash table
     MetaView<uint64_t, char> msgid( base + "msgid.meta", base + "msgid" );
     const auto msgidsize = msgid.Size();
 
@@ -261,6 +263,7 @@ int main( int argc, char** argv )
 
     printf( "\n" );
 
+    // calculate message groups and indirect references
     struct IndirectData
     {
         std::vector<uint32_t> parent;
