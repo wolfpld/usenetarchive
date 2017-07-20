@@ -190,6 +190,8 @@ int main( int argc, char** argv )
         FILE* data = fopen( ( base + "msgid" ).c_str(), "wb" );
         FILE* meta = fopen( ( base + "msgid.meta" ).c_str(), "wb" );
         uint64_t offset = 0;
+        uint8_t zero = 0;
+        offset += fwrite( &zero, 1, 1, data );
         for( auto& v : msgidset )
         {
             fwrite( &offset, 1, sizeof( offset ), meta );
