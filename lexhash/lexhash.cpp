@@ -32,7 +32,7 @@ int main( int argc, char** argv )
     FileMap<char> str( base + "lexstr" );
 
     auto size = meta.DataSize();
-    auto hashbits = MsgIdHashBits( size );
+    auto hashbits = MsgIdHashBits( size, 75 );
     auto hashsize = MsgIdHashSize( hashbits );
     auto hashmask = MsgIdHashMask( hashbits );
     auto bucket = new std::vector<HashData>[hashsize];

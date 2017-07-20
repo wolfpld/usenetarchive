@@ -43,7 +43,7 @@ int main( int argc, char** argv )
     FILE* midmeta = fopen( midmetafn.c_str(), "wb" );
     FILE* middata = fopen( middatafn.c_str(), "wb" );
 
-    auto hashbits = MsgIdHashBits( size );
+    auto hashbits = MsgIdHashBits( size, 75 );
     auto hashsize = MsgIdHashSize( hashbits );
     auto hashmask = MsgIdHashMask( hashbits );
     auto bucket = new std::vector<HashData>[hashsize];

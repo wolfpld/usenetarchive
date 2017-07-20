@@ -1,36 +1,39 @@
 #ifndef __MSGIDHASH_HPP__
 #define __MSGIDHASH_HPP__
 
+#include <assert.h>
 #include <stdint.h>
 
-static inline int MsgIdHashBits( uint32_t size )
+// load factor in 1/100
+static inline int MsgIdHashBits( uint32_t size, uint8_t load )
 {
-    // Load factor 0.75
-    size *= 4;
-    size /= 3;
+    assert( load <= 100 );
+
+    auto s = uint64_t( size ) * 100;
+    s /= load;
 
     int r = 0;
-    if( size & 0xFFFF0000 )
+    if( s & 0xFFFF0000 )
     {
-        size >>= 16;
+        s >>= 16;
         r |= 16;
     }
-    if( size & 0xFF00 )
+    if( s & 0xFF00 )
     {
-        size >>= 8;
+        s >>= 8;
         r |= 8;
     }
-    if( size & 0xF0 )
+    if( s & 0xF0 )
     {
-        size >>= 4;
+        s >>= 4;
         r |= 4;
     }
-    if( size & 0xC )
+    if( s & 0xC )
     {
-        size >>= 2;
+        s >>= 2;
         r |= 2;
     }
-    if( size & 0x2 )
+    if( s & 0x2 )
     {
         r |= 1;
     }

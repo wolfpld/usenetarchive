@@ -203,7 +203,7 @@ int main( int argc, char** argv )
     MetaView<uint64_t, char> msgid( base + "msgid.meta", base + "msgid" );
     const auto msgidsize = msgid.Size();
 
-    auto hashbits = MsgIdHashBits( msgidsize );
+    auto hashbits = MsgIdHashBits( msgidsize, 75 );
     auto hashsize = MsgIdHashSize( hashbits );
     auto hashmask = MsgIdHashMask( hashbits );
     auto bucket = new std::array<uint32_t, 8>[hashsize];
