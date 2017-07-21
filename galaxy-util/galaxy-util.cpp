@@ -217,6 +217,8 @@ int main( int argc, char** argv )
     auto bucket = new std::array<uint32_t, 8>[hashsize];
     auto sizes = std::vector<int>( hashsize );
 
+    auto msghash = new uint32_t[unique];
+
     cnt = 0;
     for( int i=0; i<unique; i++ )
     {
@@ -226,7 +228,9 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 ) & hashmask;
+        uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
+        msghash[i] = hash;
+        hash &= hashmask;
         if( sizes[hash] == bucket[hash].size() )
         {
             fprintf( stderr, "Too many collisions\n" );
@@ -313,7 +317,7 @@ int main( int argc, char** argv )
             }
 
             groups.clear();
-            auto hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
+            auto hash = msghash[i];
             for( int j=0; j<arch.size(); j++ )
             {
                 const auto idx = arch[j]->GetMessageIndex( msgidvec[i], hash );
