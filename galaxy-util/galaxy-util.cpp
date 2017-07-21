@@ -160,6 +160,7 @@ int main( int argc, char** argv )
     }
 
     // list of unique msg id
+    std::vector<const char*> msgidvec;
     uint64_t cnt = 0;
     uint64_t unique;
     {
@@ -187,12 +188,20 @@ int main( int argc, char** argv )
         unique = msgidset.size();
         printf( "\nUnique message count: %zu\n", unique );
 
+        msgidvec.reserve( unique );
+        for( auto& v : msgidset )
+        {
+            msgidvec.emplace_back( v );
+        }
+    }
+
+    {
         FILE* data = fopen( ( base + "msgid" ).c_str(), "wb" );
         FILE* meta = fopen( ( base + "msgid.meta" ).c_str(), "wb" );
         uint64_t offset = 0;
         uint8_t zero = 0;
         offset += fwrite( &zero, 1, 1, data );
-        for( auto& v : msgidset )
+        for( auto& v : msgidvec )
         {
             fwrite( &offset, 1, sizeof( offset ), meta );
             offset += fwrite( v, 1, strlen( v ) + 1, data );
@@ -202,25 +211,22 @@ int main( int argc, char** argv )
     }
 
     // create hash table
-    MetaView<uint64_t, char> msgid( base + "msgid.meta", base + "msgid" );
-    const auto msgidsize = msgid.Size();
-
-    auto hashbits = MsgIdHashBits( msgidsize, 75 );
+    auto hashbits = MsgIdHashBits( unique, 75 );
     auto hashsize = MsgIdHashSize( hashbits );
     auto hashmask = MsgIdHashMask( hashbits );
     auto bucket = new std::array<uint32_t, 8>[hashsize];
     auto sizes = std::vector<int>( hashsize );
 
     cnt = 0;
-    for( int i=0; i<msgidsize; i++ )
+    for( int i=0; i<unique; i++ )
     {
         if( ( cnt++ & 0x3FFFF ) == 0 )
         {
-            printf( "%i/%i\r", cnt, msgidsize );
+            printf( "%i/%i\r", cnt, unique );
             fflush( stdout );
         }
 
-        uint32_t hash = XXH32( msgid[i], strlen( msgid[i] ), 0 ) & hashmask;
+        uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 ) & hashmask;
         if( sizes[hash] == bucket[hash].size() )
         {
             fprintf( stderr, "Too many collisions\n" );
@@ -298,19 +304,19 @@ int main( int argc, char** argv )
         FILE* data = fopen( ( base + "midgr" ).c_str(), "wb" );
         FILE* meta = fopen( ( base + "midgr.meta" ).c_str(), "wb" );
         ExpandingBuffer eb;
-        for( int i=0; i<msgidsize; i++ )
+        for( int i=0; i<unique; i++ )
         {
             if( ( cnt++ & 0x3FF ) == 0 )
             {
-                printf( "%i/%i\r", cnt, msgidsize );
+                printf( "%i/%i\r", cnt, unique );
                 fflush( stdout );
             }
 
             groups.clear();
-            auto hash = XXH32( msgid[i], strlen( msgid[i] ), 0 );
+            auto hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
             for( int j=0; j<arch.size(); j++ )
             {
-                const auto idx = arch[j]->GetMessageIndex( msgid[i], hash );
+                const auto idx = arch[j]->GetMessageIndex( msgidvec[i], hash );
                 if( idx != -1 )
                 {
                     groups.emplace_back( j );
@@ -318,7 +324,7 @@ int main( int argc, char** argv )
             }
             assert( !groups.empty() );
             const auto& refarch = arch[groups[0]];
-            const auto idx = refarch->GetMessageIndex( msgid[i], hash );
+            const auto idx = refarch->GetMessageIndex( msgidvec[i], hash );
             if( refarch->GetParent( idx ) == -1 )
             {
                 auto post = refarch->GetMessage( idx, eb );
@@ -346,7 +352,7 @@ int main( int argc, char** argv )
                                 for( int g=1; g<groups.size(); g++ )
                                 {
                                     const auto& currarch = arch[groups[g]];
-                                    const auto gmidx = currarch->GetMessageIndex( msgid[i] );
+                                    const auto gmidx = currarch->GetMessageIndex( msgidvec[i] );
                                     assert( gmidx != -1 );
                                     const auto pmidx = currarch->GetParent( gmidx );
                                     if( pmidx != -1 )
