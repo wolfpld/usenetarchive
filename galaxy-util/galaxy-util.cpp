@@ -211,66 +211,70 @@ int main( int argc, char** argv )
     }
 
     // create hash table
-    auto hashbits = MsgIdHashBits( unique, 75 );
-    auto hashsize = MsgIdHashSize( hashbits );
-    auto hashmask = MsgIdHashMask( hashbits );
-    auto bucket = new std::array<uint32_t, 8>[hashsize];
-    auto sizes = std::vector<int>( hashsize );
-
     auto msghash = new uint32_t[unique];
 
-    cnt = 0;
-    for( int i=0; i<unique; i++ )
     {
-        if( ( cnt++ & 0x3FFFF ) == 0 )
-        {
-            printf( "%i/%i\r", cnt, unique );
-            fflush( stdout );
-        }
+        auto hashbits = MsgIdHashBits( unique, 75 );
+        auto hashsize = MsgIdHashSize( hashbits );
+        auto hashmask = MsgIdHashMask( hashbits );
+        auto bucket = new std::array<uint32_t, 8>[hashsize];
+        auto sizes = std::vector<int>( hashsize );
 
-        uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
-        msghash[i] = hash;
-        hash &= hashmask;
-        if( sizes[hash] == bucket[hash].size() )
-        {
-            fprintf( stderr, "Too many collisions\n" );
-            exit( 1 );
-        }
-        bucket[hash][sizes[hash]] = i;
-        sizes[hash]++;
-    }
-    printf( "\n" );
-
-    {
-        uint64_t zero = 0;
-        FILE* data = fopen( ( base + "midhash" ).c_str(), "wb" );
-        FILE* meta = fopen( ( base + "midhash.meta" ).c_str(), "wb" );
-        uint64_t offset = fwrite( &zero, 1, sizeof( zero ), data );
         cnt = 0;
-        for( size_t i=0; i<hashsize; i++ )
+        for( int i=0; i<unique; i++ )
         {
             if( ( cnt++ & 0x3FFFF ) == 0 )
             {
-                printf( "%i/%i\r", cnt, hashsize );
+                printf( "%i/%i\r", cnt, unique );
                 fflush( stdout );
             }
 
-            std::sort( bucket[i].begin(), bucket[i].begin() + sizes[i] );
-
-            uint32_t num = sizes[i];
-            if( num == 0 )
+            uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
+            msghash[i] = hash;
+            hash &= hashmask;
+            if( sizes[hash] == bucket[hash].size() )
             {
-                fwrite( &zero, 1, sizeof( zero ), meta );
+                fprintf( stderr, "Too many collisions\n" );
+                exit( 1 );
             }
-            else
-            {
-                fwrite( &offset, 1, sizeof( offset ), meta );
-                offset += fwrite( &num, 1, sizeof( num ), data );
-                offset += fwrite( bucket[i].data(), 1, sizeof( uint32_t ) * num, data );
-            }
+            bucket[hash][sizes[hash]] = i;
+            sizes[hash]++;
         }
-        fclose( data );
-        fclose( meta );
+        printf( "\n" );
+
+        {
+            uint64_t zero = 0;
+            FILE* data = fopen( ( base + "midhash" ).c_str(), "wb" );
+            FILE* meta = fopen( ( base + "midhash.meta" ).c_str(), "wb" );
+            uint64_t offset = fwrite( &zero, 1, sizeof( zero ), data );
+            cnt = 0;
+            for( size_t i=0; i<hashsize; i++ )
+            {
+                if( ( cnt++ & 0x3FFFF ) == 0 )
+                {
+                    printf( "%i/%i\r", cnt, hashsize );
+                    fflush( stdout );
+                }
+
+                std::sort( bucket[i].begin(), bucket[i].begin() + sizes[i] );
+
+                uint32_t num = sizes[i];
+                if( num == 0 )
+                {
+                    fwrite( &zero, 1, sizeof( zero ), meta );
+                }
+                else
+                {
+                    fwrite( &offset, 1, sizeof( offset ), meta );
+                    offset += fwrite( &num, 1, sizeof( num ), data );
+                    offset += fwrite( bucket[i].data(), 1, sizeof( uint32_t ) * num, data );
+                }
+            }
+            fclose( data );
+            fclose( meta );
+        }
+
+        delete[] bucket;
     }
 
     printf( "\n" );
