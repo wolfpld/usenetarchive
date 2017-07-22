@@ -206,9 +206,9 @@ int main( int argc, char** argv )
         auto hashmask = MsgIdHashMask( hashbits );
 
         auto hashdata = new uint64_t[hashsize];
-        auto distance = new int8_t[hashsize];
+        auto distance = new uint8_t[hashsize];
         memset( distance, 0xFF, hashsize );
-        int8_t distmax = 0;
+        uint8_t distmax = 0;
 
         for( int i=0; i<unique; i++ )
         {
@@ -222,11 +222,11 @@ int main( int argc, char** argv )
             msghash[i] = hash;
             hash &= hashmask;
 
-            int8_t dist = 0;
+            uint8_t dist = 0;
             uint64_t idx = i;
             for(;;)
             {
-                if( distance[hash] == -1 )
+                if( distance[hash] == 0xFF )
                 {
                     if( distmax < dist ) distmax = dist;
                     distance[hash] = dist;
@@ -240,7 +240,7 @@ int main( int argc, char** argv )
                     std::swap( hashdata[hash], idx );
                 }
                 dist++;
-                assert( dist < std::numeric_limits<int8_t>::max() );
+                assert( dist < 0xFF );
                 hash = (hash+1) & hashmask;
             }
         }
@@ -269,7 +269,7 @@ int main( int argc, char** argv )
                     fflush( stdout );
                 }
 
-                if( distance[i] == -1 )
+                if( distance[i] == 0xFF )
                 {
                     fwrite( &zero, 1, sizeof( uint64_t ), data );
                     fwrite( &zero, 1, sizeof( uint64_t ), data );
