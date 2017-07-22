@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\..\common\CharUtil.hpp" />
     <ClInclude Include="..\..\..\common\FileMap.hpp" />
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
+    <ClInclude Include="..\..\..\common\HashSearchBig.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
     <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />

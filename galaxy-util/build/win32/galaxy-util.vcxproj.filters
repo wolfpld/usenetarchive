@@ -119,5 +119,8 @@
     <ClInclude Include="..\..\..\common\MessageLogic.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\HashSearchBig.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

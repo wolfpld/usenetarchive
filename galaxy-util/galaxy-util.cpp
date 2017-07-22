@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <array>
+#include <assert.h>
 #include <inttypes.h>
+#include <limits>
 #include <map>
 #include <set>
 #include <stdint.h>
@@ -195,60 +197,71 @@ int main( int argc, char** argv )
         }
     }
 
-    {
-        FILE* data = fopen( ( base + "msgid" ).c_str(), "wb" );
-        FILE* meta = fopen( ( base + "msgid.meta" ).c_str(), "wb" );
-        uint64_t offset = 0;
-        uint8_t zero = 0;
-        offset += fwrite( &zero, 1, 1, data );
-        for( auto& v : msgidvec )
-        {
-            fwrite( &offset, 1, sizeof( offset ), meta );
-            offset += fwrite( v, 1, strlen( v ) + 1, data );
-        }
-        fclose( data );
-        fclose( meta );
-    }
-
     // create hash table
     auto msghash = new uint32_t[unique];
 
     {
-        auto hashbits = MsgIdHashBits( unique, 75 );
+        auto hashbits = MsgIdHashBits( unique, 90 );
         auto hashsize = MsgIdHashSize( hashbits );
         auto hashmask = MsgIdHashMask( hashbits );
-        auto bucket = new std::array<uint32_t, 8>[hashsize];
-        auto sizes = std::vector<int>( hashsize );
 
-        cnt = 0;
+        auto hashdata = new uint64_t[hashsize];
+        auto distance = new int8_t[hashsize];
+        memset( distance, 0xFF, hashsize );
+        int8_t distmax = 0;
+
         for( int i=0; i<unique; i++ )
         {
-            if( ( cnt++ & 0x3FFFF ) == 0 )
+            if( ( i & 0x3FFFF ) == 0 )
             {
-                printf( "%i/%i\r", cnt, unique );
+                printf( "%i/%i\r", i, unique );
                 fflush( stdout );
             }
 
             uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
             msghash[i] = hash;
             hash &= hashmask;
-            if( sizes[hash] == bucket[hash].size() )
+
+            int8_t dist = 0;
+            uint64_t idx = i;
+            for(;;)
             {
-                fprintf( stderr, "Too many collisions\n" );
-                exit( 1 );
+                if( distance[hash] == -1 )
+                {
+                    if( distmax < dist ) distmax = dist;
+                    distance[hash] = dist;
+                    hashdata[hash] = idx;
+                    break;
+                }
+                if( distance[hash] < dist )
+                {
+                    if( distmax < dist ) distmax = dist;
+                    std::swap( distance[hash], dist );
+                    std::swap( hashdata[hash], idx );
+                }
+                dist++;
+                assert( dist < std::numeric_limits<int8_t>::max() );
+                hash = (hash+1) & hashmask;
             }
-            bucket[hash][sizes[hash]] = i;
-            sizes[hash]++;
         }
         printf( "\n" );
 
         {
-            uint64_t zero = 0;
-            FILE* data = fopen( ( base + "midhash" ).c_str(), "wb" );
             FILE* meta = fopen( ( base + "midhash.meta" ).c_str(), "wb" );
-            uint64_t offset = fwrite( &zero, 1, sizeof( zero ), data );
-            cnt = 0;
-            for( size_t i=0; i<hashsize; i++ )
+            fwrite( &distmax, 1, 1, meta );
+            fclose( meta );
+
+            FILE* data = fopen( ( base + "midhash" ).c_str(), "wb" );
+            FILE* strdata = fopen( ( base + "msgid" ).c_str(), "wb" );
+            FILE* strmeta = fopen( ( base + "msgid.meta" ).c_str(), "wb" );
+
+            const uint64_t zero = 0;
+            uint64_t stroffset = fwrite( &zero, 1, 1, strdata );
+
+            auto msgidoffset = new uint64_t[unique];
+
+            int cnt = 0;
+            for( int i=0; i<hashsize; i++ )
             {
                 if( ( i & 0x3FFFF ) == 0 )
                 {
@@ -256,25 +269,34 @@ int main( int argc, char** argv )
                     fflush( stdout );
                 }
 
-                std::sort( bucket[i].begin(), bucket[i].begin() + sizes[i] );
-
-                uint32_t num = sizes[i];
-                if( num == 0 )
+                if( distance[i] == -1 )
                 {
-                    fwrite( &zero, 1, sizeof( zero ), meta );
+                    fwrite( &zero, 1, sizeof( uint64_t ), data );
+                    fwrite( &zero, 1, sizeof( uint64_t ), data );
                 }
                 else
                 {
-                    fwrite( &offset, 1, sizeof( offset ), meta );
-                    offset += fwrite( &num, 1, sizeof( num ), data );
-                    offset += fwrite( bucket[i].data(), 1, sizeof( uint32_t ) * num, data );
+                    fwrite( &stroffset, 1, sizeof( uint64_t ), data );
+                    fwrite( hashdata+i, 1, sizeof( uint64_t ), data );
+
+                    msgidoffset[hashdata[i]] = stroffset;
+                    cnt++;
+                    auto str = msgidvec[hashdata[i]];
+                    stroffset += fwrite( str, 1, strlen( str ) + 1, strdata );
                 }
             }
+
+            assert( cnt == unique );
+            fwrite( msgidoffset, 1, unique * sizeof( uint64_t ), strmeta );
+            delete[] msgidoffset;
+
             fclose( data );
-            fclose( meta );
+            fclose( strdata );
+            fclose( strmeta );
         }
 
-        delete[] bucket;
+        delete[] hashdata;
+        delete[] distance;
     }
 
     printf( "\n" );
@@ -290,7 +312,7 @@ int main( int argc, char** argv )
 
     {
         char tmp[1024];
-        HashSearchBig midhash( base + "msgid.meta", base + "msgid", base + "midhash.meta", base + "midhash" );
+        HashSearchBig midhash( base + "msgid", base + "midhash.meta", base + "midhash" );
 
         struct VectorHasher
         {
@@ -307,16 +329,16 @@ int main( int argc, char** argv )
 
         std::unordered_map<std::vector<int>, uint32_t, VectorHasher> mapdata;
         std::vector<int> groups;
-        cnt = 0;
+
         uint32_t offset32 = 0;
         FILE* data = fopen( ( base + "midgr" ).c_str(), "wb" );
         FILE* meta = fopen( ( base + "midgr.meta" ).c_str(), "wb" );
         ExpandingBuffer eb;
         for( int i=0; i<unique; i++ )
         {
-            if( ( cnt++ & 0x3FF ) == 0 )
+            if( ( i & 0x3FF ) == 0 )
             {
-                printf( "%i/%i\r", cnt, unique );
+                printf( "%i/%i\r", i, unique );
                 fflush( stdout );
             }
 
@@ -417,7 +439,6 @@ int main( int argc, char** argv )
 
         uint32_t offset = 0;
         uint32_t zero = 0;
-        cnt = 0;
         FILE* data = fopen( ( base + "indirect" ).c_str(), "wb" );
         offset += fwrite( &zero, 1, sizeof( uint32_t ), data );
         for( auto& it : indirect )
