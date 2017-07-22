@@ -205,6 +205,8 @@ int main( int argc, char** argv )
         auto hashsize = MsgIdHashSize( hashbits );
         auto hashmask = MsgIdHashMask( hashbits );
 
+        printf( "Load factor: %.2f\n", float( unique ) / hashsize );
+
         auto hashdata = new uint64_t[hashsize];
         auto distance = new uint8_t[hashsize];
         memset( distance, 0xFF, hashsize );
