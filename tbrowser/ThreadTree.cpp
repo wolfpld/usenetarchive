@@ -83,6 +83,7 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
     {
         const auto msgid = m_archive->GetMessageId( idx );
         const auto gidx  = m_galaxy->GetMessageIndex( msgid );
+        assert( strcmp( m_galaxy->GetMessageId( gidx ), msgid ) == 0 );
         const auto groups = m_galaxy->GetNumberOfGroups( gidx );
         assert( groups > 0 );
 
