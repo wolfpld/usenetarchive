@@ -250,9 +250,9 @@ int main( int argc, char** argv )
             cnt = 0;
             for( size_t i=0; i<hashsize; i++ )
             {
-                if( ( cnt++ & 0x3FFFF ) == 0 )
+                if( ( i & 0x3FFFF ) == 0 )
                 {
-                    printf( "%i/%i\r", cnt, hashsize );
+                    printf( "%i/%i\r", i, hashsize );
                     fflush( stdout );
                 }
 
