@@ -64,6 +64,7 @@ int main( int argc, char** argv )
     ExpandingBuffer eb;
     uint32_t cntd = 0;
     uint32_t cntu = 0;
+    uint32_t cntb = 0;
     std::unordered_set<std::string> unique;
     uint64_t offset = 0;
     for( uint32_t i=0; i<size; i++ )
@@ -75,30 +76,58 @@ int main( int argc, char** argv )
         }
 
         auto post = mview[i];
-        auto buf = FindHeader( post, "message-id: ", 12 );
-        buf += 12;
-        while( *buf != '<' ) buf++;
-        buf++;
-        auto end = buf;
-        while( *end != '>' ) end++;
-
-        std::string tmp( buf, end );
-        if( unique.find( tmp ) == unique.end() )
+        auto buf = FindOptionalHeader( post, "message-id: ", 12 );
+        if( *buf == '\n' )
         {
-            unique.emplace( std::move( tmp ) );
-            cntu++;
-            Write( mview, i, ddata, dmeta, offset );
+            buf = FindOptionalHeader( post, "message-id:\t", 12 );
+        }
+        if( *buf != '\n' )
+        {
+            buf += 12;
+            auto end = buf;
+            while( *buf != '<' && *buf != '\n' ) buf++;
+            if( *buf == '\n' )
+            {
+                std::swap( end, buf );
+            }
+            else
+            {
+                buf++;
+                end = buf;
+                while( *end != '>' && *end != '\n' ) end++;
+            }
+
+            if( IsMsgId( buf, end ) )
+            {
+                std::string tmp( buf, end );
+                if( unique.find( tmp ) == unique.end() )
+                {
+                    unique.emplace( std::move( tmp ) );
+                    cntu++;
+                    Write( mview, i, ddata, dmeta, offset );
+                }
+                else
+                {
+                    cntd++;
+                }
+            }
+            else
+            {
+                Write( mview, i, ddata, dmeta, offset );
+                cntb++;
+            }
         }
         else
         {
-            cntd++;
+            Write( mview, i, ddata, dmeta, offset );
+            cntb++;
         }
     }
 
     fclose( dmeta );
     fclose( ddata );
 
-    printf( "Processed %i MsgIDs. Unique: %i, dupes: %i\n", size, cntu, cntd );
+    printf( "Processed %i MsgIDs. Unique: %i, dupes: %i, broken: %i\n", size, cntu, cntd, cntb );
 
     return 0;
 }
