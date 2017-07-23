@@ -5,7 +5,7 @@
 
 #include "StringCompress.hpp"
 
-static const char* TrigramDecompressionModel[256] = {
+static const char* CodeBook[256] = {
     nullptr,   // 0: end of string
     nullptr,   // 1: encoded host string
     /* 0x02   31433265 hits */ "$1",
@@ -264,10 +264,10 @@ static const char* TrigramDecompressionModel[256] = {
     /* 0xff    1621619 hits */ "47",
 };
 
-enum { TrigramSize2 = 116 };
-enum { TrigramSize3 = 43 };
+enum { BigramSize = 116 };
+enum { TrigramSize = 43 };
 
-static const char* TrigramCompressionModel2[TrigramSize2] = {
+static const char* BigramTable[BigramSize] = {
     "$1",
     "$2",
     "$3",
@@ -386,7 +386,7 @@ static const char* TrigramCompressionModel2[TrigramSize2] = {
     "v$",
 };
 
-static uint8_t TrigramCompressionIndex2[TrigramSize2] = {
+static uint8_t BigramIndex[BigramSize] = {
     2,
     7,
     184,
@@ -505,7 +505,7 @@ static uint8_t TrigramCompressionIndex2[TrigramSize2] = {
     157,
 };
 
-static const char* TrigramCompressionModel3[TrigramSize3] = {
+static const char* TrigramTable[TrigramSize] = {
     "$0$",
     ".00",
     ".dl",
@@ -551,7 +551,7 @@ static const char* TrigramCompressionModel3[TrigramSize3] = {
     "v$1",
 };
 
-static uint8_t TrigramCompressionIndex3[TrigramSize3] = {
+static uint8_t TrigramIndex[TrigramSize] = {
     231,
     10,
     17,
@@ -687,17 +687,17 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
                 ( *in >= '0' && *in <= '9' ) ||
                 ( *in >= 'a' && *in <= 'v' ) )
             {
-                auto it3 = std::lower_bound( TrigramCompressionModel3, TrigramCompressionModel3 + TrigramSize3, in, [] ( const auto& l, const auto& r ) { return strncmp( l, r, 3 ) < 0; } );
-                if( it3 != TrigramCompressionModel3 + TrigramSize3 && strncmp( *it3, in, 3 ) == 0 )
+                auto it3 = std::lower_bound( TrigramTable, TrigramTable + TrigramSize, in, [] ( const auto& l, const auto& r ) { return strncmp( l, r, 3 ) < 0; } );
+                if( it3 != TrigramTable + TrigramSize && strncmp( *it3, in, 3 ) == 0 )
                 {
-                    *out++ = TrigramCompressionIndex3[it3 - TrigramCompressionModel3];
+                    *out++ = TrigramIndex[it3 - TrigramTable];
                     in += 3;
                     continue;
                 }
-                auto it2 = std::lower_bound( TrigramCompressionModel2, TrigramCompressionModel2 + TrigramSize2, in, [] ( const auto& l, const auto& r ) { return strncmp( l, r, 2 ) < 0; } );
-                if( it2 != TrigramCompressionModel2 + TrigramSize2 && strncmp( *it2, in, 2 ) == 0 )
+                auto it2 = std::lower_bound( BigramTable, BigramTable + BigramSize, in, [] ( const auto& l, const auto& r ) { return strncmp( l, r, 2 ) < 0; } );
+                if( it2 != BigramTable + BigramSize && strncmp( *it2, in, 2 ) == 0 )
                 {
-                    *out++ = TrigramCompressionIndex2[it2 - TrigramCompressionModel2];
+                    *out++ = BigramIndex[it2 - BigramTable];
                     in += 2;
                     continue;
                 }
@@ -731,13 +731,13 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
     {
         if( *in >= 32 && *in <= 126 )
         {
-            assert( TrigramDecompressionModel[*in][0] == *in );
-            assert( TrigramDecompressionModel[*in][1] == '\0' );
+            assert( CodeBook[*in][0] == *in );
+            assert( CodeBook[*in][1] == '\0' );
             *out++ = *in++;
         }
         else if( *in != 1 )
         {
-            const char* dec = TrigramDecompressionModel[*in++];
+            const char* dec = CodeBook[*in++];
             while( *dec != '\0' ) *out++ = *dec++;
         }
         else
