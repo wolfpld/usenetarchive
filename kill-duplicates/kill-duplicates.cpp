@@ -17,6 +17,16 @@
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
 
+static void Write( const MessageView& mview, uint32_t i, FILE* ddata, FILE* dmeta, uint64_t& offset )
+{
+    const auto raw = mview.Raw( i );
+    fwrite( raw.ptr, 1, raw.compressedSize, ddata );
+
+    RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+    fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
+    offset += raw.compressedSize;
+}
+
 int main( int argc, char** argv )
 {
     if( argc != 3 )
@@ -77,13 +87,7 @@ int main( int argc, char** argv )
         {
             unique.emplace( std::move( tmp ) );
             cntu++;
-
-            const auto raw = mview.Raw( i );
-            fwrite( raw.ptr, 1, raw.compressedSize, ddata );
-
-            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
-            fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
-            offset += raw.compressedSize;
+            Write( mview, i, ddata, dmeta, offset );
         }
         else
         {
