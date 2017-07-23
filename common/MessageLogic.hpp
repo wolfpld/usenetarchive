@@ -11,6 +11,7 @@ const char* FindHeader( const char* msg, const char* header, int hlen );
 const char* FindReferences( const char* msg );
 int ValidateReferences( const char*& buf );
 bool ValidateMsgId( const char* begin, const char* end, char* dst );
+bool IsMsgId( const char* begin, const char* end );
 
 int DetectWrote( const char* ptr );
 const char* DetectWroteEnd( const char* ptr, int baseLevel );

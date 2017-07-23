@@ -119,6 +119,21 @@ bool ValidateMsgId( const char* begin, const char* end, char* dst )
     return broken;
 }
 
+// Note that this function doesn't perform strict validation. Many message-ids are broken,
+// for example containing forbidden space character. UAT can handle that.
+bool IsMsgId( const char* begin, const char* end )
+{
+    while( begin != end )
+    {
+        if( *begin < 32 || *begin > 126 || *begin == '<' || *begin == '>' )
+        {
+            return false;
+        }
+        begin++;
+    }
+    return true;
+}
+
 // Returns number of lines in "wrote" context
 int DetectWrote( const char* ptr )
 {
