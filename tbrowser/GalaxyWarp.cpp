@@ -35,8 +35,11 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
 
     bool needCurrent = false;
 
+    uint8_t pack[1024];
+    m_galaxy.PackMsgId( msgid, pack );
+
     assert( m_list.empty() );
-    const auto gidx = m_galaxy.GetMessageIndex( msgid );
+    const auto gidx = m_galaxy.GetMessageIndex( pack );
     const auto groups = m_galaxy.GetGroups( gidx );
     const auto current = m_galaxy.GetActiveArchive();
     for( int i=0; i<groups.size; i++ )

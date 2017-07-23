@@ -165,7 +165,7 @@ int main( int argc, char** argv )
     // list of unique msg id
     StringCompress* compress;
 
-    std::vector<const char*> msgidvec;
+    std::vector<const uint8_t*> msgidvec;
     uint64_t unique;
     {
         uint64_t cnt = 0;
@@ -211,7 +211,7 @@ int main( int argc, char** argv )
 
             uint8_t tmp[2048];
             compress->Pack( v, tmp );
-            msgidvec.emplace_back( strdup( (const char*)tmp ) );
+            msgidvec.emplace_back( (const uint8_t*)strdup( (const char*)tmp ) );
         }
         printf( "\n" );
     }
@@ -237,7 +237,7 @@ int main( int argc, char** argv )
                 fflush( stdout );
             }
 
-            uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 ) & hashmask;
+            uint32_t hash = XXH32( msgidvec[i], strlen( (const char*)msgidvec[i] ), 0 ) & hashmask;
 
             uint8_t dist = 0;
             uint64_t idx = i;
@@ -299,7 +299,7 @@ int main( int argc, char** argv )
                     msgidoffset[hashdata[i]] = stroffset;
                     cnt++;
                     auto str = msgidvec[hashdata[i]];
-                    stroffset += fwrite( str, 1, strlen( str ) + 1, strdata );
+                    stroffset += fwrite( str, 1, strlen( (const char*)str ) + 1, strdata );
                 }
             }
 
@@ -328,7 +328,7 @@ int main( int argc, char** argv )
     std::map<uint32_t, IndirectData> indirect;
 
     {
-        char tmp[1024];
+        uint8_t tmp[1024];
         HashSearchBig midhash( base + "msgid", base + "midhash.meta", base + "midhash" );
 
         struct VectorHasher
@@ -360,7 +360,7 @@ int main( int argc, char** argv )
             }
 
             char decmsg[2048];
-            auto declen = compress->Unpack( (const uint8_t*)msgidvec[i], decmsg );
+            auto declen = compress->Unpack( msgidvec[i], decmsg );
 
             groups.clear();
             uint32_t hash = XXH32( decmsg, declen - 1, 0 );
@@ -394,7 +394,7 @@ int main( int argc, char** argv )
                             while( *--buf != '<' ) {}
                             buf++;
                             assert( end - buf < 1024 );
-                            ValidateMsgId( buf, end, tmp );
+                            ValidateMsgId( buf, end, (char*)tmp );
                             const auto parent = midhash.Search( tmp );
                             if( parent != -1 )
                             {
@@ -408,7 +408,7 @@ int main( int argc, char** argv )
                                     if( pmidx != -1 )
                                     {
                                         const auto pmid = currarch->GetMessageId( pmidx );
-                                        if( strcmp( pmid, tmp ) == 0 )
+                                        if( strcmp( pmid, (const char*)tmp ) == 0 )
                                         {
                                             ok = false;
                                             break;

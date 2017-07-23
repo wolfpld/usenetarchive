@@ -291,7 +291,10 @@ void Browser::Entry()
                 {
                     if( m_galaxy )
                     {
-                        idx = m_galaxy->GetMessageIndex( msgid.c_str() );
+                        uint8_t pack[8192];
+                        m_galaxy->PackMsgId( msgid.c_str(), pack );
+
+                        idx = m_galaxy->GetMessageIndex( pack );
                         if( idx >= 0 )
                         {
                             auto groups = m_galaxy->GetGroups( idx );

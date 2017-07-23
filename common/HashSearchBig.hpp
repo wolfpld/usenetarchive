@@ -29,27 +29,27 @@ public:
         m_distmax = distfile[0];
     }
 
-    int Search( const char* str, XXH32_hash_t _hash ) const
+    int Search( const uint8_t* str, XXH32_hash_t _hash ) const
     {
         auto hash = _hash & m_mask;
         uint8_t dist = 0;
         for(;;)
         {
             if( m_hash[hash].offset == 0 ) return -1;
-            if( strcmp( str, m_data + m_hash[hash].offset ) == 0 ) return m_hash[hash].idx;
+            if( strcmp( (const char*)str, (const char*)(const uint8_t*)m_data + m_hash[hash].offset ) == 0 ) return m_hash[hash].idx;
             dist++;
             if( dist > m_distmax ) return -1;
             hash = (hash+1) & m_mask;
         }
     }
 
-    int Search( const char* str ) const
+    int Search( const uint8_t* str ) const
     {
-        return Search( str, XXH32( str, strlen( str ), 0 ) );
+        return Search( str, XXH32( str, strlen( (const char*)str ), 0 ) );
     }
 
 private:
-    FileMap<char> m_data;
+    FileMap<uint8_t> m_data;
     FileMap<Data> m_hash;
     uint32_t m_mask;
     uint8_t m_distmax;

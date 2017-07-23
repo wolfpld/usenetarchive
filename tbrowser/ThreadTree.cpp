@@ -82,8 +82,10 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
     if( state == GalaxyState::Unknown )
     {
         const auto msgid = m_archive->GetMessageId( idx );
-        const auto gidx  = m_galaxy->GetMessageIndex( msgid );
-        assert( strcmp( m_galaxy->GetMessageId( gidx ), msgid ) == 0 );
+        uint8_t pack[1024];
+        m_galaxy->PackMsgId( msgid, pack );
+        const auto gidx  = m_galaxy->GetMessageIndex( pack );
+        assert( strcmp( (const char*)m_galaxy->GetMessageId( gidx ), (const char*)pack ) == 0 );
         const auto groups = m_galaxy->GetNumberOfGroups( gidx );
         assert( groups > 0 );
 
@@ -102,8 +104,8 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
         }
         else
         {
-            bool parents = !m_galaxy->AreParentsSame( gidx, msgid ) || ip.size != 0;
-            bool children = !m_galaxy->AreChildrenSame( gidx, msgid ) || ic.size != 0;
+            bool parents = !m_galaxy->AreParentsSame( gidx, pack ) || ip.size != 0;
+            bool children = !m_galaxy->AreChildrenSame( gidx, pack ) || ic.size != 0;
             if( parents )
             {
                 if( children )

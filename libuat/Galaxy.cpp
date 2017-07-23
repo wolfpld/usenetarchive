@@ -70,7 +70,7 @@ const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )
     return m_arch[idx];
 }
 
-bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
+bool Galaxy::AreChildrenSame( uint32_t idx, const uint8_t* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
@@ -87,10 +87,13 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     assert( !arch.empty() );
     if( arch.size() == 1 ) return true;
 
-    auto children = arch[0]->GetChildren( msgid );
+    char unpack[1024];
+    m_compress.Unpack( msgid, unpack );
+
+    auto children = arch[0]->GetChildren( unpack );
     for( int i=1; i<arch.size(); i++ )
     {
-        if( arch[i]->GetChildren( msgid ).size != children.size )
+        if( arch[i]->GetChildren( unpack ).size != children.size )
         {
             return false;
         }
@@ -104,7 +107,7 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
 
     for( int i=1; i<arch.size(); i++ )
     {
-        auto c2 = arch[i]->GetChildren( msgid );
+        auto c2 = arch[i]->GetChildren( unpack );
         for( int j=0; j<c2.size; j++ )
         {
             auto tmid = arch[i]->GetMessageId( c2.ptr[j] );
@@ -127,7 +130,7 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     return true;
 }
 
-bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
+bool Galaxy::AreParentsSame( uint32_t idx, const uint8_t* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
@@ -144,12 +147,15 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
     assert( !arch.empty() );
     if( arch.size() == 1 ) return true;
 
-    const auto tid = arch[0]->GetParent( msgid );
+    char unpack[1024];
+    m_compress.Unpack( msgid, unpack );
+
+    const auto tid = arch[0]->GetParent( unpack );
     const auto tmid = tid == -1 ? "" : arch[0]->GetMessageId( tid );
 
     for( int i=1; i<arch.size(); i++ )
     {
-        auto tid2 = arch[i]->GetParent( msgid );
+        auto tid2 = arch[i]->GetParent( unpack );
         auto tmid2 = tid2 == -1 ? "" : arch[i]->GetMessageId( tid2 );
         if( strcmp( tmid, tmid2 ) != 0 )
         {
