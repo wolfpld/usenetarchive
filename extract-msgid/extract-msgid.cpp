@@ -78,12 +78,41 @@ int main( int argc, char** argv )
         }
 
         auto post = mview[i];
-        auto buf = FindHeader( post, "message-id: ", 12 );
-        buf += 12;
-        while( *buf != '<' ) buf++;
-        buf++;
-        auto end = buf;
-        while( *end != '>' ) end++;
+        auto buf = FindOptionalHeader( post, "message-id: ", 12 );
+        const char* end;
+        if( *buf != '\n' )
+        {
+            buf += 12;
+            end = buf;
+            while( *buf != '<' && *buf != '\n' ) buf++;
+            if( *buf == '\n' )
+            {
+                std::swap( end, buf );
+                if( !IsMsgId( buf, end ) )
+                {
+                    fprintf( stderr, "Broken Message-Id: in message %i!\n", i );
+                    CreateDummyMsgId( buf, end, i );
+                }
+            }
+            else
+            {
+                buf++;
+                end = buf;
+                while( *end != '>' && *end != '\n' ) end++;
+
+                if( !IsMsgId( buf, end ) )
+                {
+                    fprintf( stderr, "Broken Message-Id: in message %i!\n", i );
+                    CreateDummyMsgId( buf, end, i );
+                }
+            }
+        }
+        else
+        {
+            fprintf( stderr, "No Message-Id: header in message %i!\n", i );
+            CreateDummyMsgId( buf, end, i );
+        }
+
         fwrite( buf, 1, end-buf, middata );
         fwrite( &zero, 1, 1, middata );
 
