@@ -16,8 +16,14 @@
     <Filter Include="libcrm114">
       <UniqueIdentifier>{97c31713-4de4-43e4-b874-2e28bd5475d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="xxhash">
-      <UniqueIdentifier>{30058835-8cf7-4d7f-8f56-33cab2bcdb0b}</UniqueIdentifier>
+    <Filter Include="zstd">
+      <UniqueIdentifier>{0fc411e8-7881-47d1-8aca-b0b90c5e8731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstd\common">
+      <UniqueIdentifier>{dd49c9db-1d35-4d7a-b7bd-bf26606f7c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstd\decompress">
+      <UniqueIdentifier>{7f3c2a4b-a608-4aeb-a56b-6a925b460941}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,8 +129,32 @@
     <ClCompile Include="..\..\..\contrib\tre\xmalloc.c">
       <Filter>tre</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c">
-      <Filter>xxhash</Filter>
+    <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\pool.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\threading.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c">
+      <Filter>zstd\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c">
+      <Filter>zstd\decompress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
+      <Filter>zstd\decompress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -224,8 +254,41 @@
     <ClInclude Include="..\..\..\contrib\tre\xmalloc.h">
       <Filter>tre</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h">
-      <Filter>xxhash</Filter>
+    <ClInclude Include="..\..\..\common\ZMessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\zstd.h">
+      <Filter>zstd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\fse.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\huf.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\mem.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\pool.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\threading.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_errors.h">
+      <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h">
+      <Filter>zstd\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

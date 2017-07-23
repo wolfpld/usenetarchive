@@ -1,7 +1,7 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
-INCLUDES := -I../../../contrib
+INCLUDES := -I../../../contrib -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS :=
 IMAGE := filter-spam
 
