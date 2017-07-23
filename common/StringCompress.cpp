@@ -14,6 +14,7 @@ StringCompress::StringCompress( const std::set<const char*, CharUtil::LessCompar
         while( *v != '@' && *v != '\0' ) v++;
         if( *v == '@' )
         {
+            v++;
             auto it = hosts.find( v );
             if( it == hosts.end() )
             {
@@ -72,8 +73,9 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
     {
         if( *in == '@' )
         {
-            auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, in, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
-            if( it != m_hostLookup + m_maxHost && strncmp( m_data + m_hostOffset[*it], in, 3 ) == 0 )
+            auto test = in+1;
+            auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, test, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
+            if( it != m_hostLookup + m_maxHost && strncmp( m_data + m_hostOffset[*it], test, 3 ) == 0 )
             {
                 *out++ = 1;
                 *out++ = *it;
@@ -112,6 +114,7 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
         if( *in == 1 )
         {
             in++;
+            *out++ = '@';
             const char* dec = m_data + m_hostOffset[*in];
             while( *dec != '\0' ) *out++ = *dec++;
             assert( *++in == 0 );
