@@ -135,3 +135,11 @@ void CopyFile( const std::string& from, const std::string& to )
     fclose( src );
     fclose( dst );
 }
+
+void CopyCommonFiles( const std::string& source, const std::string& target )
+{
+    if( Exists( source + "name" ) ) CopyFile( source + "name", target + "name" );
+    if( Exists( source + "desc_long" ) ) CopyFile( source + "desc_long", target + "desc_long" );
+    if( Exists( source + "desc_short" ) ) CopyFile( source + "desc_short", target + "desc_short" );
+    if( Exists( source + "prefix" ) ) CopyFile( source + "prefix", target + "prefix" );
+}
