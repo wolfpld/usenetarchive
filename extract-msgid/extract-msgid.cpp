@@ -79,6 +79,10 @@ int main( int argc, char** argv )
 
         auto post = mview[i];
         auto buf = FindOptionalHeader( post, "message-id: ", 12 );
+        if( *buf == '\n' )
+        {
+            buf = FindOptionalHeader( post, "message-id:\t", 12 );
+        }
         const char* end;
         if( *buf != '\n' )
         {
