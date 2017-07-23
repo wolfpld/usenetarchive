@@ -21,6 +21,7 @@
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
+#include "../common/ZMessageView.hpp"
 
 extern "C" {
 #include "../contrib/libcrm114/crm114_sysincludes.h"
@@ -122,6 +123,29 @@ int main( int argc, char** argv )
 
         CopyCommonFiles( base, dbase );
 
+        FILE *dzmeta = nullptr;
+        FILE* dzdata = nullptr;
+        ZMessageView* zview = nullptr;
+        if( Exists( base + "zdict" ) )
+        {
+            zview = new ZMessageView( base + "zmeta", base + "zdata", base + "zdict" );
+            dzmeta = fopen( ( dbase + "zmeta" ).c_str(), "wb" );
+            dzdata = fopen( ( dbase + "zdata" ).c_str(), "wb" );
+
+            if( !dzmeta || !dzdata )
+            {
+                fprintf( stderr, "Incomplete zstd data.\n" );
+                exit( 1 );
+            }
+            if( zview->Size() != size )
+            {
+                fprintf( stderr, "LZ4 and zstd message number mismatch.\n" );
+                exit( 1 );
+            }
+
+            CopyFile( base + "zdict", dbase + "zdict" );
+        }
+
         FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
         FILE* ddata = fopen( ddatafn.c_str(), "wb" );
 
@@ -163,6 +187,7 @@ int main( int argc, char** argv )
         }
 
         uint64_t offset = 0;
+        uint64_t zoffset = 0;
         uint64_t savec = 0, saveu = 0;
         uint32_t cntbad = 0;
         auto it = data.begin();
@@ -205,10 +230,31 @@ int main( int argc, char** argv )
             RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
             offset += raw.compressedSize;
+
+            if( zview )
+            {
+                const auto zraw = zview->Raw( i );
+                if( zraw.size != raw.size )
+                {
+                    fprintf( stderr, "LZ4 and zstd message %i size mismatch\n", i );
+                    exit( 1 );
+                }
+
+                RawImportMeta zpacket = { zoffset, zraw.size, zraw.compressedSize };
+                fwrite( &zpacket, 1, sizeof( RawImportMeta ), dzmeta );
+
+                fwrite( zraw.ptr, 1, zraw.compressedSize, dzdata );
+                zoffset += zraw.compressedSize;
+            }
         }
 
         fclose( dmeta );
         fclose( ddata );
+
+        if( dzmeta ) fclose( dzmeta );
+        if( dzdata ) fclose( dzdata );
+
+        delete zview;
 
         printf( "\nKilled %i messages.\nSaved %i KB (uncompressed), %i KB (compressed)\n", cntbad, saveu / 1024, savec / 1024 );
     }
