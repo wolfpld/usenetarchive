@@ -130,7 +130,18 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
 
     while( *in != 0 )
     {
-        if( *in == 1 )
+        if( *in >= 32 && *in <= 126 )
+        {
+            assert( TrigramDecompressionModel[*in][0] == *in );
+            assert( TrigramDecompressionModel[*in][1] == '\0' );
+            *out++ = *in++;
+        }
+        else if( *in != 1 )
+        {
+            const char* dec = TrigramDecompressionModel[*in++];
+            while( *dec != '\0' ) *out++ = *dec++;
+        }
+        else
         {
             in++;
             *out++ = '@';
@@ -139,8 +150,6 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
             assert( *++in == 0 );
             break;
         }
-        const char* dec = TrigramDecompressionModel[*in++];
-        while( *dec != '\0' ) *out++ = *dec++;
     }
 
     *out++ = '\0';
