@@ -94,7 +94,7 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
             if( it != m_hostLookup + m_maxHost && strncmp( m_data + m_hostOffset[*it], test, 3 ) == 0 )
             {
                 *out++ = 1;
-                *out++ = *it;
+                *out++ = (*it) + 1;
                 break;
             }
         }
@@ -131,7 +131,7 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
         {
             in++;
             *out++ = '@';
-            const char* dec = m_data + m_hostOffset[*in];
+            const char* dec = m_data + m_hostOffset[(*in) - 1];
             while( *dec != '\0' ) *out++ = *dec++;
             assert( *++in == 0 );
             break;
