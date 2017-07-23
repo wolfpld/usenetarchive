@@ -21,6 +21,7 @@
 #include "../common/MetaView.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/MsgIdHash.hpp"
+#include "../common/StringCompress.hpp"
 
 #include "../libuat/Archive.hpp"
 
@@ -162,10 +163,12 @@ int main( int argc, char** argv )
     }
 
     // list of unique msg id
+    StringCompress* compress;
+
     std::vector<const char*> msgidvec;
-    uint64_t cnt = 0;
     uint64_t unique;
     {
+        uint64_t cnt = 0;
         std::set<const char*, CharUtil::LessComparator> msgidset;
         for( int i=0; i<arch.size(); i++ )
         {
@@ -190,16 +193,30 @@ int main( int argc, char** argv )
         unique = msgidset.size();
         printf( "\nUnique message count: %zu\n", unique );
 
+        printf( "Building code book...\n" );
+        fflush( stdout );
+        compress = new StringCompress( msgidset );
+        compress->WriteData( base + "msgid.codebook" );
+
+        printf( "Packing msg ids\n" );
         msgidvec.reserve( unique );
+        cnt = 0;
         for( auto& v : msgidset )
         {
-            msgidvec.emplace_back( v );
+            if( ( cnt++ & 0x3FFF ) == 0 )
+            {
+                printf( "%i/%i\r", cnt, unique );
+                fflush( stdout );
+            }
+
+            uint8_t tmp[2048];
+            compress->Pack( v, tmp );
+            msgidvec.emplace_back( strdup( (const char*)tmp ) );
         }
+        printf( "\n" );
     }
 
     // create hash table
-    auto msghash = new uint32_t[unique];
-
     {
         auto hashbits = MsgIdHashBits( unique, 90 );
         auto hashsize = MsgIdHashSize( hashbits );
@@ -220,9 +237,7 @@ int main( int argc, char** argv )
                 fflush( stdout );
             }
 
-            uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 );
-            msghash[i] = hash;
-            hash &= hashmask;
+            uint32_t hash = XXH32( msgidvec[i], strlen( msgidvec[i] ), 0 ) & hashmask;
 
             uint8_t dist = 0;
             uint64_t idx = i;
@@ -344,11 +359,14 @@ int main( int argc, char** argv )
                 fflush( stdout );
             }
 
+            char decmsg[2048];
+            auto declen = compress->Unpack( (const uint8_t*)msgidvec[i], decmsg );
+
             groups.clear();
-            auto hash = msghash[i];
+            uint32_t hash = XXH32( decmsg, declen - 1, 0 );
             for( int j=0; j<arch.size(); j++ )
             {
-                const auto idx = arch[j]->GetMessageIndex( msgidvec[i], hash );
+                const auto idx = arch[j]->GetMessageIndex( decmsg, hash );
                 if( idx != -1 )
                 {
                     groups.emplace_back( j );
@@ -356,7 +374,7 @@ int main( int argc, char** argv )
             }
             assert( !groups.empty() );
             const auto& refarch = arch[groups[0]];
-            const auto idx = refarch->GetMessageIndex( msgidvec[i], hash );
+            const auto idx = refarch->GetMessageIndex( decmsg, hash );
             if( refarch->GetParent( idx ) == -1 )
             {
                 auto post = refarch->GetMessage( idx, eb );
@@ -384,7 +402,7 @@ int main( int argc, char** argv )
                                 for( int g=1; g<groups.size(); g++ )
                                 {
                                     const auto& currarch = arch[groups[g]];
-                                    const auto gmidx = currarch->GetMessageIndex( msgidvec[i] );
+                                    const auto gmidx = currarch->GetMessageIndex( decmsg );
                                     assert( gmidx != -1 );
                                     const auto pmidx = currarch->GetParent( gmidx );
                                     if( pmidx != -1 )

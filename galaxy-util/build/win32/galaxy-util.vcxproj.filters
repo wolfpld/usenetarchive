@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\StringCompress.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\Filesystem.hpp">
@@ -120,6 +123,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\HashSearchBig.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\StringCompress.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
