@@ -39,8 +39,8 @@ public:
     size_t UnpackMsgId( const uint8_t* compressed, char* msgid ) const { return m_compress.Unpack( compressed, msgid ); }
 
     int GetNumberOfGroups( uint32_t idx ) const { if( idx == -1 ) return 0; return *m_midgr[idx]; }
-    bool AreChildrenSame( uint32_t idx, const uint8_t* msgid ) const;
-    bool AreParentsSame( uint32_t idx, const uint8_t* msgid ) const;
+    bool AreChildrenSame( uint32_t idx, const char* msgid ) const;
+    bool AreParentsSame( uint32_t idx, const char* msgid ) const;
     ViewReference<uint32_t> GetGroups( uint32_t idx ) const { assert( idx != -1 ); auto ptr = m_midgr[idx]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
     int32_t GetIndirectIndex( uint32_t idx ) const;
 
