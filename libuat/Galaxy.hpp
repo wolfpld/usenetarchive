@@ -39,19 +39,10 @@ public:
     size_t UnpackMsgId( const uint8_t* compressed, char* msgid ) const { return m_compress.Unpack( compressed, msgid ); }
 
     int GetNumberOfGroups( uint32_t idx ) const { if( idx == -1 ) return 0; return *m_midgr[idx]; }
-    int GetNumberOfGroups( const uint8_t* msgid ) const { return GetNumberOfGroups( GetMessageIndex( msgid ) ); }
-
     bool AreChildrenSame( uint32_t idx, const uint8_t* msgid ) const;
-    bool AreChildrenSame( const uint8_t* msgid ) const { auto idx = GetMessageIndex( msgid ); assert( idx != -1 ); return AreChildrenSame( idx, msgid ); }
-
     bool AreParentsSame( uint32_t idx, const uint8_t* msgid ) const;
-    bool AreParentsSame( const uint8_t* msgid ) const { auto idx = GetMessageIndex( msgid ); assert( idx != -1 ); return AreParentsSame( idx, msgid ); }
-
     ViewReference<uint32_t> GetGroups( uint32_t idx ) const { assert( idx != -1 ); auto ptr = m_midgr[idx]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
-    ViewReference<uint32_t> GetGroups( const uint8_t* msgid ) const { return GetGroups( GetMessageIndex( msgid ) ); }
-
     int32_t GetIndirectIndex( uint32_t idx ) const;
-    int32_t GetIndirectIndex( const uint8_t* msgid ) const { return GetIndirectIndex( GetMessageIndex( msgid ) ); }
 
     ViewReference<uint32_t> GetIndirectParents( uint32_t indirect_idx ) const { assert( indirect_idx != -1 ); auto ptr = m_indirect[indirect_idx*2]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
     ViewReference<uint32_t> GetIndirectChildren( uint32_t indirect_idx ) const { assert( indirect_idx != -1 ); auto ptr = m_indirect[indirect_idx*2+1]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
