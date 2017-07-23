@@ -35,6 +35,9 @@ public:
     int GetMessageIndex( const char* msgid ) const { return m_midhash.Search( msgid ); }
     const char* GetMessageId( uint32_t idx ) const { return m_middb[idx]; }
 
+    size_t PackMsgId( const char* msgid, uint8_t* compressed ) const { return m_compress.Pack( msgid, compressed ); }
+    size_t UnpackMsgId( const uint8_t* compressed, char* msgid ) const { return m_compress.Unpack( compressed, msgid ); }
+
     int GetNumberOfGroups( uint32_t idx ) const { if( idx == -1 ) return 0; return *m_midgr[idx]; }
     int GetNumberOfGroups( const char* msgid ) const { return GetNumberOfGroups( GetMessageIndex( msgid ) ); }
 
