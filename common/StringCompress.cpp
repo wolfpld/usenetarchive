@@ -60,6 +60,22 @@ StringCompress::StringCompress( const std::set<const char*, CharUtil::LessCompar
     std::sort( m_hostLookup, m_hostLookup+m_maxHost, [&hvec] ( const auto& l, const auto& r ) { return strcmp( hvec[l]->first, hvec[r]->first ) < 0; } );
 }
 
+StringCompress::StringCompress( const std::string& fn )
+{
+    FILE* f = fopen( fn.c_str(), "rb" );
+    assert( f );
+
+    fread( &m_dataLen, 1, sizeof( m_dataLen ), f );
+    auto data = new char[m_dataLen];
+    fread( data, 1, m_dataLen, f );
+    m_data = data;
+    fread( &m_maxHost, 1, sizeof( m_maxHost ), f );
+    fread( m_hostLookup, 1, m_maxHost * sizeof( uint8_t ), f );
+    fread( m_hostOffset, 1, m_maxHost * sizeof( uint32_t ), f );
+
+    fclose( f );
+}
+
 StringCompress::~StringCompress()
 {
     delete[] m_data;

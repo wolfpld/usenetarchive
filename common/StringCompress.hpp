@@ -12,6 +12,7 @@ class StringCompress
 {
 public:
     StringCompress( const std::set<const char*, CharUtil::LessComparator>& strings );
+    StringCompress( const std::string& fn );
     ~StringCompress();
 
     size_t Pack( const char* in, uint8_t* out ) const;
