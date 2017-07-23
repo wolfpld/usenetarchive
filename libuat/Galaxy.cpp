@@ -13,7 +13,7 @@ Galaxy* Galaxy::Open( const std::string& fn )
     if( !Exists( base + "archives" ) || !Exists( base + "archives.meta" ) ||
         !Exists( base + "midgr" ) || !Exists( base + "midgr.meta" ) ||
         !Exists( base + "midhash" ) || !Exists( base + "midhash.meta" ) ||
-        !Exists( base + "msgid" ) || !Exists( base + "msgid.meta" ) ||
+        !Exists( base + "msgid" ) || !Exists( base + "msgid.meta" ) || !Exists( base + "msgid.codebook" ) ||
         !Exists( base + "str" ) || !Exists( base + "str.meta" ) ||
         !Exists( base + "indirect" ) || !Exists( base + "indirect.offset" ) || !Exists( base + "indirect.dense" ) )
     {
@@ -34,6 +34,7 @@ Galaxy::Galaxy( const std::string& fn )
     , m_midgr( fn + "midgr.meta", fn + "midgr" )
     , m_indirect( fn + "indirect.offset", fn + "indirect" )
     , m_indirectDense( fn + "indirect.dense" )
+    , m_compress( fn + "msgid.codebook" )
 {
     const auto size = m_archives.Size() / 2;
     for( int i=0; i<size; i++ )

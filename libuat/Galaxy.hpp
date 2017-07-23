@@ -9,6 +9,7 @@
 #include "../common/FileMap.hpp"
 #include "../common/HashSearchBig.hpp"
 #include "../common/MetaView.hpp"
+#include "../common/StringCompress.hpp"
 
 #include "Archive.hpp"
 #include "ViewReference.hpp"
@@ -67,6 +68,7 @@ private:
     const MetaView<uint32_t, uint32_t> m_midgr;
     const MetaView<uint32_t, uint32_t> m_indirect;
     const FileMap<uint64_t> m_indirectDense;
+    const StringCompress m_compress;
 
     std::vector<std::shared_ptr<Archive>> m_arch;
     std::vector<int> m_available;

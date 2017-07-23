@@ -270,6 +270,9 @@
     <ClCompile Include="..\..\ThreadTree.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\StringCompress.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -435,6 +438,9 @@
       <Filter>tbrowser</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\Package.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\StringCompress.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

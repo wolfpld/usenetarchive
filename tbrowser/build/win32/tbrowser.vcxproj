@@ -143,6 +143,7 @@
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addchstr.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addstr.c" />
@@ -234,6 +235,7 @@
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\Package.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
+    <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
