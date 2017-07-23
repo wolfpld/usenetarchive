@@ -715,6 +715,11 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
                 *out++ = (*it) + 1;
                 break;
             }
+            else
+            {
+                *out++ = '@';
+                in++;
+            }
         }
     }
 
