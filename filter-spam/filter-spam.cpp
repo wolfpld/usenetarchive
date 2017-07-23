@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#  include <windows.h>
+#endif
+
 #include <algorithm>
 #include <assert.h>
 #include <unordered_set>
@@ -25,10 +29,6 @@ extern "C" {
 #include "../contrib/libcrm114/crm114_lib.h"
 #include "../contrib/libcrm114/crm114_internal.h"
 }
-
-#ifdef _WIN32
-#  include <windows.h>
-#endif
 
 int main( int argc, char** argv )
 {

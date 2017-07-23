@@ -6,6 +6,10 @@
 #include <sys/stat.h>
 #include <vector>
 
+#ifdef CopyFile
+#  undef CopyFile
+#endif
+
 bool CreateDirStruct( const std::string& path );
 std::vector<std::string> ListDirectory( const std::string& path );
 void CopyFile( const std::string& from, const std::string& to );
