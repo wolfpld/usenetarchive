@@ -120,6 +120,8 @@ int main( int argc, char** argv )
         std::string dmetafn = dbase + "meta";
         std::string ddatafn = dbase + "data";
 
+        CopyCommonFiles( base, dbase );
+
         FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
         FILE* ddata = fopen( ddatafn.c_str(), "wb" );
 
