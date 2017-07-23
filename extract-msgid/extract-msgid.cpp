@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <assert.h>
+#include <chrono>
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +9,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <random>
 #include <vector>
 
 #include "../contrib/xxhash/xxhash.h"
@@ -22,6 +25,21 @@ struct HashData
     uint32_t offset;
     uint32_t idx;
 };
+
+void CreateDummyMsgId( const char*& begin, const char*& end, int idx )
+{
+    static char buf[1024];
+    static std::random_device rd;
+
+    int64_t t = std::chrono::duration_cast<std::chrono::nanoseconds>( std::chrono::high_resolution_clock::now().time_since_epoch() ).count();
+    const auto r = uint32_t{ rd() };
+
+    sprintf( buf, "uat.%i.%" PRId64 ".%i@usenet.archive.toolkit", idx, t, r );
+
+    begin = buf;
+    end = begin;
+    while( *end != '\0' ) end++;
+}
 
 int main( int argc, char** argv )
 {
