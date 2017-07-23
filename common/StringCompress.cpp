@@ -125,3 +125,17 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
 
     return out - refout;
 }
+
+void StringCompress::WriteData( const std::string& fn ) const
+{
+    FILE* f = fopen( fn.c_str(), "wb" );
+    assert( f );
+
+    fwrite( &m_dataLen, 1, sizeof( m_dataLen ), f );
+    fwrite( m_data, 1, m_dataLen, f );
+    fwrite( &m_maxHost, 1, sizeof( m_maxHost ), f );
+    fwrite( m_hostLookup, 1, m_maxHost * sizeof( uint8_t ), f );
+    fwrite( m_hostOffset, 1, m_maxHost * sizeof( uint32_t ), f );
+
+    fclose( f );
+}
