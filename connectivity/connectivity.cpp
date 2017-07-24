@@ -161,19 +161,25 @@ int main( int argc, char** argv )
             if( recvdate != -1 ) break;
         }
 
-        buf = post;
-        while( strnicmpl( buf, "date: ", 6 ) != 0 && strnicmpl( buf, "date:\t", 6 ) != 0 )
+        time_t date = -1;
+        buf = FindOptionalHeader( post, "date: ", 6 );
+        if( *buf == '\n' )
         {
-            while( *buf != '\n' ) buf++;
-            buf++;
+            buf = FindOptionalHeader( post, "date:\t", 6 );
         }
-        buf += 6;
-        auto end = buf;
-        while( *++end != '\n' ) {}
-        memcpy( tmp, buf, end-buf );
-        tmp[end-buf] = '\0';
+        if( *buf != '\n' )
+        {
+            buf += 6;
+            auto end = buf;
+            while( *end != '\n' && *end != '\0' ) end++;
+            if( *end == '\n' )
+            {
+                memcpy( tmp, buf, end-buf );
+                tmp[end-buf] = '\0';
+                date = parsedate_rfc5322_lax( tmp );
+            }
+        }
 
-        auto date = parsedate_rfc5322_lax( tmp );
         if( date == -1 )
         {
             baddate++;
