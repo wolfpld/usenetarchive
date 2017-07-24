@@ -5,7 +5,7 @@ uat-filter-spam \- filter spam
 .I uat-filter spam
 <spam database directory>
 <archive>
-[destination [--quiet]] | [-m msgid]
+[destination [--quiet] [--size maxsize]] | [-m msgid]
 .SH DESCRIPTION
 This utility may be used to learn which messages are legitimate and which
 are spam. After database has been sufficiently trained, spam messages may be
@@ -31,6 +31,9 @@ Destination archive for spam removal. Omit it to start training session.
 .TP
 .BR --quiet
 Prevent listing removed messages. Only valid in spam removal mode.
+.TP
+.BR --size\fI\ maxsize
+Filter messages exceeding specified maximum size.
 .TP
 .BR -m\fI\ msgid
 Perform training only on a message with

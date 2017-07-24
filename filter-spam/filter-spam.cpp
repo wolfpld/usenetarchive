@@ -39,15 +39,17 @@ int main( int argc, char** argv )
 
     if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] )] | [-m msgid]\n", argv[0] );
+        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] | [--size max] )] | [-m msgid]\n", argv[0] );
         fprintf( stderr, "Omitting destination will start training mode.\n" );
         exit( 1 );
     }
 
     bool training = argc == 3;
     bool quiet = false;
+    bool ask = false;
+    int maxsize = -1;
 
-    if( argc == 5 )
+    if( argc > 5 )
     {
         if( strcmp( argv[3], "-m" ) == 0 )
         {
@@ -57,7 +59,20 @@ int main( int argc, char** argv )
         {
             quiet = true;
         }
-        else if( strcmp( argv[4], "--ask" ) != 0 )
+        else if( strcmp( argv[4], "--ask" ) == 0 )
+        {
+            ask = true;
+        }
+        else if( strcmp( argv[4], "--size" ) == 0 )
+        {
+            if( argc != 6 )
+            {
+                fprintf( stderr, "No max size provided.\n" );
+                exit( 1 );
+            }
+            maxsize = atoi( argv[5] );
+        }
+        else
         {
             fprintf( stderr, "Bad params!\n" );
             exit( 1 );
@@ -171,12 +186,23 @@ int main( int argc, char** argv )
             auto children = cdata[3];
             if( children == 0 && parent == -1 )
             {
-                auto post = mview[i];
-                CRM114_MATCHRESULT res;
-                crm114_classify_text( crm_db, post, raw.size, &res );
-                if( res.bestmatch_index != 0 )
+                if( maxsize != -1 )
                 {
-                    data.emplace_back( Data { i, float( res.tsprob ) } );
+                    const auto raw = mview.Raw( i );
+                    if( raw.size > maxsize )
+                    {
+                        data.emplace_back( Data { i, float( raw.size ) } );
+                    }
+                }
+                else
+                {
+                    auto post = mview[i];
+                    CRM114_MATCHRESULT res;
+                    crm114_classify_text( crm_db, post, raw.size, &res );
+                    if( res.bestmatch_index != 0 )
+                    {
+                        data.emplace_back( Data { i, float( res.tsprob ) } );
+                    }
                 }
             }
         }
@@ -199,12 +225,19 @@ int main( int argc, char** argv )
             {
                 if( !quiet )
                 {
-                    printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%.3f\033[0m\t%s\n", strings[i*3+1], strings[i*3], it->prob, msgid[i] );
+                    if( maxsize == -1 )
+                    {
+                        printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%.3f\033[0m\t%s\n", strings[i*3+1], strings[i*3], it->prob, msgid[i] );
+                    }
+                    else
+                    {
+                        printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%i\033[0m\t%s\n", strings[i*3+1], strings[i*3], (int)it->prob, msgid[i] );
+                    }
                     fflush( stdout );
                 }
                 ++it;
                 bool spam = true;
-                if( argc == 5 && !quiet )
+                if( ask )
                 {
                     printf( "\033[31;1mSelect [s]pam or [v]alid.\033[0m\n" );
                     fflush( stdout );
