@@ -181,20 +181,19 @@ int main( int argc, char** argv )
             }
 
             const auto raw = mview.Raw( i );
-            auto cdata = conn[i];
-            auto parent = cdata[1];
-            auto children = cdata[3];
-            if( children == 0 && parent == -1 )
+            if( maxsize != -1 )
             {
-                if( maxsize != -1 )
+                if( raw.size > maxsize )
                 {
-                    const auto raw = mview.Raw( i );
-                    if( raw.size > maxsize )
-                    {
-                        data.emplace_back( Data { i, float( raw.size ) } );
-                    }
+                    data.emplace_back( Data { i, float( raw.size ) } );
                 }
-                else
+            }
+            else
+            {
+                auto cdata = conn[i];
+                auto parent = cdata[1];
+                auto children = cdata[3];
+                if( children == 0 && parent == -1 )
                 {
                     auto post = mview[i];
                     CRM114_MATCHRESULT res;
