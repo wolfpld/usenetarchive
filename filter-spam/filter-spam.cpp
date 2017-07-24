@@ -39,7 +39,7 @@ int main( int argc, char** argv )
 
     if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] | [--size max] )] | [-m msgid]\n", argv[0] );
+        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] | [--size max] | [--kill msgid...] )] | [-m msgid]\n", argv[0] );
         fprintf( stderr, "Omitting destination will start training mode.\n" );
         exit( 1 );
     }
@@ -47,7 +47,10 @@ int main( int argc, char** argv )
     bool training = argc == 3;
     bool quiet = false;
     bool ask = false;
+    bool kill = false;
     int maxsize = -1;
+
+    std::vector<const char*> toKill;
 
     if( argc > 5 )
     {
@@ -71,6 +74,14 @@ int main( int argc, char** argv )
                 exit( 1 );
             }
             maxsize = atoi( argv[5] );
+        }
+        else if( strcmp( argv[4], "--kill" ) == 0 )
+        {
+            kill = true;
+            for( int i=5; i<argc; i++ )
+            {
+                toKill.emplace_back( argv[i] );
+            }
         }
         else
         {
@@ -186,6 +197,18 @@ int main( int argc, char** argv )
                 if( raw.size > maxsize )
                 {
                     data.emplace_back( Data { i, float( raw.size ) } );
+                }
+            }
+            else if( kill )
+            {
+                const auto id = msgid[i];
+                for( auto& v : toKill )
+                {
+                    if( strcmp( id, v ) == 0 )
+                    {
+                        data.emplace_back( Data { i, float( raw.size ) } );
+                        break;
+                    }
                 }
             }
             else
