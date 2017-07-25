@@ -44,7 +44,7 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    bool training = argc == 3;
+    bool training = false;
     bool quiet = false;
     bool ask = false;
     bool kill = false;
@@ -52,7 +52,7 @@ int main( int argc, char** argv )
 
     std::vector<const char*> toKill;
 
-    if( argc > 5 )
+    if( argc > 4 )
     {
         if( strcmp( argv[3], "-m" ) == 0 )
         {
