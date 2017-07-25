@@ -41,15 +41,15 @@ private:
         L_LAST
     };
 
-    enum { OffsetBits = 18 };
-    enum { LenBits = 10 };
+    enum { OffsetBits = 30 };
+    enum { LenBits = 30 };
     enum { FlagsBits = 3 };
     struct Line
     {
-        uint32_t offset     : OffsetBits;
-        uint32_t len        : LenBits;
-        uint32_t flags      : FlagsBits;
-        uint32_t linebreak  : 1;
+        uint64_t offset     : OffsetBits;
+        uint64_t len        : LenBits;
+        uint64_t flags      : FlagsBits;
+        uint64_t linebreak  : 1;
     };
 
     void PrepareLines();
@@ -70,7 +70,7 @@ private:
     bool m_allHeaders;
     bool m_rot13;
 
-    static_assert( sizeof( Line ) == sizeof( uint32_t ), "Size of Line greater than 4 bytes." );
+    static_assert( sizeof( Line ) == sizeof( uint64_t ), "Size of Line greater than 8 bytes." );
     static_assert( ( 1 << FlagsBits ) >= L_LAST, "Not enough bits for all flags." );
 };
 
