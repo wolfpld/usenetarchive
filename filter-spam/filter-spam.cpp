@@ -39,7 +39,7 @@ int main( int argc, char** argv )
 
     if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] | [--size max] | [--kill msgid...] )] | [-m msgid]\n", argv[0] );
+        fprintf( stderr, "USAGE: %s database source [destination ( [--ask] | [--quiet] | [--size max] | [--kill msgid...] | [--thread threshold] )] | [-m msgid]\n", argv[0] );
         fprintf( stderr, "Omitting destination will start training mode.\n" );
         exit( 1 );
     }
@@ -49,6 +49,7 @@ int main( int argc, char** argv )
     bool ask = false;
     bool kill = false;
     int maxsize = -1;
+    float thread = -1;
 
     std::vector<const char*> toKill;
 
@@ -82,6 +83,10 @@ int main( int argc, char** argv )
             {
                 toKill.emplace_back( argv[i] );
             }
+        }
+        else if( strcmp( argv[4], "--thread" ) == 0 )
+        {
+            thread = atof( argv[5] );
         }
         else
         {
@@ -215,15 +220,46 @@ int main( int argc, char** argv )
             {
                 auto cdata = conn[i];
                 auto parent = cdata[1];
-                auto children = cdata[3];
-                if( children == 0 && parent == -1 )
+                if( parent == -1 )
                 {
-                    auto post = mview[i];
-                    CRM114_MATCHRESULT res;
-                    crm114_classify_text( crm_db, post, raw.size, &res );
-                    if( res.bestmatch_index != 0 )
+                    auto children = cdata[3];
+                    if( children == 0 )
                     {
-                        data.emplace_back( Data { i, float( res.tsprob ) } );
+                        auto post = mview[i];
+                        CRM114_MATCHRESULT res;
+                        crm114_classify_text( crm_db, post, raw.size, &res );
+                        if( res.bestmatch_index != 0 )
+                        {
+                            data.emplace_back( Data { i, float( res.tsprob ) } );
+                        }
+                    }
+                    else if( thread != -1 )
+                    {
+                        bool allBad = true;
+                        auto toCheck = cdata[2];
+                        for( int j=0; j<toCheck; j++ )
+                        {
+                            const auto craw = mview.Raw( i+j );
+                            auto post = mview[i+j];
+                            CRM114_MATCHRESULT res;
+                            crm114_classify_text( crm_db, post, craw.size, &res );
+                            if( res.bestmatch_index == 0 || res.tsprob > thread )
+                            {
+                                allBad = false;
+                                break;
+                            }
+                        }
+                        if( allBad )
+                        {
+                            for( int j=0; j<toCheck; j++ )
+                            {
+                                const auto craw = mview.Raw( i+j );
+                                auto post = mview[i+j];
+                                CRM114_MATCHRESULT res;
+                                crm114_classify_text( crm_db, post, craw.size, &res );
+                                data.emplace_back( Data { i+j, float( res.tsprob ) } );
+                            }
+                        }
                     }
                 }
             }

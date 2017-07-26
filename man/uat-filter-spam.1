@@ -2,10 +2,10 @@
 .SH NAME
 uat-filter-spam \- filter spam
 .SH SYNOPSIS
-.I uat-filter spam
+.I uat-filter-spam
 <spam database directory>
 <archive>
-[destination [--quiet] | [--size maxsize] | [--kill msgid...]] | [-m msgid]
+[destination [--quiet] | [--size maxsize] | [--kill msgid...] | [--thread threshold]] | [-m msgid]
 .SH DESCRIPTION
 This utility may be used to learn which messages are legitimate and which
 are spam. After database has been sufficiently trained, spam messages may be
@@ -20,10 +20,33 @@ During spam removal basic data about removed messages will be printed. It is
 recommended to review this list to check for any false positives, especially
 if reusing spam database trained on another news group.
 
-Only top-level messages which have no replies are considered for spam
-removal. It is a common pattern for spam messages to be "fired and forgot"
-and be ignored by everyone, but in case such message would incite some
-discussion, it wouldn't be good to remove it, as it provides context.
+There are various operation modes of
+.I uat-filter-spam
+
+.IP o
+In the default one, only top-level messages which have no replies are
+considered for spam removal. It is a common pattern for spam messages to be
+"fired and forgot" and be ignored by everyone, but in case such message would
+incite some discussion, it wouldn't be good to remove it, as it provides
+context.
+.IP o
+Sometimes there is a thread of obvious spam messages. The default mode has
+no way to determine if this is a meaningful discussion, or just a spammer
+replying to spammer. In thread processing mode, all messages in given thread
+must be spam and must be below a specified threshold value. Message
+classification value varies from 0, which is surely spam to 1, which is
+surely a valid message, with the decision boundary at 0.5. To be completely
+sure about preservation of potentially valid threads, this boundary can be
+specified to e.g. 0.1.
+.IP o
+Size-based spam determination doesn't care about threading and uses
+uncompressed message size as the sole evaluator of being spam. Big messages
+usually contain binary content, but be aware that sometimes there's valid
+discussion in messages of hundreds kilobytes size.
+.IP o
+Messages can also be manually killed by providing a list of message ids to
+be removed.
+
 .SH OPTIONS
 .TP
 .BR destination
@@ -37,6 +60,9 @@ Filter messages exceeding specified maximum size.
 .TP
 .BR --kill\fI\ msgid...
 Remove messages matching specified message ids.
+.TP
+.BR --thread\fI\ threshold
+Enable thread processing mode.
 .TP
 .BR -m\fI\ msgid
 Perform training only on a message with
