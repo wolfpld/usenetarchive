@@ -6,9 +6,9 @@ LIBS :=
 IMAGE := filter-spam
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
-SRC2 := $(shell egrep 'ClCompile.*c"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
+SRC2 := $(shell egrep 'ClCompile.*cc"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
 OBJ := $(SRC:%.cpp=%.o)
-OBJ2 := $(SRC2:%.c=%.o)
+OBJ2 := $(SRC2:%.cc=%.o)
 
 all: $(IMAGE)
 
@@ -22,24 +22,24 @@ all: $(IMAGE)
 	sed 's,.*\.o[ :]*,$(<:.cpp=.o) $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-%.o: %.c
-	$(CC) -c $(INCLUDES) $(CFLAGS) $(DEFINES) $< -o $@
+%.o: %.cc
+	$(CXX) -c $(INCLUDES) $(CFLAGS) $(DEFINES) $< -o $@
 
-%.d : %.c
+%.d : %.cc
 	@echo Resolving dependencies of $<
 	@mkdir -p $(@D)
-	@$(CC) -MM $(INCLUDES) $(CFLAGS) $(DEFINES) $< > $@.$$$$; \
-	sed 's,.*\.o[ :]*,$(<:.c=.o) $@ : ,g' < $@.$$$$ > $@; \
+	@$(CXX) -MM $(INCLUDES) $(CFLAGS) $(DEFINES) $< > $@.$$$$; \
+	sed 's,.*\.o[ :]*,$(<:.cc=.o) $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 $(IMAGE): $(OBJ) $(OBJ2)
 	$(CXX) $(CXXFLAGS) $(DEFINES) $(OBJ) $(OBJ2) $(LIBS) -o $@
 
 ifneq "$(MAKECMDGOALS)" "clean"
--include $(SRC:.cpp=.d) $(SRC2:.c=.d)
+-include $(SRC:.cpp=.d) $(SRC2:.cc=.d)
 endif
 
 clean:
-	rm -f $(OBJ) $(OBJ2) $(SRC:.cpp=.d) $(SRC2:.c=.d) $(IMAGE)
+	rm -f $(OBJ) $(OBJ2) $(SRC:.cpp=.d) $(SRC2:.cc=.d) $(IMAGE)
 
 .PHONY: clean all
