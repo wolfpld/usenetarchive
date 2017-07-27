@@ -34,6 +34,7 @@ class TerminatorClassifierOWV: public TerminatorClassifierBase {
 
  public:
   TerminatorClassifierOWV(double* weights_classifier);
+  ~TerminatorClassifierOWV();
   virtual void Train(std::map<std::string, node>& weights, bool is_spam);
   virtual double Predict(std::map<std::string, node>& weights);
 };

@@ -22,6 +22,11 @@ TerminatorClassifierOWV::TerminatorClassifierOWV(double* weights_classifier) {
   for( unsigned i = 0; i<CLASSIFIER_NUMBER; i++ ) this->weights_classifier_[i] = weights_classifier[i];
 }
 
+TerminatorClassifierOWV::~TerminatorClassifierOWV()
+{
+  for( unsigned i = 0; i<CLASSIFIER_NUMBER; i++ ) delete this->classifiers_[i];
+}
+
 double TerminatorClassifierOWV::Predict(std::map<std::string, node>& weights) {
   double final_score = 0.0;
   double total_weights = 0.0;
