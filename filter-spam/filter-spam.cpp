@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <vector>
 
+#include "../contrib/terminator/terminator.h"
+
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
 #include "../common/HashSearch.hpp"
@@ -22,14 +24,6 @@
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
 #include "../common/ZMessageView.hpp"
-
-extern "C" {
-#include "../contrib/libcrm114/crm114_sysincludes.h"
-#include "../contrib/libcrm114/crm114_config.h"
-#include "../contrib/libcrm114/crm114_structs.h"
-#include "../contrib/libcrm114/crm114_lib.h"
-#include "../contrib/libcrm114/crm114_internal.h"
-}
 
 int main( int argc, char** argv )
 {
@@ -96,6 +90,10 @@ int main( int argc, char** argv )
             exit( 1 );
         }
     }
+    else if( argc == 3 )
+    {
+        training = true;
+    }
 
     if( !Exists( argv[2] ) )
     {
@@ -115,24 +113,13 @@ int main( int argc, char** argv )
     const MetaView<uint32_t, char> msgid( base + "midmeta", base + "middata" );
     HashSearch midhash( base + "middata", base + "midhash", base + "midhashdata" );
 
-    CRM114_CONTROLBLOCK* crm_cb = crm114_new_cb();
-    crm114_cb_setflags( crm_cb, CRM114_OSB_BAYES );
-    crm114_cb_setclassdefaults( crm_cb );
-    crm_cb->how_many_classes = 2;
-    strcpy( crm_cb->cls[0].name, "valid" );
-    strcpy( crm_cb->cls[1].name, "spam" );
-    crm_cb->datablock_size = 1 << 25;
-    crm114_cb_setblockdefaults( crm_cb );
-
-    CRM114_DATABLOCK* crm_db = crm114_new_db( crm_cb );
-
     const std::string dbdir( argv[1] );
-    if( Exists( dbdir + "/spamdb" ) )
+    if( !Exists( dbdir ) )
     {
-        FILE* f = fopen( ( dbdir + "/spamdb" ).c_str(), "rb" );
-        fread( crm_db, 1, crm_cb->datablock_size, f );
-        fclose( f );
+        CreateDirStruct( dbdir );
     }
+
+    auto classifier = std::make_unique<Terminator>( dbdir + "/spamdb", 16*1024*1024 );
 
     if( !training )
     {
@@ -228,38 +215,38 @@ int main( int argc, char** argv )
                     if( children == 0 )
                     {
                         auto post = mview[i];
-                        CRM114_MATCHRESULT res;
-                        crm114_classify_text( crm_db, post, raw.size, &res );
-                        if( res.bestmatch_index != 0 )
+                        auto score = classifier->Predict( post );
+                        if( score > 0.5 )
                         {
-                            data.emplace_back( Data { i, float( res.tsprob ) } );
+                            data.emplace_back( Data { i, float( score ) } );
                         }
                     }
                     else if( thread )
                     {
                         bool allBad = true;
                         auto toCheck = cdata[2];
+                        std::vector<float> scores;
+                        scores.reserve( toCheck );
                         for( int j=0; j<toCheck; j++ )
                         {
                             const auto craw = mview.Raw( i+j );
                             auto post = mview[i+j];
-                            CRM114_MATCHRESULT res;
-                            crm114_classify_text( crm_db, post, craw.size, &res );
-                            if( res.bestmatch_index == 0 || res.tsprob > threadThreshold )
+                            auto score = classifier->Predict( post );
+                            if( score < threadThreshold )
                             {
                                 allBad = false;
                                 break;
+                            }
+                            else
+                            {
+                                scores.emplace_back( float( score ) );
                             }
                         }
                         if( allBad )
                         {
                             for( int j=0; j<toCheck; j++ )
                             {
-                                const auto craw = mview.Raw( i+j );
-                                auto post = mview[i+j];
-                                CRM114_MATCHRESULT res;
-                                crm114_classify_text( crm_db, post, craw.size, &res );
-                                data.emplace_back( Data { i+j, float( res.tsprob ) } );
+                                data.emplace_back( Data { i+j, scores[j] } );
                             }
                         }
                     }
@@ -453,10 +440,10 @@ int main( int argc, char** argv )
                 printf( "...\n" );
             }
 
-            CRM114_MATCHRESULT res;
-            crm114_classify_text( crm_db, post, raw.size, &res );
+            std::string str( post );
+            auto score = classifier->Predict( str );
 
-            if( res.bestmatch_index == 0 )
+            if( score <= 0.5 )
             {
                 printf( "\033[32;1mClassification: valid" );
             }
@@ -464,7 +451,7 @@ int main( int argc, char** argv )
             {
                 printf( "\033[31;1mClassification: spam" );
             }
-            printf( "   success probability: %.3f.\n", res.tsprob );
+            printf( "   message score: %.3f.\n", score );
             printf( "Press [s] for spam or [v] for valid, [i] to ignore. Press [W] to write database or [Q] to quit.\033[0m\n" );
             fflush( stdout );
 
@@ -485,13 +472,9 @@ int main( int argc, char** argv )
             }
             else if( c != 'i' )
             {
-                crm114_learn_text( &crm_db, (c == 's') ? 1 : 0, post, raw.size );
+                classifier->Train( str, c == 's' );
             }
         }
-
-        FILE* fdb = fopen( ( dbdir + "/spamdb" ).c_str(), "wb" );
-        fwrite( crm_db, 1, crm_cb->datablock_size, fdb );
-        fclose( fdb );
 
         FILE* fvis = fopen( ( dbdir + "/visited" ).c_str(), "wb" );
         uint32_t n = visited.size();

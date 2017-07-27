@@ -69,9 +69,6 @@
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachedb.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachetest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompare.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
@@ -87,37 +84,13 @@
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirdb.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirmgr.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirtest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcfile.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcforestmgr.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcforesttest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcgrasstest.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashdb.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashmgr.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashtest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kclangc.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kclangctest.c">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcmap.cc">
@@ -129,16 +102,7 @@
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolydb.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolymgr.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolytest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcprotodb.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcprototest.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcregex.cc">
@@ -147,28 +111,13 @@
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcstashdb.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcstashtest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kctextdb.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcthread.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctreemgr.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctreetest.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutil.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutilmgr.cc">
-      <Filter>kyotocabinet</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutiltest.cc">
       <Filter>kyotocabinet</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\terminator\terminator.cc">

@@ -22,40 +22,23 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachedb.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachetest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompare.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompress.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdb.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdbext.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirdb.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirmgr.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirtest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcfile.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcforestmgr.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcforesttest.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcgrasstest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashdb.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashmgr.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashtest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kclangc.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kclangctest.c" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcmap.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcplantdb.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolydb.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolymgr.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolytest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcprotodb.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcprototest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcregex.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcstashdb.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcstashtest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kctextdb.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcthread.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctreemgr.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctreetest.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutil.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutilmgr.cc" />
-    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutiltest.cc" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\..\contrib\terminator\terminator.cc" />
     <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_base.cc" />
@@ -222,7 +205,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalIncludeDirectories>../../../contrib/zstd;../../../contrib/zstd/common;../../../contrib;../../../contrib/kyotocabinet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../contrib/zstd;../../../contrib/zstd/common;../../../contrib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
