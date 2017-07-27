@@ -10,12 +10,6 @@
     <Filter Include="lz4">
       <UniqueIdentifier>{b37f120f-0661-4423-92fa-a003841addf4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="tre">
-      <UniqueIdentifier>{c3acfc9c-2a0f-4bb1-b19b-4559c36136a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libcrm114">
-      <UniqueIdentifier>{97c31713-4de4-43e4-b874-2e28bd5475d1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="zstd">
       <UniqueIdentifier>{0fc411e8-7881-47d1-8aca-b0b90c5e8731}</UniqueIdentifier>
     </Filter>
@@ -24,6 +18,12 @@
     </Filter>
     <Filter Include="zstd\decompress">
       <UniqueIdentifier>{7f3c2a4b-a608-4aeb-a56b-6a925b460941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kyotocabinet">
+      <UniqueIdentifier>{576b4b4d-3a6e-412a-99d0-6bd3f7b5dc0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="terminator">
+      <UniqueIdentifier>{40fd58f2-855b-4e08-91e9-65c5ffebd2fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,96 +38,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\common\Filesystem.cpp">
       <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_base.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_bit_entropy.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_datalib.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_fast_substring_compression.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_hyperspace.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_markov.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_markov_microgroom.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_matrix.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_matrix_util.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_pca.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_pca_lib_fncts.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_regex_tre.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_strnhash.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm_lib_fncts.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_svm_quad_prog.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_util.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\libcrm114\crm114_vector_tokenize.c">
-      <Filter>libcrm114</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\regcomp.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\regerror.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\regexec.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-ast.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-compile.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-match-approx.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-match-backtrack.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-match-parallel.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-mem.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-parse.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\tre-stack.c">
-      <Filter>tre</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\tre\xmalloc.c">
-      <Filter>tre</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c">
       <Filter>zstd\common</Filter>
@@ -156,6 +66,144 @@
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c">
       <Filter>zstd\decompress</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachedb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachetest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompare.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompress.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdbext.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirdb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirmgr.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcdirtest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcfile.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcforestmgr.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcforesttest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcgrasstest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashdb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashmgr.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kchashtest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kclangc.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kclangctest.c">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcmap.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcplantdb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolydb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolymgr.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcpolytest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcprotodb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcprototest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcregex.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcstashdb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcstashtest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctextdb.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcthread.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctreemgr.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kctreetest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutil.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutilmgr.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\kyotocabinet\kcutiltest.cc">
+      <Filter>kyotocabinet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_base.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_bwinnow.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_hit.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_lr.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_nb.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_nsnb.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_owv.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_pa.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_pam.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_winnow.cc">
+      <Filter>terminator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -181,78 +229,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
       <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_config.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_datalib.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_internal.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_lib.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_matrix.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_matrix_util.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_pca.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_pca_lib_fncts.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_regex.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_structs.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm_lib_fncts.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_svm_quad_prog.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\libcrm114\crm114_sysincludes.h">
-      <Filter>libcrm114</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\regex.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-ast.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-compile.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-config.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-internal.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-match-utils.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-mem.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-parse.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\tre-stack.h">
-      <Filter>tre</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\tre\xmalloc.h">
-      <Filter>tre</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\ZMessageView.hpp">
       <Filter>common</Filter>
@@ -289,6 +265,105 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h">
       <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\cmdcommon.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kccachedb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kccommon.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kccompare.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kccompress.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcdb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcdbext.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcdirdb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcfile.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kchashdb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kclangc.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcmap.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcplantdb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcpolydb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcprotodb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcregex.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcstashdb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kctextdb.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcthread.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\kcutil.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\kyotocabinet\myconf.h">
+      <Filter>kyotocabinet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_base.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_bwinnow.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_hit.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_lr.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_nb.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_nsnb.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_owv.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_pa.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_pam.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_classifier_winnow.h">
+      <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\contrib\terminator\terminator_common.h">
+      <Filter>terminator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@
 #include <map>
 #include <string>
 #include <cmath>
-#include <kchashdb.h>
+#include "../kyotocabinet/kchashdb.h"
 #include <cstdio>
 #include <cstdlib>
 
