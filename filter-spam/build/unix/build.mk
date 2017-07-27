@@ -2,13 +2,15 @@ CFLAGS +=
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES := -I../../../contrib -I../../../contrib/zstd/common -I../../../contrib/zstd
-LIBS :=
+LIBS := -lpthread
 IMAGE := filter-spam
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
 SRC2 := $(shell egrep 'ClCompile.*cc"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
+SRC3 := $(shell egrep 'ClCompile.*\.c"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
 OBJ := $(SRC:%.cpp=%.o)
 OBJ2 := $(SRC2:%.cc=%.o)
+OBJ3 := $(SRC3:%.c=%.o)
 
 all: $(IMAGE)
 
@@ -32,14 +34,24 @@ all: $(IMAGE)
 	sed 's,.*\.o[ :]*,$(<:.cc=.o) $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-$(IMAGE): $(OBJ) $(OBJ2)
-	$(CXX) $(CXXFLAGS) $(DEFINES) $(OBJ) $(OBJ2) $(LIBS) -o $@
+%.o: %.c
+	$(CC) -c $(INCLUDES) $(CFLAGS) $(DEFINES) $< -o $@
+
+%.d : %.c
+	@echo Resolving dependencies of $<
+	@mkdir -p $(@D)
+	@$(CC) -MM $(INCLUDES) $(CFLAGS) $(DEFINES) $< > $@.$$$$; \
+	sed 's,.*\.o[ :]*,$(<:.c=.o) $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+$(IMAGE): $(OBJ) $(OBJ2) $(OBJ3)
+	$(CXX) $(CXXFLAGS) $(DEFINES) $(OBJ) $(OBJ2) $(OBJ3) $(LIBS) -o $@
 
 ifneq "$(MAKECMDGOALS)" "clean"
--include $(SRC:.cpp=.d) $(SRC2:.cc=.d)
+-include $(SRC:.cpp=.d) $(SRC2:.cc=.d) $(SRC3:.c=.d)
 endif
 
 clean:
-	rm -f $(OBJ) $(OBJ2) $(SRC:.cpp=.d) $(SRC2:.cc=.d) $(IMAGE)
+	rm -f $(OBJ) $(OBJ2) $(OBJ3) $(SRC:.cpp=.d) $(SRC2:.cc=.d) $(SRC3:.c=.d) $(IMAGE)
 
 .PHONY: clean all
