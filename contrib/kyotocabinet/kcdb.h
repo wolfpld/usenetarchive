@@ -16,13 +16,13 @@
 #ifndef _KCDB_H                          // duplication check
 #define _KCDB_H
 
-#include <kccommon.h>
-#include <kcutil.h>
-#include <kcthread.h>
-#include <kcfile.h>
-#include <kccompress.h>
-#include <kccompare.h>
-#include <kcmap.h>
+#include "kccommon.h"
+#include "kcutil.h"
+#include "kcthread.h"
+#include "kcfile.h"
+#include "kccompress.h"
+#include "kccompare.h"
+#include "kcmap.h"
 
 #define KCDBSSMAGICDATA  "KCSS\n"        ///< The magic data of the snapshot file
 

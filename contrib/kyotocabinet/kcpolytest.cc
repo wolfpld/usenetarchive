@@ -13,8 +13,8 @@
  *************************************************************************************************/
 
 
-#include <kcpolydb.h>
-#include <kcdbext.h>
+#include "kcpolydb.h"
+#include "kcdbext.h"
 #include "cmdcommon.h"
 
 

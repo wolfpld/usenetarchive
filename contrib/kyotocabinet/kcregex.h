@@ -16,8 +16,8 @@
 #ifndef _KCREGEX_H                       // duplication check
 #define _KCREGEX_H
 
-#include <kccommon.h>
-#include <kcutil.h>
+#include "kccommon.h"
+#include "kcutil.h"
 
 namespace kyotocabinet {                 // common namespace
 

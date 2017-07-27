@@ -16,16 +16,16 @@
 #ifndef _KCDIRDB_H                       // duplication check
 #define _KCDIRDB_H
 
-#include <kccommon.h>
-#include <kcutil.h>
-#include <kcthread.h>
-#include <kcfile.h>
-#include <kccompress.h>
-#include <kccompare.h>
-#include <kcmap.h>
-#include <kcregex.h>
-#include <kcdb.h>
-#include <kcplantdb.h>
+#include "kccommon.h"
+#include "kcutil.h"
+#include "kcthread.h"
+#include "kcfile.h"
+#include "kccompress.h"
+#include "kccompare.h"
+#include "kcmap.h"
+#include "kcregex.h"
+#include "kcdb.h"
+#include "kcplantdb.h"
 
 #define KCDDBMAGICFILE  "__KCDIR__"      ///< magic file of the directory
 #define KCDDBMETAFILE  "__meta__"        ///< meta data file of the directory

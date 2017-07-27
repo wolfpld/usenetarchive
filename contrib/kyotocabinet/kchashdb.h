@@ -16,16 +16,16 @@
 #ifndef _KCHASHDB_H                      // duplication check
 #define _KCHASHDB_H
 
-#include <kccommon.h>
-#include <kcutil.h>
-#include <kcthread.h>
-#include <kcfile.h>
-#include <kccompress.h>
-#include <kccompare.h>
-#include <kcmap.h>
-#include <kcregex.h>
-#include <kcdb.h>
-#include <kcplantdb.h>
+#include "kccommon.h"
+#include "kcutil.h"
+#include "kcthread.h"
+#include "kcfile.h"
+#include "kccompress.h"
+#include "kccompare.h"
+#include "kcmap.h"
+#include "kcregex.h"
+#include "kcdb.h"
+#include "kcplantdb.h"
 
 #define KCHDBMAGICDATA  "KC\n"           ///< magic data of the file
 #define KCHDBCHKSUMSEED  "__kyotocabinet__"  ///< seed of the module checksum

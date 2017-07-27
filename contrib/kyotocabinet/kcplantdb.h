@@ -16,15 +16,15 @@
 #ifndef _KCPLANTDB_H                     // duplication check
 #define _KCPLANTDB_H
 
-#include <kccommon.h>
-#include <kcutil.h>
-#include <kcthread.h>
-#include <kcfile.h>
-#include <kccompress.h>
-#include <kccompare.h>
-#include <kcmap.h>
-#include <kcregex.h>
-#include <kcdb.h>
+#include "kccommon.h"
+#include "kcutil.h"
+#include "kcthread.h"
+#include "kcfile.h"
+#include "kccompress.h"
+#include "kccompare.h"
+#include "kcmap.h"
+#include "kcregex.h"
+#include "kcdb.h"
 
 #define KCPDBMETAKEY  "@"                ///< key of the record for meta data
 #define KCPDBTMPPATHEXT  "tmpkct"        ///< extension of the temporary file

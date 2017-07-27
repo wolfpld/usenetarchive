@@ -16,8 +16,8 @@
 #ifndef _KCMAP_H                         // duplication check
 #define _KCMAP_H
 
-#include <kccommon.h>
-#include <kcutil.h>
+#include "kccommon.h"
+#include "kcutil.h"
 
 namespace kyotocabinet {                 // common namespace
 

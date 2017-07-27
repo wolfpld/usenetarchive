@@ -16,16 +16,16 @@
 #ifndef _KCCACHEDB_H                     // duplication check
 #define _KCCACHEDB_H
 
-#include <kccommon.h>
-#include <kcutil.h>
-#include <kcthread.h>
-#include <kcfile.h>
-#include <kccompress.h>
-#include <kccompare.h>
-#include <kcmap.h>
-#include <kcregex.h>
-#include <kcdb.h>
-#include <kcplantdb.h>
+#include "kccommon.h"
+#include "kcutil.h"
+#include "kcthread.h"
+#include "kcfile.h"
+#include "kccompress.h"
+#include "kccompare.h"
+#include "kcmap.h"
+#include "kcregex.h"
+#include "kcdb.h"
+#include "kcplantdb.h"
 
 namespace kyotocabinet {                 // common namespace
 
