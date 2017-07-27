@@ -49,7 +49,8 @@ int main( int argc, char** argv )
     bool ask = false;
     bool kill = false;
     int maxsize = -1;
-    float thread = -1;
+    float threadThreshold = -1;
+    bool thread = false;
 
     std::vector<const char*> toKill;
 
@@ -86,7 +87,8 @@ int main( int argc, char** argv )
         }
         else if( strcmp( argv[4], "--thread" ) == 0 )
         {
-            thread = atof( argv[5] );
+            thread = true;
+            threadThreshold = atof( argv[5] );
         }
         else
         {
@@ -233,7 +235,7 @@ int main( int argc, char** argv )
                             data.emplace_back( Data { i, float( res.tsprob ) } );
                         }
                     }
-                    else if( thread != -1 )
+                    else if( thread )
                     {
                         bool allBad = true;
                         auto toCheck = cdata[2];
@@ -243,7 +245,7 @@ int main( int argc, char** argv )
                             auto post = mview[i+j];
                             CRM114_MATCHRESULT res;
                             crm114_classify_text( crm_db, post, craw.size, &res );
-                            if( res.bestmatch_index == 0 || res.tsprob > thread )
+                            if( res.bestmatch_index == 0 || res.tsprob > threadThreshold )
                             {
                                 allBad = false;
                                 break;
