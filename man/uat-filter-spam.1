@@ -34,10 +34,10 @@ Sometimes there is a thread of obvious spam messages. The default mode has
 no way to determine if this is a meaningful discussion, or just a spammer
 replying to spammer. In thread processing mode, all messages in given thread
 must be spam and must be below a specified threshold value. Message
-classification value varies from 0, which is surely spam to 1, which is
+classification value varies from 1, which is surely spam to 0, which is
 surely a valid message, with the decision boundary at 0.5. To be completely
 sure about preservation of potentially valid threads, this boundary can be
-specified to e.g. 0.1.
+specified to e.g. 0.9.
 .IP o
 Size-based spam determination doesn't care about threading and uses
 uncompressed message size as the sole evaluator of being spam. Big messages
