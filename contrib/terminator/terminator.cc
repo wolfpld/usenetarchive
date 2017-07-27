@@ -50,6 +50,7 @@ Terminator::~Terminator() {
   db_.set(Terminator::IDENTIFIER_CLASSIFIER_WEIGHTS.c_str(), Terminator::IDENTIFIER_CLASSIFIER_WEIGHTS.size(),
           (char*)this->classifier_weights_, sizeof(this->classifier_weights_));
   db_.close();
+  delete this->classifier_;
 }
 
 double Terminator::Predict(std::string email_content) {
