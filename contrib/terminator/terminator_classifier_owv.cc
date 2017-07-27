@@ -19,8 +19,7 @@ TerminatorClassifierOWV::TerminatorClassifierOWV(double* weights_classifier) {
   this->classifiers_[6] = new TerminatorClassifierPAM();
   this->classifiers_[7] = new TerminatorClassifierHIT();
 
-  unsigned i = 0;
-  while (i++ < CLASSIFIER_NUMBER) this->weights_classifier_[i] = weights_classifier[i];
+  for( unsigned i = 0; i<CLASSIFIER_NUMBER; i++ ) this->weights_classifier_[i] = weights_classifier[i];
 }
 
 double TerminatorClassifierOWV::Predict(std::map<std::string, node>& weights) {
