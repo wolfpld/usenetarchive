@@ -274,7 +274,20 @@ int main( int argc, char** argv )
                 {
                     if( maxsize == -1 )
                     {
-                        printf( "\033[36;1m%.3f \033[33;1m%s\t\033[35;1m%s\t\033[0m%s\n", it->prob, strings[i*3+1], strings[i*3], msgid[i] );
+                        int color;
+                        if( it->prob < 0.35f )
+                        {
+                            color = 32;
+                        }
+                        else if( it->prob <= 0.65f )
+                        {
+                            color = 36;
+                        }
+                        else
+                        {
+                            color = 31;
+                        }
+                        printf( "\033[%i;1m%.3f \033[33;1m%s\t\033[35;1m%s\t\033[0m%s\n", color, it->prob, strings[i*3+1], strings[i*3], msgid[i] );
                     }
                     else
                     {
