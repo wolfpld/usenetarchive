@@ -401,10 +401,15 @@ int main( int argc, char** argv )
             auto post = mview[idx];
             auto raw = mview.Raw( idx );
 
+            time_t date = *conn[idx];
+            auto lt = localtime( &date );
+            char buf[64];
+            auto dlen = strftime( buf, 64, "%F %R", lt );
+
             printf("\033[2J\033[0;0H");
 
             printf( "\n\t\033[36;1m-= Message %i =-\033[0m\n\n", idx );
-            printf( "\033[35;1mFrom: %s\n\033[33;1mSubject: %s\033[0m\n\033[36mMessage-Id: %s\033[0m\n\n", strings[idx*3], strings[idx*3+1], msgid[idx] );
+            printf( "\033[35;1mFrom: %s\n\033[33;1mSubject: %s\n\033[34mDate: %s\n\033[36mMessage-Id: %s\033[0m\n\n", strings[idx*3], strings[idx*3+1], buf, msgid[idx] );
 
             auto ptr = post;
             auto end = ptr;
