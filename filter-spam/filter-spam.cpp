@@ -274,7 +274,7 @@ int main( int argc, char** argv )
                 {
                     if( maxsize == -1 )
                     {
-                        printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%.3f\033[0m\t%s\n", strings[i*3+1], strings[i*3], it->prob, msgid[i] );
+                        printf( "\033[36;1m%.3f \033[33;1m%s\t\033[35;1m%s\t\033[0m%s\n", it->prob, strings[i*3+1], strings[i*3], msgid[i] );
                     }
                     else
                     {
