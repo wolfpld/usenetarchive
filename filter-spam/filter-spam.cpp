@@ -461,9 +461,17 @@ int main( int argc, char** argv )
             std::string str( post );
             auto score = classifier->Predict( str );
 
-            if( score <= 0.5 )
+            if( score < 0.35 )
             {
                 printf( "\033[32;1mClassification: valid" );
+            }
+            else if( score <= 0.5 )
+            {
+                printf( "\033[36;1mClassification: unsure/valid" );
+            }
+            else if( score <= 0.65 )
+            {
+                printf( "\033[36;1mClassification: unsure/spam" );
             }
             else
             {
