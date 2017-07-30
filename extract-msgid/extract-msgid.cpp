@@ -146,7 +146,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%i\r", i, hashsize );
             fflush( stdout );
         }
 
