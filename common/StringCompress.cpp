@@ -1,7 +1,4 @@
-#include <algorithm>
 #include <assert.h>
-#include <string.h>
-#include <unordered_map>
 
 #include "StringCompress.hpp"
 
@@ -597,61 +594,6 @@ static uint8_t TrigramIndex[TrigramSize] = {
     214,
 };
 
-
-StringCompress::StringCompress( const std::set<const char*, CharUtil::LessComparator>& strings )
-{
-    std::unordered_map<const char*, uint64_t, CharUtil::Hasher, CharUtil::Comparator> hosts;
-
-    for( auto v : strings )
-    {
-        while( *v != '@' && *v != '\0' ) v++;
-        if( *v == '@' )
-        {
-            v++;
-            auto it = hosts.find( v );
-            if( it == hosts.end() )
-            {
-                hosts.emplace( v, 1 );
-            }
-            else
-            {
-                it->second++;
-            }
-        }
-    }
-
-    std::vector<std::unordered_map<const char*, uint64_t, CharUtil::Hasher, CharUtil::Comparator>::iterator> hvec;
-    hvec.reserve( hosts.size() );
-    for( auto it = hosts.begin(); it != hosts.end(); ++it )
-    {
-        hvec.emplace_back( it );
-    }
-    std::sort( hvec.begin(), hvec.end(), [] ( const auto& l, const auto& r ) { return l->second * ( strlen( l->first ) - 1 ) > r->second * ( strlen( r->first ) - 1 ); } );
-
-    m_dataLen = 0;
-    m_maxHost = std::min<int>( hvec.size(), 255 );
-    for( int i=0; i<m_maxHost; i++ )
-    {
-        m_dataLen += strlen( hvec[i]->first ) + 1;
-    }
-
-    auto data = new char[m_dataLen];
-    auto ptr = data;
-    for( int i=0; i<m_maxHost; i++ )
-    {
-        m_hostOffset[i] = ptr - data;
-        auto len = strlen( hvec[i]->first );
-        memcpy( ptr, hvec[i]->first, len+1 );
-        ptr += len+1;
-    }
-    m_data = data;
-
-    for( int i=0; i<m_maxHost; i++ )
-    {
-        m_hostLookup[i] = i;
-    }
-    std::sort( m_hostLookup, m_hostLookup+m_maxHost, [&hvec] ( const auto& l, const auto& r ) { return strcmp( hvec[l]->first, hvec[r]->first ) < 0; } );
-}
 
 StringCompress::StringCompress( const std::string& fn )
 {
