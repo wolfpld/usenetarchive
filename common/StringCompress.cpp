@@ -703,6 +703,13 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
     return out - refout;
 }
 
+size_t StringCompress::Repack( const uint8_t* in, uint8_t* out, const StringCompress& other ) const
+{
+    char tmp[2048];
+    other.Unpack( in, tmp );
+    return Pack( tmp, out );
+}
+
 void StringCompress::WriteData( const std::string& fn ) const
 {
     FILE* f = fopen( fn.c_str(), "wb" );

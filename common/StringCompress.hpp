@@ -21,6 +21,7 @@ public:
 
     size_t Pack( const char* in, uint8_t* out ) const;
     size_t Unpack( const uint8_t* in, char* out ) const;
+    size_t Repack( const uint8_t* in, uint8_t* out, const StringCompress& other ) const;
 
     void WriteData( const std::string& fn ) const;
 
