@@ -93,6 +93,8 @@ int main( int argc, char** argv )
 
     CopyFile( base + "middata", dbase + "middata" );
     CopyFile( base + "midhash", dbase + "midhash" );
+    CopyFile( base + "midhashdata", dbase + "midhashdata" );
+    CopyFile( base + "msgid.codebook", dbase + "msgid.codebook" );
 
     CopyFile( base + "lexhash", dbase + "lexhash" );
     CopyFile( base + "lexhashdata", dbase + "lexhashdata" );
@@ -227,30 +229,6 @@ int main( int argc, char** argv )
         }
         fclose( dst );
         printf( "\n" );
-
-        FileMap<uint32_t> midhashdata( base + "midhashdata" );
-        auto ptr = (const uint32_t*)midhashdata;
-        dst = fopen( ( dbase + "midhashdata" ).c_str(), "wb" );
-        int i = 0;
-        while( ptr != midhashdata + midhashdata.DataSize() )
-        {
-            if( ( i++ & 0x3FF ) == 0 )
-            {
-                printf( "midhashdata %i\r", i );
-                fflush( stdout );
-            }
-            auto num = *ptr++;
-            fwrite( &num, 1, sizeof( num ), dst );
-            for( int i=0; i<num; i++ )
-            {
-                auto offset = *ptr++;
-                fwrite( &offset, 1, sizeof( offset ), dst );
-                auto idx = rev[*ptr++];
-                fwrite( &idx, 1, sizeof( idx ), dst );
-            }
-        }
-        fclose( dst );
-        printf( "midhashdata: %i\n", i );
     }
 
     {
