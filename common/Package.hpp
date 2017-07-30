@@ -33,7 +33,8 @@ static const PackMeta PackageContents[] = {
     { "zdict", false },
     { "lexdist", true },
     { "lexdistmeta", true },
-    { "prefix", true }
+    { "prefix", true },
+    { "msgid.codebook", false }
 };
 
 struct PackageFile
@@ -63,6 +64,7 @@ struct PackageFile
         lexdist,
         lexdistmeta,
         prefix,
+        codebook,
         NUM_PACKAGE_FILE_TYPES
     };
 };
@@ -70,8 +72,9 @@ struct PackageFile
 enum { PackageFiles = sizeof( PackageContents ) / sizeof( PackMeta ) };
 enum { AdditionalFilesV1 = 2 };
 enum { AdditionalFilesV2 = 1 };
+enum { AdditionalFilesV3 = 1 };
 
-enum : char { PackageVersion = 2 };
+enum : char { PackageVersion = 3 };
 enum { PackageHeaderSize = 8 };
 enum { PackageMagicSize = PackageHeaderSize - 1 };
 static const char PackageHeader[PackageHeaderSize] = { '\0', 'U', 's', 'e', 'n', 'e', 't', PackageVersion };

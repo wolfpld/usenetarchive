@@ -57,13 +57,17 @@ int main( int argc, char** argv )
         }
 
         int numfiles = PackageFiles;
-        if( version < 2 )
+        if( version < 3 )
         {
-            numfiles -= AdditionalFilesV2;
-        }
-        if( version < 1 )
-        {
-            numfiles -= AdditionalFilesV1;
+            numfiles -= AdditionalFilesV3;
+            if( version < 2 )
+            {
+                numfiles -= AdditionalFilesV2;
+                if( version < 1 )
+                {
+                    numfiles -= AdditionalFilesV1;
+                }
+            }
         }
 
         uint64_t sizes[PackageFiles];
