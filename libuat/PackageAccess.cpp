@@ -12,17 +12,19 @@ PackageAccess* PackageAccess::Open( const std::string& fn )
     char tmp[PackageHeaderSize];
     if( fread( tmp, 1, PackageHeaderSize, f ) != PackageHeaderSize ) goto err;
     if( memcmp( tmp, PackageHeader, PackageMagicSize ) != 0 ) goto err;
-    if( tmp[PackageMagicSize] > PackageVersion ) goto err;
+    const auto version = tmp[PackageMagicSize];
+    if( version > PackageVersion ) goto err;
     fclose( f );
-    return new PackageAccess( fn );
+    return new PackageAccess( fn, version );
 
 err:
     fclose( f );
     return nullptr;
 }
 
-PackageAccess::PackageAccess( const std::string& fn )
+PackageAccess::PackageAccess( const std::string& fn, uint32_t version )
     : m_file( fn )
+    , m_version( version )
 {
     memcpy( m_sizes, m_file + PackageHeaderSize, PackageFiles * sizeof( uint64_t ) );
     uint64_t offset = PackageHeaderSize + PackageFiles * sizeof( uint64_t );
