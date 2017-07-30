@@ -21,6 +21,7 @@ Archive* Archive::Open( const std::string& fn )
     {
         auto pkg = PackageAccess::Open( fn );
         if( !pkg ) return nullptr;
+        if( pkg->Version() < PackageVersion ) return nullptr;
         return new Archive( pkg );
     }
     else
