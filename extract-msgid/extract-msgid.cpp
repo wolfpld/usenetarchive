@@ -55,16 +55,8 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
-    std::string midmetafn = base + "midmeta";
-    std::string middatafn = base + "middata";
-
-    FILE* midmeta = fopen( midmetafn.c_str(), "wb" );
-    FILE* middata = fopen( middatafn.c_str(), "wb" );
-
-    auto hashbits = MsgIdHashBits( size, 75 );
-    auto hashsize = MsgIdHashSize( hashbits );
-    auto hashmask = MsgIdHashMask( hashbits );
-    auto bucket = new std::vector<HashData>[hashsize];
+    std::vector<const char*> msgidvec;
+    msgidvec.reserve( size );
 
     uint32_t offset = 0;
     ExpandingBuffer eb;
@@ -117,15 +109,36 @@ int main( int argc, char** argv )
             CreateDummyMsgId( buf, end, i );
         }
 
-        fwrite( buf, 1, end-buf, middata );
-        fwrite( &zero, 1, 1, middata );
+        const auto slen = end-buf;
+        auto tmp = new char[slen+1];
+        memcpy( tmp, buf, slen );
+        tmp[slen] = '\0';
+        msgidvec.emplace_back( tmp );
+    }
+
+    auto hashbits = MsgIdHashBits( size, 75 );
+    auto hashsize = MsgIdHashSize( hashbits );
+    auto hashmask = MsgIdHashMask( hashbits );
+    auto bucket = new std::vector<HashData>[hashsize];
+
+    std::string midmetafn = base + "midmeta";
+    std::string middatafn = base + "middata";
+
+    FILE* midmeta = fopen( midmetafn.c_str(), "wb" );
+    FILE* middata = fopen( middatafn.c_str(), "wb" );
+
+    for( uint32_t i=0; i<size; i++ )
+    {
+        const auto msg = msgidvec[i];
+        const auto len = strlen( msg );
+        fwrite( msg, 1, len+1, middata );
 
         fwrite( &offset, 1, sizeof( offset ), midmeta );
 
-        uint32_t hash = XXH32( buf, end-buf, 0 ) & hashmask;
+        uint32_t hash = XXH32( msg, len, 0 ) & hashmask;
         bucket[hash].emplace_back( HashData { offset, i } );
 
-        offset += end-buf+1;
+        offset += len+1;
     }
 
     fclose( midmeta );
