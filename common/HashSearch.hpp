@@ -6,40 +6,49 @@
 
 #include "../contrib/xxhash/xxhash.h"
 
-#include "../common/MetaView.hpp"
+#include "../common/FileMap.hpp"
 #include "../common/MsgIdHash.hpp"
 
 class HashSearch
 {
+    struct Data
+    {
+        uint32_t offset;
+        uint32_t idx;
+    };
+
 public:
     HashSearch( const std::string& data, const std::string& hash, const std::string& hashdata )
         : m_data( data )
-        , m_hash( hash, hashdata )
-        , m_mask( m_hash.Size() - 1 )
+        , m_hash( hash )
+        , m_mask( m_hash.DataSize() - 1 )
     {
+        FileMap<char> distfile( hashdata );
+        m_distmax = distfile[0];
     }
 
     HashSearch( const FileMapPtrs& data, const FileMapPtrs& hash, const FileMapPtrs& hashdata )
         : m_data( data )
-        , m_hash( hash, hashdata )
-        , m_mask( m_hash.Size() - 1 )
+        , m_hash( hash )
+        , m_mask( m_hash.DataSize() - 1 )
     {
+        FileMap<char> distfile( hashdata );
+        m_distmax = distfile[0];
     }
 
     int Search( const char* str, XXH32_hash_t _hash ) const
     {
-        const auto hash = _hash & m_mask;
-        auto ptr = m_hash[hash];
-        const auto num = *ptr++;
-        for( uint32_t i=0; i<num; i++ )
+        auto hash = _hash & m_mask;
+        uint8_t dist = 0;
+        for(;;)
         {
-            if( strcmp( str, m_data + *ptr++ ) == 0 )
-            {
-                return *ptr;
-            }
-            ptr++;
+            auto h = m_hash[hash];
+            if( m_hash[hash].offset == 0 ) return -1;
+            if( strcmp( str, m_data + m_hash[hash].offset ) == 0 ) return m_hash[hash].idx;
+            dist++;
+            if( dist > m_distmax ) return -1;
+            hash = (hash+1) & m_mask;
         }
-        return -1;
     }
 
     int Search( const char* str ) const
@@ -49,8 +58,9 @@ public:
 
 private:
     FileMap<char> m_data;
-    MetaView<uint32_t, uint32_t> m_hash;
+    FileMap<Data> m_hash;
     uint32_t m_mask;
+    uint8_t m_distmax;
 };
 
 #endif
