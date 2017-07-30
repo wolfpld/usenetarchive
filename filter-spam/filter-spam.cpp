@@ -23,6 +23,7 @@
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
+#include "../common/StringCompress.hpp"
 #include "../common/ZMessageView.hpp"
 
 int main( int argc, char** argv )
@@ -106,12 +107,13 @@ int main( int argc, char** argv )
 
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
-    FileMap<uint32_t> toplevel( base + "toplevel" );
+    const FileMap<uint32_t> toplevel( base + "toplevel" );
     auto topsize = toplevel.DataSize();
-    MetaView<uint32_t, char> strings( base + "strmeta", base + "strings" );
-    MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
-    const MetaView<uint32_t, char> msgid( base + "midmeta", base + "middata" );
-    HashSearch midhash( base + "middata", base + "midhash", base + "midhashdata" );
+    const MetaView<uint32_t, char> strings( base + "strmeta", base + "strings" );
+    const MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
+    const MetaView<uint32_t, uint8_t> msgid( base + "midmeta", base + "middata" );
+    const HashSearch midhash( base + "middata", base + "midhash", base + "midhashdata" );
+    const StringCompress compress( base + "msgid.codebook" );
 
     const std::string dbdir( argv[1] );
     if( !Exists( dbdir ) )
@@ -195,7 +197,8 @@ int main( int argc, char** argv )
             }
             else if( kill )
             {
-                const auto id = msgid[i];
+                char id[2048];
+                compress.Unpack( msgid[i], id );
                 for( auto& v : toKill )
                 {
                     if( strcmp( id, v ) == 0 )
@@ -272,6 +275,8 @@ int main( int argc, char** argv )
             {
                 if( !quiet )
                 {
+                    char unpack[2048];
+                    compress.Unpack( msgid[i], unpack );
                     if( maxsize == -1 )
                     {
                         int color;
@@ -287,11 +292,11 @@ int main( int argc, char** argv )
                         {
                             color = 31;
                         }
-                        printf( "\033[%i;1m%.3f \033[33;1m%s\t\033[35;1m%s\t\033[0m%s\n", color, it->prob, strings[i*3+1], strings[i*3], msgid[i] );
+                        printf( "\033[%i;1m%.3f \033[33;1m%s\t\033[35;1m%s\t\033[0m%s\n", color, it->prob, strings[i*3+1], strings[i*3], unpack );
                     }
                     else
                     {
-                        printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%i\033[0m\t%s\n", strings[i*3+1], strings[i*3], (int)it->prob, msgid[i] );
+                        printf( "\033[33;1m%s\t\033[35;1m%s\t\033[36;1m%i\033[0m\t%s\n", strings[i*3+1], strings[i*3], (int)it->prob, unpack );
                     }
                     fflush( stdout );
                 }
@@ -381,7 +386,9 @@ int main( int argc, char** argv )
         std::vector<uint32_t> indices;
         if( argc == 5 )
         {
-            auto idx = midhash.Search( argv[4] );
+            uint8_t pack[2048];
+            compress.Pack( argv[4], pack );
+            auto idx = midhash.Search( pack );
             if( idx == -1 )
             {
                 fprintf( stderr, "Invalid MsgID!\n" );
@@ -397,7 +404,9 @@ int main( int argc, char** argv )
                 auto children = conn[idx];
                 children += 3;
                 if( *children != 0 ) continue;
-                std::string id( msgid[idx] );
+                char unpack[2048];
+                compress.Unpack( msgid[idx], unpack );
+                std::string id( unpack );
                 if( visited.find( id ) != visited.end() ) continue;
                 indices.push_back( idx );
             }
@@ -409,7 +418,9 @@ int main( int argc, char** argv )
 
         for( auto& idx : indices )
         {
-            visited.emplace( msgid[idx] );
+            char unpack[2048];
+            compress.Unpack( msgid[idx], unpack );
+            visited.emplace( unpack );
 
             auto post = mview[idx];
             auto raw = mview.Raw( idx );
@@ -422,7 +433,7 @@ int main( int argc, char** argv )
             printf("\033[2J\033[0;0H");
 
             printf( "\n\t\033[36;1m-= Message %i =-\033[0m\n\n", idx );
-            printf( "\033[35;1mFrom: %s\n\033[33;1mSubject: %s\n\033[34mDate: %s\n\033[36mMessage-Id: %s\033[0m\n\n", strings[idx*3], strings[idx*3+1], buf, msgid[idx] );
+            printf( "\033[35;1mFrom: %s\n\033[33;1mSubject: %s\n\033[34mDate: %s\n\033[36mMessage-Id: %s\033[0m\n\n", strings[idx*3], strings[idx*3+1], buf, unpack );
 
             auto ptr = post;
             auto end = ptr;

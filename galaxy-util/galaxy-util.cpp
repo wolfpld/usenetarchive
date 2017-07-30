@@ -50,7 +50,7 @@ int main( int argc, char** argv )
 
     // load archive list
     {
-        FileMap<char> listfile( listfn );
+        const FileMap<char> listfile( listfn );
         const char* begin = listfile;
         auto ptr = begin;
         auto size = listfile.DataSize();
@@ -163,7 +163,7 @@ int main( int argc, char** argv )
     }
 
     // list of unique msg id
-    StringCompress* compress;
+    const StringCompress* compress;
 
     std::vector<const uint8_t*> msgidvec;
     uint64_t unique;
@@ -329,7 +329,7 @@ int main( int argc, char** argv )
 
     {
         uint8_t tmp[1024];
-        HashSearchBig midhash( base + "msgid", base + "midhash.meta", base + "midhash" );
+        const HashSearchBig midhash( base + "msgid", base + "midhash.meta", base + "midhash" );
 
         struct VectorHasher
         {

@@ -19,6 +19,7 @@
 #include "../common/MessageView.hpp"
 #include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
+#include "../common/StringCompress.hpp"
 
 struct HashData
 {
@@ -55,8 +56,8 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
-    std::vector<const char*> msgidvec;
-    msgidvec.reserve( size );
+    std::vector<const char*> rawmsgidvec;
+    rawmsgidvec.reserve( size );
 
     ExpandingBuffer eb;
     for( uint32_t i=0; i<size; i++ )
@@ -111,10 +112,31 @@ int main( int argc, char** argv )
         auto tmp = new char[slen+1];
         memcpy( tmp, buf, slen );
         tmp[slen] = '\0';
-        msgidvec.emplace_back( tmp );
+        rawmsgidvec.emplace_back( tmp );
     }
 
     printf( "Processed %i MsgIDs.\n", size );
+
+    printf( "Building code book...\n" );
+    fflush( stdout );
+    const StringCompress compress( rawmsgidvec );
+    compress.WriteData( base + "msgid.codebook" );
+
+    std::vector<const uint8_t*> msgidvec;
+    msgidvec.reserve( size );
+    for( int i=0; i<size; i++ )
+    {
+        if( ( i & 0x3FFF ) == 0 )
+        {
+            printf( "%i/%i\r", i, size );
+            fflush( stdout );
+        }
+
+        uint8_t tmp[2048];
+        compress.Pack( rawmsgidvec[i], tmp );
+        msgidvec.emplace_back( (const uint8_t*)strdup( (const char*)tmp ) );
+    }
+    printf( "\n" );
 
     auto hashbits = MsgIdHashBits( size, 90 );
     auto hashsize = MsgIdHashSize( hashbits );
@@ -128,7 +150,7 @@ int main( int argc, char** argv )
     for( uint32_t i=0; i<size; i++ )
     {
         const auto msg = msgidvec[i];
-        const auto len = strlen( msg );
+        const auto len = strlen( (const char*)msg );
 
         uint32_t hash = XXH32( msg, len, 0 ) & hashmask;
         uint8_t dist = 0;
@@ -189,7 +211,7 @@ int main( int argc, char** argv )
             msgidoffset[hashdata[i]] = stroffset;
             cnt++;
             auto str = msgidvec[hashdata[i]];
-            stroffset += fwrite( str, 1, strlen( str ) + 1, strdata );
+            stroffset += fwrite( str, 1, strlen( (const char*)str ) + 1, strdata );
         }
     }
 

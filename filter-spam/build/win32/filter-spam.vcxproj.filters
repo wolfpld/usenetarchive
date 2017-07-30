@@ -153,6 +153,9 @@
     <ClCompile Include="..\..\..\contrib\terminator\terminator_classifier_winnow.cc">
       <Filter>terminator</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\StringCompress.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -313,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\terminator\terminator_common.h">
       <Filter>terminator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\StringCompress.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c" />
     <ClCompile Include="..\..\merge-raw.cpp" />
   </ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -16,6 +16,7 @@
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/String.hpp"
+#include "../common/StringCompress.hpp"
 
 extern "C" { time_t parsedate_rfc5322_lax(const char *date); }
 
@@ -49,7 +50,8 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
-    HashSearch hash( base + "middata", base + "midhash", base + "midhashdata" );
+    const HashSearch hash( base + "middata", base + "midhash", base + "midhashdata" );
+    const StringCompress compress( base + "msgid.codebook" );
 
     const auto size = mview.Size();
 
@@ -98,7 +100,9 @@ int main( int argc, char** argv )
                 assert( end - buf < 1024 );
                 broken += ValidateMsgId( buf, end, tmp );
 
-                auto idx = hash.Search( tmp );
+                uint8_t pack[2048];
+                compress.Pack( tmp, pack );
+                auto idx = hash.Search( pack );
                 if( idx >= 0 )
                 {
                     data[i].parent = idx;

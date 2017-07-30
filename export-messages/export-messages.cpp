@@ -9,6 +9,7 @@
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/String.hpp"
+#include "../common/StringCompress.hpp"
 
 int main( int argc, char** argv )
 {
@@ -34,7 +35,8 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
-    const MetaView<uint32_t, char> mid( base + "midmeta", base + "middata" );
+    const MetaView<uint32_t, uint8_t> mid( base + "midmeta", base + "middata" );
+    const StringCompress compress( base + "msgid.codebook" );
 
     const auto size = mview.Size();
     for( int i=0; i<size; i++ )
@@ -48,8 +50,11 @@ int main( int argc, char** argv )
         auto raw = mview.Raw( i );
         auto ptr = mview[i];
 
+        char msgid[1024];
+        compress.Unpack( mid[i], msgid );
+
         char buf[1024];
-        sprintf( buf, "%s/%s", argv[2], mid[i] );
+        sprintf( buf, "%s/%s", argv[2], msgid );
         FILE* f = fopen( buf, "wb" );
         if( !f )
         {

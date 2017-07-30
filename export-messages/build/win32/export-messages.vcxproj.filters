@@ -30,6 +30,9 @@
     <ClCompile Include="..\..\..\common\Filesystem.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\StringCompress.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -60,6 +63,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\MessageView.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\StringCompress.hpp">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

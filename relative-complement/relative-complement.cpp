@@ -9,6 +9,7 @@
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
+#include "../common/StringCompress.hpp"
 
 int main( int argc, char** argv )
 {
@@ -43,9 +44,11 @@ int main( int argc, char** argv )
     basedst += "/";
 
     const MessageView mview1( base1 + "meta", base1 + "data" );
-    const MetaView<uint32_t, char> mid1( base1 + "midmeta", base1 + "middata" );
+    const MetaView<uint32_t, uint8_t> mid1( base1 + "midmeta", base1 + "middata" );
+    const StringCompress compress1( base1 + "msgid.codebook" );
     const MessageView mview2( base2 + "meta", base2 + "data" );
     const HashSearch hash2( base2 + "middata", base2 + "midhash", base2 + "midhashdata" );
+    const StringCompress compress2( base2 + "msgid.codebook" );
 
     std::string metadstfn = basedst + "meta";
     std::string datadstfn = basedst + "data";
@@ -68,7 +71,9 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        if( hash2.Search( mid1[i] ) >= 0 )
+        uint8_t repack[2048];
+        compress2.Repack( mid1[i], repack, compress1 );
+        if( hash2.Search( repack ) >= 0 )
         {
             dupes++;
         }

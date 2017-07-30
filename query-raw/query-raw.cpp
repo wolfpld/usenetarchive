@@ -10,6 +10,7 @@
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/String.hpp"
+#include "../common/StringCompress.hpp"
 
 #define CSTR(x) strcmp( argv[2], x ) == 0
 
@@ -78,8 +79,9 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
-    const MetaView<uint32_t, char> mid( base + "midmeta", base + "middata" );
+    const MetaView<uint32_t, uint8_t> mid( base + "midmeta", base + "middata" );
     const HashSearch hash( base + "middata", base + "midhash", base + "midhashdata" );
+    const StringCompress compress( base + "msgid.codebook" );
 
     const auto size = mview.Size();
 
@@ -92,13 +94,16 @@ int main( int argc, char** argv )
     {
         for( uint32_t i=0; i<size; i++ )
         {
-            const char* payload = mid[i];
-            printf( "%s\n", payload );
+            char unpack[2048];
+            compress.Unpack( mid[i], unpack );
+            printf( "%s\n", unpack );
         }
     }
     else if( mode == Mode::QueryMsgId )
     {
-        auto idx = hash.Search( argv[3] );
+        uint8_t pack[2048];
+        compress.Pack( argv[3], pack );
+        auto idx = hash.Search( pack );
         if( idx >= 0 )
         {
             printf( "Message idx: %i\n\n", idx );

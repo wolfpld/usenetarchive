@@ -25,6 +25,7 @@
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
 #include "../common/String.hpp"
+#include "../common/StringCompress.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
 #include "../common/ZMessageView.hpp"
@@ -90,11 +91,13 @@ int main( int argc, char** argv )
     std::string szdatafn = source + "zdata";
     std::string szdictfn = source + "zdict";
 
-    ZMessageView zview( szmetafn, szdatafn, szdictfn );
-    HashSearch shash( source + "middata", source + "midhash", source + "midhashdata" );
-    HashSearch uhash( update + "middata", update + "midhash", update + "midhashdata" );
-    MetaView<uint32_t, char> smiddb( source + "midmeta", source + "middata" );
-    MetaView<uint32_t, char> umiddb( update + "midmeta", update + "middata" );
+    const ZMessageView zview( szmetafn, szdatafn, szdictfn );
+    const HashSearch shash( source + "middata", source + "midhash", source + "midhashdata" );
+    const HashSearch uhash( update + "middata", update + "midhash", update + "midhashdata" );
+    const MetaView<uint32_t, uint8_t> smiddb( source + "midmeta", source + "middata" );
+    const MetaView<uint32_t, uint8_t> umiddb( update + "midmeta", update + "middata" );
+    const StringCompress scomp( source + "msgid.codebook" );
+    const StringCompress ucomp( update + "msgid.codebook" );
 
     ZSTD_CDict* zdict;
     {
@@ -186,8 +189,9 @@ int main( int argc, char** argv )
         auto ssize = zview.Size();
         for( int i=0; i<ssize; i++ )
         {
-            const auto msgid = smiddb[i];
-            const auto idx = uhash.Search( msgid );
+            uint8_t repack[2048];
+            ucomp.Repack( smiddb[i], repack, scomp );
+            const auto idx = uhash.Search( repack );
             if( idx == -1 )
             {
                 const auto raw = zview.Raw( i );
@@ -211,8 +215,9 @@ int main( int argc, char** argv )
     {
         for( int i=0; i<usize; i++ )
         {
-            const auto msgid = umiddb[i];
-            const auto idx = shash.Search( msgid );
+            uint8_t repack[2048];
+            scomp.Repack( umiddb[i], repack, ucomp );
+            const auto idx = shash.Search( repack );
             if( idx == -1 )
             {
                 RawImportMeta packet = { offset, data[i].size, data[i].compressedSize };

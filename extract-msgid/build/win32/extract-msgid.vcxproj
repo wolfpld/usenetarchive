@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c" />
     <ClCompile Include="..\..\extract-msgid.cpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
+    <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>

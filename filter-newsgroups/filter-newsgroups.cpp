@@ -41,7 +41,7 @@ int main( int argc, char** argv )
     MessageView mview( base + "meta", base + "data" );
     const auto size = mview.Size();
 
-    MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
+    const MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
 
     CreateDirStruct( argv[3] );
 

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccachedb.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompare.cc" />
     <ClCompile Include="..\..\..\contrib\kyotocabinet\kccompress.cc" />
@@ -70,6 +71,7 @@
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
+    <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\kyotocabinet\cmdcommon.h" />
     <ClInclude Include="..\..\..\contrib\kyotocabinet\kccachedb.h" />
