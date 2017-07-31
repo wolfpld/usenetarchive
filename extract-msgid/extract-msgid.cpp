@@ -21,12 +21,6 @@
 #include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 
-struct HashData
-{
-    uint32_t offset;
-    uint32_t idx;
-};
-
 void CreateDummyMsgId( const char*& begin, const char*& end, int idx )
 {
     static char buf[1024];
