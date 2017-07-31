@@ -104,8 +104,8 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
         }
         else
         {
-            bool parents = !m_galaxy->AreParentsSame( gidx, msgid ) || ip.size != 0;
-            bool children = !m_galaxy->AreChildrenSame( gidx, msgid ) || ic.size != 0;
+            bool parents = ip.size != 0 || !m_galaxy->AreParentsSame( gidx, msgid );
+            bool children = ic.size != 0 || !m_galaxy->AreChildrenSame( gidx, msgid );
             if( parents )
             {
                 if( children )
