@@ -611,6 +611,22 @@ StringCompress::StringCompress( const std::string& fn )
     fclose( f );
 }
 
+StringCompress::StringCompress( const FileMapPtrs& ptrs )
+{
+    FileMap<char> f( ptrs );
+    memcpy( &m_dataLen, f, sizeof( m_dataLen ) );
+    auto data = new char[m_dataLen];
+    uint32_t offset = sizeof( m_dataLen );
+    memcpy( data, f+offset, m_dataLen );
+    m_data = data;
+    offset += m_dataLen;
+    memcpy( &m_maxHost, f+offset, sizeof( m_maxHost ) );
+    offset += sizeof( m_maxHost );
+    memcpy( m_hostLookup, f+offset, m_maxHost * sizeof( uint8_t ) );
+    offset += m_maxHost * sizeof( uint8_t );
+    memcpy( m_hostOffset, f+offset, m_maxHost * sizeof( uint32_t ) );
+}
+
 StringCompress::~StringCompress()
 {
     delete[] m_data;

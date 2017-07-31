@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "CharUtil.hpp"
+#include "FileMap.hpp"
 
 class StringCompress
 {
@@ -17,6 +18,7 @@ public:
     template<class T>
     StringCompress( const T& strings );
     StringCompress( const std::string& fn );
+    StringCompress( const FileMapPtrs& ptrs );
     ~StringCompress();
 
     size_t Pack( const char* in, uint8_t* out ) const;
