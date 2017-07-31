@@ -48,7 +48,7 @@ private:
 };
 
 template<>
-int HashSearch<uint8_t>::Search( const uint8_t* str, XXH32_hash_t _hash ) const
+inline int HashSearch<uint8_t>::Search( const uint8_t* str, XXH32_hash_t _hash ) const
 {
     auto hash = _hash & m_mask;
     uint8_t dist = 0;
@@ -64,7 +64,7 @@ int HashSearch<uint8_t>::Search( const uint8_t* str, XXH32_hash_t _hash ) const
 }
 
 template<>
-int HashSearch<char>::Search( const char* str, XXH32_hash_t _hash ) const
+inline int HashSearch<char>::Search( const char* str, XXH32_hash_t _hash ) const
 {
     auto hash = _hash & m_mask;
     uint8_t dist = 0;
@@ -80,13 +80,13 @@ int HashSearch<char>::Search( const char* str, XXH32_hash_t _hash ) const
 }
 
 template<>
-int HashSearch<uint8_t>::Search( const uint8_t* str ) const
+inline int HashSearch<uint8_t>::Search( const uint8_t* str ) const
 {
     return Search( str, XXH32( str, strlen( (const char*)str ), 0 ) );
 }
 
 template<>
-int HashSearch<char>::Search( const char* str ) const
+inline int HashSearch<char>::Search( const char* str ) const
 {
     return Search( str, XXH32( str, strlen( str ), 0 ) );
 }
