@@ -64,8 +64,7 @@ int main( int argc, char** argv )
         auto toplevel = archive->GetTopLevel();
         auto children = archive->GetChildren( uint32_t( 0 ) );
         if( !(
-            toplevel.ptr[0] == 0 &&
-            toplevel.size == 1 ||
+            ( toplevel.ptr[0] == 0 && toplevel.size == 1 ) ||
             ( children.size == 0 && toplevel.ptr[1] == 1 ) ||
             children.ptr[0] == 1 ) )
         {
