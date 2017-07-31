@@ -41,7 +41,7 @@ int main( int argc, char** argv )
     basedst += "/";
 
     const MessageView mview1( base1 + "meta", base1 + "data" );
-    const HashSearch hash1( base1 + "middata", base1 + "midhash", base1 + "midhashdata" );
+    const HashSearch<uint8_t> hash1( base1 + "middata", base1 + "midhash", base1 + "midhashdata" );
     StringCompress compress1( base1 + "msgid.codebook" );
 
     std::string metadstfn = basedst + "meta";

@@ -112,7 +112,7 @@ int main( int argc, char** argv )
     const MetaView<uint32_t, char> strings( base + "strmeta", base + "strings" );
     const MetaView<uint32_t, uint32_t> conn( base + "connmeta", base + "conndata" );
     const MetaView<uint32_t, uint8_t> msgid( base + "midmeta", base + "middata" );
-    const HashSearch midhash( base + "middata", base + "midhash", base + "midhashdata" );
+    const HashSearch<uint8_t> midhash( base + "middata", base + "midhash", base + "midhashdata" );
     const StringCompress compress( base + "msgid.codebook" );
 
     const std::string dbdir( argv[1] );

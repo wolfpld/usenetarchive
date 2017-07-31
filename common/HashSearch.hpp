@@ -9,6 +9,7 @@
 #include "../common/FileMap.hpp"
 #include "../common/MsgIdHash.hpp"
 
+template<class T>
 class HashSearch
 {
     struct Data
@@ -36,31 +37,58 @@ public:
         m_distmax = distfile[0];
     }
 
-    int Search( const uint8_t* str, XXH32_hash_t _hash ) const
-    {
-        auto hash = _hash & m_mask;
-        uint8_t dist = 0;
-        for(;;)
-        {
-            auto h = m_hash[hash];
-            if( m_hash[hash].offset == 0 ) return -1;
-            if( strcmp( (const char*)str, (const char*)(const uint8_t*)m_data + m_hash[hash].offset ) == 0 ) return m_hash[hash].idx;
-            dist++;
-            if( dist > m_distmax ) return -1;
-            hash = (hash+1) & m_mask;
-        }
-    }
-
-    int Search( const uint8_t* str ) const
-    {
-        return Search( str, XXH32( str, strlen( (const char*)str ), 0 ) );
-    }
+    int Search( const T* str, XXH32_hash_t _hash ) const;
+    int Search( const T* str ) const;
 
 private:
-    FileMap<uint8_t> m_data;
+    FileMap<T> m_data;
     FileMap<Data> m_hash;
     uint32_t m_mask;
     uint8_t m_distmax;
 };
+
+template<>
+int HashSearch<uint8_t>::Search( const uint8_t* str, XXH32_hash_t _hash ) const
+{
+    auto hash = _hash & m_mask;
+    uint8_t dist = 0;
+    for(;;)
+    {
+        auto& h = m_hash[hash];
+        if( h.offset == 0 ) return -1;
+        if( strcmp( (const char*)str, (const char*)(const uint8_t*)m_data + h.offset ) == 0 ) return h.idx;
+        dist++;
+        if( dist > m_distmax ) return -1;
+        hash = (hash+1) & m_mask;
+    }
+}
+
+template<>
+int HashSearch<char>::Search( const char* str, XXH32_hash_t _hash ) const
+{
+    auto hash = _hash & m_mask;
+    uint8_t dist = 0;
+    for(;;)
+    {
+        auto& h = m_hash[hash];
+        if( h.offset == 0 ) return -1;
+        if( strcmp( str, m_data + h.offset ) == 0 ) return h.idx;
+        dist++;
+        if( dist > m_distmax ) return -1;
+        hash = (hash+1) & m_mask;
+    }
+}
+
+template<>
+int HashSearch<uint8_t>::Search( const uint8_t* str ) const
+{
+    return Search( str, XXH32( str, strlen( (const char*)str ), 0 ) );
+}
+
+template<>
+int HashSearch<char>::Search( const char* str ) const
+{
+    return Search( str, XXH32( str, strlen( str ), 0 ) );
+}
 
 #endif

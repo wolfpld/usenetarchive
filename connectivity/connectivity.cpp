@@ -50,7 +50,7 @@ int main( int argc, char** argv )
     base.append( "/" );
 
     MessageView mview( base + "meta", base + "data" );
-    const HashSearch hash( base + "middata", base + "midhash", base + "midhashdata" );
+    const HashSearch<uint8_t> hash( base + "middata", base + "midhash", base + "midhashdata" );
     const StringCompress compress( base + "msgid.codebook" );
 
     const auto size = mview.Size();

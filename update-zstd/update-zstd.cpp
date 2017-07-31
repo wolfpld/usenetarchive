@@ -92,8 +92,8 @@ int main( int argc, char** argv )
     std::string szdictfn = source + "zdict";
 
     const ZMessageView zview( szmetafn, szdatafn, szdictfn );
-    const HashSearch shash( source + "middata", source + "midhash", source + "midhashdata" );
-    const HashSearch uhash( update + "middata", update + "midhash", update + "midhashdata" );
+    const HashSearch<uint8_t> shash( source + "middata", source + "midhash", source + "midhashdata" );
+    const HashSearch<uint8_t> uhash( update + "middata", update + "midhash", update + "midhashdata" );
     const MetaView<uint32_t, uint8_t> smiddb( source + "midmeta", source + "middata" );
     const MetaView<uint32_t, uint8_t> umiddb( update + "midmeta", update + "middata" );
     const StringCompress scomp( source + "msgid.codebook" );
