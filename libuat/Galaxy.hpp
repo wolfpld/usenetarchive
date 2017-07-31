@@ -37,6 +37,7 @@ public:
 
     size_t PackMsgId( const char* msgid, uint8_t* compressed ) const { return m_compress.Pack( msgid, compressed ); }
     size_t UnpackMsgId( const uint8_t* compressed, char* msgid ) const { return m_compress.Unpack( compressed, msgid ); }
+    size_t RepackMsgId( const uint8_t* in, uint8_t* out, const StringCompress& other ) const { return m_compress.Repack( in, out, other ); }
 
     int GetNumberOfGroups( uint32_t idx ) const { if( idx == -1 ) return 0; return *m_midgr[idx]; }
     bool AreChildrenSame( uint32_t idx, const char* msgid ) const;
