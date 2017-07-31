@@ -17,7 +17,6 @@ struct Tool
 };
 
 static const Tool tools[] = {
-    { "Browser", "Qt-based graphical archive browser." },
     { "connectivity", "Calculate message dependency graph." },
     { "export-messages", "Save each messages in LZ4 workset to a file." },
     { "extract-msgid", "Build Message ID reference table." },

@@ -105,11 +105,6 @@ These tools provide access to archive data:
 ### End-user Utilities
 
 - tbrowser --- Curses-based text mode browser of archives.
-- browser --- Graphical browser of archives (no longer maintained).
-
-![](doc/browser1.png)
-
-![](doc/browser2.png)
 
 ## Future work ideas
 
