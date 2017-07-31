@@ -161,7 +161,7 @@ int DetectWrote( const char* ptr )
 
     // Check for typical "wrote:" markers
     auto e = end - 1;
-    while( e > ptr && *e == ' ' || *e == '\t') e--;
+    while( e > ptr && ( *e == ' ' || *e == '\t' ) ) e--;
     e++;
     if( e - ptr >= 1 )
     {
@@ -208,7 +208,7 @@ const char* DetectWroteEnd( const char* ptr, int baseLevel )
 
     // Check for typical "wrote:" markers
     auto e = end - 1;
-    while( e > ptr && *e == ' ' || *e == '\t') e--;
+    while( e > ptr && ( *e == ' ' || *e == '\t' ) ) e--;
     e++;
     if( e - ptr >= 1 )
     {
