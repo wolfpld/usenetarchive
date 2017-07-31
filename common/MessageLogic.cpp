@@ -1,4 +1,5 @@
 #include <string.h>
+#include <utility>
 
 #include "MessageLogic.hpp"
 #include "String.hpp"
@@ -123,15 +124,22 @@ bool ValidateMsgId( const char* begin, const char* end, char* dst )
 // for example containing forbidden space character. UAT can handle that.
 bool IsMsgId( const char* begin, const char* end )
 {
+    uint32_t u = 0, h = 0, a = 0;   // unique, host, at
     while( begin != end )
     {
         if( *begin < 32 || *begin > 126 || *begin == '<' || *begin == '>' )
         {
             return false;
         }
+        if( *begin == '@' )
+        {
+            a++;
+            std::swap( u, h );
+        }
         begin++;
+        h++;
     }
-    return true;
+    return a == 1 && u > 0 && h > 0;
 }
 
 // Returns number of lines in "wrote" context
