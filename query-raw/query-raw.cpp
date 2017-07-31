@@ -80,7 +80,7 @@ int main( int argc, char** argv )
 
     MessageView mview( base + "meta", base + "data" );
     const MetaView<uint32_t, uint8_t> mid( base + "midmeta", base + "middata" );
-    const HashSearch hash( base + "middata", base + "midhash", base + "midhashdata" );
+    const HashSearch<uint8_t> hash( base + "middata", base + "midhash", base + "midhashdata" );
     const StringCompress compress( base + "msgid.codebook" );
 
     const auto size = mview.Size();
