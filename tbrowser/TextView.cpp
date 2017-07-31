@@ -89,7 +89,6 @@ void TextView::Draw()
 {
     int w, h;
     getmaxyx( m_win, h, w );
-    int tw = w;
     werase( m_win );
     int i;
     for( i=0; i<h; i++ )

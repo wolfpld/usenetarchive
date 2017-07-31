@@ -13,12 +13,11 @@
 #include "GalaxyOpen.hpp"
 #include "UTF8.hpp"
 
-GalaxyOpen::GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage )
+GalaxyOpen::GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy )
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_bar( bar )
     , m_galaxy( galaxy )
-    , m_storage( storage )
     , m_filter( galaxy.GetNumberOfArchives(), true )
     , m_active( false )
     , m_cursor( galaxy.GetActiveArchive() )

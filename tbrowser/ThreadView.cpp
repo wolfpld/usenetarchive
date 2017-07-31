@@ -17,7 +17,6 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_cursor( 0 )
     , m_fillPos( 0 )
     , m_topLevelPos( 0 )
-    , m_galaxy( galaxy != nullptr )
 {
     Draw();
 }

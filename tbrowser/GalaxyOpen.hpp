@@ -13,7 +13,7 @@ class PersistentStorage;
 class GalaxyOpen : public View
 {
 public:
-    GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage );
+    GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy );
 
     void Entry();
 
@@ -29,7 +29,6 @@ private:
     Browser* m_parent;
     BottomBar& m_bar;
     Galaxy& m_galaxy;
-    PersistentStorage& m_storage;
     std::vector<bool> m_filter;
 
     bool m_active;

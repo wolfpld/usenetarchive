@@ -243,7 +243,6 @@ int ThreadTree::ExpandImpl( int idx, bool recursive )
     SetExpanded( idx, true );
 
     auto children = m_archive->GetChildren( idx );
-    int parent = idx;
     idx++;
     int depth = 0;
     for( int i=0; i<children.size; i++ )
@@ -483,7 +482,6 @@ void ThreadTree::DrawLine( WINDOW* win, int line, int idx, bool hilite, int colo
     }
     if( len > 0 )
     {
-        auto target = len;
         if( !hilite && wasVisited ) wattron( win, COLOR_PAIR(8) | A_BOLD );
         if( SameSubject( m_killre, subject, prev ) )
         {

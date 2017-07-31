@@ -323,7 +323,6 @@ static inline bool CheckOverlap( const char* w1s, const char* w1e, const char* w
 void SearchView::FillPreview( int idx )
 {
     const auto& res = m_result.results[idx];
-    const auto& words = m_result.matched;
 
     auto msg = std::string( m_archive->GetMessage( res.postid, m_eb ) );
     auto content = msg.c_str();

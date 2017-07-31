@@ -51,7 +51,6 @@ private:
     int m_top, m_bottom;
     int m_cursor;
     int m_fillPos, m_topLevelPos;
-    bool m_galaxy;
 };
 
 #endif
