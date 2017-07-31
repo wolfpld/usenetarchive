@@ -277,7 +277,9 @@ int main( int argc, char** argv )
         bool ok = true;
         for( int i=0; i<size; i++ )
         {
-            std::string msgid = archive->GetMessageId( i );
+            char unpack[2048];
+            archive->UnpackMsgId( archive->GetMessageId( i ), unpack );
+            std::string msgid( unpack );
             if( unique.find( msgid ) == unique.end() )
             {
                 unique.emplace( std::move( msgid ) );
