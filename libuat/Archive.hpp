@@ -57,7 +57,7 @@ public:
     const char* GetSubject( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetSubject( idx ) : nullptr; }
 
     const char* GetRealName( uint32_t idx ) const { return m_strings[idx*3+2]; }
-    const char* GetRealName( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetSubject( idx ) : nullptr; }
+    const char* GetRealName( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetRealName( idx ) : nullptr; }
 
     int GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& scoreList ) const;
 
