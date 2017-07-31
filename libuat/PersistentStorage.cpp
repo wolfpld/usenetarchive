@@ -337,7 +337,7 @@ void PersistentStorage::LoadScore()
         while( end - ptr < size && *end != '\n' && *end != '\r' ) end++;
         std::string match( ptr, end );
         ptr = end;
-        while( size > 0 && *ptr == '\n' || *ptr == '\r' )
+        while( size > 0 && ( *ptr == '\n' || *ptr == '\r' ) )
         {
             ptr++;
             size--;
