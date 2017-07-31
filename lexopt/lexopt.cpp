@@ -54,10 +54,11 @@ int main( int argc, char** argv )
     std::sort( order, order + metasize, [&strlength]( const auto& l, const auto& r ) { return strlength[l] > strlength[r]; } );
 
     char* buf = new char[strsize];
+    buf[0] = '\0';
     std::unordered_set<const char*, CharUtil::Hasher, CharUtil::Comparator> avail;
 
     unsigned int savings = 0;
-    uint32_t offset = 0;
+    uint32_t offset = 1;
     for( int i=0; i<metasize; i++ )
     {
         if( ( i & 0x1FFF ) == 0 )

@@ -218,7 +218,9 @@ int main( int argc, char** argv )
     FILE* fdata = fopen( ( base + "lexdata" ).c_str(), "wb" );
     FILE* fhit = fopen( ( base + "lexhit" ).c_str(), "wb" );
 
-    uint32_t ostr = 0;
+    uint8_t zero = 0;
+
+    uint32_t ostr = fwrite( &zero, 1, 1, fstr );
     uint32_t odata = 0;
     uint32_t ohit = 0;
 

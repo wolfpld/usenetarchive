@@ -12,12 +12,6 @@
 #include "../common/LexiconTypes.hpp"
 #include "../common/MsgIdHash.hpp"
 
-struct HashData
-{
-    uint32_t offset;
-    uint32_t idx;
-};
-
 int main( int argc, char** argv )
 {
     if( argc != 2 )
@@ -32,10 +26,16 @@ int main( int argc, char** argv )
     FileMap<char> str( base + "lexstr" );
 
     auto size = meta.DataSize();
-    auto hashbits = MsgIdHashBits( size, 75 );
+    auto hashbits = MsgIdHashBits( size, 90 );
     auto hashsize = MsgIdHashSize( hashbits );
     auto hashmask = MsgIdHashMask( hashbits );
-    auto bucket = new std::vector<HashData>[hashsize];
+
+    auto offsets = new uint32_t[hashsize];
+    auto hashdata = new uint32_t[hashsize];
+    auto distance = new uint8_t[hashsize];
+    memset( distance, 0xFF, hashsize );
+    uint8_t distmax = 0;
+
     for( uint32_t i=0; i<size; i++ )
     {
         if( ( i & 0xFFF ) == 0 )
@@ -48,50 +48,65 @@ int main( int argc, char** argv )
         auto s = str + m.str;
 
         uint32_t hash = XXH32( s, strlen( s ), 0 ) & hashmask;
-        bucket[hash].emplace_back( HashData { m.str, i } );
+        uint8_t dist = 0;
+        uint32_t idx = i;
+        uint32_t off = m.str;
+        for(;;)
+        {
+            if( distance[hash] == 0xFF )
+            {
+                if( distmax < dist ) distmax = dist;
+                distance[hash] = dist;
+                hashdata[hash] = idx;
+                offsets[hash] = off;
+                break;
+            }
+            if( distance[hash] < dist )
+            {
+                if( distmax < dist ) distmax = dist;
+                std::swap( distance[hash], dist );
+                std::swap( hashdata[hash], idx );
+                std::swap( offsets[hash], off );
+            }
+            dist++;
+            assert( dist < std::numeric_limits<uint8_t>::max() );
+            hash = (hash+1) & hashmask;
+        }
     }
 
     printf( "\n" );
 
-    std::string hashfn = base + "lexhash";
-    std::string hashdatafn = base + "lexhashdata";
+    FILE* fhashdata = fopen( ( base + "lexhashdata" ).c_str(), "wb" );
+    fwrite( &distmax, 1, 1, fhashdata );
+    fclose( fhashdata );
 
-    FILE* fhash = fopen( hashfn.c_str(), "wb" );
-    FILE* fhashdata = fopen( hashdatafn.c_str(), "wb" );
-
-    const uint32_t zero = 0;
-    fwrite( &zero, 1, sizeof( uint32_t ), fhashdata );
-    uint32_t offset = sizeof( uint32_t );
-    for( uint32_t i=0; i<hashsize; i++ )
+    uint32_t zero = 0;
+    FILE* fhash = fopen( ( base + "lexhash" ).c_str(), "wb" );
+    int cnt = 0;
+    for( int i=0; i<hashsize; i++ )
     {
-        if( ( i & 0xFFF ) == 0 )
+        if( ( i & 0x3FFF ) == 0 )
         {
             printf( "%i/%i\r", i, hashsize );
             fflush( stdout );
         }
 
-        std::sort( bucket[i].begin(), bucket[i].end(), [&str]( const HashData& l, const HashData& r ) { return strcmp( str + l.offset, str + r.offset ) > 0; } );
-
-        uint32_t num = bucket[i].size();
-        if( num == 0 )
+        if( distance[i] == 0xFF )
         {
+            fwrite( &zero, 1, sizeof( uint32_t ), fhash );
             fwrite( &zero, 1, sizeof( uint32_t ), fhash );
         }
         else
         {
-            fwrite( &offset, 1, sizeof( offset ), fhash );
-            fwrite( &num, 1, sizeof( num ), fhashdata );
-            fwrite( bucket[i].data(), 1, num * sizeof( HashData ), fhashdata );
-            offset += sizeof( num ) + num * sizeof( HashData );
+            fwrite( offsets+i, 1, sizeof( uint32_t ), fhash );
+            fwrite( hashdata+i, 1, sizeof( uint32_t ), fhash );
+            cnt++;
         }
     }
-
+    assert( cnt == size );
     fclose( fhash );
-    fclose( fhashdata );
 
-    delete[] bucket;
-
-    printf( "Processed %i buckets.\n", hashsize );
+    printf( "%i/%i\n", hashsize, hashsize );
 
     return 0;
 }
