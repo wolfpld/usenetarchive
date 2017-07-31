@@ -60,6 +60,7 @@ Archive::Archive( const std::string& dir )
     , m_descLong( dir + "desc_long", true )
     , m_name( dir + "name", true )
     , m_prefix( dir + "prefix", true )
+    , m_compress( dir + "msgid.codebook" )
 {
     if( Exists( dir + "lexdist" ) && Exists( dir + "lexdistmeta" ) )
     {
@@ -85,6 +86,7 @@ Archive::Archive( const PackageAccess* pkg )
     , m_descLong( pkg->Get( PackageFile::desc_long ) )
     , m_name( pkg->Get( PackageFile::name ) )
     , m_prefix( pkg->Get( PackageFile::prefix ) )
+    , m_compress( pkg->Get( PackageFile::codebook ) )
 {
     const auto lexdist = pkg->Get( PackageFile::lexdist );
     const auto lexdistmeta = pkg->Get( PackageFile::lexdistmeta );

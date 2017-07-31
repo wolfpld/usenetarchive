@@ -11,6 +11,7 @@
 #include "../common/HashSearch.hpp"
 #include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
+#include "../common/StringCompress.hpp"
 #include "../common/ZMessageView.hpp"
 
 #include "PackageAccess.hpp"
@@ -89,6 +90,7 @@ private:
     const FileMap<char> m_descLong;
     const FileMap<char> m_name;
     const FileMap<char> m_prefix;
+    const StringCompress m_compress;
     std::unique_ptr<MetaView<uint32_t, uint32_t>> m_lexdist;
 };
 
