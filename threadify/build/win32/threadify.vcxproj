@@ -24,6 +24,7 @@
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
@@ -47,6 +48,7 @@
     <ClInclude Include="..\..\..\common\MsgIdHash.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
+    <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h" />

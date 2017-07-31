@@ -69,6 +69,9 @@
     <ClCompile Include="..\..\..\libuat\SearchEngine.cpp">
       <Filter>libuat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\StringCompress.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\libuat\SearchEngine.hpp">
       <Filter>libuat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\StringCompress.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
