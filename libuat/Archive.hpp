@@ -68,6 +68,11 @@ public:
     std::pair<const char*, uint64_t> GetArchiveName() const { return std::make_pair( ( const char*)m_name, m_name.Size() ); }
     std::pair<const char*, uint64_t> GetPrefixList() const { return std::make_pair( ( const char*)m_prefix, m_prefix.Size() ); }
 
+    size_t PackMsgId( const char* msgid, uint8_t* compressed ) const { return m_compress.Pack( msgid, compressed ); }
+    size_t UnpackMsgId( const uint8_t* compressed, char* msgid ) const { return m_compress.Unpack( compressed, msgid ); }
+    size_t RepackMsgId( const uint8_t* in, uint8_t* out, const StringCompress& other ) const { return m_compress.Repack( in, out, other ); }
+    const StringCompress& GetCompress() const { return m_compress; }
+
 private:
     Archive( const std::string& dir );
     Archive( const PackageAccess* pkg );
