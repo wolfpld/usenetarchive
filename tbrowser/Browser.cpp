@@ -142,10 +142,14 @@ void Browser::Entry()
             doupdate();
             break;
         case 'd':
-            m_storage.MarkVisited( m_archive->GetMessageId( m_tview.GetCursor() ) );
+        {
+            char unpack[2048];
+            m_archive->UnpackMsgId( m_archive->GetMessageId( m_tview.GetCursor() ), unpack );
+            m_storage.MarkVisited( unpack );
             m_tview.GoNextUnread();
             doupdate();
             break;
+        }
         case KEY_UP:
         case 'k':
             m_tview.MoveCursor( -1 );
@@ -282,7 +286,9 @@ void Browser::Entry()
             auto msgid = m_bottom.Query( "MsgID: " );
             if( !msgid.empty() )
             {
-                auto idx = m_archive->GetMessageIndex( msgid.c_str() );
+                uint8_t pack[2048];
+                m_archive->PackMsgId( msgid.c_str(), pack );
+                auto idx = m_archive->GetMessageIndex( pack );
                 if( idx >= 0 )
                 {
                     OpenMessage( idx );
@@ -291,10 +297,10 @@ void Browser::Entry()
                 {
                     if( m_galaxy )
                     {
-                        uint8_t pack[8192];
-                        m_galaxy->PackMsgId( msgid.c_str(), pack );
+                        uint8_t gpack[2048];
+                        m_galaxy->RepackMsgId( pack, gpack, m_archive->GetCompress() );
 
-                        idx = m_galaxy->GetMessageIndex( pack );
+                        idx = m_galaxy->GetMessageIndex( gpack );
                         if( idx >= 0 )
                         {
                             auto groups = m_galaxy->GetGroups( idx );
@@ -310,7 +316,8 @@ void Browser::Entry()
                                     {
                                         auto archive = m_galaxy->GetArchive( *groups.ptr );
                                         SwitchArchive( archive, m_galaxy->GetArchiveFilename( *groups.ptr ) );
-                                        SwitchToMessage( archive->GetMessageIndex( msgid.c_str() ) );
+                                        archive->RepackMsgId( gpack, pack, m_galaxy->GetCompress() );
+                                        SwitchToMessage( archive->GetMessageIndex( pack ) );
                                     }
                                 }
                                 else
@@ -426,7 +433,9 @@ void Browser::Entry()
                 else
                 {
                     m_bottom.SetHelp( HelpSet::GalaxyOpen );
-                    m_gwarp->Entry( m_archive->GetMessageId( m_tview.GetCursor() ), state, true, m_tview.GetThreadTree() );
+                    char unpack[2048];
+                    m_archive->UnpackMsgId( m_archive->GetMessageId( m_tview.GetCursor() ), unpack );
+                    m_gwarp->Entry( unpack, state, true, m_tview.GetThreadTree() );
                     m_bottom.SetHelp( HelpSet::Default );
                     RestoreDefaultView();
                 }

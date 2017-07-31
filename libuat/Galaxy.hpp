@@ -33,30 +33,31 @@ public:
     int GetActiveArchive() const { return m_active; }
 
     int GetMessageIndex( const uint8_t* msgid ) const { return m_midhash.Search( msgid ); }
-    const char* GetMessageId( uint32_t idx ) const { return m_middb[idx]; }
+    const uint8_t* GetMessageId( uint32_t idx ) const { return m_middb[idx]; }
 
     size_t PackMsgId( const char* msgid, uint8_t* compressed ) const { return m_compress.Pack( msgid, compressed ); }
     size_t UnpackMsgId( const uint8_t* compressed, char* msgid ) const { return m_compress.Unpack( compressed, msgid ); }
     size_t RepackMsgId( const uint8_t* in, uint8_t* out, const StringCompress& other ) const { return m_compress.Repack( in, out, other ); }
+    const StringCompress& GetCompress() const { return m_compress; }
 
     int GetNumberOfGroups( uint32_t idx ) const { if( idx == -1 ) return 0; return *m_midgr[idx]; }
-    bool AreChildrenSame( uint32_t idx, const char* msgid ) const;
-    bool AreParentsSame( uint32_t idx, const char* msgid ) const;
+    bool AreChildrenSame( uint32_t idx, const uint8_t* msgid ) const;
+    bool AreParentsSame( uint32_t idx, const uint8_t* msgid ) const;
     ViewReference<uint32_t> GetGroups( uint32_t idx ) const { assert( idx != -1 ); auto ptr = m_midgr[idx]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
     int32_t GetIndirectIndex( uint32_t idx ) const;
 
     ViewReference<uint32_t> GetIndirectParents( uint32_t indirect_idx ) const { assert( indirect_idx != -1 ); auto ptr = m_indirect[indirect_idx*2]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
     ViewReference<uint32_t> GetIndirectChildren( uint32_t indirect_idx ) const { assert( indirect_idx != -1 ); auto ptr = m_indirect[indirect_idx*2+1]; auto num = *ptr++; return ViewReference<uint32_t> { ptr, num }; }
 
-    int ParentDepth( const char* msgid, uint32_t arch ) const;
-    int NumberOfChildren( const char* msgid, uint32_t arch ) const { return m_arch[arch]->GetChildren( msgid ).size; }
-    int TotalNumberOfChildren( const char* msgid, uint32_t arch ) const { return m_arch[arch]->GetTotalChildrenCount( msgid ); }
+    int ParentDepth( const uint8_t* msgid, uint32_t arch ) const;
+    int NumberOfChildren( const uint8_t* msgid, uint32_t arch ) const;
+    int TotalNumberOfChildren( const uint8_t* msgid, uint32_t arch ) const;
 
 private:
     Galaxy( const std::string& dir );
 
     std::string m_base;
-    const MetaView<uint64_t, char> m_middb;
+    const MetaView<uint64_t, uint8_t> m_middb;
     const HashSearchBig m_midhash;
     const MetaView<uint32_t, char> m_archives;
     const MetaView<uint32_t, char> m_strings;

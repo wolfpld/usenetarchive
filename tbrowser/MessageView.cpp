@@ -66,7 +66,9 @@ bool MessageView::Display( uint32_t idx, int move )
         {
             Draw();
         }
-        m_storage.MarkVisited( m_archive->GetMessageId( idx ) );
+        char unpack[2048];
+        m_archive->UnpackMsgId( m_archive->GetMessageId( idx ), unpack );
+        m_storage.MarkVisited( unpack );
     }
     else if( m_active )
     {

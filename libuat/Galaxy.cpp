@@ -70,7 +70,7 @@ const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )
     return m_arch[idx];
 }
 
-bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
+bool Galaxy::AreChildrenSame( uint32_t idx, const uint8_t* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
@@ -87,16 +87,24 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     assert( !arch.empty() );
     if( arch.size() == 1 ) return true;
 
-    auto children = arch[0]->GetChildren( msgid );
+    uint8_t local[2048];
+    arch[0]->RepackMsgId( msgid, local, m_compress );
+    const auto children = arch[0]->GetChildren( local );
+    std::vector<ViewReference<uint32_t>> cvec;
+    cvec.reserve( arch.size() - 1 );
     for( int i=1; i<arch.size(); i++ )
     {
-        if( arch[i]->GetChildren( msgid ).size != children.size )
+        arch[i]->RepackMsgId( msgid, local, m_compress );
+        const auto c = arch[i]->GetChildren( local );
+        if( c.size != children.size )
         {
             return false;
         }
+        cvec.emplace_back( c );
     }
 
-    std::vector<const char*> test;
+    std::vector<const uint8_t*> test;
+    test.reserve( children.size );
     for( int i=0; i<children.size; i++ )
     {
         test.emplace_back( arch[0]->GetMessageId( children.ptr[i] ) );
@@ -104,14 +112,16 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
 
     for( int i=1; i<arch.size(); i++ )
     {
-        auto c2 = arch[i]->GetChildren( msgid );
+        const auto& c2 = cvec[i-1];
         for( int j=0; j<c2.size; j++ )
         {
             auto tmid = arch[i]->GetMessageId( c2.ptr[j] );
+            arch[0]->RepackMsgId( tmid, local, arch[i]->GetCompress() );
+
             bool found = false;
             for( auto& v : test )
             {
-                if( strcmp( v, tmid ) == 0 )
+                if( strcmp( (const char*)v, (const char*)local ) == 0 )
                 {
                     found = true;
                     break;
@@ -127,7 +137,7 @@ bool Galaxy::AreChildrenSame( uint32_t idx, const char* msgid ) const
     return true;
 }
 
-bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
+bool Galaxy::AreParentsSame( uint32_t idx, const uint8_t* msgid ) const
 {
     auto ptr = m_midgr[idx];
     auto num = *ptr++;
@@ -144,18 +154,43 @@ bool Galaxy::AreParentsSame( uint32_t idx, const char* msgid ) const
     assert( !arch.empty() );
     if( arch.size() == 1 ) return true;
 
-    const auto tid = arch[0]->GetParent( msgid );
-    const auto tmid = tid == -1 ? "" : arch[0]->GetMessageId( tid );
+    uint8_t local[2048];
+    arch[0]->RepackMsgId( msgid, local, m_compress );
+    const auto tid = arch[0]->GetParent( local );
 
-    for( int i=1; i<arch.size(); i++ )
+    if( tid == -1 )
     {
-        auto tid2 = arch[i]->GetParent( msgid );
-        auto tmid2 = tid2 == -1 ? "" : arch[i]->GetMessageId( tid2 );
-        if( strcmp( tmid, tmid2 ) != 0 )
+        for( int i=1; i<arch.size(); i++ )
         {
-            return false;
+            arch[i]->RepackMsgId( msgid, local, m_compress );
+            auto tid2 = arch[i]->GetParent( local );
+            if( tid2 != -1 )
+            {
+                return false;
+            }
         }
     }
+    else
+    {
+        const auto tmid = arch[0]->GetMessageId( tid );
+        for( int i=1; i<arch.size(); i++ )
+        {
+            arch[i]->RepackMsgId( msgid, local, m_compress );
+            auto tid2 = arch[i]->GetParent( local );
+            if( tid2 == -1 )
+            {
+                return false;
+            }
+            auto tmid2 = arch[i]->GetMessageId( tid2 );
+            uint8_t tlocal[2048];
+            arch[i]->RepackMsgId( tmid, tlocal, arch[0]->GetCompress() );
+            if( strcmp( (const char*)tlocal, (const char*)tmid2 ) != 0 )
+            {
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 
@@ -176,7 +211,7 @@ int32_t Galaxy::GetIndirectIndex( uint32_t idx ) const
     }
 }
 
-int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
+int Galaxy::ParentDepth( const uint8_t* msgid, uint32_t arch ) const
 {
     int num = -1;
     auto idx = m_arch[arch]->GetMessageIndex( msgid );
@@ -187,4 +222,14 @@ int Galaxy::ParentDepth( const char* msgid, uint32_t arch ) const
     }
     while( idx != -1 );
     return num;
+}
+
+int Galaxy::NumberOfChildren( const uint8_t* msgid, uint32_t arch ) const
+{
+    return m_arch[arch]->GetChildren( msgid ).size;
+}
+
+int Galaxy::TotalNumberOfChildren( const uint8_t* msgid, uint32_t arch ) const
+{
+    return m_arch[arch]->GetTotalChildrenCount( msgid );
 }

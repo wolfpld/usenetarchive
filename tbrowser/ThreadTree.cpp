@@ -82,10 +82,10 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
     if( state == GalaxyState::Unknown )
     {
         const auto msgid = m_archive->GetMessageId( idx );
-        uint8_t pack[1024];
-        m_galaxy->PackMsgId( msgid, pack );
-        const auto gidx  = m_galaxy->GetMessageIndex( pack );
-        assert( strcmp( (const char*)m_galaxy->GetMessageId( gidx ), (const char*)pack ) == 0 );
+        uint8_t glxid[2048];
+        m_galaxy->RepackMsgId( msgid, glxid, m_archive->GetCompress() );
+        const auto gidx  = m_galaxy->GetMessageIndex( glxid );
+        assert( strcmp( (const char*)m_galaxy->GetMessageId( gidx ), (const char*)glxid ) == 0 );
         const auto groups = m_galaxy->GetNumberOfGroups( gidx );
         assert( groups > 0 );
 
@@ -104,8 +104,8 @@ GalaxyState ThreadTree::GetGalaxyState( int idx )
         }
         else
         {
-            bool parents = ip.size != 0 || !m_galaxy->AreParentsSame( gidx, msgid );
-            bool children = ic.size != 0 || !m_galaxy->AreChildrenSame( gidx, msgid );
+            bool parents = ip.size != 0 || !m_galaxy->AreParentsSame( gidx, glxid );
+            bool children = ic.size != 0 || !m_galaxy->AreChildrenSame( gidx, glxid );
             if( parents )
             {
                 if( children )
@@ -160,7 +160,10 @@ ScoreState ThreadTree::GetScoreState( int idx )
 bool ThreadTree::WasVisited( int idx )
 {
     if( WasVisitedRaw( idx ) ) return true;
-    auto ret = m_storage.WasVisited( m_archive->GetMessageId( idx ) );
+    auto msgid = m_archive->GetMessageId( idx );
+    char unpack[2048];
+    m_archive->UnpackMsgId( msgid, unpack );
+    auto ret = m_storage.WasVisited( unpack );
     if( ret ) SetVisited( idx, true );
     return ret;
 }

@@ -109,7 +109,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "view" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto msg = archive->GetMessage( argv[1], eb );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        auto msg = archive->GetMessage( pack, eb );
         if( msg )
         {
             printf( "%s\n", msg );
@@ -122,7 +124,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "parent" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto parent = archive->GetParent( argv[1] );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        auto parent = archive->GetParent( pack );
         if( parent >= 0 )
         {
             printf( "Parent: %i\n", parent );
@@ -148,7 +152,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "child" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto children = archive->GetChildren( argv[1] );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        auto children = archive->GetChildren( pack );
         for( uint64_t i=0; i<children.size; i++ )
         {
             printf( "%i\n", children.ptr[i] );
@@ -166,7 +172,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "date" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto date = archive->GetDate( argv[1] );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        auto date = archive->GetDate( pack );
         time_t t = { date };
         printf( "%s\n", asctime( localtime( &t ) ) );
     }
@@ -180,7 +188,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "from" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto data = archive->GetFrom( argv[1] );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        auto data = archive->GetFrom( pack );
         if( data )
         {
             printf( "%s\n", data );
@@ -206,7 +216,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "subject" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        auto data = archive->GetSubject( argv[1] );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        auto data = archive->GetSubject( pack );
         if( data )
         {
             printf( "%s\n", data );
@@ -232,7 +244,9 @@ int main( int argc, char** argv )
     else if( strcmp( argv[0], "idx" ) == 0 )
     {
         if( argc == 1 ) BadArg();
-        printf( "Message index: %i\n", archive->GetMessageIndex( argv[1] ) );
+        uint8_t pack[2048];
+        archive->PackMsgId( argv[1], pack );
+        printf( "Message index: %i\n", archive->GetMessageIndex( pack ) );
     }
     else if( strcmp( argv[0], "search" ) == 0 )
     {

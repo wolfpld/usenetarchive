@@ -28,36 +28,36 @@ public:
     static Archive* Open( const std::string& fn );
 
     const char* GetMessage( uint32_t idx, ExpandingBuffer& eb ) { return idx >= m_mcnt ? nullptr : m_mview.GetMessage( idx, eb ); }
-    const char* GetMessage( const char* msgid, ExpandingBuffer& eb ) { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetMessage( idx, eb ) : nullptr; }
+    const char* GetMessage( const uint8_t* msgid, ExpandingBuffer& eb ) { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetMessage( idx, eb ) : nullptr; }
     size_t NumberOfMessages() const { return m_mcnt; }
 
-    int GetMessageIndex( const char* msgid ) const { return m_midhash.Search( msgid ); }
-    int GetMessageIndex( const char* msgid, XXH32_hash_t hash ) const { return m_midhash.Search( msgid, hash ); }
-    const char* GetMessageId( uint32_t idx ) const { return m_middb[idx]; }
+    int GetMessageIndex( const uint8_t* msgid ) const { return m_midhash.Search( msgid ); }
+    int GetMessageIndex( const uint8_t* msgid, XXH32_hash_t hash ) const { return m_midhash.Search( msgid, hash ); }
+    const uint8_t* GetMessageId( uint32_t idx ) const { return m_middb[idx]; }
 
     ViewReference<uint32_t> GetTopLevel() const { return ViewReference<uint32_t> { m_toplevel, m_toplevel.DataSize() }; }
     size_t NumberOfTopLevel() const { return m_toplevel.DataSize(); }
 
     int32_t GetParent( uint32_t idx ) const { auto data = m_connectivity[idx]; return (int32_t)*(data+1); }
-    int32_t GetParent( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetParent( idx ) : -1; }
+    int32_t GetParent( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetParent( idx ) : -1; }
 
     ViewReference<uint32_t> GetChildren( uint32_t idx ) const { auto data = ( m_connectivity[idx] ) + 3; auto num = *data++; return ViewReference<uint32_t> { data, num }; }
-    ViewReference<uint32_t> GetChildren( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetChildren( idx ) : ViewReference<uint32_t> { nullptr, 0 }; }
+    ViewReference<uint32_t> GetChildren( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetChildren( idx ) : ViewReference<uint32_t> { nullptr, 0 }; }
 
     uint32_t GetTotalChildrenCount( uint32_t idx ) const { auto data = m_connectivity[idx]; return data[2]; }
-    uint32_t GetTotalChildrenCount( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetTotalChildrenCount( idx ) : 0; }
+    uint32_t GetTotalChildrenCount( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetTotalChildrenCount( idx ) : 0; }
 
     uint32_t GetDate( uint32_t idx ) const { auto data = m_connectivity[idx]; return *data; }
-    uint32_t GetDate( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetDate( idx ) : 0; }
+    uint32_t GetDate( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetDate( idx ) : 0; }
 
     const char* GetFrom( uint32_t idx ) const { return m_strings[idx*3]; }
-    const char* GetFrom( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetFrom( idx ) : nullptr; }
+    const char* GetFrom( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetFrom( idx ) : nullptr; }
 
     const char* GetSubject( uint32_t idx ) const { return m_strings[idx*3+1]; }
-    const char* GetSubject( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetSubject( idx ) : nullptr; }
+    const char* GetSubject( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetSubject( idx ) : nullptr; }
 
     const char* GetRealName( uint32_t idx ) const { return m_strings[idx*3+2]; }
-    const char* GetRealName( const char* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetRealName( idx ) : nullptr; }
+    const char* GetRealName( const uint8_t* msgid ) const { auto idx = m_midhash.Search( msgid ); return idx >= 0 ? GetRealName( idx ) : nullptr; }
 
     int GetMessageScore( uint32_t idx, const std::vector<ScoreEntry>& scoreList ) const;
 
@@ -82,15 +82,15 @@ private:
     ZMessageView m_mview;
     const size_t m_mcnt;
     const FileMap<uint32_t> m_toplevel;
-    const HashSearch m_midhash;
-    const MetaView<uint32_t, char> m_middb;
+    const HashSearch<uint8_t> m_midhash;
+    const MetaView<uint32_t, uint8_t> m_middb;
     const MetaView<uint32_t, uint32_t> m_connectivity;
     const MetaView<uint32_t, char> m_strings;
     const FileMap<LexiconMetaPacket> m_lexmeta;
     const FileMap<char> m_lexstr;
     const FileMap<LexiconDataPacket> m_lexdata;
     const FileMap<uint8_t> m_lexhit;
-    const HashSearch m_lexhash;
+    const HashSearch<char> m_lexhash;
     const FileMap<char> m_descShort;
     const FileMap<char> m_descLong;
     const FileMap<char> m_name;

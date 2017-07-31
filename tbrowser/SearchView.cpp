@@ -194,7 +194,9 @@ void SearchView::Draw()
             }
 
             wattron( m_win, COLOR_PAIR(1) );
-            if( m_storage.WasVisited( m_archive->GetMessageId( res.postid ) ) )
+            char unpack[2048];
+            m_archive->UnpackMsgId( m_archive->GetMessageId( res.postid ), unpack );
+            if( m_storage.WasVisited( unpack ) )
             {
                 waddch( m_win, 'R' );
             }

@@ -35,7 +35,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
 
     bool needCurrent = false;
 
-    uint8_t pack[1024];
+    uint8_t pack[2048];
     m_galaxy.PackMsgId( msgid, pack );
 
     assert( m_list.empty() );
@@ -47,10 +47,13 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
         const auto idx = groups.ptr[i];
         if( m_galaxy.IsArchiveAvailable( idx ) )
         {
+            uint8_t local[2048];
+            m_galaxy.GetArchive( idx )->RepackMsgId( pack, local, m_galaxy.GetCompress() );
+
             m_list.emplace_back( WarpEntry { idx, true, current == idx, false, msgid,
-                m_galaxy.ParentDepth( msgid, idx ),
-                m_galaxy.NumberOfChildren( msgid, idx ),
-                m_galaxy.TotalNumberOfChildren( msgid, idx ) - 1 } );
+                m_galaxy.ParentDepth( local, idx ),
+                m_galaxy.NumberOfChildren( local, idx ),
+                m_galaxy.TotalNumberOfChildren( local, idx ) - 1 } );
         }
         else
         {
@@ -74,15 +77,22 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
             {
                 const auto imsgid = m_galaxy.GetMessageId( ip.ptr[i] );
                 const auto igroups = m_galaxy.GetGroups( ip.ptr[i] );
+
+                char unpack[2048];
+                m_galaxy.UnpackMsgId( imsgid, unpack );
+
                 for( int j=0; j<igroups.size; j++ )
                 {
                     const auto idx = igroups.ptr[j];
                     if( m_galaxy.IsArchiveAvailable( idx ) )
                     {
-                        m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
-                            m_galaxy.ParentDepth( imsgid, idx ),
-                            m_galaxy.NumberOfChildren( imsgid, idx ),
-                            m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
+                        uint8_t local[2048];
+                        m_galaxy.GetArchive( idx )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
+
+                        m_list.emplace_back( WarpEntry { idx, true, false, true, unpack,
+                            m_galaxy.ParentDepth( local, idx ),
+                            m_galaxy.NumberOfChildren( local, idx ),
+                            m_galaxy.TotalNumberOfChildren( local, idx ) - 1 } );
                     }
                     else
                     {
@@ -98,15 +108,22 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
             {
                 const auto imsgid = m_galaxy.GetMessageId( ic.ptr[i] );
                 const auto igroups = m_galaxy.GetGroups( ic.ptr[i] );
+
+                char unpack[2048];
+                m_galaxy.UnpackMsgId( imsgid, unpack );
+
                 for( int j=0; j<igroups.size; j++ )
                 {
                     const auto idx = igroups.ptr[j];
                     if( m_galaxy.IsArchiveAvailable( idx ) )
                     {
-                        m_list.emplace_back( WarpEntry { idx, true, false, true, imsgid,
-                            m_galaxy.ParentDepth( imsgid, idx ),
-                            m_galaxy.NumberOfChildren( imsgid, idx ),
-                            m_galaxy.TotalNumberOfChildren( imsgid, idx ) - 1 } );
+                        uint8_t local[2048];
+                        m_galaxy.GetArchive( idx )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
+
+                        m_list.emplace_back( WarpEntry { idx, true, false, true, unpack,
+                            m_galaxy.ParentDepth( local, idx ),
+                            m_galaxy.NumberOfChildren( local, idx ),
+                            m_galaxy.TotalNumberOfChildren( local, idx ) - 1 } );
                     }
                     else
                     {
@@ -165,8 +182,10 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
             if( m_list[m_cursor].available )
             {
                 auto archive = m_galaxy.GetArchive( m_list[m_cursor].id );
+                uint8_t pack[2048];
+                archive->PackMsgId( m_list[m_cursor].msgid, pack );
                 m_parent->SwitchArchive( archive, m_galaxy.GetArchiveFilename( m_list[m_cursor].id ) );
-                m_parent->SwitchToMessage( archive->GetMessageIndex( m_list[m_cursor].msgid ) );
+                m_parent->SwitchToMessage( archive->GetMessageIndex( pack ) );
                 m_active = false;
                 Cleanup();
                 return;
@@ -385,7 +404,9 @@ void GalaxyWarp::PreparePreview( int cursor )
 {
     const auto aid = m_list[cursor].id;
     auto& archive = m_galaxy.GetArchive( aid, false );
-    auto idx = archive->GetMessageIndex( m_list[cursor].msgid );
+    uint8_t pack[2048];
+    archive->PackMsgId( m_list[cursor].msgid, pack );
+    auto idx = archive->GetMessageIndex( pack );
 
     int treeid;
     ThreadTree* tree;

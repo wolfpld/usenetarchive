@@ -1,5 +1,5 @@
 CFLAGS += 
-CXXFLAGS := $(CFLAGS) -std=c++14
+CXXFLAGS := $(CFLAGS) -std=gnu++14
 DEFINES +=
 INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS := -lpthread
