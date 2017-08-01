@@ -183,10 +183,12 @@ int main( int argc, char** argv )
                 }
 
                 const auto id = a.GetMessageId( j );
-                auto it = msgidset.find( id );
+                char unpack[2048];
+                a.UnpackMsgId( id, unpack );
+                auto it = msgidset.find( unpack );
                 if( it == msgidset.end() )
                 {
-                    msgidset.emplace( id );
+                    msgidset.emplace( strdup( unpack ) );
                 }
             }
         }
@@ -328,7 +330,7 @@ int main( int argc, char** argv )
     std::map<uint32_t, IndirectData> indirect;
 
     {
-        uint8_t tmp[1024];
+        char tmp[1024];
         const HashSearchBig midhash( base + "msgid", base + "midhash.meta", base + "midhash" );
 
         struct VectorHasher
@@ -359,14 +361,12 @@ int main( int argc, char** argv )
                 fflush( stdout );
             }
 
-            char decmsg[2048];
-            auto declen = compress->Unpack( msgidvec[i], decmsg );
-
             groups.clear();
-            uint32_t hash = XXH32( decmsg, declen - 1, 0 );
             for( int j=0; j<arch.size(); j++ )
             {
-                const auto idx = arch[j]->GetMessageIndex( decmsg, hash );
+                uint8_t repack[2048];
+                arch[j]->RepackMsgId( msgidvec[i], repack, *compress );
+                const auto idx = arch[j]->GetMessageIndex( repack );
                 if( idx != -1 )
                 {
                     groups.emplace_back( j );
@@ -374,7 +374,9 @@ int main( int argc, char** argv )
             }
             assert( !groups.empty() );
             const auto& refarch = arch[groups[0]];
-            const auto idx = refarch->GetMessageIndex( decmsg, hash );
+            uint8_t repack[2048];
+            refarch->RepackMsgId( msgidvec[i], repack, *compress );
+            const auto idx = refarch->GetMessageIndex( repack );
             if( refarch->GetParent( idx ) == -1 )
             {
                 auto post = refarch->GetMessage( idx, eb );
@@ -394,21 +396,26 @@ int main( int argc, char** argv )
                             while( *--buf != '<' ) {}
                             buf++;
                             assert( end - buf < 1024 );
-                            ValidateMsgId( buf, end, (char*)tmp );
-                            const auto parent = midhash.Search( tmp );
+                            ValidateMsgId( buf, end, tmp );
+                            uint8_t pack[2048];
+                            compress->Pack( tmp, pack );
+                            const auto parent = midhash.Search( pack );
                             if( parent != -1 )
                             {
                                 bool ok = true;
                                 for( int g=1; g<groups.size(); g++ )
                                 {
                                     const auto& currarch = arch[groups[g]];
-                                    const auto gmidx = currarch->GetMessageIndex( decmsg );
+                                    uint8_t crepack[2048];
+                                    currarch->RepackMsgId( msgidvec[i], crepack, *compress );
+                                    const auto gmidx = currarch->GetMessageIndex( crepack );
                                     assert( gmidx != -1 );
                                     const auto pmidx = currarch->GetParent( gmidx );
                                     if( pmidx != -1 )
                                     {
-                                        const auto pmid = currarch->GetMessageId( pmidx );
-                                        if( strcmp( pmid, (const char*)tmp ) == 0 )
+                                        char unpack[2048];
+                                        currarch->UnpackMsgId( currarch->GetMessageId( pmidx ), unpack );
+                                        if( strcmp( unpack, (const char*)tmp ) == 0 )
                                         {
                                             ok = false;
                                             break;
