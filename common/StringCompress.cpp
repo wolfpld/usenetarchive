@@ -1,5 +1,7 @@
 #include <assert.h>
 
+#include "../contrib/xxhash/xxhash.h"
+
 #include "StringCompress.hpp"
 
 static const char* CodeBook[256] = {
@@ -607,6 +609,7 @@ StringCompress::StringCompress( const std::string& fn )
     fread( &m_maxHost, 1, sizeof( m_maxHost ), f );
     fread( m_hostLookup, 1, m_maxHost * sizeof( uint8_t ), f );
     fread( m_hostOffset, 1, m_maxHost * sizeof( uint32_t ), f );
+    fread( m_hostHash, 1, HostMax * sizeof( uint8_t ), f );
 
     fclose( f );
 }
@@ -625,6 +628,8 @@ StringCompress::StringCompress( const FileMapPtrs& ptrs )
     memcpy( m_hostLookup, f+offset, m_maxHost * sizeof( uint8_t ) );
     offset += m_maxHost * sizeof( uint8_t );
     memcpy( m_hostOffset, f+offset, m_maxHost * sizeof( uint32_t ) );
+    offset += m_maxHost * sizeof( uint32_t );
+    memcpy( m_hostHash, f+offset, HostMax * sizeof( uint8_t ) );
 }
 
 StringCompress::~StringCompress()
@@ -666,11 +671,35 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
         else
         {
             auto test = in+1;
-            auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, test, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
-            if( it != m_hostLookup + m_maxHost && strcmp( m_data + m_hostOffset[*it], test ) == 0 )
+            const auto hash = XXH32( test, strlen( test ), 0 ) % HashSize;
+            if( m_hostHash[hash] >= HostReserve )
             {
-                *out++ = 1;
-                *out++ = (*it) + 1;
+                if( strcmp( test, m_data + m_hostOffset[m_hostHash[hash] - HostReserve] ) == 0 )
+                {
+                    *out++ = 1;
+                    *out++ = m_hostHash[hash];
+                }
+                else
+                {
+                    *out++ = '@';
+                    in++;
+                    while( *in != '\0' ) *out++ = *in++;
+                }
+            }
+            else if( m_hostHash[hash] == BadHashMark )
+            {
+                auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, test, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
+                if( it != m_hostLookup + m_maxHost && strcmp( m_data + m_hostOffset[*it], test ) == 0 )
+                {
+                    *out++ = 1;
+                    *out++ = (*it) + HostReserve;
+                }
+                else
+                {
+                    *out++ = '@';
+                    in++;
+                    while( *in != '\0' ) *out++ = *in++;
+                }
             }
             else
             {
@@ -714,7 +743,7 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
         {
             in++;
             *out++ = '@';
-            const char* dec = m_data + m_hostOffset[(*in) - 1];
+            const char* dec = m_data + m_hostOffset[(*in) - HostReserve];
             while( *dec != '\0' ) *out++ = *dec++;
             assert( *++in == 0 );
             break;
@@ -743,6 +772,25 @@ void StringCompress::WriteData( const std::string& fn ) const
     fwrite( &m_maxHost, 1, sizeof( m_maxHost ), f );
     fwrite( m_hostLookup, 1, m_maxHost * sizeof( uint8_t ), f );
     fwrite( m_hostOffset, 1, m_maxHost * sizeof( uint32_t ), f );
+    fwrite( m_hostHash, 1, HashSize * sizeof( uint8_t ), f );
 
     fclose( f );
+}
+
+void StringCompress::BuildHostHash()
+{
+    memset( m_hostHash, 0, HashSize );
+    for( int i=0; i<m_maxHost; i++ )
+    {
+        const auto host = m_data + m_hostOffset[i];
+        const auto hash = XXH32( host, strlen( host ), 0 ) % HashSize;
+        if( m_hostHash[hash] == 0 )
+        {
+            m_hostHash[hash] = i + HostReserve;
+        }
+        else
+        {
+            m_hostHash[hash] = BadHashMark;
+        }
+    }
 }

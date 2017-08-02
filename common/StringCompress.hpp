@@ -14,6 +14,11 @@
 
 class StringCompress
 {
+    enum { HashSize = 1024 };
+    enum { HostReserve = 2 };   // reserved host values: 0 - terminator, 1 - bad hash marker
+    enum { BadHashMark = 1 };
+    enum { HostMax = 256 - HostReserve };
+
 public:
     template<class T>
     StringCompress( const T& strings );
@@ -34,11 +39,14 @@ private:
     StringCompress& operator=( const StringCompress& ) = delete;
     StringCompress& operator=( StringCompress&& ) = delete;
 
+    void BuildHostHash();
+
     const char* m_data;
     uint32_t m_dataLen;
     uint8_t m_maxHost;
-    uint8_t m_hostLookup[255];
-    uint32_t m_hostOffset[255];
+    uint8_t m_hostLookup[HostMax];
+    uint32_t m_hostOffset[HostMax];
+    uint8_t m_hostHash[HashSize];
 };
 
 
@@ -74,7 +82,7 @@ StringCompress::StringCompress( const T& strings )
     std::sort( hvec.begin(), hvec.end(), [] ( const auto& l, const auto& r ) { return l->second * ( strlen( l->first ) - 1 ) > r->second * ( strlen( r->first ) - 1 ); } );
 
     m_dataLen = 0;
-    m_maxHost = std::min<int>( hvec.size(), 255 );
+    m_maxHost = std::min<int>( hvec.size(), HostMax );
     for( int i=0; i<m_maxHost; i++ )
     {
         m_dataLen += strlen( hvec[i]->first ) + 1;
@@ -96,7 +104,8 @@ StringCompress::StringCompress( const T& strings )
         m_hostLookup[i] = i;
     }
     std::sort( m_hostLookup, m_hostLookup+m_maxHost, [&hvec] ( const auto& l, const auto& r ) { return strcmp( hvec[l]->first, hvec[r]->first ) < 0; } );
-}
 
+    BuildHostHash();
+}
 
 #endif
