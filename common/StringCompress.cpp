@@ -644,11 +644,21 @@ static inline bool memcmp3( const char* l, const char* r )
     return l[2] < r[2];
 }
 
+static inline bool memcmp3_0( const char* l, const char* r )
+{
+    return l[0] == r[0] && l[1] == r[1] && l[2] == r[2];
+}
+
 static inline bool memcmp2( const char* l, const char* r )
 {
     if( l[0] < r[0] ) return true;
     if( l[0] > r[0] ) return false;
     return l[1] < r[1];
+}
+
+static inline bool memcmp2_0( const char* l, const char* r )
+{
+    return l[0] == r[0] && l[1] == r[1];
 }
 
 static inline int lower_bound3( const char* value )
@@ -697,7 +707,6 @@ static inline int lower_bound2( const char* value )
     return first;
 }
 
-
 size_t StringCompress::Pack( const char* in, uint8_t* out ) const
 {
     const uint8_t* refout = out;
@@ -712,14 +721,14 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
                 ( *in >= 'a' && *in <= 'v' ) )
             {
                 auto it3 = lower_bound3( in );
-                if( it3 != TrigramSize && strncmp( TrigramTable + (it3*3), in, 3 ) == 0 )
+                if( it3 != TrigramSize && memcmp3_0( TrigramTable + (it3*3), in ) )
                 {
                     *out++ = TrigramIndex[it3];
                     in += 3;
                     continue;
                 }
                 auto it2 = lower_bound2( in );
-                if( it2 != BigramSize && strncmp( BigramTable + (it2*2), in, 2 ) == 0 )
+                if( it2 != BigramSize && memcmp2_0( BigramTable + (it2*2), in ) )
                 {
                     *out++ = BigramIndex[it2];
                     in += 2;
