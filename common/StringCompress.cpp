@@ -266,124 +266,123 @@ static const char* CodeBook[256] = {
 enum { BigramSize = 116 };
 enum { TrigramSize = 43 };
 
-static const char* BigramTable[BigramSize] = {
-    "$1",
-    "$2",
-    "$3",
-    "$4",
-    "$6",
-    ".0",
-    ".1",
-    ".2",
-    ".3",
-    ".4",
-    ".d",
-    "0$",
-    "0.",
-    "00",
-    "01",
-    "02",
-    "03",
-    "04",
-    "05",
-    "06",
-    "07",
-    "08",
-    "09",
-    "1$",
-    "1.",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "18",
-    "19",
-    "2$",
-    "2.",
-    "20",
-    "21",
-    "22",
-    "23",
-    "24",
-    "25",
-    "26",
-    "27",
-    "3$",
-    "3.",
-    "30",
-    "31",
-    "32",
-    "33",
-    "34",
-    "35",
-    "36",
-    "37",
-    "38",
-    "39",
-    "4$",
-    "4.",
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-    "46",
-    "47",
-    "5$",
-    "50",
-    "51",
-    "57",
-    "6$",
-    "60",
-    "65",
-    "7$",
-    "70",
-    "78",
-    "8$",
-    "80",
-    "81",
-    "85",
-    "9$",
-    "90",
-    "91",
-    "92",
-    "93",
-    "96",
-    "98",
-    "99",
-    "a$",
-    "b$",
-    "c$",
-    "d$",
-    "dl",
-    "e$",
-    "f$",
-    "g$",
-    "h$",
-    "i$",
-    "j$",
-    "k$",
-    "l$",
-    "lg",
-    "lr",
-    "m$",
-    "n$",
-    "o$",
-    "p$",
-    "q$",
-    "r$",
-    "rn",
-    "s$",
-    "sl",
-    "t$",
-    "u$",
-    "v$",
-};
+static const char* BigramTable =
+    "$1"
+    "$2"
+    "$3"
+    "$4"
+    "$6"
+    ".0"
+    ".1"
+    ".2"
+    ".3"
+    ".4"
+    ".d"
+    "0$"
+    "0."
+    "00"
+    "01"
+    "02"
+    "03"
+    "04"
+    "05"
+    "06"
+    "07"
+    "08"
+    "09"
+    "1$"
+    "1."
+    "10"
+    "11"
+    "12"
+    "13"
+    "14"
+    "15"
+    "16"
+    "17"
+    "18"
+    "19"
+    "2$"
+    "2."
+    "20"
+    "21"
+    "22"
+    "23"
+    "24"
+    "25"
+    "26"
+    "27"
+    "3$"
+    "3."
+    "30"
+    "31"
+    "32"
+    "33"
+    "34"
+    "35"
+    "36"
+    "37"
+    "38"
+    "39"
+    "4$"
+    "4."
+    "40"
+    "41"
+    "42"
+    "43"
+    "44"
+    "45"
+    "46"
+    "47"
+    "5$"
+    "50"
+    "51"
+    "57"
+    "6$"
+    "60"
+    "65"
+    "7$"
+    "70"
+    "78"
+    "8$"
+    "80"
+    "81"
+    "85"
+    "9$"
+    "90"
+    "91"
+    "92"
+    "93"
+    "96"
+    "98"
+    "99"
+    "a$"
+    "b$"
+    "c$"
+    "d$"
+    "dl"
+    "e$"
+    "f$"
+    "g$"
+    "h$"
+    "i$"
+    "j$"
+    "k$"
+    "l$"
+    "lg"
+    "lr"
+    "m$"
+    "n$"
+    "o$"
+    "p$"
+    "q$"
+    "r$"
+    "rn"
+    "s$"
+    "sl"
+    "t$"
+    "u$"
+    "v$";
 
 static uint8_t BigramIndex[BigramSize] = {
     2,
@@ -504,51 +503,50 @@ static uint8_t BigramIndex[BigramSize] = {
     157,
 };
 
-static const char* TrigramTable[TrigramSize] = {
-    "$0$",
-    ".00",
-    ".dl",
-    "0$1",
-    "000",
-    "001",
-    "1$1",
-    "100",
-    "112",
-    "2$1",
-    "200",
-    "3$1",
-    "4$1",
-    "5$1",
-    "6$1",
-    "7$1",
-    "8$1",
-    "9$1",
-    "a$1",
-    "b$1",
-    "c$1",
-    "d$1",
-    "dlg",
-    "e$1",
-    "f$1",
-    "g$1",
-    "h$1",
-    "i$1",
-    "j$1",
-    "k$1",
-    "l$1",
-    "lrn",
-    "m$1",
-    "n$1",
-    "o$1",
-    "p$1",
-    "q$1",
-    "r$1",
-    "s$1",
-    "slr",
-    "t$1",
-    "u$1",
-    "v$1",
-};
+static const char* TrigramTable =
+    "$0$"
+    ".00"
+    ".dl"
+    "0$1"
+    "000"
+    "001"
+    "1$1"
+    "100"
+    "112"
+    "2$1"
+    "200"
+    "3$1"
+    "4$1"
+    "5$1"
+    "6$1"
+    "7$1"
+    "8$1"
+    "9$1"
+    "a$1"
+    "b$1"
+    "c$1"
+    "d$1"
+    "dlg"
+    "e$1"
+    "f$1"
+    "g$1"
+    "h$1"
+    "i$1"
+    "j$1"
+    "k$1"
+    "l$1"
+    "lrn"
+    "m$1"
+    "n$1"
+    "o$1"
+    "p$1"
+    "q$1"
+    "r$1"
+    "s$1"
+    "slr"
+    "t$1"
+    "u$1"
+    "v$1";
 
 static uint8_t TrigramIndex[TrigramSize] = {
     231,
@@ -637,6 +635,30 @@ StringCompress::~StringCompress()
     delete[] m_data;
 }
 
+template<class T, class Compare>
+static int lower_bound( int first, int last, const T& value, Compare comp )
+{
+    assert( first == 0 );
+    int it, step;
+    int count = last;
+    while( count > 0 )
+    {
+        it = first;
+        step = count / 2;
+        it += step;
+        if( comp( it, value ) )
+        {
+            first = ++it;
+            count -= step + 1;
+        }
+        else
+        {
+            count = step;
+        }
+    }
+    return first;
+}
+
 size_t StringCompress::Pack( const char* in, uint8_t* out ) const
 {
     const uint8_t* refout = out;
@@ -650,17 +672,17 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
                 ( *in >= '0' && *in <= '9' ) ||
                 ( *in >= 'a' && *in <= 'v' ) )
             {
-                auto it3 = std::lower_bound( TrigramTable, TrigramTable + TrigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( l, r, 3 ) < 0; } );
-                if( it3 != TrigramTable + TrigramSize && strncmp( *it3, in, 3 ) == 0 )
+                auto it3 = lower_bound( 0, TrigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( TrigramTable + ( l*3 ), r, 3 ) < 0; } );
+                if( it3 != TrigramSize && strncmp( TrigramTable + (it3*3), in, 3 ) == 0 )
                 {
-                    *out++ = TrigramIndex[it3 - TrigramTable];
+                    *out++ = TrigramIndex[it3];
                     in += 3;
                     continue;
                 }
-                auto it2 = std::lower_bound( BigramTable, BigramTable + BigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( l, r, 2 ) < 0; } );
-                if( it2 != BigramTable + BigramSize && strncmp( *it2, in, 2 ) == 0 )
+                auto it2 = lower_bound( 0, BigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( BigramTable + ( l*2 ), r, 2 ) < 0; } );
+                if( it2 != BigramSize && strncmp( BigramTable + (it2*2), in, 2 ) == 0 )
                 {
-                    *out++ = BigramIndex[it2 - BigramTable];
+                    *out++ = BigramIndex[it2];
                     in += 2;
                     continue;
                 }
