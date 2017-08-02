@@ -667,7 +667,7 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
         {
             auto test = in+1;
             auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, test, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
-            if( it != m_hostLookup + m_maxHost && strncmp( m_data + m_hostOffset[*it], test, 3 ) == 0 )
+            if( it != m_hostLookup + m_maxHost && strcmp( m_data + m_hostOffset[*it], test ) == 0 )
             {
                 *out++ = 1;
                 *out++ = (*it) + 1;
