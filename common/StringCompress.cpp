@@ -635,6 +635,22 @@ StringCompress::~StringCompress()
     delete[] m_data;
 }
 
+static inline bool memcmp3( const char* l, const char* r )
+{
+    if( l[0] < r[0] ) return true;
+    if( l[0] > r[0] ) return false;
+    if( l[1] < r[1] ) return true;
+    if( l[1] > r[1] ) return false;
+    return l[2] < r[2];
+}
+
+static inline bool memcmp2( const char* l, const char* r )
+{
+    if( l[0] < r[0] ) return true;
+    if( l[0] > r[0] ) return false;
+    return l[1] < r[1];
+}
+
 static inline int lower_bound3( const char* value )
 {
     int first = 0;
@@ -645,7 +661,7 @@ static inline int lower_bound3( const char* value )
         it = first;
         step = count / 2;
         it += step;
-        if( memcmp( TrigramTable + (it*3), value, 3 ) < 0 )
+        if( memcmp3( TrigramTable + (it*3), value ) )
         {
             first = ++it;
             count -= step + 1;
@@ -668,7 +684,7 @@ static inline int lower_bound2( const char* value )
         it = first;
         step = count / 2;
         it += step;
-        if( memcmp( BigramTable + (it*2), value, 2 ) < 0 )
+        if( memcmp2( BigramTable + (it*2), value ) )
         {
             first = ++it;
             count -= step + 1;
