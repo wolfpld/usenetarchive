@@ -740,7 +740,12 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
         else if( *in != 1 )
         {
             const char* dec = CodeBook[*in++];
-            while( *dec != '\0' ) *out++ = *dec++;
+            *out++ = *dec++;
+            *out++ = *dec++;
+            if( *dec != '\0' )
+            {
+                *out++ = *dec;
+            }
         }
         else
         {
