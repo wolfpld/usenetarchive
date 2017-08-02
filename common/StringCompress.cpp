@@ -607,7 +607,7 @@ StringCompress::StringCompress( const std::string& fn )
     fread( &m_maxHost, 1, sizeof( m_maxHost ), f );
     fread( m_hostLookup, 1, m_maxHost * sizeof( uint8_t ), f );
     fread( m_hostOffset, 1, m_maxHost * sizeof( uint32_t ), f );
-    fread( m_hostHash, 1, HostMax * sizeof( uint8_t ), f );
+    fread( m_hostHash, 1, HashSize * sizeof( uint8_t ), f );
 
     fclose( f );
 }
@@ -627,7 +627,7 @@ StringCompress::StringCompress( const FileMapPtrs& ptrs )
     offset += m_maxHost * sizeof( uint8_t );
     memcpy( m_hostOffset, f+offset, m_maxHost * sizeof( uint32_t ) );
     offset += m_maxHost * sizeof( uint32_t );
-    memcpy( m_hostHash, f+offset, HostMax * sizeof( uint8_t ) );
+    memcpy( m_hostHash, f+offset, HashSize * sizeof( uint8_t ) );
 }
 
 StringCompress::~StringCompress()
