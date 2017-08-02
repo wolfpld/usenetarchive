@@ -722,17 +722,20 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
 
     while( *in != 0 )
     {
-        if( *in == '@' )
-        {
-            *out++ = *in++;
-            while( *in != '\0' ) *out++ = *in++;
-            break;
-        }
-        else if( *in >= 32 && *in <= 126 )
+        if( *in >= 32 && *in <= 126 )
         {
             assert( CodeBook[*in][0] == *in );
             assert( CodeBook[*in][1] == '\0' );
-            *out++ = *in++;
+            if( *in != '@' )
+            {
+                *out++ = *in++;
+            }
+            else
+            {
+                *out++ = *in++;
+                while( *in != '\0' ) *out++ = *in++;
+                break;
+            }
         }
         else if( *in != 1 )
         {
