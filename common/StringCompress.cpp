@@ -671,13 +671,14 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
             {
                 *out++ = 1;
                 *out++ = (*it) + 1;
-                break;
             }
             else
             {
                 *out++ = '@';
                 in++;
+                while( *in != '\0' ) *out++ = *in++;
             }
+            break;
         }
     }
 
@@ -692,7 +693,13 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
 
     while( *in != 0 )
     {
-        if( *in >= 32 && *in <= 126 )
+        if( *in == '@' )
+        {
+            *out++ = *in++;
+            while( *in != '\0' ) *out++ = *in++;
+            break;
+        }
+        else if( *in >= 32 && *in <= 126 )
         {
             assert( CodeBook[*in][0] == *in );
             assert( CodeBook[*in][1] == '\0' );
