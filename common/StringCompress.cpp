@@ -635,18 +635,17 @@ StringCompress::~StringCompress()
     delete[] m_data;
 }
 
-template<class T, class Compare>
-static int lower_bound( int first, int last, const T& value, Compare comp )
+static inline int lower_bound3( const char* value )
 {
-    assert( first == 0 );
+    int first = 0;
     int it, step;
-    int count = last;
+    int count = TrigramSize;
     while( count > 0 )
     {
         it = first;
         step = count / 2;
         it += step;
-        if( comp( it, value ) )
+        if( memcmp( TrigramTable + (it*3), value, 3 ) < 0 )
         {
             first = ++it;
             count -= step + 1;
@@ -658,6 +657,30 @@ static int lower_bound( int first, int last, const T& value, Compare comp )
     }
     return first;
 }
+
+static inline int lower_bound2( const char* value )
+{
+    int first = 0;
+    int it, step;
+    int count = BigramSize;
+    while( count > 0 )
+    {
+        it = first;
+        step = count / 2;
+        it += step;
+        if( memcmp( BigramTable + (it*2), value, 2 ) < 0 )
+        {
+            first = ++it;
+            count -= step + 1;
+        }
+        else
+        {
+            count = step;
+        }
+    }
+    return first;
+}
+
 
 size_t StringCompress::Pack( const char* in, uint8_t* out ) const
 {
@@ -672,14 +695,14 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
                 ( *in >= '0' && *in <= '9' ) ||
                 ( *in >= 'a' && *in <= 'v' ) )
             {
-                auto it3 = lower_bound( 0, TrigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( TrigramTable + ( l*3 ), r, 3 ) < 0; } );
+                auto it3 = lower_bound3( in );
                 if( it3 != TrigramSize && strncmp( TrigramTable + (it3*3), in, 3 ) == 0 )
                 {
                     *out++ = TrigramIndex[it3];
                     in += 3;
                     continue;
                 }
-                auto it2 = lower_bound( 0, BigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( BigramTable + ( l*2 ), r, 2 ) < 0; } );
+                auto it2 = lower_bound2( in );
                 if( it2 != BigramSize && strncmp( BigramTable + (it2*2), in, 2 ) == 0 )
                 {
                     *out++ = BigramIndex[it2];
