@@ -645,14 +645,14 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
                 ( *in >= '0' && *in <= '9' ) ||
                 ( *in >= 'a' && *in <= 'v' ) )
             {
-                auto it3 = std::lower_bound( TrigramTable, TrigramTable + TrigramSize, in, [] ( const auto& l, const auto& r ) { return strncmp( l, r, 3 ) < 0; } );
+                auto it3 = std::lower_bound( TrigramTable, TrigramTable + TrigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( l, r, 3 ) < 0; } );
                 if( it3 != TrigramTable + TrigramSize && strncmp( *it3, in, 3 ) == 0 )
                 {
                     *out++ = TrigramIndex[it3 - TrigramTable];
                     in += 3;
                     continue;
                 }
-                auto it2 = std::lower_bound( BigramTable, BigramTable + BigramSize, in, [] ( const auto& l, const auto& r ) { return strncmp( l, r, 2 ) < 0; } );
+                auto it2 = std::lower_bound( BigramTable, BigramTable + BigramSize, in, [] ( const auto& l, const auto& r ) { return memcmp( l, r, 2 ) < 0; } );
                 if( it2 != BigramTable + BigramSize && strncmp( *it2, in, 2 ) == 0 )
                 {
                     *out++ = BigramIndex[it2 - BigramTable];
