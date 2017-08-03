@@ -29,18 +29,17 @@ GalaxyWarp::GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, Persist
 {
 }
 
-void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect, const ThreadTree& currentTree )
+void GalaxyWarp::Entry( const uint8_t* glxid, GalaxyState state, bool showIndirect, const ThreadTree& currentTree )
 {
-    m_msgid = msgid;
+    char unpack[2048];
+    m_galaxy.UnpackMsgId( glxid, unpack );
+    m_msgid = unpack;
     m_top = m_bottom = m_cursor = 0;
 
     bool needCurrent = false;
 
-    uint8_t pack[2048];
-    m_galaxy.PackMsgId( msgid, pack );
-
     assert( m_list.empty() );
-    const auto gidx = m_galaxy.GetMessageIndex( pack );
+    const auto gidx = m_galaxy.GetMessageIndex( glxid );
     const auto groups = m_galaxy.GetGroups( gidx );
     const auto current = m_galaxy.GetActiveArchive();
     for( int i=0; i<groups.size; i++ )
@@ -49,9 +48,9 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
         if( m_galaxy.IsArchiveAvailable( idx ) )
         {
             uint8_t local[2048];
-            m_galaxy.GetArchive( idx, false )->RepackMsgId( pack, local, m_galaxy.GetCompress() );
+            m_galaxy.GetArchive( idx, false )->RepackMsgId( glxid, local, m_galaxy.GetCompress() );
 
-            m_list.emplace_back( WarpEntry { idx, true, current == idx, false, msgid,
+            m_list.emplace_back( WarpEntry { idx, true, current == idx, false, m_msgid,
                 m_galaxy.ParentDepth( local, idx ),
                 m_galaxy.NumberOfChildren( local, idx ),
                 m_galaxy.TotalNumberOfChildren( local, idx ) - 1 } );

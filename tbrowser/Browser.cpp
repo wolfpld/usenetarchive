@@ -330,7 +330,7 @@ void Browser::Entry()
                             else
                             {
                                 m_bottom.SetHelp( HelpSet::GalaxyOpen );
-                                m_gwarp->Entry( msgid.c_str(), GalaxyState::Unknown, false, m_tview.GetThreadTree() );
+                                m_gwarp->Entry( gpack, GalaxyState::Unknown, false, m_tview.GetThreadTree() );
                                 m_bottom.SetHelp( HelpSet::Default );
                                 RestoreDefaultView();
                             }
@@ -433,9 +433,9 @@ void Browser::Entry()
                 else
                 {
                     m_bottom.SetHelp( HelpSet::GalaxyOpen );
-                    char unpack[2048];
-                    m_archive->UnpackMsgId( m_archive->GetMessageId( m_tview.GetCursor() ), unpack );
-                    m_gwarp->Entry( unpack, state, true, m_tview.GetThreadTree() );
+                    uint8_t repack[2048];
+                    m_galaxy->RepackMsgId( m_archive->GetMessageId( m_tview.GetCursor() ), repack, m_archive->GetCompress() );
+                    m_gwarp->Entry( repack, state, true, m_tview.GetThreadTree() );
                     m_bottom.SetHelp( HelpSet::Default );
                     RestoreDefaultView();
                 }
