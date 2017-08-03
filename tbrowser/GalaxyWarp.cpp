@@ -3,6 +3,7 @@
 #include <chrono>
 #include <ctype.h>
 #include <sstream>
+#include <string.h>
 #include <vector>
 
 #include "../libuat/Galaxy.hpp"
@@ -89,7 +90,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
                         uint8_t local[2048];
                         m_galaxy.GetArchive( idx )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
 
-                        m_list.emplace_back( WarpEntry { idx, true, false, true, unpack,
+                        m_list.emplace_back( WarpEntry { idx, true, false, true, strdup( unpack ),
                             m_galaxy.ParentDepth( local, idx ),
                             m_galaxy.NumberOfChildren( local, idx ),
                             m_galaxy.TotalNumberOfChildren( local, idx ) - 1 } );
@@ -120,7 +121,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
                         uint8_t local[2048];
                         m_galaxy.GetArchive( idx )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
 
-                        m_list.emplace_back( WarpEntry { idx, true, false, true, unpack,
+                        m_list.emplace_back( WarpEntry { idx, true, false, true, strdup( unpack ),
                             m_galaxy.ParentDepth( local, idx ),
                             m_galaxy.NumberOfChildren( local, idx ),
                             m_galaxy.TotalNumberOfChildren( local, idx ) - 1 } );
@@ -205,6 +206,13 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
 
 void GalaxyWarp::Cleanup()
 {
+    for( auto& v : m_list )
+    {
+        if( v.indirect )
+        {
+            free( (void*)v.msgid );
+        }
+    }
     m_list.clear();
     m_preview.clear();
     m_treeCache.clear();
