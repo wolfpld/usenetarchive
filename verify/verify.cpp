@@ -141,6 +141,29 @@ int main( int argc, char** argv )
         }
     }
 
+    // message access by msg id
+    {
+        bool ok = true;
+        for( int i=0; i<size; i++ )
+        {
+            const auto msgid = archive->GetMessageId( i );
+            const auto idx = archive->GetMessageIndex( msgid );
+            if( idx != i )
+            {
+                ok = false;
+                break;
+            }
+        }
+        if( ok )
+        {
+            PrintInfo( State::Ok, "Message ID hash ok" );
+        }
+        else
+        {
+            PrintInfo( State::Fail, "Message ID hash is broken" );
+        }
+    }
+
     // message sorting
     {
         std::vector<uint32_t> order;
