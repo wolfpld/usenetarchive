@@ -243,7 +243,7 @@ int main( int argc, char** argv )
             }
             if( midhash[i*2] > 0 )
             {
-                uint32_t idx = order[midhash[i*2+1]];
+                uint32_t idx = rev[midhash[i*2+1]];
                 fwrite( midhash+i*2, 1, sizeof( uint32_t ), dst );
                 fwrite( &idx, 1, sizeof( uint32_t ), dst );
             }
