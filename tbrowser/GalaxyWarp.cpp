@@ -49,7 +49,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
         if( m_galaxy.IsArchiveAvailable( idx ) )
         {
             uint8_t local[2048];
-            m_galaxy.GetArchive( idx )->RepackMsgId( pack, local, m_galaxy.GetCompress() );
+            m_galaxy.GetArchive( idx, false )->RepackMsgId( pack, local, m_galaxy.GetCompress() );
 
             m_list.emplace_back( WarpEntry { idx, true, current == idx, false, msgid,
                 m_galaxy.ParentDepth( local, idx ),
@@ -88,7 +88,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
                     if( m_galaxy.IsArchiveAvailable( idx ) )
                     {
                         uint8_t local[2048];
-                        m_galaxy.GetArchive( idx )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
+                        m_galaxy.GetArchive( idx, false )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
 
                         m_list.emplace_back( WarpEntry { idx, true, false, true, strdup( unpack ),
                             m_galaxy.ParentDepth( local, idx ),
@@ -119,7 +119,7 @@ void GalaxyWarp::Entry( const char* msgid, GalaxyState state, bool showIndirect,
                     if( m_galaxy.IsArchiveAvailable( idx ) )
                     {
                         uint8_t local[2048];
-                        m_galaxy.GetArchive( idx )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
+                        m_galaxy.GetArchive( idx, false )->RepackMsgId( imsgid, local, m_galaxy.GetCompress() );
 
                         m_list.emplace_back( WarpEntry { idx, true, false, true, strdup( unpack ),
                             m_galaxy.ParentDepth( local, idx ),
