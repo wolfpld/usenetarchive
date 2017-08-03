@@ -836,9 +836,24 @@ size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
 
 size_t StringCompress::Repack( const uint8_t* in, uint8_t* out, const StringCompress& other ) const
 {
-    char tmp[2048];
-    other.Unpack( in, tmp );
-    return Pack( tmp, out );
+    const auto refout = out;
+    while( *in != '@' && *in != 1 )
+    {
+        *out++ = *in++;
+    }
+    if( *in == 1 )
+    {
+        in++;
+        const char* dec = other.m_data + other.m_hostOffset[(*in) - HostReserve];
+        PackHost( out, dec );
+    }
+    else
+    {
+        PackHost( out, (const char*)in+1 );
+    }
+    *out++ = '\0';
+
+    return out - refout;
 }
 
 void StringCompress::WriteData( const std::string& fn ) const
