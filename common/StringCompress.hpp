@@ -40,6 +40,7 @@ private:
     StringCompress& operator=( StringCompress&& ) = delete;
 
     void BuildHostHash();
+    void PackHost( uint8_t*& out, const char* host ) const;
 
     const char* m_data;
     uint32_t m_dataLen;

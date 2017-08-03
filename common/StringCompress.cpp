@@ -740,43 +740,7 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
         }
         else
         {
-            auto test = in+1;
-            const auto hash = XXH32( test, strlen( test ), 0 ) % HashSize;
-            if( m_hostHash[hash] >= HostReserve )
-            {
-                if( strcmp( test, m_data + m_hostOffset[m_hostHash[hash] - HostReserve] ) == 0 )
-                {
-                    *out++ = 1;
-                    *out++ = m_hostHash[hash];
-                }
-                else
-                {
-                    *out++ = '@';
-                    in++;
-                    while( *in != '\0' ) *out++ = *in++;
-                }
-            }
-            else if( m_hostHash[hash] == BadHashMark )
-            {
-                auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, test, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
-                if( it != m_hostLookup + m_maxHost && strcmp( m_data + m_hostOffset[*it], test ) == 0 )
-                {
-                    *out++ = 1;
-                    *out++ = (*it) + HostReserve;
-                }
-                else
-                {
-                    *out++ = '@';
-                    in++;
-                    while( *in != '\0' ) *out++ = *in++;
-                }
-            }
-            else
-            {
-                *out++ = '@';
-                in++;
-                while( *in != '\0' ) *out++ = *in++;
-            }
+            PackHost( out, in+1 );
             break;
         }
     }
@@ -784,6 +748,43 @@ size_t StringCompress::Pack( const char* in, uint8_t* out ) const
     *out++ = 0;
 
     return out - refout;
+}
+
+void StringCompress::PackHost( uint8_t*& out, const char* host ) const
+{
+    const auto hash = XXH32( host, strlen( host ), 0 ) % HashSize;
+    if( m_hostHash[hash] >= HostReserve )
+    {
+        if( strcmp( host, m_data + m_hostOffset[m_hostHash[hash] - HostReserve] ) == 0 )
+        {
+            *out++ = 1;
+            *out++ = m_hostHash[hash];
+        }
+        else
+        {
+            *out++ = '@';
+            while( *host != '\0' ) *out++ = *host++;
+        }
+    }
+    else if( m_hostHash[hash] == BadHashMark )
+    {
+        auto it = std::lower_bound( m_hostLookup, m_hostLookup + m_maxHost, host, [this] ( const auto& l, const auto& r ) { return strcmp( m_data + m_hostOffset[l], r ) < 0; } );
+        if( it != m_hostLookup + m_maxHost && strcmp( m_data + m_hostOffset[*it], host ) == 0 )
+        {
+            *out++ = 1;
+            *out++ = (*it) + HostReserve;
+        }
+        else
+        {
+            *out++ = '@';
+            while( *host != '\0' ) *out++ = *host++;
+        }
+    }
+    else
+    {
+        *out++ = '@';
+        while( *host != '\0' ) *out++ = *host++;
+    }
 }
 
 size_t StringCompress::Unpack( const uint8_t* in, char* out ) const
