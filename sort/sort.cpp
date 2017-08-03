@@ -92,7 +92,6 @@ int main( int argc, char** argv )
     CopyFile( base + "strings", dbase + "strings" );
 
     CopyFile( base + "middata", dbase + "middata" );
-    CopyFile( base + "midhash", dbase + "midhash" );
     CopyFile( base + "midhashdata", dbase + "midhashdata" );
     CopyFile( base + "msgid.codebook", dbase + "msgid.codebook" );
 
@@ -226,6 +225,33 @@ int main( int argc, char** argv )
                 fflush( stdout );
             }
             fwrite( midmeta + order[i], 1, sizeof( uint32_t ), dst );
+        }
+        fclose( dst );
+        printf( "\n" );
+    }
+
+    {
+        FileMap<uint32_t> midhash( base + "midhash" );
+        const auto hsize = midhash.DataSize() / 2;
+        FILE* dst = fopen( ( dbase + "midhash" ).c_str(), "wb" );
+        for( int i=0; i<hsize; i++ )
+        {
+            if( ( i & 0xFFF ) == 0 )
+            {
+                printf( "midhash %i/%i\r", i, hsize );
+                fflush( stdout );
+            }
+            if( midhash[i*2] > 0 )
+            {
+                uint32_t idx = order[midhash[i*2+1]];
+                fwrite( midhash+i*2, 1, sizeof( uint32_t ), dst );
+                fwrite( &idx, 1, sizeof( uint32_t ), dst );
+            }
+            else
+            {
+                uint64_t zero = 0;
+                fwrite( &zero, 1, sizeof( uint64_t ), dst );
+            }
         }
         fclose( dst );
         printf( "\n" );
