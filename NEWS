@@ -1,6 +1,44 @@
 v0.5 (xxxx-xx-xx)
 -----------------
 
+- Qt browser has been removed.
+- Use robin hood hashing for Message ID/lexicon/galaxy data.
+  - Disk space requirements have been reduced.
+  - Data access pattern is now linear, which increases speed of operation,
+    especially due to reduction of page fault rate.
+- Use custom string compression algorithm for Message IDs. This results in
+  nearly 50% disk space savings.
+- Improvements in extract-msgid utility:
+  - Relaxed Message ID validation. If a non-confirming ID can be handled
+    without any hassle, it is.
+  - Message ID scanning procedure is much stricter now.
+    - Scan is only performed in headers block.
+    - Message ID now must be in the same line as the 'Message-ID:' field
+      header.
+  - Completely broken Message IDs, or messages without the 'Message-ID:' field
+    are now assigned a custom, unique Message ID.
+- The same Message ID validation is also performed in kill-duplicates utility.
+- Improvements in filter-spam utility:
+  - Zstd data is now also filtered, if present. LZ4 data is still required.
+  - Optional mode for filtering against message size.
+  - Optional mode for filtering messages by provided Message ID list.
+  - Optional mode for threaded spam removal.
+  - Replaced libcrm114 spam classificator with terminator library.
+  - Display Message ID and date in spam training mode.
+  - Increase message preview size in spam training mode.
+  - Spam score is now displayed in first column in removed messages listing.
+  - Spam score is now colorized, according to spam/ham/unsure classification.
+- Handle missing 'Date:' field in connectivity utility.
+- Improvements to text mode browser:
+  - Very long (more than 1024 characters) message lines are now properly
+    handled.
+- Bump package version to 3.
+  - Required by changes to the hashing algorithm.
+  - Required to save Message ID compression codebook.
+  - Old archives are now refused to be opened by libuat. Package utility still
+    can handle them.
+- Check if all messages can be accessed using their Message IDs in verify
+  utility.
 
 v0.4 (2017-07-19)
 -----------------
