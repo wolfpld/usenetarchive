@@ -1,0 +1,181 @@
+v0.5 (xxxx-xx-xx)
+-----------------
+
+
+v0.4 (2017-07-19)
+-----------------
+
+- Qt browser is now marked as deprecated.
+- Use command line interface in query utility.
+- Allow scanning for the last message index on usenet servers (Xref field).
+- Add update-zstd utility.
+- Add nntp-get utility.
+- Further speed improvements in lexdist utility.
+- Store levenshtein distance in lexdist data. Use this information to modify
+  search score.
+- Search for indirect links between messages in galaxy mode. An indirect link
+  is a reply sent to group A to a message sent to group B. This is not a
+  crosspost, but messages obviously should be cross-referenced.
+- Text mode browser improvements:
+  - Internal changes to message buffer ownership, resulting in decreased
+    memory usage and fixing of a nasty bug.
+  - Support for filtering in galaxy archive open list. Requires further work.
+  - Search results now can be sorted by date in ascending or descending order.
+    The default order is still determined by search score.
+  - Search results preview now displays properly formatted message context and
+    highlights most relevant search terms.
+  - Display 'to:' field, which is used instead of 'newsgroups:' in mailing
+    list messages.
+  - Adjust search results display to workaround performance problems of some
+    terminal emulators.
+  - Display thread preview in galaxy warp mode.
+  - Long lines are now properly broken into multiple lines on word boundaries.
+- Search improvements:
+  - Fuzzy search can be disabled for individual words.
+  - Some words may be required to be present.
+  - Some words may be required to be absent.
+  - Limited search term wildcard expansion.
+  - Ability to restrict search to headers.
+  - Provide more search metadata.
+  - The 'wrote' message preamble is now detected heuristically and assigned
+    its own lexicon context type.
+  - Speed optimization (at the cost of memory).
+  - Words existing in only one message are no longer stored in lexicon.
+- Changes in threadify utility:
+  - Search context has been limited to 16 lines.
+  - Don't check for matches in low-ranked messages.
+  - Only match messages that are in a reasonable chronological order.
+- Improve end-of-message detection in import-source-mbox utility.
+- Handle messages without 'subject:' field. Such messages are conforming to
+  RFC requirements.
+- Improvements to time stamp handling:
+  - Search for date in 'received:' field, if the message contains malformed
+    'date:' field. Still try to parse the 'date:' field, if search fails.
+  - Detect time traveling messages ('date:' and 'received:' fields too far
+    apart in time).
+- Bump package version to 2.
+  - Store list of subject prefixes common to the archive.
+  - Additional lexicon context types invalidate old lexicon data.
+
+
+v0.3 (2017-01-29)
+-----------------
+
+- Added google-groups utility.
+- Added sort utility.
+- Text mode browser improvements:
+  - On launch thread tree is focused on the last viewed message.
+  - Message viewing history traversal.
+  - Deep thread trees (more than ~55 levels) are now properly drawn.
+  - ROT13 support.
+  - Thread tree is now filled on-demand. This reduces startup time.
+  - Long lines in messages are now broken to multiple on-screen lines.
+  - Highlight tree of children of the current message.
+  - Support for going to a specific message.
+  - Only sorted archives are supported now. This greatly reduces memory usage.
+  - Basic support for message search.
+  - Give visual indication of folded subtrees.
+  - Added help.
+  - Added ability to display group charter.
+  - Deep thread trees are now displayed in a condensed mode.
+  - Change coloring of quotations. Previously whole line color was determined
+    by the quotation level. Now the color changes, as the quotation level
+    progresses.
+  - Add one more level of quote coloring.
+  - Various improvements to status lines.
+  - Minimal score file implementation. Messages can be classified as neutral,
+    positive or negative.
+  - Allow switching to another archive from within browser.
+  - Allow going to message by its index in the archive.
+- Archive verification changes:
+  - Check if archive is sorted.
+  - Check for availability of proper archive name.
+  - Display notification, if archive description files are missing.
+  - Detection of broken connectivity data.
+  - Check total children counts.
+  - Check for message duplicates.
+  - ANSI color support.
+  - Optional quiet mode (only failures are displayed).
+- Visited message list is not checked for external changes on every query
+  (half second grace time).
+- Improvements to time stamp handling:
+  - Support for reading broken deja news 'date:' field.
+  - Handle 'date:' field with tabulation separator.
+- Recurse into subdirectories in import-source-maildir utility.
+- Unix packaging support:
+  - Added uat dispatcher utility.
+  - Added man page documentation.
+  - Added global makefile.
+  - Added Arch PKGBUILD file.
+- Ignore carriage return character in maildir import utilities.
+- Improvements in utf8ize utility:
+  - Detect if message is already encoded as UTF-8.
+  - Translate ISO8859-2/CP1250 encoded as UTF-8 to proper UTF-8 codepoints.
+- Fix threading loops in threadify utility.
+- Fix self-referencing message handling.
+- Fix total children count method in connectivity utility.
+- Message ID and lexicon hash tables now target 0.75 load factor, instead of
+  using hardcoded size.
+- Allow changing selectivity level in repack-zstd utility.
+- Search improvements:
+  - Adjust score by calculating search terms distance in messages.
+  - Do not require are search terms to be present in results.
+  - Fuzzy search.
+- Various critical improvements to lexdist utility speed. This enables actual
+  use of this utility.
+- Bump package version to 1.
+  - Required by variable hash table sizes.
+  - Packing of lexicon distance data, if available.
+- Introduction of galaxy mode. This is an optional metadata collection
+  generated from multiple archives.
+  - List of groups contained in galaxy is available to browser, which allows
+    archive selection from a list, not by file name.
+  - Unique Message ID collection lists all messages in all archives.
+  - Each message is assigned to one or more archives.
+  - Browser can display crossposts.
+  - Additional processing is used to determine whether children or parent
+    messages are not the same in all archives containing the message. This
+    indicates that additional discussion took place.
+  - Galaxy warp functionality allows quick switching to another archive, which
+    contains the crossposted message.
+- Use memory mapped zstd dictionary without making a copy.
+- Delay initialization of zstd context until it's really needed.
+
+
+v0.2 (2016-11-17)
+-----------------
+
+- Added relative-complement utility.
+- Added export-messages utility.
+- Added verify utility.
+- Qt browser improvements:
+  - Each user name will now have semi-unique color.
+  - Number of threads is displayed next to total number of messages when
+    opening new archive.
+  - Search scroll is now reset after performing new search.
+  - Notification window is displayed when loading archive.
+  - Ability to go to a specific date.
+  - Message viewing history has been added, with ability to go back to
+    previously visited messages.
+  - Thread list is now filled on demand, which results in performance
+    improvements and significant memory usage reduction.
+  - Application state is now held between browsing sessions:
+    - Last browsed archive is remembered and reopened on application
+      launch.
+    - Last viewed message is saved and restored when opening archive.
+    - Browser remembers which messages were already viewed and displays
+      them accordingly.
+- Initial implementation of text mode browser.
+  - Design is based on slrn news reader.
+  - Message thread tree can be displayed.
+  - Messages can be viewed.
+- Make sure all messages are accessible in browsers.
+- Break message reference loops.
+- Use less memory-hungry hash table in lexicon utility.
+- Allow configuration of compression options in repack-zstd utility.
+
+
+v0.1 (2016-08-23)
+-----------------
+
+Initial release. Package version 0.
