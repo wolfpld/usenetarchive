@@ -43,6 +43,40 @@ void SetRootTo( uint32_t idx, uint32_t val )
     }
 }
 
+static size_t RemoveSpaces( const char* in, char* out )
+{
+    const auto refout = out;
+    while( *in != '\0' )
+    {
+        if( *in != ' ' && *in != '\t' )
+        {
+            *out++ = *in;
+        }
+        in++;
+    }
+    *out++ = '\0';
+    return out - refout;
+}
+
+// s1 is child
+// s2 is parent
+bool IsSubjectMatch( const char* s1, const char* s2, const KillRe& kill )
+{
+    auto k1 = kill.Kill( s1 );
+    auto k2 = kill.Kill( s2 );
+    if( strcmp( k1, k2 ) == 0 ) return true;
+
+    if( strlen( k1 ) >= 1024 || strlen( k2 ) >= 1024 ) return false;
+
+    char r1[1024];
+    char r2[1024];
+    const auto sz1 = RemoveSpaces( k1, r1 );
+    const auto sz2 = RemoveSpaces( k2, r2 );
+
+    return sz1 == sz2 && memcmp( r1, r2, sz1 ) == 0;
+}
+
+
 int main( int argc, char** argv )
 {
     if( argc < 2 || ( argc % 2 ) == 1 )
