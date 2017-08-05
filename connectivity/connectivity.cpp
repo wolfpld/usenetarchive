@@ -135,6 +135,15 @@ int main( int argc, char** argv )
                 received.emplace_back( buf );
             }
         }
+        buf = FindOptionalHeader( post, "injection-date: ", 16 );
+        if( *buf != '\n' )
+        {
+            buf += 16;
+            if( *buf != '\n' )
+            {
+                received.emplace_back( buf );
+            }
+        }
 
         time_t recvdate = -1;
         for( int i=received.size()-1; i>=0; i-- )

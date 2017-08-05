@@ -42,9 +42,9 @@ v0.5 (xxxx-xx-xx)
 - Check for empty 'Subject:' field in extract-msgmeta utility.
 - Extraction of parent message from 'References:' field is now more relaxed.
 - Improvements to time stamp handling:
-  - While 'Received:' field exists in mailing list messages, there's no such
-    field in usenet messages. Also check for 'NNTP-Received-Date:', which
-    indicates the time when server got the message.
+  - While 'Received:' field exists primarily in mailing list messages, usenet
+    messages use 'NNTP-Received-Date:' or 'Injection-Data:' headers. These are
+    now also handled.
 
 v0.4 (2017-07-19)
 -----------------
