@@ -126,6 +126,16 @@ int main( int argc, char** argv )
             while( *buf++ != '\n' ) {}
         }
 
+        buf = FindOptionalHeader( post, "nntp-posting-date: ", 19 );
+        if( *buf != '\n' )
+        {
+            buf += 19;
+            if( *buf != '\n' )
+            {
+                received.emplace_back( buf );
+            }
+        }
+
         time_t recvdate = -1;
         for( int i=received.size()-1; i>=0; i-- )
         {
