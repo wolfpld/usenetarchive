@@ -80,18 +80,6 @@ const char* FindHeader( const char* msg, const char* header, int hlen )
     return msg;
 }
 
-int ValidateReferences( const char*& buf )
-{
-    int valid = 0;
-    while( *buf != '\n' )
-    {
-        if( *buf == '<' ) valid++;
-        else if( *buf == '>' ) valid--;
-        buf++;
-    }
-    return valid;
-}
-
 // Note that this function doesn't perform strict validation. Many message-ids are broken,
 // for example containing forbidden space character. UAT can handle that.
 bool IsMsgId( const char* begin, const char* end )

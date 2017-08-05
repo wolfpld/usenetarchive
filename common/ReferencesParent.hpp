@@ -38,7 +38,7 @@ inline bool ValidateMsgId( const char* begin, const char* end, char* dst )
 //  -1 indicates no parent
 //  -2 indicates broken, unrecoverable reference information
 template<class Search>
-inline int GetParentFromReferences( const char* post, const StringCompress& compress, const Search& hash )
+inline int GetParentFromReferences( const char* post, const StringCompress& compress, const Search& hash, char* tmp )
 {
     auto buf = FindReferences( post );
     if( *buf == '\n' ) return -1;
@@ -72,7 +72,6 @@ inline int GetParentFromReferences( const char* post, const StringCompress& comp
             return -2;
         }
 
-        char tmp[1024];
         ValidateMsgId( buf, end, tmp );
 
         uint8_t pack[1024];

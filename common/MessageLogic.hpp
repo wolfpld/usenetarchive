@@ -8,7 +8,6 @@ const char* NextQuotationLevel( const char* ptr );
 const char* FindOptionalHeader( const char* msg, const char* header, int hlen );
 const char* FindHeader( const char* msg, const char* header, int hlen );
 
-int ValidateReferences( const char*& buf );
 bool IsMsgId( const char* begin, const char* end );
 
 int DetectWrote( const char* ptr );

@@ -21,6 +21,7 @@
 #include "../common/MetaView.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/MsgIdHash.hpp"
+#include "../common/ReferencesParent.hpp"
 #include "../common/StringCompress.hpp"
 
 #include "../libuat/Archive.hpp"
@@ -330,7 +331,6 @@ int main( int argc, char** argv )
     std::map<uint32_t, IndirectData> indirect;
 
     {
-        char tmp[1024];
         const HashSearchBig midhash( base + "msgid", base + "midhash.meta", base + "midhash" );
 
         struct VectorHasher
@@ -379,58 +379,35 @@ int main( int argc, char** argv )
             const auto idx = refarch->GetMessageIndex( repack );
             if( refarch->GetParent( idx ) == -1 )
             {
+                char tmp[1024];
                 auto post = refarch->GetMessage( idx, eb );
-                auto buf = FindReferences( post );
-                if( *buf != '\n' )
+                auto parent = GetParentFromReferences( post, *compress, midhash, tmp );
+                if( parent >= 0 )
                 {
-                    const auto terminate = buf;
-                    int valid = ValidateReferences( buf );
-                    if( valid == 0 && buf != terminate )
+                    bool ok = true;
+                    for( int g=1; g<groups.size(); g++ )
                     {
-                        buf--;
-                        for(;;)
+                        const auto& currarch = arch[groups[g]];
+                        uint8_t crepack[2048];
+                        currarch->RepackMsgId( msgidvec[i], crepack, *compress );
+                        const auto gmidx = currarch->GetMessageIndex( crepack );
+                        assert( gmidx != -1 );
+                        const auto pmidx = currarch->GetParent( gmidx );
+                        if( pmidx != -1 )
                         {
-                            while( *buf != '>' && buf != terminate ) buf--;
-                            if( buf == terminate ) break;
-                            auto end = buf;
-                            while( *--buf != '<' ) {}
-                            buf++;
-                            assert( end - buf < 1024 );
-                            ValidateMsgId( buf, end, tmp );
-                            uint8_t pack[2048];
-                            compress->Pack( tmp, pack );
-                            const auto parent = midhash.Search( pack );
-                            if( parent != -1 )
+                            char unpack[2048];
+                            currarch->UnpackMsgId( currarch->GetMessageId( pmidx ), unpack );
+                            if( strcmp( unpack, tmp ) == 0 )
                             {
-                                bool ok = true;
-                                for( int g=1; g<groups.size(); g++ )
-                                {
-                                    const auto& currarch = arch[groups[g]];
-                                    uint8_t crepack[2048];
-                                    currarch->RepackMsgId( msgidvec[i], crepack, *compress );
-                                    const auto gmidx = currarch->GetMessageIndex( crepack );
-                                    assert( gmidx != -1 );
-                                    const auto pmidx = currarch->GetParent( gmidx );
-                                    if( pmidx != -1 )
-                                    {
-                                        char unpack[2048];
-                                        currarch->UnpackMsgId( currarch->GetMessageId( pmidx ), unpack );
-                                        if( strcmp( unpack, (const char*)tmp ) == 0 )
-                                        {
-                                            ok = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if( ok )
-                                {
-                                    indirect[i].parent.emplace_back( parent );
-                                    indirect[parent].child.emplace_back( i );
-                                }
+                                ok = false;
                                 break;
                             }
-                            if( *buf == '>' ) buf--;
                         }
+                    }
+                    if( ok )
+                    {
+                        indirect[i].parent.emplace_back( parent );
+                        indirect[parent].child.emplace_back( i );
                     }
                 }
             }

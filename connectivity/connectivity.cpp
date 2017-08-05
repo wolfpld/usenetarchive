@@ -74,7 +74,8 @@ int main( int argc, char** argv )
 
         auto post = mview[i];
 
-        auto parent = GetParentFromReferences( post, compress, hash );
+        char tmp[1024];
+        auto parent = GetParentFromReferences( post, compress, hash, tmp );
         if( parent == -2 )
         {
             broken++;
