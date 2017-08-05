@@ -251,9 +251,7 @@ int main( int argc, char** argv )
                 }
                 else
                 {
-                    auto s1 = kr.Kill( archive->GetSubject( i ) );
-                    auto s2 = kr.Kill( archive->GetSubject( best ) );
-                    if( strcmp( s1, s2 ) == 0 )
+                    if( IsSubjectMatch( archive->GetSubject( i ), archive->GetSubject( best ), kr ) )
                     {
                         cntsure++;
                         found.emplace_back( i, best );

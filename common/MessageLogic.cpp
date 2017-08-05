@@ -1,6 +1,7 @@
 #include <string.h>
 #include <utility>
 
+#include "KillRe.hpp"
 #include "MessageLogic.hpp"
 #include "String.hpp"
 
@@ -100,6 +101,13 @@ bool IsMsgId( const char* begin, const char* end )
         h++;
     }
     return a == 1 && u > 0 && h > 0;
+}
+
+bool IsSubjectMatch( const char* s1, const char* s2, const KillRe& kill )
+{
+    auto k1 = kill.Kill( s1 );
+    auto k2 = kill.Kill( s2 );
+    return strcmp( k1, k2 ) == 0;
 }
 
 // Returns number of lines in "wrote" context
