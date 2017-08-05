@@ -32,7 +32,6 @@ static const Tool tools[] = {
     { "lexdist", "Calculate distance between words." },
     { "lexhash", "Calculate lexicon hash tables." },
     { "lexicon", "Create search lexicon." },
-    { "lexopt", "Optimize lexicon." },
     { "lexsort", "Sort lexicon data." },
     { "lexstats", "Show lexicon statistics." },
     { "merge-raw", "Merge two data sets into one." },

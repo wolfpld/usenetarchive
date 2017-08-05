@@ -14,7 +14,6 @@ TOOLS := \
 	lexdist \
 	lexhash \
 	lexicon \
-	lexopt \
 	lexsort \
 	lexstats \
 	merge-raw \

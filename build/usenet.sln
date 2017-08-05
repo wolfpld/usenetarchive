@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extract-msgid", "..\extract-msgid\build\win32\extract-msgid.vcxproj", "{F4589BE3-DB05-4D70-9C97-EE1DD099D807}"
 EndProject
@@ -46,8 +46,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "repack-lz4", "..\repack-lz4\build\win32\repack-lz4.vcxproj", "{9983E1F2-8C5D-479F-9E01-7A9867B64171}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "threadify", "..\threadify\build\win32\threadify.vcxproj", "{93148ED5-C442-4486-A309-B84BF02C61E1}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexopt", "..\lexopt\build\win32\lexopt.vcxproj", "{FE89C79A-F37D-40AE-802F-C591B40CC8BE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "relative-complement", "..\relative-complement\build\win32\relative-complement.vcxproj", "{142C844D-7A76-415E-AA45-6A2CE0B77A50}"
 EndProject
@@ -161,10 +159,6 @@ Global
 		{93148ED5-C442-4486-A309-B84BF02C61E1}.Debug|x64.Build.0 = Debug|x64
 		{93148ED5-C442-4486-A309-B84BF02C61E1}.Release|x64.ActiveCfg = Release|x64
 		{93148ED5-C442-4486-A309-B84BF02C61E1}.Release|x64.Build.0 = Release|x64
-		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Debug|x64.ActiveCfg = Debug|x64
-		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Debug|x64.Build.0 = Debug|x64
-		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Release|x64.ActiveCfg = Release|x64
-		{FE89C79A-F37D-40AE-802F-C591B40CC8BE}.Release|x64.Build.0 = Release|x64
 		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Debug|x64.ActiveCfg = Debug|x64
 		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Debug|x64.Build.0 = Debug|x64
 		{142C844D-7A76-415E-AA45-6A2CE0B77A50}.Release|x64.ActiveCfg = Release|x64

@@ -43,8 +43,7 @@ digraph
     msgmeta -> connectivity;
     connectivity -> repack;
     repack -> lexicon;
-    lexicon -> lexopt;
-    lexopt -> lexhash;
+    lexicon -> lexhash;
     lexhash -> lexsort;
     lexsort -> sort;
     sort -> lexdist;

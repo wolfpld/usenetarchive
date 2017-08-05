@@ -81,7 +81,6 @@ Raw data right after import is highly unfit for direct use. Messages are duplica
 Search in archive is performed with the help of a word lexicon. The following tools are used for its preparation:
 
 - lexicon --- Build a list of words and hit-tables for each word.
-- lexopt --- Optimize lexicon string database.
 - lexstats --- Display lexicon statistics.
 - lexdist --- Calculate distances between words.
 - lexhash --- Prepare lexicon hash table.
@@ -137,7 +136,6 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *zstd* → **repack-lz4** → adds: *LZ4*  
 (*zstd*, *msgid*) + (*LZ4*, *msgid*) → **update-zstd** → produces: *zstd*  
 *LZ4*, *conn* → **lexicon** → adds: *lex*  
-*lex* → **lexopt** → modifies: *lex*  
 *lex* → **lexhash** → adds: *lexhash*  
 *lex* → **lexsort** → modifies: *lex*  
 *lex* → **lexdist** → adds: *lexdist*  
