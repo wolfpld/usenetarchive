@@ -78,7 +78,7 @@ int main( int argc, char** argv )
                 if( strnicmpl( buf, "subject: ", 9 ) == 0 )
                 {
                     buf += 9;
-                    sptr = buf;
+                    sptr = *buf != '\n' ? buf : EmptySubject;
                     sdone = true;
                 }
             }
