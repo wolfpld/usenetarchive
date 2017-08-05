@@ -6,6 +6,34 @@
 #include "MessageLogic.hpp"
 #include "StringCompress.hpp"
 
+inline const char* FindReferences( const char* msg )
+{
+    auto buf = FindOptionalHeader( msg, "references: ", 12 );
+    if( *buf != '\n' ) return buf + 12;
+    buf = FindOptionalHeader( msg, "in-reply-to: ", 13 );
+    if( *buf != '\n' ) return buf + 13;
+    return buf;
+}
+
+inline bool ValidateMsgId( const char* begin, const char* end, char* dst )
+{
+    bool broken = false;
+    while( begin != end )
+    {
+        if( *begin != ' ' && *begin != '\t' )
+        {
+            *dst++ = *begin;
+        }
+        else
+        {
+            broken = true;
+        }
+        begin++;
+    }
+    *dst++ = '\0';
+    return broken;
+}
+
 // Return message index of parent.
 //  -1 indicates no parent
 //  -2 indicates broken, unrecoverable reference information
