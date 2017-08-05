@@ -15,6 +15,7 @@
 #include "../common/HashSearch.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
+#include "../common/ReferencesParent.hpp"
 #include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 
@@ -59,7 +60,6 @@ int main( int argc, char** argv )
     fflush( stdout );
 
     unsigned int broken = 0;
-    std::unordered_set<std::string> missing;
     std::vector<uint32_t> toplevel;
     auto data = new Message[size];
     char tmp[1024];
@@ -74,74 +74,19 @@ int main( int argc, char** argv )
 
         auto post = mview[i];
 
-        auto buf = FindReferences( post );
-        if( *buf == '\n' )
+        auto parent = GetParentFromReferences( post, compress, hash );
+        if( parent == -2 )
+        {
+            broken++;
+        }
+        if( parent < 0 )
         {
             toplevel.push_back( i );
-            continue;
         }
-
-        bool isTopLevel = true;
-        const auto terminate = buf;
-        while( *buf != '\n' ) buf++;
-        if( buf != terminate )
+        else
         {
-            buf--;
-            // Handle "In-Reply-To: <msg@id> from a@x.y at 12/12/1999"
-            while( buf > terminate && ( *buf != '>' && *buf != '<' ) ) buf--;
-            if( buf > terminate && *buf != '<' )
-            {
-                for(;;)
-                {
-                    while( buf > terminate && ( *buf == ' ' || *buf == '\t' ) ) buf--;
-                    if( buf <= terminate || *buf != '>' )
-                    {
-                        broken++;
-                        break;
-                    }
-                    auto end = buf;
-                    buf--;
-                    while( buf > terminate && *buf != '<' ) buf--;
-                    if( *buf != '<' )
-                    {
-                        broken++;
-                        break;
-                    }
-                    buf++;
-                    assert( end - buf < 1024 );
-                    if( !IsMsgId( buf, end ) )
-                    {
-                        broken++;
-                        break;
-                    }
-                    broken += ValidateMsgId( buf, end, tmp );
-
-                    uint8_t pack[1024];
-                    compress.Pack( tmp, pack );
-                    auto idx = hash.Search( pack );
-                    if( idx >= 0 )
-                    {
-                        data[i].parent = idx;
-                        data[idx].children.emplace_back( i );
-                        isTopLevel = false;
-                        break;
-                    }
-                    else
-                    {
-                        missing.emplace( tmp );
-                    }
-
-                    buf -= 2;
-                }
-            }
-            else
-            {
-                broken++;
-            }
-        }
-        if( isTopLevel )
-        {
-            toplevel.push_back( i );
+            data[i].parent = parent;
+            data[parent].children.emplace_back( i );
         }
     }
 
@@ -280,7 +225,7 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\nTop level messages: %i\nMissing messages (maybe crosspost): %i\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nTime traveling mesages: %i\nReference loops: %i\n", toplevel.size(), missing.size(), broken, baddate, recdate, timetravel, loopcnt );
+    printf( "\nTop level messages: %i\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nTime traveling mesages: %i\nReference loops: %i\n", toplevel.size(), broken, baddate, recdate, timetravel, loopcnt );
 
     printf( "Sorting top level...\n" );
     fflush( stdout );

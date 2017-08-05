@@ -80,5 +80,8 @@
     <ClInclude Include="..\..\..\common\StringCompress.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\ReferencesParent.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
