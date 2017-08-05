@@ -6,6 +6,8 @@ v0.5 (xxxx-xx-xx)
   - Disk space requirements have been reduced.
   - Data access pattern is now linear, which increases speed of operation,
     especially due to reduction of page fault rate.
+  - These changes require removal of lexopt utility and merge of lexhash into
+    lexicon utility.
 - Use custom string compression algorithm for Message IDs. This results in
   nearly 50% disk space savings.
 - Improvements in extract-msgid utility:
