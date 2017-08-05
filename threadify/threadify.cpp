@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 #include "../libuat/Archive.hpp"
@@ -143,7 +144,7 @@ int main( int argc, char** argv )
     std::vector<std::string> wordbuf;
     int cntnew = 0, cntsure = 0, cntbad = 0, cnttime = 0;
     std::vector<std::pair<uint32_t, uint32_t>> found;
-    std::map<uint32_t, float> hits;
+    std::unordered_map<uint32_t, float> hits;
     ExpandingBuffer eb;
 
     for( int j=0; j<toplevel.size(); j++ )
