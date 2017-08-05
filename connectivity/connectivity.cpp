@@ -19,6 +19,8 @@
 #include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 
+enum { TimeTravelLimit = 60*60*24*7 };      // one week
+
 extern "C" { time_t parsedate_rfc5322_lax(const char *date); }
 
 struct Message
@@ -27,6 +29,12 @@ struct Message
     int32_t parent = -1;
     uint32_t childTotal = std::numeric_limits<uint32_t>::max();
     std::vector<uint32_t> children;
+};
+
+struct TimeGroup
+{
+    uint32_t timestamp;
+    uint32_t count;
 };
 
 void Sort( std::vector<uint32_t>& vec, const Message* msg )
@@ -146,10 +154,66 @@ int main( int argc, char** argv )
         }
 
         time_t recvdate = -1;
-        for( int i=received.size()-1; i>=0; i-- )
+        if( received.size() == 1 )
         {
-            recvdate = parsedate_rfc5322_lax( received[i] );
-            if( recvdate != -1 ) break;
+            recvdate = parsedate_rfc5322_lax( received[0] );
+        }
+        else if( received.size() > 1 )
+        {
+            std::vector<uint32_t> timestamps;
+            timestamps.reserve( received.size() );
+            for( auto& v : received )
+            {
+                auto ts = parsedate_rfc5322_lax( v );
+                if( ts != -1 )
+                {
+                    timestamps.emplace_back( ts );
+                }
+            }
+            if( timestamps.size() == 1 )
+            {
+                recvdate = timestamps[0];
+            }
+            else if( timestamps.size() > 1 )
+            {
+                assert( timestamps.size() < std::numeric_limits<uint16_t>::max() );
+                std::vector<uint16_t> sort;
+                sort.reserve( timestamps.size() );
+                for( int i=0; i<timestamps.size(); i++ )
+                {
+                    sort.emplace_back( i );
+                }
+                std::sort( sort.begin(), sort.end(), [&timestamps] ( const auto& l, const auto& r ) { return timestamps[l] < timestamps[r]; } );
+
+                std::vector<TimeGroup> groups;
+                groups.emplace_back( TimeGroup { timestamps[sort[0]], 1 } );
+                for( int i=1; i<timestamps.size(); i++ )
+                {
+                    assert( timestamps[sort[i]] >= groups.back().timestamp );
+                    if( timestamps[sort[i]] - groups.back().timestamp > TimeTravelLimit )
+                    {
+                        groups.emplace_back( TimeGroup { timestamps[sort[i]], 1 } );
+                    }
+                    else
+                    {
+                        groups.back().count++;
+                    }
+                }
+                if( groups.size() > 1 )
+                {
+                    std::sort( groups.begin(), groups.end(), [] ( const auto& l, const auto& r ) {
+                        if( l.count == r.count )
+                        {
+                            return l.timestamp < r.timestamp;
+                        }
+                        else
+                        {
+                            return l.count > r.count;
+                        }
+                    } );
+                }
+                recvdate = groups[0].timestamp;
+            }
         }
 
         time_t date = -1;
@@ -203,7 +267,7 @@ int main( int argc, char** argv )
         }
         else if( recvdate != -1 )
         {
-            if( abs( date - recvdate ) > 60*60*24*7 )       // one week
+            if( abs( date - recvdate ) > TimeTravelLimit )
             {
                 timetravel++;
                 date = recvdate;
