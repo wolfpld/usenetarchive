@@ -271,7 +271,7 @@ void ThreadTree::Collapse( int idx )
     SetExpanded( idx, false );
 }
 
-static bool SameSubject( const KillRe& kr,const char* subject, const char*& prev )
+static bool SameSubject( const KillRe& kr, const char* subject, const char*& prev )
 {
     if( subject == prev ) return true;
     if( prev == nullptr )
