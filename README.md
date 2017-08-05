@@ -83,7 +83,6 @@ Search in archive is performed with the help of a word lexicon. The following to
 - lexicon --- Build a list of words and hit-tables for each word.
 - lexstats --- Display lexicon statistics.
 - lexdist --- Calculate distances between words.
-- lexhash --- Prepare lexicon hash table.
 - lexsort --- Sort lexicon data.
 
 ### Data Access
@@ -136,14 +135,13 @@ mbox file → **import-source-mbox** → produces: *LZ4*
 *zstd* → **repack-lz4** → adds: *LZ4*  
 (*zstd*, *msgid*) + (*LZ4*, *msgid*) → **update-zstd** → produces: *zstd*  
 *LZ4*, *conn* → **lexicon** → adds: *lex*  
-*lex* → **lexhash** → adds: *lexhash*  
 *lex* → **lexsort** → modifies: *lex*  
 *lex* → **lexdist** → adds: *lexdist*  
 *lex* → **lexstats** → user interaction  
 *LZ4*, *msgid* → **query-raw** → user interaction  
-*zstd*, *msgid*, *conn*, *str*, *lex*, *lexhash* → **libuat** → user interaction  
+*zstd*, *msgid*, *conn*, *str*, *lex* → **libuat** → user interaction  
 *everything but LZ4* → **package** → *one file archive*  
-*everything but LZ4* → **threadify** → modifies: *conn*, invalidates: *lex*, *lexhash*  
+*everything but LZ4* → **threadify** → modifies: *conn*, invalidates: *lex*  
 *archive* → **sort** → modifies: *archive*  
 *collection of archives* → **galaxy-util** → *archive galaxy*
 

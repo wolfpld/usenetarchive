@@ -9,12 +9,14 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../contrib/xxhash/xxhash.h"
 #include "../common/Alloc.hpp"
 #include "../common/ICU.hpp"
 #include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
+#include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
 
 #define SPP_INCLUDE_SPP_ALLOC 1
@@ -213,14 +215,105 @@ int main( int argc, char** argv )
     printf( "\nSaving...\n" );
     fflush( stdout );
 
-    FILE* fmeta = fopen( ( base + "lexmeta" ).c_str(), "wb" );
+    auto wordNum = data.size();
+    auto hashbits = MsgIdHashBits( wordNum, 90 );
+    auto hashsize = MsgIdHashSize( hashbits );
+    auto hashmask = MsgIdHashMask( hashbits );
+
+    auto hashdata = new uint32_t[hashsize];
+    auto distance = new uint8_t[hashsize];
+    memset( distance, 0xFF, hashsize );
+    uint8_t distmax = 0;
+
+    int cnt = 0;
+    std::vector<const char*> strings;
+    strings.reserve( wordNum );
+    for( auto& v : data )
+    {
+        if( ( cnt & 0xFFF ) == 0 )
+        {
+            printf( "%i/%i\r", cnt, wordNum );
+            fflush( stdout );
+        }
+
+        const auto& s = v.first;
+        strings.emplace_back( s.c_str() );
+
+        uint32_t hash = XXH32( s.c_str(), s.size(), 0 ) & hashmask;
+        uint8_t dist = 0;
+        uint32_t idx = cnt;
+        for(;;)
+        {
+            if( distance[hash] == 0xFF )
+            {
+                if( distmax < dist ) distmax = dist;
+                distance[hash] = dist;
+                hashdata[hash] = idx;
+                break;
+            }
+            if( distance[hash] < dist )
+            {
+                if( distmax < dist ) distmax = dist;
+                std::swap( distance[hash], dist );
+                std::swap( hashdata[hash], idx );
+            }
+            dist++;
+            assert( dist < std::numeric_limits<uint8_t>::max() );
+            hash = (hash+1) & hashmask;
+        }
+
+        cnt++;
+    }
+
+    printf( "\n" );
+
+    FILE* fhashdata = fopen( ( base + "lexhashdata" ).c_str(), "wb" );
+    fwrite( &distmax, 1, 1, fhashdata );
+    fclose( fhashdata );
+
+    FILE* fhash = fopen( ( base + "lexhash" ).c_str(), "wb" );
     FILE* fstr = fopen( ( base + "lexstr" ).c_str(), "wb" );
+
+    uint32_t zero = 0;
+    uint32_t stroffset = fwrite( &zero, 1, 1, fstr );
+
+    auto offsetData = new uint32_t[wordNum];
+
+    cnt = 0;
+    for( int i=0; i<hashsize; i++ )
+    {
+        if( ( i & 0x3FFF ) == 0 )
+        {
+            printf( "%i/%i\r", i, hashsize );
+            fflush( stdout );
+        }
+
+        if( distance[i] == 0xFF )
+        {
+            fwrite( &zero, 1, sizeof( uint32_t ), fhash );
+            fwrite( &zero, 1, sizeof( uint32_t ), fhash );
+        }
+        else
+        {
+            fwrite( &stroffset, 1, sizeof( uint32_t ), fhash );
+            fwrite( hashdata+i, 1, sizeof( uint32_t ), fhash );
+
+            offsetData[hashdata[i]] = stroffset;
+            cnt++;
+            auto str = strings[hashdata[i]];
+            stroffset += fwrite( str, 1, strlen( str ) + 1, fstr );
+        }
+    }
+    assert( cnt == hashsize );
+    fclose( fhash );
+    fclose( fstr );
+
+    printf( "\n" );
+
+    FILE* fmeta = fopen( ( base + "lexmeta" ).c_str(), "wb" );
     FILE* fdata = fopen( ( base + "lexdata" ).c_str(), "wb" );
     FILE* fhit = fopen( ( base + "lexhit" ).c_str(), "wb" );
 
-    uint8_t zero = 0;
-
-    uint32_t ostr = fwrite( &zero, 1, 1, fstr );
     uint32_t odata = 0;
     uint32_t ohit = 0;
 
@@ -233,16 +326,11 @@ int main( int argc, char** argv )
             printf( "%i/%i\r", idx, dataSize );
             fflush( stdout );
         }
-        idx++;
 
         uint32_t dsize = v.second.size();
-        fwrite( &ostr, 1, sizeof( uint32_t ), fmeta );
+        fwrite( &offsetData[idx], 1, sizeof( uint32_t ), fmeta );
         fwrite( &odata, 1, sizeof( uint32_t ), fmeta );
         fwrite( &dsize, 1, sizeof( uint32_t ), fmeta );
-
-        auto strsize = v.first.size() + 1;
-        fwrite( v.first.c_str(), 1, strsize, fstr );
-        ostr += strsize;
 
         for( auto& d : v.second )
         {
@@ -270,12 +358,13 @@ int main( int argc, char** argv )
             }
         }
         odata += sizeof( uint32_t ) * dsize * 2;
+
+        idx++;
     }
 
     printf( "\n" );
 
     fclose( fmeta );
-    fclose( fstr );
     fclose( fdata );
     fclose( fhit );
 

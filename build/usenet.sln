@@ -33,8 +33,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexstats", "..\lexstats\bui
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexdist", "..\lexdist\build\win32\lexdist.vcxproj", "{5396A9AB-DDF0-4D66-B026-78E313F765D9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexhash", "..\lexhash\build\win32\lexhash.vcxproj", "{CFFC6922-D083-492F-A44A-CE618DB0D144}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexsort", "..\lexsort\build\win32\lexsort.vcxproj", "{1C7F92F9-4D03-4025-BB5D-9BB47CF90A5F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter-newsgroups", "..\filter-newsgroups\build\win32\filter-newsgroups.vcxproj", "{96CE0604-1E5E-4877-A02E-B4C12216201C}"
@@ -131,10 +129,6 @@ Global
 		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Debug|x64.Build.0 = Debug|x64
 		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Release|x64.ActiveCfg = Release|x64
 		{5396A9AB-DDF0-4D66-B026-78E313F765D9}.Release|x64.Build.0 = Release|x64
-		{CFFC6922-D083-492F-A44A-CE618DB0D144}.Debug|x64.ActiveCfg = Debug|x64
-		{CFFC6922-D083-492F-A44A-CE618DB0D144}.Debug|x64.Build.0 = Debug|x64
-		{CFFC6922-D083-492F-A44A-CE618DB0D144}.Release|x64.ActiveCfg = Release|x64
-		{CFFC6922-D083-492F-A44A-CE618DB0D144}.Release|x64.Build.0 = Release|x64
 		{1C7F92F9-4D03-4025-BB5D-9BB47CF90A5F}.Debug|x64.ActiveCfg = Debug|x64
 		{1C7F92F9-4D03-4025-BB5D-9BB47CF90A5F}.Debug|x64.Build.0 = Debug|x64
 		{1C7F92F9-4D03-4025-BB5D-9BB47CF90A5F}.Release|x64.ActiveCfg = Release|x64

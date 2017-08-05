@@ -12,7 +12,6 @@ TOOLS := \
 	import-source-mbox \
 	kill-duplicates \
 	lexdist \
-	lexhash \
 	lexicon \
 	lexsort \
 	lexstats \
