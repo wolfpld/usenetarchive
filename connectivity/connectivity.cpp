@@ -81,43 +81,65 @@ int main( int argc, char** argv )
             continue;
         }
 
+        bool isTopLevel = true;
         const auto terminate = buf;
-        int valid = ValidateReferences( buf );
-        if( valid == 0 && buf != terminate )
+        while( *buf != '\n' ) buf++;
+        if( buf != terminate )
         {
             buf--;
-            for(;;)
+            // Handle "In-Reply-To: <msg@id> from a@x.y at 12/12/1999"
+            while( buf > terminate && ( *buf != '>' && *buf != '<' ) ) buf--;
+            if( buf > terminate && *buf != '<' )
             {
-                while( *buf != '>' && buf != terminate ) buf--;
-                if( buf == terminate )
+                for(;;)
                 {
-                    toplevel.push_back( i );
-                    break;
-                }
-                auto end = buf;
-                while( *--buf != '<' ) {}
-                buf++;
-                assert( end - buf < 1024 );
-                broken += ValidateMsgId( buf, end, tmp );
+                    while( buf > terminate && ( *buf == ' ' || *buf == '\t' ) ) buf--;
+                    if( buf <= terminate || *buf != '>' )
+                    {
+                        broken++;
+                        break;
+                    }
+                    auto end = buf;
+                    buf--;
+                    while( buf > terminate && *buf != '<' ) buf--;
+                    if( *buf != '<' )
+                    {
+                        broken++;
+                        break;
+                    }
+                    buf++;
+                    assert( end - buf < 1024 );
+                    if( !IsMsgId( buf, end ) )
+                    {
+                        broken++;
+                        break;
+                    }
+                    broken += ValidateMsgId( buf, end, tmp );
 
-                uint8_t pack[2048];
-                compress.Pack( tmp, pack );
-                auto idx = hash.Search( pack );
-                if( idx >= 0 )
-                {
-                    data[i].parent = idx;
-                    data[idx].children.emplace_back( i );
-                    break;
-                }
-                else
-                {
-                    missing.emplace( tmp );
-                }
+                    uint8_t pack[1024];
+                    compress.Pack( tmp, pack );
+                    auto idx = hash.Search( pack );
+                    if( idx >= 0 )
+                    {
+                        data[i].parent = idx;
+                        data[idx].children.emplace_back( i );
+                        isTopLevel = false;
+                        break;
+                    }
+                    else
+                    {
+                        missing.emplace( tmp );
+                    }
 
-                if( *buf == '>' ) buf--;
+                    buf -= 2;
+                }
+            }
+            else
+            {
+                broken++;
             }
         }
-        else
+        if( isTopLevel )
         {
             toplevel.push_back( i );
         }
