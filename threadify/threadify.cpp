@@ -1,8 +1,10 @@
 #include <assert.h>
 #include <algorithm>
+#include <atomic>
 #include <ctype.h>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
@@ -17,6 +19,8 @@
 #include "../common/KillRe.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/String.hpp"
+#include "../common/System.hpp"
+#include "../common/TaskDispatch.hpp"
 
 struct Message
 {
@@ -96,7 +100,7 @@ int main( int argc, char** argv )
         return 1;
     }
     auto size = archive->NumberOfMessages();
-    SearchEngine search( *archive );
+    const SearchEngine search( *archive );
     KillRe kr;
     kr.LoadPrefixList( *archive );
 
@@ -175,134 +179,161 @@ int main( int argc, char** argv )
 
     printf( "\nMatching messages...\n" );
 
-    std::vector<std::string> wordbuf;
     int cntnew = 0, cntsure = 0, cntbad = 0, cnttime = 0;
     std::vector<std::pair<uint32_t, uint32_t>> found;
-    std::unordered_map<uint32_t, float> hits;
-    ExpandingBuffer eb;
 
-    for( int j=0; j<toplevel.size(); j++ )
+    const auto cpus = System::CPUCores();
+    TaskDispatch tasks( cpus );
+    std::atomic<uint32_t> cnt( 0 );
+    const auto topsize = toplevel.size();
+
+    std::mutex viewLock, resLock, splitLock;
+
+    for( int t=0; t<cpus; t++ )
     {
-        if( ( j & 0x1F ) == 0 )
-        {
-            printf( "%i/%i\r", j, toplevel.size() );
-            fflush( stdout );
-        }
+        tasks.Queue( [&cnt, &topsize, &toplevel, &viewLock, &resLock, &splitLock, &archive, &search, &found, &cntnew, &cntsure, &cntbad, &cnttime, &kr] {
+            ExpandingBuffer eb;
+            std::unordered_map<uint32_t, float> hits;
+            std::vector<std::string> wordbuf;
 
-        auto i = toplevel[j];
-        bool headers = true;
-        bool wroteDone = false;
-        int remaining = 16;
-
-        auto post = archive->GetMessage( i, eb );
-        for(;;)
-        {
-            auto end = post;
-            if( headers )
+            for(;;)
             {
-                if( *end == '\n' )
+                auto j = cnt.fetch_add( 1, std::memory_order_relaxed );
+                if( j >= topsize ) break;
+                if( ( j & 0x1F ) == 0 )
                 {
-                    headers = false;
-                    continue;
+                    printf( "%i/%i\r", j, topsize );
+                    fflush( stdout );
                 }
 
-                while( *end != '\n' ) end++;
-                post = end + 1;
-            }
-            else
-            {
-                const char* line = end;
-                while( *end != '\n' && *end != '\0' ) end++;
-                int quotLevel = QuotationLevel( line, end );
-                if( line != end && quotLevel == 1 )
+                auto i = toplevel[j];
+                bool headers = true;
+                bool wroteDone = false;
+                int remaining = 16;
+
+                viewLock.lock();
+                auto post = archive->GetMessage( i, eb );
+                viewLock.unlock();
+
+                for(;;)
                 {
-                    const char* wrote = line;
-                    if( !wroteDone )
+                    auto end = post;
+                    if( headers )
                     {
-                        wrote = DetectWroteEnd( line, 1 );
-                        wroteDone = true;
-                    }
-                    if( wrote == line )
-                    {
-                        SplitLine( line, end, wordbuf );
-                        if( !wordbuf.empty() )
+                        if( *end == '\n' )
                         {
-                            auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords, T_Content );
-                            auto& res = results.results;
-                            if( !res.empty() )
-                            {
-                                auto terminate = res[0].rank * 0.02;
-                                auto matched = results.matched.size();
-                                for( auto& r : res )
-                                {
-                                    if( r.rank < terminate ) break;
-                                    hits[r.postid] += r.rank * matched * matched;
-                                }
-                            }
-                            wordbuf.clear();
+                            headers = false;
+                            continue;
                         }
-                        if( --remaining == 0 ) break;
+
+                        while( *end != '\n' ) end++;
+                        post = end + 1;
                     }
                     else
                     {
-                        end = wrote;
-                        while( *end != '\n' ) end--;
+                        const char* line = end;
+                        while( *end != '\n' && *end != '\0' ) end++;
+                        int quotLevel = QuotationLevel( line, end );
+                        if( line != end && quotLevel == 1 )
+                        {
+                            const char* wrote = line;
+                            if( !wroteDone )
+                            {
+                                wrote = DetectWroteEnd( line, 1 );
+                                wroteDone = true;
+                            }
+                            if( wrote == line )
+                            {
+                                splitLock.lock();
+                                SplitLine( line, end, wordbuf );
+                                splitLock.unlock();
+                                if( !wordbuf.empty() )
+                                {
+                                    auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords, T_Content );
+                                    auto& res = results.results;
+                                    if( !res.empty() )
+                                    {
+                                        auto terminate = res[0].rank * 0.02;
+                                        auto matched = results.matched.size();
+                                        for( auto& r : res )
+                                        {
+                                            if( r.rank < terminate ) break;
+                                            hits[r.postid] += r.rank * matched * matched;
+                                        }
+                                    }
+                                    wordbuf.clear();
+                                }
+                                if( --remaining == 0 ) break;
+                            }
+                            else
+                            {
+                                end = wrote;
+                                while( *end != '\n' ) end--;
+                            }
+                        }
+                        if( *end == '\0' ) break;
+                        post = end + 1;
                     }
                 }
-                if( *end == '\0' ) break;
-                post = end + 1;
-            }
-        }
-        if( hits.empty() )
-        {
-            cntnew++;
-        }
-        else
-        {
-            uint32_t best = 0;
-            float rank = 0;
-            for( auto& h : hits )
-            {
-                if( h.second > rank )
+
+                resLock.lock();
+                if( hits.empty() )
                 {
-                    rank = h.second;
-                    best = h.first;
-                }
-            }
-            hits.clear();
-            if( root[i] == root[best] )
-            {
-                cntnew++;
-            }
-            else
-            {
-                time_t t1 = archive->GetDate( i );
-                time_t t2 = archive->GetDate( best );
-                if( ( t1 > t2 + 60 * 60 * 24 * 365 ) ||     // child message is year+ younger than parent
-                    ( t1 < t2 - 60 * 60 * 24 * 30 ) )       // child message is month+ older than parent
-                {
-                    cnttime++;
+                    cntnew++;
                 }
                 else
                 {
-                    if( IsSubjectMatch( archive->GetSubject( i ), archive->GetSubject( best ), kr ) )
+                    uint32_t best = 0;
+                    float rank = 0;
+                    for( auto& h : hits )
                     {
-                        cntsure++;
-                        found.emplace_back( i, best );
-                        SetRootTo( i, root[best] );
+                        if( h.second > rank )
+                        {
+                            rank = h.second;
+                            best = h.first;
+                        }
+                    }
+                    hits.clear();
+                    if( root[i] == root[best] )
+                    {
+                        cntnew++;
                     }
                     else
                     {
-                        cntbad++;
+                        time_t t1 = archive->GetDate( i );
+                        time_t t2 = archive->GetDate( best );
+                        if( ( t1 > t2 + 60 * 60 * 24 * 365 ) ||     // child message is year+ younger than parent
+                            ( t1 < t2 - 60 * 60 * 24 * 30 ) )       // child message is month+ older than parent
+                        {
+                            cnttime++;
+                        }
+                        else
+                        {
+                            if( IsSubjectMatch( archive->GetSubject( i ), archive->GetSubject( best ), kr ) )
+                            {
+                                cntsure++;
+                                found.emplace_back( i, best );
+                                SetRootTo( i, root[best] );
+                            }
+                            else
+                            {
+                                cntbad++;
+                            }
+                        }
                     }
                 }
+                resLock.unlock();
             }
-        }
+        } );
     }
+    tasks.Sync();
+    printf( "%i/%i\n", topsize, topsize );
+
+    std::sort( found.begin(), found.end(), [] ( const auto& l, const auto& r ) { return l.first < r.first; } );
 
     std::unordered_set<uint32_t> bad;
 
-    printf( "\nApplying changes...\n" );
+    printf( "Applying changes...\n" );
     fflush( stdout );
     for( auto& v : found )
     {
