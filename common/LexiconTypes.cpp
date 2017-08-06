@@ -32,7 +32,7 @@ const uint8_t LexiconHitTypeEncoding[] = {
 
 const uint8_t LexiconHitPosMask[] = {
     0x7F,   // 0111 1111
-    0x1F,   // 0001 1111
+    0x0F,   // 0000 1111
     0x1F,   // 0001 1111
     0x1F,   // 0001 1111
     0x0F,   // 0000 1111
