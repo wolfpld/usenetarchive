@@ -21,13 +21,13 @@ float const LexiconWeights[] = {
 };
 
 const uint8_t LexiconHitTypeEncoding[] = {
-    0x00,   // 0000 0000
-    0xE0,   // 1110 0000
-    0x80,   // 1000 0000
-    0xA0,   // 1010 0000
-    0xC0,   // 1100 0000
-    0xF0,   // 1111 0000
-    0xF8    // 1111 1000
+    0x00,   // 0xxx xxxx
+    0xE0,   // 1110 xxxx
+    0x80,   // 100x xxxx
+    0xA0,   // 101x xxxx
+    0xC0,   // 1100 xxxx
+    0xF0,   // 1111 0xxx
+    0xF8    // 1111 1xxx
 };
 
 const uint8_t LexiconHitPosMask[] = {
