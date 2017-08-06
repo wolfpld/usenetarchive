@@ -128,10 +128,10 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        uint8_t tmp[2048];
-        const auto sz = compress.Pack( rawmsgidvec[i], tmp );
-        auto ptr = (uint8_t*)slab.Alloc( sz );
-        memcpy( ptr, tmp, sz );
+        auto ptr = (uint8_t*)slab.Alloc( 2048 );
+        const auto sz = compress.Pack( rawmsgidvec[i], ptr );
+        assert( sz <= 2048 );
+        slab.Unalloc( 2048 - sz );
         msgidvec.emplace_back( ptr );
     }
     printf( "\n" );

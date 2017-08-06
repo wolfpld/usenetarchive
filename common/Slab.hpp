@@ -36,6 +36,12 @@ public:
         return ret;
     }
 
+    void Unalloc( size_t size )
+    {
+        assert( size <= m_offset );
+        m_offset -= size;
+    }
+
     Slab( const Slab& ) = delete;
     Slab( Slab&& ) = delete;
 
