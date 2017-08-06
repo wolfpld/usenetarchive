@@ -368,8 +368,7 @@ int main( int argc, char** argv )
     if( !found.empty() )
     {
         printf( "Saving...\n" );
-        printf( "WARNING! Lexicon data has been invalidated!\n" );
-        printf( "WARNING! Sorting order has been changed!\n" );
+        printf( "WARNING! Sorting order has been changed! Run sort and lexsort.\n" );
 
         FILE* tlout = fopen( ( base + "toplevel" ).c_str(), "wb" );
         fwrite( toplevel.data(), 1, sizeof( uint32_t ) * toplevel.size(), tlout );
@@ -400,6 +399,26 @@ int main( int argc, char** argv )
         }
         fclose( cdata );
         fclose( cmeta );
+
+        size_t lexsize;
+        LexiconDataPacket* lexdata;
+        {
+            FileMap<LexiconDataPacket> lex( base + "lexdata" );
+            lexsize = lex.DataSize();
+            lexdata = new LexiconDataPacket[lexsize];
+            memcpy( lexdata, lex, lexsize * sizeof( LexiconDataPacket ) );
+        }
+
+        for( size_t i=0; i<lexsize; i++ )
+        {
+            const auto postid = lexdata[i].postid & LexiconPostMask;
+            const auto children = LexiconTransformChildNum( msgdata[postid].childTotal - 1 );
+            lexdata[i].postid = postid | ( children << LexiconChildShift );
+        }
+
+        FILE* flex = fopen( ( base + "lexdata" ).c_str(), "wb" );
+        fwrite( lexdata, 1, lexsize * sizeof( LexiconDataPacket ), flex );
+        fclose( flex );
     }
 
     printf( "\nFound %i new threads.\nSurely matched %i messages (same subject line). Wrong guesses: %i due to different subject + %i non-chronological\n", cntnew, cntsure, cntbad, cnttime );
