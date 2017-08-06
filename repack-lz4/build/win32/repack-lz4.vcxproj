@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\common\Filesystem.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
+    <ClCompile Include="..\..\..\common\System.cpp" />
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4hc.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
@@ -37,6 +39,8 @@
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\common\System.hpp" />
+    <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h" />

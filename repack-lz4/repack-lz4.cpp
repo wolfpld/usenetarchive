@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include <atomic>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +21,8 @@
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/RawImportMeta.hpp"
+#include "../common/System.hpp"
+#include "../common/TaskDispatch.hpp"
 #include "../common/ZMessageView.hpp"
 
 int main( int argc, char** argv )
@@ -40,13 +43,64 @@ int main( int argc, char** argv )
     std::string metafn = base + "meta";
     std::string datafn = base + "data";
 
-    ZMessageView zview( base + "zmeta", base + "zdata", base + "zdict" );
-    auto size = zview.Size();
+    size_t size;
+    {
+        const ZMessageView zview( base + "zmeta", base + "zdata", base + "zdict" );
+        size = zview.Size();
+    }
 
-    FILE* meta = fopen( metafn.c_str(), "wb" );
-    FILE* data = fopen( datafn.c_str(), "wb" );
+    struct Buffer
+    {
+        uint32_t compressedSize;
+        uint32_t size;
+        const char* data;
+    };
 
-    ExpandingBuffer eb, eb_dec;
+    const auto cpus = System::CPUCores();
+    printf( "Repacking (%i threads)\n", cpus );
+
+    Buffer* data = new Buffer[size];
+
+    TaskDispatch tasks( cpus );
+    std::atomic<uint32_t> cnt( 0 );
+
+    for( int t=0; t<cpus; t++ )
+    {
+        tasks.Queue( [&cnt, size, &base, &data] {
+            ExpandingBuffer eb, eb_dec;
+            ZMessageView zview( base + "zmeta", base + "zdata", base + "zdict" );
+            for(;;)
+            {
+                auto j = cnt.fetch_add( 1, std::memory_order_relaxed );
+                if( j >= size ) break;
+                if( ( j & 0x3FF ) == 0 )
+                {
+                    printf( "%i/%i\r", j, size );
+                    fflush( stdout );
+                }
+
+                auto raw = zview.Raw( j );
+                auto post = zview.GetMessage( j, eb_dec );
+
+                int maxSize = LZ4_compressBound( raw.size );
+                char* compressed = eb.Request( maxSize );
+                int csize = LZ4_compress_HC( post, compressed, raw.size, maxSize, 16 );
+
+                char* buf = new char[csize];
+                memcpy( buf, compressed, csize );
+
+                data[j].compressedSize = csize;
+                data[j].size = raw.size;
+                data[j].data = buf;
+            }
+        } );
+    }
+    tasks.Sync();
+    printf( "%i/%i\n", size, size );
+
+    FILE* fmeta = fopen( metafn.c_str(), "wb" );
+    FILE* fdata = fopen( datafn.c_str(), "wb" );
+
     uint64_t offset = 0;
     for( size_t idx=0; idx<size; idx++ )
     {
@@ -56,23 +110,16 @@ int main( int argc, char** argv )
             fflush( stdout );
         }
 
-        auto raw = zview.Raw( idx );
-        auto buf = zview.GetMessage( idx, eb_dec );
+        fwrite( data[idx].data, 1, data[idx].compressedSize, fdata );
 
-        int maxSize = LZ4_compressBound( raw.size );
-        char* compressed = eb.Request( maxSize );
-        int csize = LZ4_compress_HC( buf, compressed, raw.size, maxSize, 16 );
-
-        fwrite( compressed, 1, csize, data );
-
-        RawImportMeta metaPacket = { offset, raw.size, csize };
-        fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
-        offset += csize;
+        RawImportMeta metaPacket = { offset, data[idx].size, data[idx].compressedSize };
+        fwrite( &metaPacket, 1, sizeof( RawImportMeta ), fmeta );
+        offset += data[idx].compressedSize;
     }
     printf( "%i messages processed.\n", size );
 
-    fclose( meta );
-    fclose( data );
+    fclose( fmeta );
+    fclose( fdata );
 
     return 0;
 }

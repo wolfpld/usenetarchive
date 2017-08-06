@@ -48,6 +48,7 @@ v0.5 (xxxx-xx-xx)
     messages use 'NNTP-Received-Date:' or 'Injection-Data:' headers. These are
     now also handled.
   - Validate date against all server date headers, not only the first one.
+- Multi-threaded compression in repack-lz4 utility.
 
 
 v0.4 (2017-07-19)
