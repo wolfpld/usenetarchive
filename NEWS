@@ -51,7 +51,10 @@ v0.5 (xxxx-xx-xx)
 - Multi-threaded compression in repack-lz4 utility.
 - Improved memory efficiency of small temporary allocations in various
   utilities.
-- Multi-threaded message matching in threadify utility.
+- Improvements in threadify utility:
+  - Multi-threaded message matching.
+  - Lexicon data is now properly transformed after the messages are matched.
+    Lexicon utility no longer needs to be run twice.
 - Change search in headers to search in 'From:' or 'Subject:' fields.
 
 
