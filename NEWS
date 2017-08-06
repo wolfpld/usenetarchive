@@ -49,6 +49,8 @@ v0.5 (xxxx-xx-xx)
     now also handled.
   - Validate date against all server date headers, not only the first one.
 - Multi-threaded compression in repack-lz4 utility.
+- Improved memory efficiency of small temporary allocations in various
+  utilities.
 
 
 v0.4 (2017-07-19)
