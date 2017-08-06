@@ -18,6 +18,7 @@
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MsgIdHash.hpp"
+#include "../common/Slab.hpp"
 #include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 
@@ -53,6 +54,7 @@ int main( int argc, char** argv )
     std::vector<const char*> rawmsgidvec;
     rawmsgidvec.reserve( size );
 
+    Slab<32*1024*1024> slab;
     ExpandingBuffer eb;
     for( uint32_t i=0; i<size; i++ )
     {
@@ -103,7 +105,7 @@ int main( int argc, char** argv )
         }
 
         const auto slen = end-buf;
-        auto tmp = new char[slen+1];
+        auto tmp = (char*)slab.Alloc( slen+1 );
         memcpy( tmp, buf, slen );
         tmp[slen] = '\0';
         rawmsgidvec.emplace_back( tmp );
@@ -127,8 +129,10 @@ int main( int argc, char** argv )
         }
 
         uint8_t tmp[2048];
-        compress.Pack( rawmsgidvec[i], tmp );
-        msgidvec.emplace_back( (const uint8_t*)strdup( (const char*)tmp ) );
+        const auto sz = compress.Pack( rawmsgidvec[i], tmp );
+        auto ptr = (uint8_t*)slab.Alloc( sz );
+        memcpy( ptr, tmp, sz );
+        msgidvec.emplace_back( ptr );
     }
     printf( "\n" );
 
