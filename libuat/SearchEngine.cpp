@@ -11,7 +11,8 @@ enum WordFlags
     WF_None     = 0,
     WF_Must     = 1 << 0,
     WF_Cant     = 1 << 1,
-    WF_Header   = 1 << 2
+    WF_From     = 1 << 2,
+    WF_Subject  = 1 << 3,
 };
 
 struct PostData
@@ -242,12 +243,20 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                     str++;
                 }
             }
-            if( strend - str > 4 )
+            if( strend - str > 5 )
             {
-                if( strncmp( str, "hdr:", 4 ) == 0 )
+                if( strncmp( str, "from:", 5 ) == 0 )
                 {
-                    wf |= WF_Header;
-                    str += 4;
+                    wf |= WF_From;
+                    str += 5;
+                }
+            }
+            else if( strend - str > 8 )
+            {
+                if( strncmp( str, "subject:", 8 ) == 0 )
+                {
+                    wf |= WF_Subject;
+                    str += 8;
                 }
             }
             if( strend - str > 2 && *str == '"' && *(strend-1) == '"' )
@@ -371,11 +380,12 @@ std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::ve
                     }
                 }
             }
-            else if( wf & WF_Header )
+            else if( wf & ( WF_From | WF_Subject ) )
             {
+                const LexiconType type = ( wf & WF_From ) ? T_From : T_Subject;
                 for( int j=0; j<hitnum; j++ )
                 {
-                    if( LexiconDecodeType( hits[j] ) == T_Header )
+                    if( LexiconDecodeType( hits[j] ) == type )
                     {
                         vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
                         break;
