@@ -22,13 +22,20 @@
 #define SPP_INCLUDE_SPP_ALLOC 1
 #include "../contrib/sparsepp/spp.h"
 
+enum class HeaderType
+{
+    From,
+    Subject,
+    Invalid
+};
+
 const char* AllowedHeaders[] = {
     "from",
     "subject",
     nullptr
 };
 
-bool IsHeaderAllowed( const char* hdr, const char* end )
+HeaderType IsHeaderAllowed( const char* hdr, const char* end )
 {
     int size = end - hdr;
     char* tmp = (char*)alloca( size+1 );
@@ -43,11 +50,20 @@ bool IsHeaderAllowed( const char* hdr, const char* end )
     {
         if( strncmp( tmp, *test, size+1 ) == 0 )
         {
-            return true;
+            switch( test - AllowedHeaders )
+            {
+            case 0:
+                return HeaderType::From;
+            case 1:
+                return HeaderType::Subject;
+            default:
+                assert( false );
+                return HeaderType::Invalid;
+            }
         }
         test++;
     }
-    return false;
+    return HeaderType::Invalid;
 }
 
 using HitData = std::unordered_map<std::string, spp::sparse_hash_map<uint32_t, std::vector<uint8_t>>>;
@@ -142,12 +158,27 @@ int main( int argc, char** argv )
                 }
                 while( *end != ':' ) end++;
                 end += 2;
-                if( IsHeaderAllowed( post, end-2 ) )
+                auto headerType = IsHeaderAllowed( post, end-2 );
+                if( headerType != HeaderType::Invalid )
                 {
+                    int type;
+                    switch( headerType )
+                    {
+                    case HeaderType::From:
+                        type = T_From;
+                        break;
+                    case HeaderType::Subject:
+                        type = T_Subject;
+                        break;
+                    default:
+                        assert( false );
+                        type = 0;
+                        break;
+                    }
                     const char* line = end;
                     while( *end != '\n' ) end++;
                     SplitLine( line, end, wordbuf );
-                    Add( data, wordbuf, i, T_Header, 0, children );
+                    Add( data, wordbuf, i, type, 0, children );
                 }
                 else
                 {

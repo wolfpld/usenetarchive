@@ -6,7 +6,8 @@ const char* LexiconNames[] = {
     "Quote2",
     "Quote3",
     "Signature",
-    "Header",
+    "Subject",
+    "From",
     "Wrote"
 };
 
@@ -16,6 +17,7 @@ float const LexiconWeights[] = {
     0.5f,
     0.3f,
     0.25f,
+    0.15f,
     0.1f,
     0.05f
 };
@@ -25,7 +27,8 @@ const uint8_t LexiconHitTypeEncoding[] = {
     0x80,   // 100x xxxx
     0xA0,   // 101x xxxx
     0xC0,   // 110x xxxx
-    0xE0,   // 1110 xxxx
+    0xE0,   // 1110 0xxx
+    0xE8,   // 1110 1xxx
     0xF0,   // 1111 0xxx
     0xF8    // 1111 1xxx
 };
@@ -35,7 +38,8 @@ const uint8_t LexiconHitPosMask[] = {
     0x1F,   // 0001 1111
     0x1F,   // 0001 1111
     0x1F,   // 0001 1111
-    0x0F,   // 0000 1111
+    0x07,   // 0000 0111
+    0x07,   // 0000 0111
     0x07,   // 0000 0111
     0x07    // 0000 0111
 };
