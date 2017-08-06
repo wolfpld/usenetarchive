@@ -119,5 +119,8 @@
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\common\Slab.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

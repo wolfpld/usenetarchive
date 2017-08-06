@@ -21,6 +21,7 @@
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/RawImportMeta.hpp"
+#include "../common/Slab.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
 #include "../common/ZMessageView.hpp"
@@ -63,10 +64,11 @@ int main( int argc, char** argv )
 
     TaskDispatch tasks( cpus );
     std::atomic<uint32_t> cnt( 0 );
+    auto slab = new Slab<32*1024*1024>[cpus];
 
     for( int t=0; t<cpus; t++ )
     {
-        tasks.Queue( [&cnt, size, &base, &data] {
+        tasks.Queue( [&cnt, size, &base, &data, t, &slab] {
             ExpandingBuffer eb, eb_dec;
             ZMessageView zview( base + "zmeta", base + "zdata", base + "zdict" );
             for(;;)
@@ -86,7 +88,7 @@ int main( int argc, char** argv )
                 char* compressed = eb.Request( maxSize );
                 int csize = LZ4_compress_HC( post, compressed, raw.size, maxSize, 16 );
 
-                char* buf = new char[csize];
+                char* buf = (char*)slab[t].Alloc( csize );
                 memcpy( buf, compressed, csize );
 
                 data[j].compressedSize = csize;

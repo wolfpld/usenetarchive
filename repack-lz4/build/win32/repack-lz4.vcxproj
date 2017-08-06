@@ -39,6 +39,7 @@
     <ClInclude Include="..\..\..\common\Filesystem.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
     <ClInclude Include="..\..\..\common\RawImportMeta.hpp" />
+    <ClInclude Include="..\..\..\common\Slab.hpp" />
     <ClInclude Include="..\..\..\common\System.hpp" />
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
