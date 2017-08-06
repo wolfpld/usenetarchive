@@ -250,13 +250,13 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                     wf |= WF_From;
                     str += 5;
                 }
-            }
-            else if( strend - str > 8 )
-            {
-                if( strncmp( str, "subject:", 8 ) == 0 )
+                else if( strend - str > 8 )
                 {
-                    wf |= WF_Subject;
-                    str += 8;
+                    if( strncmp( str, "subject:", 8 ) == 0 )
+                    {
+                        wf |= WF_Subject;
+                        str += 8;
+                    }
                 }
             }
             if( strend - str > 2 && *str == '"' && *(strend-1) == '"' )
