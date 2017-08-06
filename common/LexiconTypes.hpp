@@ -1,6 +1,7 @@
 #ifndef __LEXICONTYPES_HPP__
 #define __LEXICONTYPES_HPP__
 
+#include <algorithm>
 #include <stdint.h>
 
 enum LexiconType
@@ -96,6 +97,11 @@ static inline bool LexiconHitIsMaxPos( uint8_t v )
 {
     auto type = LexiconDecodeType( v );
     return ( v & LexiconHitPosMask[type] ) == LexiconHitPosMask[type];
+}
+
+static inline uint32_t LexiconTransformChildNum( uint32_t children )
+{
+    return std::min<uint32_t>( LexiconChildMax * 8, children ) / 8;
 }
 
 #endif

@@ -52,8 +52,6 @@ bool IsHeaderAllowed( const char* hdr, const char* end )
 
 using HitData = std::unordered_map<std::string, spp::sparse_hash_map<uint32_t, std::vector<uint8_t>>>;
 
-enum { MaxChildren = 0xF8 };
-
 static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
     assert( ( idx & LexiconPostMask ) == idx );
@@ -126,9 +124,7 @@ int main( int argc, char** argv )
         int wrote;
         int basePos[NUM_LEXICON_TYPES] = {};
 
-        int children = conn[i][2] - 1;
-        children = std::min<uint32_t>( MaxChildren, children );
-        children /= 8;
+        int children = LexiconTransformChildNum( conn[i][2] - 1 );
 
         auto post = mview[i];
         for(;;)
