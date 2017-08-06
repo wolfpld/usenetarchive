@@ -52,6 +52,7 @@ v0.5 (xxxx-xx-xx)
 - Improved memory efficiency of small temporary allocations in various
   utilities.
 - Multi-threaded message matching in threadify utility.
+- Change search in headers to search in 'From:' or 'Subject:' fields.
 
 
 v0.4 (2017-07-19)
