@@ -378,7 +378,7 @@ void SearchView::FillPreview( int idx )
     for( int h=0; h<res.hitnum; h++ )
     {
         const auto htype = LexiconDecodeType( res.hits[h] );
-        if( htype == T_Signature || htype == T_Header ) continue;
+        if( htype == T_Signature || htype == T_From || htype == T_Subject ) continue;
         const auto hpos = LexiconHitPos( res.hits[h] );
         uint8_t max = LexiconHitPosMask[htype];
 
