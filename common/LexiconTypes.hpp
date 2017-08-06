@@ -7,10 +7,10 @@
 enum LexiconType
 {
     T_Content,
-    T_Signature,
     T_Quote1,
     T_Quote2,
     T_Quote3,
+    T_Signature,
     T_Header,
     T_Wrote,
     NUM_LEXICON_TYPES
