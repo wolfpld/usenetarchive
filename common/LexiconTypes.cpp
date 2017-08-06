@@ -24,7 +24,7 @@ const uint8_t LexiconHitTypeEncoding[] = {
     0x00,   // 0xxx xxxx
     0x80,   // 100x xxxx
     0xA0,   // 101x xxxx
-    0xC0,   // 1100 xxxx
+    0xC0,   // 110x xxxx
     0xE0,   // 1110 xxxx
     0xF0,   // 1111 0xxx
     0xF8    // 1111 1xxx
@@ -34,7 +34,7 @@ const uint8_t LexiconHitPosMask[] = {
     0x7F,   // 0111 1111
     0x1F,   // 0001 1111
     0x1F,   // 0001 1111
-    0x0F,   // 0000 1111
+    0x1F,   // 0001 1111
     0x0F,   // 0000 1111
     0x07,   // 0000 0111
     0x07    // 0000 0111
