@@ -22,6 +22,7 @@
 #include "../common/MessageLogic.hpp"
 #include "../common/MsgIdHash.hpp"
 #include "../common/ReferencesParent.hpp"
+#include "../common/Slab.hpp"
 #include "../common/StringCompress.hpp"
 
 #include "../libuat/Archive.hpp"
@@ -166,11 +167,13 @@ int main( int argc, char** argv )
     // list of unique msg id
     const StringCompress* compress;
 
+    Slab<128*1024*1024> vecslab;
     std::vector<const uint8_t*> msgidvec;
     uint64_t unique;
     {
         uint64_t cnt = 0;
         std::set<const char*, CharUtil::LessComparator> msgidset;
+        Slab<128*1024*1024> setslab;
         for( int i=0; i<arch.size(); i++ )
         {
             const auto& a = *arch[i];
@@ -184,12 +187,17 @@ int main( int argc, char** argv )
                 }
 
                 const auto id = a.GetMessageId( j );
-                char unpack[2048];
-                a.UnpackMsgId( id, unpack );
+                auto unpack = (char*)setslab.Alloc( 2048 );
+                const auto sz = a.UnpackMsgId( id, unpack );
                 auto it = msgidset.find( unpack );
                 if( it == msgidset.end() )
                 {
-                    msgidset.emplace( strdup( unpack ) );
+                    msgidset.emplace( unpack );
+                    setslab.Unalloc( 2048 - sz );
+                }
+                else
+                {
+                    setslab.Unalloc( 2048 );
                 }
             }
         }
@@ -212,9 +220,10 @@ int main( int argc, char** argv )
                 fflush( stdout );
             }
 
-            uint8_t tmp[2048];
-            compress->Pack( v, tmp );
-            msgidvec.emplace_back( (const uint8_t*)strdup( (const char*)tmp ) );
+            auto pack = (uint8_t*)vecslab.Alloc( 2048 );
+            const auto sz = compress->Pack( v, pack );
+            vecslab.Unalloc( 2048 - sz );
+            msgidvec.emplace_back( pack );
         }
         printf( "\n" );
     }
