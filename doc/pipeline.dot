@@ -52,5 +52,5 @@ digraph
     dst1 -> query;
     dst1 -> browser;
     lexsort -> threadify;
-    threadify -> lexicon;
+    threadify -> lexsort;
 }
