@@ -125,37 +125,37 @@ int main( int argc, char** argv )
             die( sock );
         }
 
-        bool ok = true;
-        int article = v.second + 1;
+        const int start = v.second + 1;
+        int article = start;
         printf( "%s %i\r", v.first.c_str(), article );
         fflush( stdout );
         sprintf( tmp, "ARTICLE %i\r\n", article );
         sock.Send( tmp, strlen( tmp ) );
         if( !ReceiveMessage( sock, v.first.c_str(), article ) )
         {
-            printf( "%s no new messages", v.first.c_str() );
-            ok = false;
+            printf( "%s no new messages\n", v.first.c_str() );
         }
-
-        while( ok )
+        else
         {
-            article++;
-            printf( "%s %i\r", v.first.c_str(), article );
-            fflush( stdout );
-            sock.Send( "NEXT\r\n", 6 );
-            sock.Recv( buf, BufSize );
-            if( strncmp( buf, "223", 3 ) != 0 )
+            for(;;)
             {
-                break;
+                article++;
+                printf( "%s %i\r", v.first.c_str(), article );
+                fflush( stdout );
+                sock.Send( "NEXT\r\n", 6 );
+                sock.Recv( buf, BufSize );
+                if( strncmp( buf, "223", 3 ) != 0 )
+                {
+                    break;
+                }
+                sock.Send( "ARTICLE\r\n", 9 );
+                if( !ReceiveMessage( sock, v.first, article ) )
+                {
+                    break;
+                }
             }
-            sock.Send( "ARTICLE\r\n", 9 );
-            if( !ReceiveMessage( sock, v.first, article ) )
-            {
-                break;
-            }
+            printf( "%s %i..%i (+%i)\n", v.first.c_str(), start, article-1, article-start );
         }
-
-        printf( "\n" );
     }
 
     sock.Send( "QUIT\r\n", 6 );
