@@ -138,7 +138,7 @@ void Browser::Entry()
             break;
         case KEY_DC:
         case 'b':
-            MoveOrEnterAction( -m_mview.GetHeight() - 2 );
+            MoveOrEnterAction( -m_mview.GetHeight() + 2 );
             doupdate();
             break;
         case 'd':
