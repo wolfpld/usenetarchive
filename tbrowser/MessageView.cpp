@@ -139,6 +139,7 @@ void MessageView::Draw()
             waddch( m_win, ACS_VLINE );
             wattroff( m_win, COLOR_PAIR( 7 ) );
         }
+        if( m_lines[line].len == 0 ) continue;
         auto start = m_text + m_lines[line].offset;
         auto end = start + m_lines[line].len;
         if( m_lines[line].flags == L_Header && !m_lines[line].linebreak )
@@ -368,6 +369,11 @@ void MessageView::PrepareLines()
 
 void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
 {
+    if( len == 0 )
+    {
+        m_lines.emplace_back( Line { 0, 0, 0, false } );
+        return;
+    }
     auto ul = utflen( m_text + offset, m_text + offset + len );
     if( ul <= m_linesWidth )
     {
