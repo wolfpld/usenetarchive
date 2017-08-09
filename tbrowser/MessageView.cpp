@@ -328,7 +328,7 @@ void MessageView::PrepareLines()
                     strnicmpl( txt, "date: ", 6 ) == 0 ||
                     strnicmpl( txt, "to: ", 3 ) == 0 )
                 {
-                    BreakLine( offset, len, L_Header );
+                    BreakLine( offset, len, LineType::Header );
                 }
             }
         }
@@ -346,33 +346,11 @@ void MessageView::PrepareLines()
                 }
                 if( sig )
                 {
-                    BreakLine( offset, len, L_Signature );
+                    BreakLine( offset, len, LineType::Signature );
                 }
                 else
                 {
-                    auto test = txt;
-                    int level = QuotationLevel( test, end );
-                    switch( level )
-                    {
-                    case 0:
-                        BreakLine( offset, len, L_Quote0 );
-                        break;
-                    case 1:
-                        BreakLine( offset, len, L_Quote1 );
-                        break;
-                    case 2:
-                        BreakLine( offset, len, L_Quote2 );
-                        break;
-                    case 3:
-                        BreakLine( offset, len, L_Quote3 );
-                        break;
-                    case 4:
-                        BreakLine( offset, len, L_Quote4 );
-                        break;
-                    default:
-                        BreakLine( offset, len, L_Quote5 );
-                        break;
-                    }
+                    BreakLine( offset, len, LineType::Body );
                 }
             }
         }
@@ -387,14 +365,14 @@ void MessageView::AddEmptyLine()
     m_lines.emplace_back( Line { 0, 0, true } );
 }
 
-void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
+void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
 {
     assert( len != 0 );
     auto ul = utflen( m_text + offset, m_text + offset + len );
     if( ul <= m_linesWidth )
     {
         m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), 1, false } );
-        m_lineParts.emplace_back( LinePart { offset, len, flags, false } );
+        m_lineParts.emplace_back( LinePart { offset, len, L_Quote0, false } );
     }
     else
     {
@@ -421,7 +399,7 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
             }
 
             m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), 1, false } );
-            m_lineParts.emplace_back( LinePart { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
+            m_lineParts.emplace_back( LinePart { uint32_t( ptr - m_text ), uint32_t( e - ptr ), L_Quote0, br } );
             ptr = e;
             if( !br )
             {

@@ -41,6 +41,13 @@ private:
         L_LAST
     };
 
+    enum class LineType
+    {
+        Header,
+        Body,
+        Signature
+    };
+
     enum { OffsetBits = 30 };
     enum { LenBits = 30 };
     enum { FlagsBits = 3 };
@@ -60,7 +67,7 @@ private:
 
     void PrepareLines();
     void AddEmptyLine();
-    void BreakLine( uint32_t offset, uint32_t len, uint32_t flags );
+    void BreakLine( uint32_t offset, uint32_t len, LineType type );
     void PrintRot13( const char* start, const char* end );
     void PrintQuotes( const char*& start, int& len, int level );
 
