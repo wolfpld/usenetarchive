@@ -371,13 +371,13 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
 {
     if( len == 0 )
     {
-        m_lines.emplace_back( Line { 0, 0, 0, false } );
+        m_lines.emplace_back( LinePart { 0, 0, 0, false } );
         return;
     }
     auto ul = utflen( m_text + offset, m_text + offset + len );
     if( ul <= m_linesWidth )
     {
-        m_lines.emplace_back( Line { offset, len, flags, false } );
+        m_lines.emplace_back( LinePart { offset, len, flags, false } );
     }
     else
     {
@@ -403,7 +403,7 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
                 if( e == ptr ) e = original;
             }
 
-            m_lines.emplace_back( Line { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
+            m_lines.emplace_back( LinePart { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
             ptr = e;
             if( !br )
             {

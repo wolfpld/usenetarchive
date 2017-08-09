@@ -44,7 +44,7 @@ private:
     enum { OffsetBits = 30 };
     enum { LenBits = 30 };
     enum { FlagsBits = 3 };
-    struct Line
+    struct LinePart
     {
         uint64_t offset     : OffsetBits;
         uint64_t len        : LenBits;
@@ -58,7 +58,7 @@ private:
     void PrintQuotes( const char*& start, int& len, int level );
 
     ExpandingBuffer m_eb;
-    std::vector<Line> m_lines;
+    std::vector<LinePart> m_lines;
     Archive* m_archive;
     PersistentStorage& m_storage;
     const char* m_text;
@@ -70,7 +70,7 @@ private:
     bool m_allHeaders;
     bool m_rot13;
 
-    static_assert( sizeof( Line ) == sizeof( uint64_t ), "Size of Line greater than 8 bytes." );
+    static_assert( sizeof( LinePart ) == sizeof( uint64_t ), "Size of LinePart greater than 8 bytes." );
     static_assert( ( 1 << FlagsBits ) >= L_LAST, "Not enough bits for all flags." );
 };
 
