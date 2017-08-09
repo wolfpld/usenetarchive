@@ -314,7 +314,7 @@ void MessageView::PrepareLines()
         {
             if( len == 0 )
             {
-                BreakLine( offset, len, L_Quote0 );
+                AddEmptyLine();
                 headers = false;
                 while( *end == '\n' ) end++;
                 end--;
@@ -334,38 +334,45 @@ void MessageView::PrepareLines()
         }
         else
         {
-            if( strncmp( "-- \n", txt, 4 ) == 0 )
+            if( len == 0 )
             {
-                sig = true;
-            }
-            if( sig )
-            {
-                BreakLine( offset, len, L_Signature );
+                AddEmptyLine();
             }
             else
             {
-                auto test = txt;
-                int level = QuotationLevel( test, end );
-                switch( level )
+                if( strncmp( "-- \n", txt, 4 ) == 0 )
                 {
-                case 0:
-                    BreakLine( offset, len, L_Quote0 );
-                    break;
-                case 1:
-                    BreakLine( offset, len, L_Quote1 );
-                    break;
-                case 2:
-                    BreakLine( offset, len, L_Quote2 );
-                    break;
-                case 3:
-                    BreakLine( offset, len, L_Quote3 );
-                    break;
-                case 4:
-                    BreakLine( offset, len, L_Quote4 );
-                    break;
-                default:
-                    BreakLine( offset, len, L_Quote5 );
-                    break;
+                    sig = true;
+                }
+                if( sig )
+                {
+                    BreakLine( offset, len, L_Signature );
+                }
+                else
+                {
+                    auto test = txt;
+                    int level = QuotationLevel( test, end );
+                    switch( level )
+                    {
+                    case 0:
+                        BreakLine( offset, len, L_Quote0 );
+                        break;
+                    case 1:
+                        BreakLine( offset, len, L_Quote1 );
+                        break;
+                    case 2:
+                        BreakLine( offset, len, L_Quote2 );
+                        break;
+                    case 3:
+                        BreakLine( offset, len, L_Quote3 );
+                        break;
+                    case 4:
+                        BreakLine( offset, len, L_Quote4 );
+                        break;
+                    default:
+                        BreakLine( offset, len, L_Quote5 );
+                        break;
+                    }
                 }
             }
         }
@@ -375,13 +382,14 @@ void MessageView::PrepareLines()
     while( !m_lines.empty() && m_lines.back().empty ) m_lines.pop_back();
 }
 
+void MessageView::AddEmptyLine()
+{
+    m_lines.emplace_back( Line { 0, 0, true } );
+}
+
 void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
 {
-    if( len == 0 )
-    {
-        m_lines.emplace_back( Line { 0, 0, true } );
-        return;
-    }
+    assert( len != 0 );
     auto ul = utflen( m_text + offset, m_text + offset + len );
     if( ul <= m_linesWidth )
     {
