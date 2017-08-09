@@ -20,7 +20,8 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_allHeaders( false )
     , m_rot13( false )
 {
-    m_lines.reserve( 512 );
+    m_lineParts.reserve( 2048 );
+    m_lines.reserve( 1024 );
 }
 
 void MessageView::Reset( Archive& archive )
@@ -28,6 +29,7 @@ void MessageView::Reset( Archive& archive )
     Close();
     m_archive = &archive;
     m_idx = -1;
+    m_lineParts.clear();
     m_lines.clear();
 }
 
@@ -139,83 +141,88 @@ void MessageView::Draw()
             waddch( m_win, ACS_VLINE );
             wattroff( m_win, COLOR_PAIR( 7 ) );
         }
-        if( m_lines[line].len == 0 ) continue;
-        auto start = m_text + m_lines[line].offset;
-        auto end = start + m_lines[line].len;
-        if( m_lines[line].flags == L_Header && !m_lines[line].linebreak )
+        if( m_lines[line].empty ) continue;
+        const LinePart* part = m_lineParts.data() + m_lines[line].idx;
+        const int pnum = m_lines[line].parts;
+        for( int p=0; p<pnum; p++, part++ )
         {
-            auto hend = start;
-            while( *hend != ' ' ) hend++;
-            wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
-            wprintw( m_win, "%.*s", hend - start, start );
-            wattroff( m_win, COLOR_PAIR( 2 ) );
-            wattron( m_win, COLOR_PAIR( 7 ) );
-            if( m_rot13 )
+            auto start = m_text + part->offset;
+            auto end = start + part->len;
+            if( part->flags == L_Header && !part->linebreak )
             {
-                PrintRot13( hend, end );
-            }
-            else
-            {
-                wprintw( m_win, "%.*s", end - hend, hend );
-            }
-            wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
-        }
-        else
-        {
-            if( m_lines[line].linebreak )
-            {
-                wattron( m_win, COLOR_PAIR( 10 ) );
-                waddch( m_win, '+' );
-                wattroff( m_win, COLOR_PAIR( 10 ) );
-            }
-            int len = end - start;
-            switch( m_lines[line].flags )
-            {
-            case L_Header:
-                wattron( m_win, COLOR_PAIR( 7 ) | A_BOLD );
-                break;
-            case L_Signature:
-                wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
-                break;
-            case L_Quote1:
-            case L_Quote2:
-            case L_Quote3:
-            case L_Quote4:
-            case L_Quote5:
-                if( !m_lines[line].linebreak )
+                auto hend = start;
+                while( *hend != ' ' ) hend++;
+                wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+                wprintw( m_win, "%.*s", hend - start, start );
+                wattroff( m_win, COLOR_PAIR( 2 ) );
+                wattron( m_win, COLOR_PAIR( 7 ) );
+                if( m_rot13 )
                 {
-                    PrintQuotes( start, len, m_lines[line].flags - L_Quote1 + 1 );
+                    PrintRot13( hend, end );
                 }
-                wattron( m_win, QuoteFlags[m_lines[line].flags - L_Quote1] );
-                break;
-            default:
-                break;
-            }
-            if( m_rot13 )
-            {
-                PrintRot13( start, end );
+                else
+                {
+                    wprintw( m_win, "%.*s", end - hend, hend );
+                }
+                wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
             }
             else
             {
-                wprintw( m_win, "%.*s", len, start );
-            }
-            switch( m_lines[line].flags )
-            {
-            case L_Header:
-                wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
-                break;
-            case L_Signature:
-                wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
-                break;
-            case L_Quote1:
-            case L_Quote2:
-            case L_Quote3:
-            case L_Quote4:
-            case L_Quote5:
-                wattroff( m_win, QuoteFlags[m_lines[line].flags - L_Quote1] );
-                break;
-            default:
-                break;
+                if( part->linebreak )
+                {
+                    wattron( m_win, COLOR_PAIR( 10 ) );
+                    waddch( m_win, '+' );
+                    wattroff( m_win, COLOR_PAIR( 10 ) );
+                }
+                int len = end - start;
+                switch( part->flags )
+                {
+                case L_Header:
+                    wattron( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                    break;
+                case L_Signature:
+                    wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+                    break;
+                case L_Quote1:
+                case L_Quote2:
+                case L_Quote3:
+                case L_Quote4:
+                case L_Quote5:
+                    if( !part->linebreak )
+                    {
+                        PrintQuotes( start, len, part->flags - L_Quote1 + 1 );
+                    }
+                    wattron( m_win, QuoteFlags[part->flags - L_Quote1] );
+                    break;
+                default:
+                    break;
+                }
+                if( m_rot13 )
+                {
+                    PrintRot13( start, end );
+                }
+                else
+                {
+                    wprintw( m_win, "%.*s", len, start );
+                }
+                switch( part->flags )
+                {
+                case L_Header:
+                    wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                    break;
+                case L_Signature:
+                    wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+                    break;
+                case L_Quote1:
+                case L_Quote2:
+                case L_Quote3:
+                case L_Quote4:
+                case L_Quote5:
+                    wattroff( m_win, QuoteFlags[part->flags - L_Quote1] );
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
@@ -290,6 +297,7 @@ void MessageView::PrepareLines()
     {
         m_linesWidth = m_linesWidth - (m_linesWidth/2) - 1;
     }
+    m_lineParts.clear();
     m_lines.clear();
     if( m_linesWidth < 2 ) return;
     auto txt = m_text;
@@ -364,20 +372,21 @@ void MessageView::PrepareLines()
         if( *end == '\0' ) break;
         txt = end + 1;
     }
-    while( !m_lines.empty() && m_lines.back().len == 0 ) m_lines.pop_back();
+    while( !m_lines.empty() && m_lines.back().empty ) m_lines.pop_back();
 }
 
 void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
 {
     if( len == 0 )
     {
-        m_lines.emplace_back( LinePart { 0, 0, 0, false } );
+        m_lines.emplace_back( Line { 0, 0, true } );
         return;
     }
     auto ul = utflen( m_text + offset, m_text + offset + len );
     if( ul <= m_linesWidth )
     {
-        m_lines.emplace_back( LinePart { offset, len, flags, false } );
+        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), 1, false } );
+        m_lineParts.emplace_back( LinePart { offset, len, flags, false } );
     }
     else
     {
@@ -403,7 +412,8 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, uint32_t flags )
                 if( e == ptr ) e = original;
             }
 
-            m_lines.emplace_back( LinePart { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
+            m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), 1, false } );
+            m_lineParts.emplace_back( LinePart { uint32_t( ptr - m_text ), uint32_t( e - ptr ), flags, br } );
             ptr = e;
             if( !br )
             {

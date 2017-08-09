@@ -51,6 +51,12 @@ private:
         uint64_t flags      : FlagsBits;
         uint64_t linebreak  : 1;
     };
+    struct Line
+    {
+        uint32_t idx        : 21;
+        uint32_t parts      : 10;
+        uint32_t empty      : 1;
+    };
 
     void PrepareLines();
     void BreakLine( uint32_t offset, uint32_t len, uint32_t flags );
@@ -58,7 +64,8 @@ private:
     void PrintQuotes( const char*& start, int& len, int level );
 
     ExpandingBuffer m_eb;
-    std::vector<LinePart> m_lines;
+    std::vector<LinePart> m_lineParts;
+    std::vector<Line> m_lines;
     Archive* m_archive;
     PersistentStorage& m_storage;
     const char* m_text;
@@ -71,6 +78,7 @@ private:
     bool m_rot13;
 
     static_assert( sizeof( LinePart ) == sizeof( uint64_t ), "Size of LinePart greater than 8 bytes." );
+    static_assert( sizeof( Line ) == sizeof( uint32_t ), "Size of Line greater than 4 bytes." );
     static_assert( ( 1 << FlagsBits ) >= L_LAST, "Not enough bits for all flags." );
 };
 
