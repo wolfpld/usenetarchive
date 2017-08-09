@@ -148,81 +148,68 @@ void MessageView::Draw()
         {
             auto start = m_text + part->offset;
             auto end = start + part->len;
-            if( part->flags == L_Header && !part->linebreak )
+            if( part->linebreak )
             {
-                auto hend = start;
-                while( *hend != ' ' ) hend++;
+                wattron( m_win, COLOR_PAIR( 10 ) );
+                waddch( m_win, '+' );
+                wattroff( m_win, COLOR_PAIR( 10 ) );
+            }
+            int len = end - start;
+            bool rot13allowed = true;
+            switch( part->flags )
+            {
+            case L_HeaderName:
+                rot13allowed = false;
                 wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
-                wprintw( m_win, "%.*s", hend - start, start );
-                wattroff( m_win, COLOR_PAIR( 2 ) );
-                wattron( m_win, COLOR_PAIR( 7 ) );
-                if( m_rot13 )
+                break;
+            case L_HeaderBody:
+                wattron( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                break;
+            case L_Signature:
+                wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+                break;
+            case L_Quote1:
+            case L_Quote2:
+            case L_Quote3:
+            case L_Quote4:
+            case L_Quote5:
+                if( !part->linebreak )
                 {
-                    PrintRot13( hend, end );
+                    PrintQuotes( start, len, part->flags - L_Quote1 + 1 );
                 }
-                else
-                {
-                    wprintw( m_win, "%.*s", end - hend, hend );
-                }
-                wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                wattron( m_win, QuoteFlags[part->flags - L_Quote1] );
+                break;
+            default:
+                break;
+            }
+            if( m_rot13 && rot13allowed )
+            {
+                PrintRot13( start, end );
             }
             else
             {
-                if( part->linebreak )
-                {
-                    wattron( m_win, COLOR_PAIR( 10 ) );
-                    waddch( m_win, '+' );
-                    wattroff( m_win, COLOR_PAIR( 10 ) );
-                }
-                int len = end - start;
-                switch( part->flags )
-                {
-                case L_Header:
-                    wattron( m_win, COLOR_PAIR( 7 ) | A_BOLD );
-                    break;
-                case L_Signature:
-                    wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
-                    break;
-                case L_Quote1:
-                case L_Quote2:
-                case L_Quote3:
-                case L_Quote4:
-                case L_Quote5:
-                    if( !part->linebreak )
-                    {
-                        PrintQuotes( start, len, part->flags - L_Quote1 + 1 );
-                    }
-                    wattron( m_win, QuoteFlags[part->flags - L_Quote1] );
-                    break;
-                default:
-                    break;
-                }
-                if( m_rot13 )
-                {
-                    PrintRot13( start, end );
-                }
-                else
-                {
-                    wprintw( m_win, "%.*s", len, start );
-                }
-                switch( part->flags )
-                {
-                case L_Header:
-                    wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
-                    break;
-                case L_Signature:
-                    wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
-                    break;
-                case L_Quote1:
-                case L_Quote2:
-                case L_Quote3:
-                case L_Quote4:
-                case L_Quote5:
-                    wattroff( m_win, QuoteFlags[part->flags - L_Quote1] );
-                    break;
-                default:
-                    break;
-                }
+                wprintw( m_win, "%.*s", len, start );
+            }
+            switch( part->flags )
+            {
+            case L_HeaderName:
+                wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+                break;
+            case L_HeaderBody:
+                wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
+                break;
+            case L_Signature:
+                wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
+                break;
+            case L_Quote1:
+            case L_Quote2:
+            case L_Quote3:
+            case L_Quote4:
+            case L_Quote5:
+                wattroff( m_win, QuoteFlags[part->flags - L_Quote1] );
+                break;
+            default:
+                break;
             }
         }
     }
@@ -368,11 +355,30 @@ void MessageView::AddEmptyLine()
 void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
 {
     assert( len != 0 );
+
+    std::vector<LinePart> parts;
+
+    switch( type )
+    {
+    case LineType::Header:
+        SplitHeader( offset, len, parts );
+        break;
+    case LineType::Body:
+        parts.emplace_back( LinePart { offset, len, L_Quote0, false } );
+        break;
+    case LineType::Signature:
+        parts.emplace_back( LinePart { offset, len, L_Signature, false } );
+        break;
+    }
+
     auto ul = utflen( m_text + offset, m_text + offset + len );
     if( ul <= m_linesWidth )
     {
-        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), 1, false } );
-        m_lineParts.emplace_back( LinePart { offset, len, L_Quote0, false } );
+        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), (uint32_t)parts.size(), false } );
+        for( auto& part : parts )
+        {
+            m_lineParts.emplace_back( part );
+        }
     }
     else
     {
@@ -456,5 +462,29 @@ void MessageView::PrintQuotes( const char*& start, int& len, int level )
         wprintw( m_win, "%.*s", next - start + 1, start );
         start = next+1;
         wattroff( m_win, QuoteFlags[i] );
+    }
+}
+
+void MessageView::SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts )
+{
+    auto origin = m_text + offset;
+    auto str = origin;
+    int i;
+    for( i=0; i<len; i++ )
+    {
+        if( *str++ == ':' ) break;
+    }
+
+    uint32_t nameLen = str - origin;
+    uint32_t bodyLen = len - nameLen;
+
+    if( bodyLen < 2 )
+    {
+        parts.emplace_back( LinePart { offset, len, L_HeaderBody } );
+    }
+    else
+    {
+        parts.emplace_back( LinePart { offset, nameLen, L_HeaderName } );
+        parts.emplace_back( LinePart { offset + nameLen, bodyLen, L_HeaderBody } );
     }
 }

@@ -30,7 +30,8 @@ public:
 private:
     enum
     {
-        L_Header,
+        L_HeaderName,
+        L_HeaderBody,
         L_Quote0,
         L_Quote1,
         L_Quote2,
@@ -48,9 +49,9 @@ private:
         Signature
     };
 
-    enum { OffsetBits = 30 };
+    enum { OffsetBits = 29 };
     enum { LenBits = 30 };
-    enum { FlagsBits = 3 };
+    enum { FlagsBits = 4 };
     struct LinePart
     {
         uint64_t offset     : OffsetBits;
@@ -70,6 +71,8 @@ private:
     void BreakLine( uint32_t offset, uint32_t len, LineType type );
     void PrintRot13( const char* start, const char* end );
     void PrintQuotes( const char*& start, int& len, int level );
+
+    void SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts );
 
     ExpandingBuffer m_eb;
     std::vector<LinePart> m_lineParts;
