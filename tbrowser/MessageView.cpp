@@ -400,8 +400,24 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
                 if( e == ptr ) e = original;
             }
 
-            m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), 1, false } );
-            m_lineParts.emplace_back( LinePart { uint32_t( ptr - m_text ), uint32_t( e - ptr ), L_Quote0, br } );
+            const uint32_t firstPart = m_lineParts.size();
+            uint32_t partsNum = 0;
+            auto partBr = br;
+            for( const auto& v : parts )
+            {
+                auto ps = m_text + v.offset;
+                auto pe = ps + v.len;
+
+                if( ptr >= pe || e <= ps ) continue;
+
+                const auto ss = std::max( ptr, ps );
+                const auto se = std::min( e, pe );
+
+                m_lineParts.emplace_back( LinePart { uint32_t( ss - m_text ), uint32_t( se - ss ), v.flags, partBr } );
+                partBr = false;
+                partsNum++;
+            }
+            m_lines.emplace_back( Line { firstPart, partsNum, false } );
             ptr = e;
             if( !br )
             {
