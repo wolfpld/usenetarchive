@@ -173,10 +173,6 @@ void MessageView::Draw()
             case L_Quote3:
             case L_Quote4:
             case L_Quote5:
-                if( !part->linebreak )
-                {
-                    PrintQuotes( start, len, part->flags - L_Quote1 + 1 );
-                }
                 wattron( m_win, QuoteFlags[part->flags - L_Quote1] );
                 break;
             default:
@@ -364,7 +360,7 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
         SplitHeader( offset, len, parts );
         break;
     case LineType::Body:
-        parts.emplace_back( LinePart { offset, len, L_Quote0, false } );
+        SplitBody( offset, len, parts );
         break;
     case LineType::Signature:
         parts.emplace_back( LinePart { offset, len, L_Signature, false } );
@@ -453,18 +449,6 @@ void MessageView::PrintRot13( const char* start, const char* end )
     wprintw( m_win, "%.*s", end - start, tmp );
 }
 
-void MessageView::PrintQuotes( const char*& start, int& len, int level )
-{
-    for( int i=0; i<level; i++ )
-    {
-        wattron( m_win, QuoteFlags[i] );
-        auto next = NextQuotationLevel( start );
-        wprintw( m_win, "%.*s", next - start + 1, start );
-        start = next+1;
-        wattroff( m_win, QuoteFlags[i] );
-    }
-}
-
 void MessageView::SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts )
 {
     auto origin = m_text + offset;
@@ -487,4 +471,21 @@ void MessageView::SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePa
         parts.emplace_back( LinePart { offset, nameLen, L_HeaderName } );
         parts.emplace_back( LinePart { offset + nameLen, bodyLen, L_HeaderBody } );
     }
+}
+
+void MessageView::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart>& parts )
+{
+    auto origin = m_text + offset;
+    auto str = origin;
+    auto test = str;
+    int level = std::min( QuotationLevel( test, origin + len ), 5 );
+
+    for( int i=0; i<level; i++ )
+    {
+        auto end = NextQuotationLevel( str ) + 1;
+        parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( end - str ), uint64_t( L_Quote1 + i ) } );
+        str = end;
+    }
+
+    parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( len - ( str - origin ) ), uint64_t( L_Quote0 + level ) } );
 }
