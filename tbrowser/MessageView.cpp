@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <ctype.h>
 
 #include "../common/Alloc.hpp"
 #include "../common/String.hpp"
@@ -516,6 +517,59 @@ void MessageView::SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePa
     {
         parts.emplace_back( LinePart { offset, nameLen, L_HeaderName } );
         parts.emplace_back( LinePart { offset + nameLen, bodyLen, L_HeaderBody } );
+    }
+}
+
+static int FindUrl( const char*& start, const char* end )
+{
+    assert( start <= end );
+    for(;;)
+    {
+        auto ptr = start;
+        while( ptr < end && *ptr != ':' ) ptr++;
+        if( ptr >= end ) return -1;
+
+        auto tmp = ptr;
+        while( ptr > start && isalpha( ((unsigned char*)ptr)[-1] ) ) ptr--;
+
+        // slrn: "all registered and reserved scheme names are >= 3 chars long"
+        if( tmp - ptr < 3 )
+        {
+            start = tmp + 1;
+            continue;
+        }
+        if( tmp - ptr == 4 && end - tmp >= 4 && memcmp( ptr, "news:", 5 ) == 0 )     // end - tmp >= 4  ->  ':' + a@b
+        {
+            tmp++;
+            bool brackets = false;
+            if( *tmp == '<' )
+            {
+                brackets = true;
+                tmp++;
+            }
+            while( tmp < end && *tmp != ' ' && *tmp != '\t' && *tmp != '<' && *tmp != '>' ) tmp++;
+            if( tmp < end && brackets && *tmp == '>' ) tmp++;
+        }
+        else if( end - tmp < 3 || tmp[1] != '/' || tmp[2] != '/' )
+        {
+            start = tmp + 1;
+            continue;
+        }
+        else
+        {
+            assert( tmp[1] == '/' && tmp[2] == '/' );
+            tmp += 3;
+            while( tmp < end && *tmp != ' ' && *tmp != '\t' && *tmp != '"' && *tmp != '{' && *tmp != '}' && *tmp != '<' && *tmp != '>' ) tmp++;
+        }
+
+        while( tmp > ptr && ( *(tmp-1) == '.' || *(tmp-1) == ',' || *(tmp-1) == ';' || *(tmp-1) == ':' || *(tmp-1) == '(' || *(tmp-1) == ')' ) ) tmp--;
+
+        start = tmp;
+        if( tmp - ptr < 6 ) continue;
+        if( tmp[-3] == ':' && tmp[-2] == '/' && tmp[-1] == '/' ) continue;
+
+        start = ptr;
+        return tmp - ptr;
     }
 }
 
