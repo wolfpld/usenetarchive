@@ -79,7 +79,7 @@ private:
 
     void PrepareLines();
     void AddEmptyLine();
-    void BreakLine( uint32_t offset, uint32_t len, LineType type );
+    void BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& partsTmpBuf );
     void PrintRot13( const char* start, const char* end );
 
     void SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts );

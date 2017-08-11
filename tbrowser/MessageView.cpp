@@ -324,6 +324,8 @@ void MessageView::PrepareLines()
     m_lineParts.clear();
     m_lines.clear();
     if( m_linesWidth < 2 ) return;
+    std::vector<LinePart> partsTmpBuf;
+    partsTmpBuf.reserve( 16 );
     auto txt = m_text;
     bool headers = true;
     bool sig = false;
@@ -352,7 +354,7 @@ void MessageView::PrepareLines()
                     strnicmpl( txt, "date: ", 6 ) == 0 ||
                     strnicmpl( txt, "to: ", 3 ) == 0 )
                 {
-                    BreakLine( offset, len, LineType::Header );
+                    BreakLine( offset, len, LineType::Header, partsTmpBuf );
                 }
             }
         }
@@ -370,11 +372,11 @@ void MessageView::PrepareLines()
                 }
                 if( sig )
                 {
-                    BreakLine( offset, len, LineType::Signature );
+                    BreakLine( offset, len, LineType::Signature, partsTmpBuf );
                 }
                 else
                 {
-                    BreakLine( offset, len, LineType::Body );
+                    BreakLine( offset, len, LineType::Body, partsTmpBuf );
                 }
             }
         }
@@ -389,11 +391,11 @@ void MessageView::AddEmptyLine()
     m_lines.emplace_back( Line { 0, 0, true } );
 }
 
-void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
+void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& parts )
 {
     assert( len != 0 );
 
-    std::vector<LinePart> parts;
+    parts.clear();
 
     switch( type )
     {
