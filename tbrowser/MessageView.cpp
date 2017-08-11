@@ -606,5 +606,66 @@ void MessageView::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart
 
 void MessageView::Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts )
 {
-    parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( end - begin ), flags } );
+    assert( begin <= end );
+    auto str = begin;
+    for(;;)
+    {
+        while( str < end && *str != '_' && *str != '*' && *str != '/' ) str++;
+        if( str >= end )
+        {
+            parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( end - begin ), flags } );
+            return;
+        }
+        auto ch = *str;
+        if( ( str > begin && ( str[-1] == ch || isalnum( ((unsigned char*)str)[-1] ) ) ) ||
+            ( end - str > 1 && !isalnum( ((unsigned char*)str)[1] ) ) )
+        {
+            str++;
+            continue;
+        }
+
+        auto tmp = str + 1;
+        while( tmp < end && *tmp != '_' && *tmp != '*' && *tmp != '/' ) tmp++;
+        if( tmp >= end )
+        {
+            parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( end - begin ), flags } );
+            return;
+        }
+        if( *tmp != ch ||
+            ( tmp > begin && !isalnum( ((unsigned char*)tmp)[-1] ) && !ispunct( ((unsigned char*)tmp)[-1] ) ) ||
+            ( end - tmp > 1 && ( tmp[1] == ch || isalnum( ((unsigned char*)tmp)[1] ) ) ) )
+        {
+            str++;
+            continue;
+        }
+
+        DecoType deco;
+        switch( ch )
+        {
+        case '_':
+            deco = D_Underline;
+            break;
+        case '*':
+            deco = D_Bold;
+            break;
+        case '/':
+            deco = D_Italics;
+            break;
+        default:
+            assert( false );
+            deco = D_None;
+            break;
+        }
+
+        tmp++;
+        if( str > begin )
+        {
+            parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( str - begin ), flags } );
+        }
+        parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( tmp - str ), flags, uint64_t( deco ) } );
+
+        begin = tmp;
+        if( begin >= end ) return;
+        str = begin;
+    }
 }
