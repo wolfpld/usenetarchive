@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <curses.h>
 
+#include "../common/MessageLogic.hpp"
 #include "../libuat/Archive.hpp"
 #include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
@@ -286,6 +287,12 @@ void Browser::Entry()
             auto msgid = m_bottom.Query( "MsgID: " );
             if( !msgid.empty() )
             {
+                if( !IsMsgId( msgid.c_str(), msgid.c_str() + msgid.size() ) )
+                {
+                    m_bottom.Status( "Invalid message id." );
+                    doupdate();
+                    break;
+                }
                 uint8_t pack[2048];
                 m_archive->PackMsgId( msgid.c_str(), pack );
                 auto idx = m_archive->GetMessageIndex( pack );
