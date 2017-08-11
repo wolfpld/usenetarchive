@@ -575,17 +575,31 @@ static int FindUrl( const char*& start, const char* end )
 
 void MessageView::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart>& parts )
 {
-    auto origin = m_text + offset;
-    auto str = origin;
+    auto str = m_text + offset;
+    const auto end = str + len;
     auto test = str;
-    int level = std::min( QuotationLevel( test, origin + len ), 5 );
+    int level = std::min( QuotationLevel( test, end ), 5 );
 
     for( int i=0; i<level; i++ )
     {
-        auto end = NextQuotationLevel( str ) + 1;
+        const auto end = NextQuotationLevel( str ) + 1;
         parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( end - str ), uint64_t( L_Quote1 + i ) } );
         str = end;
     }
 
-    parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( len - ( str - origin ) ), uint64_t( L_Quote0 + level ) } );
+    test = str;
+    int urlsize;
+    while( ( urlsize = FindUrl( test, end ) ) != -1 )
+    {
+        if( test != str )
+        {
+            parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( test - str ), uint64_t( L_Quote0 + level ) } );
+        }
+        parts.emplace_back( LinePart { uint64_t( test - m_text ), uint64_t( urlsize ), uint64_t( L_Quote0 + level ), uint64_t( D_Underline ) } );
+
+        str = test + urlsize;
+        test = str;
+    }
+
+    parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( end - str ), uint64_t( L_Quote0 + level ) } );
 }
