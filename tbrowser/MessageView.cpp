@@ -593,7 +593,7 @@ void MessageView::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart
     {
         if( test != str )
         {
-            parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( test - str ), uint64_t( L_Quote0 + level ) } );
+            Decorate( str, test, L_Quote0 + level, parts );
         }
         parts.emplace_back( LinePart { uint64_t( test - m_text ), uint64_t( urlsize ), uint64_t( L_Quote0 + level ), uint64_t( D_Underline ) } );
 
@@ -601,5 +601,10 @@ void MessageView::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart
         test = str;
     }
 
-    parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( end - str ), uint64_t( L_Quote0 + level ) } );
+    Decorate( str, end, L_Quote0 + level, parts );
+}
+
+void MessageView::Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts )
+{
+    parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( end - begin ), flags } );
 }

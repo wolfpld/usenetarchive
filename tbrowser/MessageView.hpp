@@ -84,6 +84,7 @@ private:
 
     void SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts );
     void SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart>& parts );
+    void Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts );
 
     ExpandingBuffer m_eb;
     std::vector<LinePart> m_lineParts;
