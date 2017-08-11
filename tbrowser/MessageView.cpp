@@ -181,12 +181,17 @@ void MessageView::Draw()
             }
             switch( part->deco )
             {
+#ifdef _MSC_VER
+            case D_Underline:
+            case D_Italics:
+#else
             case D_Underline:
                 wattron( m_win, A_UNDERLINE );
                 break;
             case D_Italics:
                 wattron( m_win, A_ITALIC );
                 break;
+#endif
             case D_Bold:
                 wattron( m_win, A_BOLD );
                 break;
@@ -225,12 +230,17 @@ void MessageView::Draw()
             }
             switch( part->deco )
             {
+#ifdef _MSC_VER
+            case D_Underline:
+            case D_Italics:
+#else
             case D_Underline:
                 wattroff( m_win, A_UNDERLINE );
                 break;
             case D_Italics:
                 wattroff( m_win, A_ITALIC );
                 break;
+#endif
             case D_Bold:
                 wattroff( m_win, A_BOLD );
                 break;
