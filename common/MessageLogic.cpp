@@ -96,8 +96,11 @@ bool IsMsgId( const char* begin, const char* end )
             a++;
             std::swap( u, h );
         }
+        else
+        {
+            h++;
+        }
         begin++;
-        h++;
     }
     return a == 1 && u > 0 && h > 0;
 }
