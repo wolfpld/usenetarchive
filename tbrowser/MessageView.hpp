@@ -28,7 +28,7 @@ public:
     uint32_t DisplayedMessage() const { return m_idx; }
 
 private:
-    enum
+    enum Flags
     {
         L_HeaderName,
         L_HeaderBody,
@@ -42,6 +42,15 @@ private:
         L_LAST
     };
 
+    enum DecoType
+    {
+        D_None,
+        D_Underline,
+        D_Italics,
+        D_Bold,
+        D_LAST
+    };
+
     enum class LineType
     {
         Header,
@@ -49,14 +58,16 @@ private:
         Signature
     };
 
-    enum { OffsetBits = 29 };
-    enum { LenBits = 30 };
+    enum { OffsetBits = 28 };
+    enum { LenBits = 29 };
     enum { FlagsBits = 4 };
+    enum { DecoBits = 2 };
     struct LinePart
     {
         uint64_t offset     : OffsetBits;
         uint64_t len        : LenBits;
         uint64_t flags      : FlagsBits;
+        uint64_t deco       : DecoBits;
         uint64_t linebreak  : 1;
     };
     struct Line
@@ -91,6 +102,7 @@ private:
     static_assert( sizeof( LinePart ) == sizeof( uint64_t ), "Size of LinePart greater than 8 bytes." );
     static_assert( sizeof( Line ) == sizeof( uint32_t ), "Size of Line greater than 4 bytes." );
     static_assert( ( 1 << FlagsBits ) >= L_LAST, "Not enough bits for all flags." );
+    static_assert( ( 1 << DecoBits ) >= D_LAST, "Not enough bits for all decorations." );
 };
 
 #endif

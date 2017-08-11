@@ -178,6 +178,21 @@ void MessageView::Draw()
             default:
                 break;
             }
+            switch( part->deco )
+            {
+            case D_Underline:
+                wattron( m_win, A_UNDERLINE );
+                break;
+            case D_Italics:
+                wattron( m_win, A_ITALIC );
+                break;
+            case D_Bold:
+                wattron( m_win, A_BOLD );
+                break;
+            case D_None:
+            default:
+                break;
+            }
             if( m_rot13 && rot13allowed )
             {
                 PrintRot13( start, end );
@@ -204,6 +219,21 @@ void MessageView::Draw()
             case L_Quote5:
                 wattroff( m_win, QuoteFlags[part->flags - L_Quote1] );
                 break;
+            default:
+                break;
+            }
+            switch( part->deco )
+            {
+            case D_Underline:
+                wattroff( m_win, A_UNDERLINE );
+                break;
+            case D_Italics:
+                wattroff( m_win, A_ITALIC );
+                break;
+            case D_Bold:
+                wattroff( m_win, A_BOLD );
+                break;
+            case D_None:
             default:
                 break;
             }
@@ -363,7 +393,7 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
         SplitBody( offset, len, parts );
         break;
     case LineType::Signature:
-        parts.emplace_back( LinePart { offset, len, L_Signature, false } );
+        parts.emplace_back( LinePart { offset, len, L_Signature, D_None, false } );
         break;
     }
 
@@ -413,7 +443,7 @@ void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type )
                 const auto ss = std::max( ptr, ps );
                 const auto se = std::min( e, pe );
 
-                m_lineParts.emplace_back( LinePart { uint32_t( ss - m_text ), uint32_t( se - ss ), v.flags, partBr } );
+                m_lineParts.emplace_back( LinePart { uint32_t( ss - m_text ), uint32_t( se - ss ), v.flags, v.deco, partBr } );
                 partBr = false;
                 partsNum++;
             }
