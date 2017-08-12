@@ -32,7 +32,7 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
     {
         auto part = data.tempSubStringBetween( p0, p1 );
         auto len = part.length();
-        if( len >= LexiconMinLen && len <= LexiconMaxLen )
+        if( len >= LexiconMinLen )
         {
             std::string str;
             part.toUTF8String( str );
@@ -52,7 +52,7 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
                 len--;
             }
 
-            if( len > 2 )
+            if( len >= LexiconMinLen && len <= LexiconMaxLen )
             {
                 if( origlen == len )
                 {
