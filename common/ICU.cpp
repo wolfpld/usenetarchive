@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <ctype.h>
 #include <unicode/locid.h>
 #include <unicode/brkiter.h>
 #include <unicode/unistr.h>
@@ -12,6 +11,21 @@ UErrorCode wordItErr = U_ZERO_ERROR;
 auto wordIt = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), wordItErr );
 
 Slab<256*1024> tmpSlab;
+
+static inline bool _isalpha( char c )
+{
+    return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' );
+}
+
+static inline bool _isdigit( char c )
+{
+    return c >= '0' && c <= '9';
+}
+
+static inline bool _isalnum( char c )
+{
+    return _isalpha( c ) || _isdigit( c );
+}
 
 void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
@@ -108,11 +122,11 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
         bptr = buf;
         for(;;)
         {
-            while( bptr < bend && !isalnum( *bptr ) ) bptr++;
+            while( bptr < bend && !_isalnum( *bptr ) ) bptr++;
             auto e = bptr+1;
-            while( e < bend && ( isalnum( *e ) || *e == '_' || ( e < bend-1 && (
-                    ( isalpha( e[-1] ) && isalpha( e[1] ) && ( *e == ':' || *e == '.' || *e == '\'' ) ) ||
-                    ( isdigit( e[-1] ) && isdigit( e[1] ) && ( *e == ',' || *e == '.' || *e == '\'' || *e == ';' ) )
+            while( e < bend && ( _isalnum( *e ) || *e == '_' || ( e < bend-1 && (
+                    ( _isalpha( e[-1] ) && _isalpha( e[1] ) && ( *e == ':' || *e == '.' || *e == '\'' ) ) ||
+                    ( _isdigit( e[-1] ) && _isdigit( e[1] ) && ( *e == ',' || *e == '.' || *e == '\'' || *e == ';' ) )
                 ) ) ) ) e++;
             while( e > bptr+2 && e[-1] == '_' ) e--;
             auto len = e - bptr;
