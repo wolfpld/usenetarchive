@@ -73,6 +73,8 @@ public:
     size_t RepackMsgId( const uint8_t* in, uint8_t* out, const StringCompress& other ) const { return m_compress.Repack( in, out, other ); }
     const StringCompress& GetCompress() const { return m_compress; }
 
+    bool HasLexDist() const { return (bool)m_lexdist; }
+
 private:
     Archive( const std::string& dir );
     Archive( const PackageAccess* pkg );

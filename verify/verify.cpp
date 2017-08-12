@@ -252,6 +252,16 @@ int main( int argc, char** argv )
         }
     }
 
+    // lexdist
+    if( archive->HasLexDist() )
+    {
+        PrintInfo( State::Ok, "Lexicon distance data available" );
+    }
+    else
+    {
+        PrintInfo( State::Info, "No lexicon distance data" );
+    }
+
     // children total counts
     {
         std::vector<int> v( size, -1 );

@@ -39,8 +39,9 @@ v0.5 (xxxx-xx-xx)
   - Required to save Message ID compression codebook.
   - Old archives are now refused to be opened by libuat. Package utility still
     can handle them.
-- Check if all messages can be accessed using their Message IDs in verify
-  utility.
+- Improvements in verify utility:
+  - Check if all messages can be accessed using their Message IDs.
+  - Display info if lexicon distance data is missing.
 - Check for empty 'Subject:' field in extract-msgmeta utility.
 - Extraction of parent message from 'References:' field is now more relaxed.
 - Improvements to time stamp handling:
