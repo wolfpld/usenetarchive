@@ -42,6 +42,21 @@ public:
         m_offset -= size;
     }
 
+    void Reset()
+    {
+        if( m_buffer.size() > 1 )
+        {
+            for( int i=1; i<m_buffer.size(); i++ )
+            {
+                delete[] m_buffer[i];
+            }
+            m_ptr = m_buffer[0];
+            m_buffer.clear();
+            m_buffer.emplace_back( m_ptr );
+        }
+        m_offset = 0;
+    }
+
     Slab( const Slab& ) = delete;
     Slab( Slab&& ) = delete;
 
