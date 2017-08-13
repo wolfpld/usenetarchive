@@ -68,6 +68,8 @@
 #if !defined(spp_utils_h_guard_)
 #define spp_utils_h_guard_
 
+#include "../rpmalloc/rpmalloc.h"
+
 #if defined(_MSC_VER)
     #if (_MSC_VER >= 1600 )                      // vs2010 (1900 is vs2015)
         #include <functional>
@@ -385,23 +387,23 @@ public:
 
     pointer allocate(size_t n, const_pointer  /* unused */= 0) 
     {
-        return static_cast<pointer>(malloc(n * sizeof(T)));
+        return static_cast<pointer>(rpmalloc(n * sizeof(T)));
     }
 
     void deallocate(pointer p, size_t /* unused */) 
     {
-        free(p);
+        rpfree(p);
     }
 
     pointer reallocate(pointer p, size_t new_size) 
     {
-        return static_cast<pointer>(realloc(p, new_size * sizeof(T)));
+        return static_cast<pointer>(rprealloc(p, new_size * sizeof(T)));
     }
 
     // extra API to match spp_allocator interface
     pointer reallocate(pointer p, size_t /* old_size */, size_t new_size) 
     {
-        return static_cast<pointer>(realloc(p, new_size * sizeof(T)));
+        return static_cast<pointer>(rprealloc(p, new_size * sizeof(T)));
     }
 
     size_type max_size() const
