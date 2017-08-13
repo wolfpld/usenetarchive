@@ -19,7 +19,6 @@
 #include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
 
-#define SPP_INCLUDE_SPP_ALLOC 1
 #include "../contrib/sparsepp/spp.h"
 
 enum class HeaderType
