@@ -103,30 +103,31 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
     }
     else
     {
-        tmpSlab.Reset();
         const auto size = end - ptr;
-        auto buf = (char*)tmpSlab.Alloc( size );
-        auto bptr = buf;
-        const auto bend = buf + size;
+        const char* bptr;
         if( toLower )
         {
+            tmpSlab.Reset();
+            auto buf = (char*)tmpSlab.Alloc( size );
+            auto lc = buf;
             for( int i=0; i<size; i++ )
             {
                 if( *ptr >= 'A' && *ptr <= 'Z' )
                 {
-                    *bptr++ = *ptr++ - 'A' + 'a';
+                    *lc++ = *ptr++ - 'A' + 'a';
                 }
                 else
                 {
-                    *bptr++ = *ptr++;
+                    *lc++ = *ptr++;
                 }
             }
             bptr = buf;
         }
         else
         {
-            memcpy( buf, ptr, size );
+            bptr = ptr;
         }
+        const char* bend = bptr + size;
         for(;;)
         {
             while( bptr < bend && !_isalnum( *bptr ) ) bptr++;
