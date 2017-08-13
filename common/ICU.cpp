@@ -108,18 +108,25 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
         auto buf = (char*)tmpSlab.Alloc( size );
         auto bptr = buf;
         const auto bend = buf + size;
-        for( int i=0; i<size; i++ )
+        if( toLower )
         {
-            if( *ptr >= 'A' && *ptr <= 'Z' )
+            for( int i=0; i<size; i++ )
             {
-                *bptr++ = *ptr++ - 'A' + 'a';
+                if( *ptr >= 'A' && *ptr <= 'Z' )
+                {
+                    *bptr++ = *ptr++ - 'A' + 'a';
+                }
+                else
+                {
+                    *bptr++ = *ptr++;
+                }
             }
-            else
-            {
-                *bptr++ = *ptr++;
-            }
+            bptr = buf;
         }
-        bptr = buf;
+        else
+        {
+            memcpy( buf, ptr, size );
+        }
         for(;;)
         {
             while( bptr < bend && !_isalnum( *bptr ) ) bptr++;
