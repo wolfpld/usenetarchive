@@ -39,116 +39,126 @@ static inline bool IsUtf( const char* begin, const char* end )
     return false;
 }
 
-void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
+static void SplitICU( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
+{
+    auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
+    icu::UnicodeString lower;
+
+    if( toLower )
+    {
+        lower = us.toLower( icu::Locale::getEnglish() );
+        wordIt->setText( lower );
+    }
+    else
+    {
+        wordIt->setText( us );
+    }
+
+    icu::UnicodeString& data = toLower ? lower : us;
+
+    int32_t p0 = 0;
+    int32_t p1 = wordIt->first();
+    while( p1 != icu::BreakIterator::DONE )
+    {
+        auto part = data.tempSubStringBetween( p0, p1 );
+        auto len = part.length();
+        if( len >= LexiconMinLen )
+        {
+            std::string str;
+            part.toUTF8String( str );
+
+            auto start = str.c_str();
+            auto end = start + str.size();
+
+            auto origlen = len;
+            while( *start == '_' )
+            {
+                start++;
+                len--;
+            }
+            while( end > start && *(end-1) == '_' )
+            {
+                end--;
+                len--;
+            }
+
+            if( len >= LexiconMinLen && len <= LexiconMaxLen )
+            {
+                if( origlen == len )
+                {
+                    out.emplace_back( std::move( str ) );
+                }
+                else
+                {
+                    out.emplace_back( std::string( start, end-start ) );
+                }
+            }
+        }
+        p0 = p1;
+        p1 = wordIt->next();
+    }
+}
+
+static void SplitASCII( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
     static Slab<256*1024> tmpSlab;
 
+    const auto size = end - ptr;
+    const char* bptr;
+    if( toLower )
+    {
+        tmpSlab.Reset();
+        auto buf = (char*)tmpSlab.Alloc( size );
+        auto lc = buf;
+        for( int i=0; i<size; i++ )
+        {
+            if( *ptr >= 'A' && *ptr <= 'Z' )
+            {
+                *lc++ = *ptr++ - 'A' + 'a';
+            }
+            else
+            {
+                *lc++ = *ptr++;
+            }
+        }
+        bptr = buf;
+    }
+    else
+    {
+        bptr = ptr;
+    }
+    const char* bend = bptr + size;
+    for(;;)
+    {
+        while( bptr < bend && !_isalnum( *bptr ) ) bptr++;
+        auto e = bptr+1;
+        while( e < bend && ( _isalnum( *e ) || *e == '_' || ( e < bend-1 && (
+            ( _isalpha( e[-1] ) && _isalpha( e[1] ) && ( *e == ':' || *e == '.' || *e == '\'' ) ) ||
+            ( _isdigit( e[-1] ) && _isdigit( e[1] ) && ( *e == ',' || *e == '.' || *e == '\'' || *e == ';' ) )
+            ) ) ) ) e++;
+        while( e > bptr+2 && e[-1] == '_' ) e--;
+        auto len = e - bptr;
+        if( len >= LexiconMinLen && len <= LexiconMaxLen )
+        {
+            out.emplace_back( std::string( bptr, e ) );
+        }
+        if( e >= bend ) break;
+        bptr = e+1;
+    }
+}
+
+void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
+{
     assert( ptr != end );
     out.clear();
 
     if( IsUtf( ptr, end ) )
     {
-        auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
-        icu::UnicodeString lower;
-
-        if( toLower )
-        {
-            lower = us.toLower( icu::Locale::getEnglish() );
-            wordIt->setText( lower );
-        }
-        else
-        {
-            wordIt->setText( us );
-        }
-
-        icu::UnicodeString& data = toLower ? lower : us;
-
-        int32_t p0 = 0;
-        int32_t p1 = wordIt->first();
-        while( p1 != icu::BreakIterator::DONE )
-        {
-            auto part = data.tempSubStringBetween( p0, p1 );
-            auto len = part.length();
-            if( len >= LexiconMinLen )
-            {
-                std::string str;
-                part.toUTF8String( str );
-
-                auto start = str.c_str();
-                auto end = start + str.size();
-
-                auto origlen = len;
-                while( *start == '_' )
-                {
-                    start++;
-                    len--;
-                }
-                while( end > start && *(end-1) == '_' )
-                {
-                    end--;
-                    len--;
-                }
-
-                if( len >= LexiconMinLen && len <= LexiconMaxLen )
-                {
-                    if( origlen == len )
-                    {
-                        out.emplace_back( std::move( str ) );
-                    }
-                    else
-                    {
-                        out.emplace_back( std::string( start, end-start ) );
-                    }
-                }
-            }
-            p0 = p1;
-            p1 = wordIt->next();
-        }
+        SplitICU( ptr, end, out, toLower );
     }
     else
     {
-        const auto size = end - ptr;
-        const char* bptr;
-        if( toLower )
-        {
-            tmpSlab.Reset();
-            auto buf = (char*)tmpSlab.Alloc( size );
-            auto lc = buf;
-            for( int i=0; i<size; i++ )
-            {
-                if( *ptr >= 'A' && *ptr <= 'Z' )
-                {
-                    *lc++ = *ptr++ - 'A' + 'a';
-                }
-                else
-                {
-                    *lc++ = *ptr++;
-                }
-            }
-            bptr = buf;
-        }
-        else
-        {
-            bptr = ptr;
-        }
-        const char* bend = bptr + size;
-        for(;;)
-        {
-            while( bptr < bend && !_isalnum( *bptr ) ) bptr++;
-            auto e = bptr+1;
-            while( e < bend && ( _isalnum( *e ) || *e == '_' || ( e < bend-1 && (
-                    ( _isalpha( e[-1] ) && _isalpha( e[1] ) && ( *e == ':' || *e == '.' || *e == '\'' ) ) ||
-                    ( _isdigit( e[-1] ) && _isdigit( e[1] ) && ( *e == ',' || *e == '.' || *e == '\'' || *e == ';' ) )
-                ) ) ) ) e++;
-            while( e > bptr+2 && e[-1] == '_' ) e--;
-            auto len = e - bptr;
-            if( len >= LexiconMinLen && len <= LexiconMaxLen )
-            {
-                out.emplace_back( std::string( bptr, e ) );
-            }
-            if( e >= bend ) break;
-            bptr = e+1;
-        }
+        SplitASCII( ptr, end, out, toLower );
     }
 }
 
