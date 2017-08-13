@@ -41,6 +41,8 @@ static inline bool IsUtf( const char* begin, const char* end )
 
 static void SplitICU( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
+    assert( ptr != end );
+
     auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
     icu::UnicodeString lower;
 
@@ -103,6 +105,8 @@ static void SplitASCII( const char* ptr, const char* end, std::vector<std::strin
 {
     static Slab<256*1024> tmpSlab;
 
+    assert( ptr != end );
+
     const auto size = end - ptr;
     const char* bptr;
     if( toLower )
@@ -154,7 +158,26 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
 
     if( IsUtf( ptr, end ) )
     {
-        SplitICU( ptr, end, out, toLower );
+        while( ptr <= end )
+        {
+            auto putf = ptr;
+            while( putf < end && ( *putf & 0x80 ) == 0 ) putf++;
+            if( putf == end )
+            {
+                SplitASCII( ptr, end, out, toLower );
+                break;
+            }
+            auto split = putf;
+            while( split > ptr && *split != ' ' && *split != '\t' ) split--;
+            if( split > ptr )
+            {
+                SplitASCII( ptr, split, out, toLower );
+                ptr = split+1;
+            }
+            while( putf < end && *putf != ' ' && *putf != '\t' ) putf++;
+            SplitICU( ptr, putf, out, toLower );
+            ptr = putf + 1;
+        }
     }
     else
     {
