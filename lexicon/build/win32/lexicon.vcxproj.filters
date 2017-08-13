@@ -39,10 +39,10 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\rpmalloc\new.cc">
+    <ClCompile Include="..\..\..\contrib\rpmalloc\rpmalloc.c">
       <Filter>rpmalloc</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\rpmalloc\rpmalloc.c">
+    <ClCompile Include="..\..\..\contrib\rpmalloc\new.cpp">
       <Filter>rpmalloc</Filter>
     </ClCompile>
   </ItemGroup>

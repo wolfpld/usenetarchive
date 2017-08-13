@@ -24,7 +24,7 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
-    <ClCompile Include="..\..\..\contrib\rpmalloc\new.cc" />
+    <ClCompile Include="..\..\..\contrib\rpmalloc\new.cpp" />
     <ClCompile Include="..\..\..\contrib\rpmalloc\rpmalloc.c" />
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c" />
     <ClCompile Include="..\..\lexicon.cpp" />
