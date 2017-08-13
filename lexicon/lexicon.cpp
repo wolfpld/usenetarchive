@@ -21,6 +21,7 @@
 
 #define SPP_GROUP_SIZE 64
 #include "../contrib/sparsepp/spp.h"
+#include "../contrib/rpmalloc/rpmalloc.h"
 
 enum class HeaderType
 {
@@ -109,6 +110,8 @@ static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, i
 
 int main( int argc, char** argv )
 {
+    rpmalloc_initialize();
+
     if( argc != 2 )
     {
         fprintf( stderr, "USAGE: %s raw\n", argv[0] );
