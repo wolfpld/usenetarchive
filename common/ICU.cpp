@@ -63,7 +63,7 @@ static void SplitICU( const char* ptr, const char* end, std::vector<std::string>
     while( p1 != icu::BreakIterator::DONE )
     {
         auto part = data.tempSubStringBetween( p0, p1 );
-        auto len = part.length();
+        auto len = part.countChar32();
         if( len >= LexiconMinLen )
         {
             std::string str;
