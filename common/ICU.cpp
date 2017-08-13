@@ -27,22 +27,25 @@ static inline bool _isalnum( char c )
     return _isalpha( c ) || _isdigit( c );
 }
 
+static inline bool IsUtf( const char* begin, const char* end )
+{
+    assert( begin <= end );
+    while( begin != end )
+    {
+        if( *begin++ & 0x80 )
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
     assert( ptr != end );
     out.clear();
 
-    bool isUtf = false;
-    for( auto p = ptr; p < end; p++ )
-    {
-        if( *p & 0x80 )
-        {
-            isUtf = true;
-            break;
-        }
-    }
-
-    if( isUtf )
+    if( IsUtf( ptr, end ) )
     {
         auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
         icu::UnicodeString lower;
