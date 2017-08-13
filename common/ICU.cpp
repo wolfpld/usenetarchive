@@ -3,6 +3,7 @@
 #include <unicode/brkiter.h>
 #include <unicode/unistr.h>
 
+#include "Alloc.hpp"
 #include "ICU.hpp"
 #include "LexiconTypes.hpp"
 #include "Slab.hpp"
@@ -153,9 +154,30 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
 
 std::string ToLower( const char* ptr, const char* end )
 {
-    std::string ret;
-    auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
-    icu::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
-    lower.toUTF8String( ret );
-    return ret;
+    const auto size = end - ptr;
+    if( IsUtf( ptr, end ) )
+    {
+        auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, size ) );
+        icu::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
+        std::string ret;
+        lower.toUTF8String( ret );
+        return ret;
+    }
+    else
+    {
+        auto buf = (char*)alloca( size );
+        auto lc = buf;
+        for( int i=0; i<size; i++ )
+        {
+            if( *ptr >= 'A' && *ptr <= 'Z' )
+            {
+                *lc++ = *ptr++ - 'A' + 'a';
+            }
+            else
+            {
+                *lc++ = *ptr++;
+            }
+        }
+        return std::string( buf, buf+size );
+    }
 }
