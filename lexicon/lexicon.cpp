@@ -19,6 +19,7 @@
 #include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
 
+#define SPP_GROUP_SIZE 64
 #include "../contrib/sparsepp/spp.h"
 
 enum class HeaderType
