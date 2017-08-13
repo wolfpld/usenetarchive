@@ -11,8 +11,6 @@
 UErrorCode wordItErr = U_ZERO_ERROR;
 auto wordIt = icu::BreakIterator::createWordInstance( icu::Locale::getEnglish(), wordItErr );
 
-Slab<256*1024> tmpSlab;
-
 static inline bool _isalpha( char c )
 {
     return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' );
@@ -43,6 +41,8 @@ static inline bool IsUtf( const char* begin, const char* end )
 
 void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
+    static Slab<256*1024> tmpSlab;
+
     assert( ptr != end );
     out.clear();
 
