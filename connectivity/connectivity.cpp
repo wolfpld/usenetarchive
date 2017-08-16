@@ -283,7 +283,7 @@ int main( int argc, char** argv )
 
     unsigned int loopcnt = 0;
     std::unordered_set<uint32_t> visited;
-    printf( "\nChild count...\n" );
+    printf( "\nFixing loops...\n" );
     fflush( stdout );
     for( uint32_t i=0; i<size; i++ )
     {
