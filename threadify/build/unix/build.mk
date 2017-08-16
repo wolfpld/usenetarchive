@@ -1,8 +1,8 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
-INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
-LIBS := -licuuc -lpthread
+INCLUDES := $(shell pkg-config --cflags icu-uc) -I../../../contrib/zstd/common -I../../../contrib/zstd
+LIBS := $(shell pkg-config --libs icu-uc) -lpthread
 IMAGE := threadify
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')

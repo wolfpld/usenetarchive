@@ -1,8 +1,8 @@
 CFLAGS += 
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
-INCLUDES := $(shell pkg-config --cflags ncurses) -I../../../contrib/zstd/common -I../../../contrib/zstd
-LIBS := $(shell pkg-config --libs ncurses) -lpthread -licuuc
+INCLUDES := $(shell pkg-config --cflags ncurses icu-uc) -I../../../contrib/zstd/common -I../../../contrib/zstd
+LIBS := $(shell pkg-config --libs ncurses icu-uc) -lpthread
 IMAGE := tbrowser
 
 FILTER := \
