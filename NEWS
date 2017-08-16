@@ -30,7 +30,9 @@ v0.5 (xxxx-xx-xx)
   - Increase message preview size in spam training mode.
   - Spam score is now displayed in first column in removed messages listing.
   - Spam score is now colorized, according to spam/ham/unsure classification.
-- Handle missing 'Date:' field in connectivity utility.
+- Improvements in connectivity utility:
+  - Handle missing 'Date:' field.
+  - Add support for ancient '12-Jan-87' date format.
 - Improvements to text mode browser:
   - Very long (more than 1024 characters) message lines are now properly
     handled.

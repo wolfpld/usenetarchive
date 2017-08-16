@@ -229,8 +229,13 @@ int main( int argc, char** argv )
             while( *end != '\n' && *end != '\0' ) end++;
             if( *end == '\n' )
             {
-                memcpy( tmp, buf, end-buf );
-                tmp[end-buf] = '\0';
+                const auto size = end - buf;
+                memcpy( tmp, buf, size );
+                tmp[size] = '\0';
+                for( int i=0; i<size; i++ )
+                {
+                    if( tmp[i] == '-' ) tmp[i] = ' ';
+                }
                 date = parsedate_rfc5322_lax( tmp );
             }
         }
