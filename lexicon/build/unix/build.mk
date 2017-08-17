@@ -2,7 +2,7 @@ CFLAGS +=
 CXXFLAGS := $(CFLAGS) -std=c++14
 DEFINES +=
 INCLUDES := $(shell pkg-config --cflags icu-uc) -I../../../contrib
-LIBS := - $(shell pkg-config --libs icu-uc)
+LIBS := $(shell pkg-config --libs icu-uc)
 IMAGE := lexicon
 
 SRC := $(shell egrep 'ClCompile.*cpp"' ../win32/$(IMAGE).vcxproj | sed -e 's/.*\"\(.*\)\".*/\1/' | sed -e 's@\\@/@g')
