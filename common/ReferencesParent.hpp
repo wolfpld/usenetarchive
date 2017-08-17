@@ -43,7 +43,6 @@ inline int GetParentFromReferences( const char* post, const StringCompress& comp
     auto buf = FindReferences( post );
     if( *buf == '\n' ) return -1;
 
-    bool isTopLevel = true;
     const auto terminate = buf;
     while( *buf != '\n' ) buf++;
     if( buf == terminate ) return -1;
