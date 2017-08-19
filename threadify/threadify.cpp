@@ -246,7 +246,38 @@ int main( int argc, char** argv )
                 }
                 else
                 {
-                    // todo
+                    auto mit = merge.begin();
+                    auto gidx = *mit;
+                    auto it = groups.find( gidx );
+                    assert( it != groups.end() );
+                    auto& g = it->second;
+                    while( ++mit != merge.end() )
+                    {
+                        it = groups.find( *mit );
+                        assert( it != groups.end() );
+                        auto& sg = it->second;
+                        for( auto m : sg.msg )
+                        {
+                            if( std::find( g.msg.begin(), g.msg.end(), m ) == g.msg.end() )
+                            {
+                                g.msg.emplace_back( m );
+                            }
+                        }
+                        for( auto& ref : refgroup )
+                        {
+                            if( ref.second == it->first )
+                            {
+                                ref.second = gidx;
+                            }
+                        }
+                        groups.erase( it );
+                    }
+                    g.msg.emplace_back( i );
+                    assert( HasUniqueElements( g.msg ) );
+                    for( auto& ref : refs )
+                    {
+                        refgroup[ref] = gidx;
+                    }
                 }
             }
         }
@@ -255,6 +286,7 @@ int main( int argc, char** argv )
             auto& g = v.second;
             if( g.msg.size() > 1 )
             {
+                assert( HasUniqueElements( g.msg ) );
                 std::sort( g.msg.begin(), g.msg.end(), [&archive] ( const auto& l, const auto& r ) { return archive->GetDate( l ) < archive->GetDate( r ); } );
                 auto parent = g.msg[0];
                 for( int i=1; i<g.msg.size(); i++ )
