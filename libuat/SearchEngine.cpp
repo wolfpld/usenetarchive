@@ -4,7 +4,11 @@
 #include "Archive.hpp"
 #include "SearchEngine.hpp"
 
+#include "../common/Slab.hpp"
 #include "../common/String.hpp"
+
+enum { SlabSize = 128*1024*1024 };
+static thread_local Slab<SlabSize> slab;
 
 enum WordFlags
 {
@@ -339,9 +343,9 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
     return !words.empty();
 }
 
-std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const
+std::vector<SearchEngine::PostDataVec> SearchEngine::GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const
 {
-    std::vector<std::vector<PostData>> wdata;
+    std::vector<PostDataVec> wdata;
     wdata.reserve( words.size() );
 
     for( int w=0; w<words.size(); w++ )
@@ -352,9 +356,15 @@ std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::ve
         auto meta = m_archive.m_lexmeta[v];
         auto data = m_archive.m_lexdata + ( meta.data / sizeof( LexiconDataPacket ) );
 
-        wdata.emplace_back();
-        auto& vec = wdata.back();
-        vec.reserve( meta.dataSize );
+        const auto allocSize = meta.dataSize;
+        if( allocSize * sizeof( PostData ) > SlabSize )
+        {
+            wdata.emplace_back( 0, nullptr );
+            continue;
+        }
+        auto pdata = (PostData*)slab.Alloc( sizeof( PostData ) * allocSize );
+        auto ptr = pdata;
+
         for( uint32_t i=0; i<meta.dataSize; i++ )
         {
             uint8_t children = data->postid >> LexiconChildShift;
@@ -375,7 +385,7 @@ std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::ve
                 {
                     if( LexiconDecodeType( hits[j] ) == filter )
                     {
-                        vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+                        *ptr++ = PostData { data->postid & LexiconPostMask, hitnum, children, hits };
                         break;
                     }
                 }
@@ -387,17 +397,25 @@ std::vector<std::vector<PostData>> SearchEngine::GetPostsForWords( const std::ve
                 {
                     if( LexiconDecodeType( hits[j] ) == type )
                     {
-                        vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+                        *ptr++ = PostData { data->postid & LexiconPostMask, hitnum, children, hits };
                         break;
                     }
                 }
             }
             else
             {
-                vec.emplace_back( PostData { data->postid & LexiconPostMask, hitnum, children, hits } );
+                *ptr++ = PostData { data->postid & LexiconPostMask, hitnum, children, hits };
             }
             data++;
         }
+
+        const auto psize = ptr - pdata;
+        assert( psize <= allocSize );
+        if( psize != allocSize )
+        {
+            slab.Unalloc( sizeof( PostData ) * ( allocSize - psize ) );
+        }
+        wdata.emplace_back( psize, pdata );
     }
 
     return wdata;
@@ -423,44 +441,51 @@ int SearchEngine::FixupFlags( int flags ) const
     return flags;
 }
 
-std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<std::vector<PostData>>& wdata ) const
+std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<SearchEngine::PostDataVec>& wdata ) const
 {
     std::vector<SearchResult> result;
 
     assert( wdata.size() == 1 );
 
-    result.reserve( wdata[0].size() );
-    for( auto& v : wdata[0] )
+    const auto size = wdata[0].first;
+    auto ptr = wdata[0].second;
+    auto end = ptr + size;
+    result.reserve( size );
+    while( ptr != end )
     {
         // hits are already sorted
-        result.emplace_back( PrepareResults( v.postid, PostRank( v ) * HitRank( v ), v.hitnum ) );
+        result.emplace_back( PrepareResults( ptr->postid, PostRank( *ptr ) * HitRank( *ptr ), ptr->hitnum ) );
         auto& sr = result.back();
-        memcpy( sr.hits, v.hits, sr.hitnum );
+        memcpy( sr.hits, ptr->hits, sr.hitnum );
         memset( sr.words, 0, sr.hitnum * sizeof( uint32_t ) );
+        ptr++;
     }
 
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<std::vector<PostData>>& wdata, int flags ) const
+std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, int flags ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = wdata.size();
 
     std::vector<const PostData*> list;
     list.reserve( 32 );
-    result.reserve( wdata[0].size() );
+    result.reserve( wdata[0].first );
 
     auto& vec = *wdata.begin();
-    for( auto& post : vec )
+    for( int i=0; i<vec.first; i++ )
     {
+        auto& post = vec.second[i];
         list.clear();
         bool ok = true;
         for( size_t i=1; i<wsize; i++ )
         {
             auto& vtest = wdata[i];
-            auto it = std::lower_bound( vtest.begin(), vtest.end(), post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } );
-            if( it == vtest.end() || it->postid != post.postid )
+            auto begin = vtest.second;
+            auto end = begin + vtest.first;
+            auto it = std::lower_bound( begin, end, post, [] ( const auto& l, const auto& r ) { return l.postid < r.postid; } );
+            if( it == end || it->postid != post.postid )
             {
                 ok = false;
                 break;
@@ -497,7 +522,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<std:
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const
+std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = std::min<size_t>( 1024, wdata.size() );
@@ -534,8 +559,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
                 {
                     if( wordFlags[i] & WF_Must )
                     {
-                        for( auto& v : wdata[i] )
+                        for( int j=0; j<wdata[i].first; j++ )
                         {
+                            auto& v = wdata[i].second[j];
                             include.emplace( v.postid );
                         }
                         break;
@@ -546,11 +572,13 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
                     if( wordFlags[i] & WF_Must )
                     {
                         auto& vtest = wdata[i];
+                        auto begin = vtest.second;
+                        auto end = begin + vtest.first;
                         auto it = include.begin();
                         while( it != include.end() )
                         {
-                            auto vit = std::lower_bound( vtest.begin(), vtest.end(), *it, [] ( const auto& l, const auto& r ) { return l.postid < r; } );
-                            if( vit == vtest.end() || vit->postid != *it )
+                            auto vit = std::lower_bound( begin, end, *it, [] ( const auto& l, const auto& r ) { return l.postid < r; } );
+                            if( vit == end || vit->postid != *it )
                             {
                                 it = include.erase( it );
                             }
@@ -569,8 +597,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
                     if( !( wordFlags[i] & WF_Cant ) )
                     {
                         assert( !( wordFlags[i] & WF_Must ) );
-                        for( auto& v : wdata[i] )
+                        for( int j=0; j<wdata[i].first; j++ )
                         {
+                            auto& v = wdata[i].second[j];
                             include.emplace( v.postid );
                         }
                     }
@@ -584,8 +613,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
                 {
                     if( wordFlags[i] & WF_Cant )
                     {
-                        for( auto& v : wdata[i] )
+                        for( int j=0; j<wdata[i].first; j++ )
                         {
+                            auto& v = wdata[i].second[j];
                             auto it = include.find( v.postid );
                             if( it != include.end() )
                             {
@@ -608,7 +638,7 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
     int count = 0;
     for( uint32_t word = 0; word < wsize; word++ )
     {
-        count += wdata[word].size();
+        count += wdata[word].first;
     }
 
     auto index = new int32_t[m_archive.NumberOfMessages()];
@@ -621,8 +651,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<std::ve
     int next = 0;
     for( uint32_t word = 0; word < wsize; word++ )
     {
-        for( auto& post : wdata[word] )
+        for( int i=0; i<wdata[word].first; i++ )
         {
+            auto& post = wdata[word].second[i];
             auto pidx = post.postid;
             if( !checkInclude || include.find( pidx ) != include.end() )
             {
@@ -770,6 +801,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         result = GetFullResult( wdata, wordMod, wordFlags, flags );
     }
+
+    slab.Reset();
 
     if( result.empty() ) return ret;
 

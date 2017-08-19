@@ -45,13 +45,15 @@ public:
     SearchData Search( const std::vector<std::string>& terms, int flags = SF_FlagsNone, int filter = T_All ) const;
 
 private:
+    using PostDataVec = std::pair<uint32_t, PostData*>;
+
     bool ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<uint32_t>& words, std::vector<int>& wordFlags, std::vector<float>& wordMod, std::vector<const char*>& matched ) const;
-    std::vector<std::vector<PostData>> GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const;
+    std::vector<PostDataVec> GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const;
     int FixupFlags( int flags ) const;
 
-    std::vector<SearchResult> GetSingleResult( const std::vector<std::vector<PostData>>& wdata ) const;
-    std::vector<SearchResult> GetAllWordResult( const std::vector<std::vector<PostData>>& wdata, int flags ) const;
-    std::vector<SearchResult> GetFullResult( const std::vector<std::vector<PostData>>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const;
+    std::vector<SearchResult> GetSingleResult( const std::vector<PostDataVec>& wdata ) const;
+    std::vector<SearchResult> GetAllWordResult( const std::vector<PostDataVec>& wdata, int flags ) const;
+    std::vector<SearchResult> GetFullResult( const std::vector<PostDataVec>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const;
 
     const Archive& m_archive;
 };
