@@ -66,7 +66,7 @@ static size_t RemoveSpaces( const char* in, char* out )
 
 // s1 is child
 // s2 is parent
-bool IsSubjectMatch( const char* s1, const char* s2, const KillRe& kill )
+static bool IsSubjectMatch( const char* s1, const char* s2, const KillRe& kill )
 {
     auto k1 = kill.Kill( s1 );
     auto k2 = kill.Kill( s2 );
