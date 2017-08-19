@@ -449,7 +449,10 @@ int main( int argc, char** argv )
             idx = parent;
         }
 
-        Sort( msgdata[v.second].children, msgdata );
+        if( !groupMode )
+        {
+            Sort( msgdata[v.second].children, msgdata );
+        }
 
         auto it = std::find( toplevel.begin(), toplevel.end(), v.first );
         assert( it != toplevel.end() );
