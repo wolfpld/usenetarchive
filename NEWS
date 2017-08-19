@@ -60,6 +60,7 @@ v0.5 (xxxx-xx-xx)
   - Multi-threaded message matching.
   - Lexicon data is now properly transformed after the messages are matched.
     Lexicon utility no longer needs to be run twice.
+  - Added second mode of operation - thread grouping.
 - Change search in headers to search in 'From:' or 'Subject:' fields.
 
 
