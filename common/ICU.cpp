@@ -164,7 +164,10 @@ void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out,
             while( putf < end && ( *putf & 0x80 ) == 0 ) putf++;
             if( putf == end )
             {
-                SplitASCII( ptr, end, out, toLower );
+                if( ptr != end )
+                {
+                    SplitASCII( ptr, end, out, toLower );
+                }
                 break;
             }
             auto split = putf;
