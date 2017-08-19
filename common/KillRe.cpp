@@ -95,7 +95,7 @@ void KillRe::LoadPrefixList( const Archive& archive )
 void KillRe::AddDefault()
 {
     Add( "re:" );
-    Add( "odp:" );
+    Add( "odp:" );      // polish
     Add( "re[2]:" );
     Add( "re[3]:" );
     Add( "re[4]:" );
@@ -104,6 +104,9 @@ void KillRe::AddDefault()
     Add( "re[7]:" );
     Add( "re[8]:" );
     Add( "re[9]:" );
+    Add( "sv:" );       // scandinavian
+    Add( "aw:" );       // german, dutch
+    Add( "vs:" );       // finnish
 }
 
 void KillRe::Clear()
