@@ -5,6 +5,7 @@
 #include <limits>
 #include <memory>
 #include <mutex>
+#include <set>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
@@ -18,6 +19,7 @@
 #include "../common/ICU.hpp"
 #include "../common/KillRe.hpp"
 #include "../common/MessageLogic.hpp"
+#include "../common/ReferencesParent.hpp"
 #include "../common/String.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
@@ -83,10 +85,11 @@ bool IsSubjectMatch( const char* s1, const char* s2, const KillRe& kill )
 
 int main( int argc, char** argv )
 {
-    if( argc < 2 || ( argc % 2 ) == 1 )
+    if( argc < 2 || ( argc != 3 && ( argc % 2 ) == 1 ) )
     {
-        fprintf( stderr, "USAGE: %s raw [-i ignore]*\n", argv[0] );
+        fprintf( stderr, "USAGE: %s raw ( [-i ignore]* | [-g] )\n", argv[0] );
         fprintf( stderr, "  -i: add string to re:-list filter\n" );
+        fprintf( stderr, "  -g: group threads by scanning for missing references\n" );
         exit( 1 );
     }
 
@@ -104,18 +107,26 @@ int main( int argc, char** argv )
     KillRe kr;
     kr.LoadPrefixList( *archive );
 
+    bool groupMode = false;
+
     while( argc > 2 )
     {
-        if( strcmp( argv[2], "-i" ) != 0 )
-        {
-            fprintf( stderr, "Bad params!\n" );
-            exit( 1 );
-        }
-        else
+        if( strcmp( argv[2], "-i" ) == 0 )
         {
             kr.Add( argv[3] );
             argv += 2;
             argc -= 2;
+        }
+        else if( strcmp( argv[2], "-g" ) == 0 )
+        {
+            groupMode = true;
+            argv++;
+            argc--;
+        }
+        else
+        {
+            fprintf( stderr, "Bad params!\n" );
+            exit( 1 );
         }
     }
 
@@ -162,174 +173,256 @@ int main( int argc, char** argv )
         }
     }
 
-    root = new uint32_t[size];
-    printf( "\nGrouping messages...\n" );
-    for( int i=0; i<size; i++ )
-    {
-        if( ( i & 0x3FF ) == 0 )
-        {
-            printf( "%i/%i\r", i, size );
-            fflush( stdout );
-        }
-
-        auto idx = i;
-        while( msgdata[idx].parent != -1 ) idx = msgdata[idx].parent;
-        root[i] = idx;
-    }
-
-    printf( "\nMatching messages...\n" );
-
-    int cntnew = 0, cntsure = 0, cntbad = 0, cnttime = 0;
-    std::vector<std::pair<uint32_t, uint32_t>> found;
-
-    const auto cpus = System::CPUCores();
-    TaskDispatch tasks( cpus );
-    std::atomic<uint32_t> cnt( 0 );
     const auto topsize = toplevel.size();
+    std::vector<std::pair<uint32_t, uint32_t>> found;
+    int cntnew = 0, cntsure = 0, cntbad = 0, cnttime = 0;
+    printf( "\nGrouping messages...\n" );
 
-    std::mutex viewLock, resLock, splitLock;
-
-    for( int t=0; t<cpus; t++ )
+    if( groupMode )
     {
-        tasks.Queue( [&cnt, &topsize, &toplevel, &viewLock, &resLock, &splitLock, &archive, &search, &found, &cntnew, &cntsure, &cntbad, &cnttime, &kr] {
-            ExpandingBuffer eb;
-            std::unordered_map<uint32_t, float> hits;
-            std::vector<std::string> wordbuf;
+        struct Group
+        {
+            std::vector<uint32_t> msg;
+        };
 
-            for(;;)
+        ExpandingBuffer eb;
+        std::unordered_map<uint32_t, Group> groups;
+        std::unordered_map<std::string, uint32_t> refgroup;
+        uint32_t curgroup = 0;
+
+        for( int j=0; j<topsize; j++ )
+        {
+            if( ( j & 0x3FF ) == 0 )
             {
-                auto j = cnt.fetch_add( 1, std::memory_order_relaxed );
-                if( j >= topsize ) break;
-                if( ( j & 0x1F ) == 0 )
+                printf( "%i/%i\r", j, topsize );
+                fflush( stdout );
+            }
+
+            auto i = toplevel[j];
+            auto post = archive->GetMessage( i, eb );
+
+            const auto refs = GetAllReferences( post, archive->GetCompress() );
+
+            if( !refs.empty() )
+            {
+                std::set<uint32_t> merge;
+                for( auto& ref : refs )
                 {
-                    printf( "%i/%i\r", j, topsize );
-                    fflush( stdout );
-                }
-
-                auto i = toplevel[j];
-                bool headers = true;
-                bool wroteDone = false;
-                int remaining = 16;
-
-                viewLock.lock();
-                auto post = archive->GetMessage( i, eb );
-                viewLock.unlock();
-
-                for(;;)
-                {
-                    auto end = post;
-                    if( headers )
+                    auto it = refgroup.find( ref );
+                    if( it != refgroup.end() )
                     {
-                        if( *end == '\n' )
-                        {
-                            headers = false;
-                            continue;
-                        }
-
-                        while( *end != '\n' ) end++;
-                        post = end + 1;
-                    }
-                    else
-                    {
-                        const char* line = end;
-                        while( *end != '\n' && *end != '\0' ) end++;
-                        int quotLevel = QuotationLevel( line, end );
-                        if( line != end && quotLevel == 1 )
-                        {
-                            const char* wrote = line;
-                            if( !wroteDone )
-                            {
-                                wrote = DetectWroteEnd( line, 1 );
-                                wroteDone = true;
-                            }
-                            if( wrote == line )
-                            {
-                                splitLock.lock();
-                                SplitLine( line, end, wordbuf );
-                                splitLock.unlock();
-                                if( !wordbuf.empty() )
-                                {
-                                    auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords, T_Content );
-                                    auto& res = results.results;
-                                    if( !res.empty() )
-                                    {
-                                        auto terminate = res[0].rank * 0.02;
-                                        auto matched = results.matched.size();
-                                        for( auto& r : res )
-                                        {
-                                            if( r.rank < terminate ) break;
-                                            hits[r.postid] += r.rank * matched * matched;
-                                        }
-                                    }
-                                    wordbuf.clear();
-                                }
-                                if( --remaining == 0 ) break;
-                            }
-                            else
-                            {
-                                end = wrote;
-                                while( *end != '\n' ) end--;
-                            }
-                        }
-                        if( *end == '\0' ) break;
-                        post = end + 1;
+                        merge.emplace( it->second );
                     }
                 }
-
-                resLock.lock();
-                if( hits.empty() )
+                if( merge.empty() )
                 {
-                    cntnew++;
+                    Group g;
+                    g.msg.emplace_back( i );
+                    groups.emplace( std::make_pair( curgroup, std::move( g ) ) );
+                    for( auto& ref : refs )
+                    {
+                        refgroup[ref] = curgroup;
+                    }
+                    curgroup++;
+                }
+                else if( merge.size() == 1 )
+                {
+                    auto gidx = *merge.begin();
+                    auto it = groups.find( gidx );
+                    assert( it != groups.end() );
+                    auto& g = it->second;
+                    g.msg.emplace_back( i );
+                    for( auto& ref : refs )
+                    {
+                        refgroup[ref] = gidx;
+                    }
                 }
                 else
                 {
-                    uint32_t best = 0;
-                    float rank = 0;
-                    for( auto& h : hits )
+                    // todo
+                }
+            }
+        }
+        for( auto& v : groups )
+        {
+            auto& g = v.second;
+            if( g.msg.size() > 1 )
+            {
+                std::sort( g.msg.begin(), g.msg.end(), [&archive] ( const auto& l, const auto& r ) { return archive->GetDate( l ) < archive->GetDate( r ); } );
+                auto parent = g.msg[0];
+                for( int i=1; i<g.msg.size(); i++ )
+                {
+                    found.emplace_back( g.msg[i], parent );
+                    cntsure++;
+                }
+            }
+        }
+    }
+    else
+    {
+        root = new uint32_t[size];
+        for( int i=0; i<size; i++ )
+        {
+            if( ( i & 0x3FF ) == 0 )
+            {
+                printf( "%i/%i\r", i, size );
+                fflush( stdout );
+            }
+
+            auto idx = i;
+            while( msgdata[idx].parent != -1 ) idx = msgdata[idx].parent;
+            root[i] = idx;
+        }
+
+        printf( "\nMatching messages...\n" );
+
+        const auto cpus = System::CPUCores();
+        TaskDispatch tasks( cpus );
+        std::atomic<uint32_t> cnt( 0 );
+
+        std::mutex viewLock, resLock, splitLock;
+
+        for( int t=0; t<cpus; t++ )
+        {
+            tasks.Queue( [&cnt, &topsize, &toplevel, &viewLock, &resLock, &splitLock, &archive, &search, &found, &cntnew, &cntsure, &cntbad, &cnttime, &kr] {
+                ExpandingBuffer eb;
+                std::unordered_map<uint32_t, float> hits;
+                std::vector<std::string> wordbuf;
+
+                for(;;)
+                {
+                    auto j = cnt.fetch_add( 1, std::memory_order_relaxed );
+                    if( j >= topsize ) break;
+                    if( ( j & 0x1F ) == 0 )
                     {
-                        if( h.second > rank )
+                        printf( "%i/%i\r", j, topsize );
+                        fflush( stdout );
+                    }
+
+                    auto i = toplevel[j];
+                    bool headers = true;
+                    bool wroteDone = false;
+                    int remaining = 16;
+
+                    viewLock.lock();
+                    auto post = archive->GetMessage( i, eb );
+                    viewLock.unlock();
+
+                    for(;;)
+                    {
+                        auto end = post;
+                        if( headers )
                         {
-                            rank = h.second;
-                            best = h.first;
+                            if( *end == '\n' )
+                            {
+                                headers = false;
+                                continue;
+                            }
+
+                            while( *end != '\n' ) end++;
+                            post = end + 1;
+                        }
+                        else
+                        {
+                            const char* line = end;
+                            while( *end != '\n' && *end != '\0' ) end++;
+                            int quotLevel = QuotationLevel( line, end );
+                            if( line != end && quotLevel == 1 )
+                            {
+                                const char* wrote = line;
+                                if( !wroteDone )
+                                {
+                                    wrote = DetectWroteEnd( line, 1 );
+                                    wroteDone = true;
+                                }
+                                if( wrote == line )
+                                {
+                                    splitLock.lock();
+                                    SplitLine( line, end, wordbuf );
+                                    splitLock.unlock();
+                                    if( !wordbuf.empty() )
+                                    {
+                                        auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords, T_Content );
+                                        auto& res = results.results;
+                                        if( !res.empty() )
+                                        {
+                                            auto terminate = res[0].rank * 0.02;
+                                            auto matched = results.matched.size();
+                                            for( auto& r : res )
+                                            {
+                                                if( r.rank < terminate ) break;
+                                                hits[r.postid] += r.rank * matched * matched;
+                                            }
+                                        }
+                                        wordbuf.clear();
+                                    }
+                                    if( --remaining == 0 ) break;
+                                }
+                                else
+                                {
+                                    end = wrote;
+                                    while( *end != '\n' ) end--;
+                                }
+                            }
+                            if( *end == '\0' ) break;
+                            post = end + 1;
                         }
                     }
-                    hits.clear();
-                    if( root[i] == root[best] )
+
+                    resLock.lock();
+                    if( hits.empty() )
                     {
                         cntnew++;
                     }
                     else
                     {
-                        time_t t1 = archive->GetDate( i );
-                        time_t t2 = archive->GetDate( best );
-                        if( ( t1 > t2 + 60 * 60 * 24 * 365 ) ||     // child message is year+ younger than parent
-                            ( t1 < t2 - 60 * 60 * 24 * 30 ) )       // child message is month+ older than parent
+                        uint32_t best = 0;
+                        float rank = 0;
+                        for( auto& h : hits )
                         {
-                            cnttime++;
+                            if( h.second > rank )
+                            {
+                                rank = h.second;
+                                best = h.first;
+                            }
+                        }
+                        hits.clear();
+                        if( root[i] == root[best] )
+                        {
+                            cntnew++;
                         }
                         else
                         {
-                            if( IsSubjectMatch( archive->GetSubject( i ), archive->GetSubject( best ), kr ) )
+                            time_t t1 = archive->GetDate( i );
+                            time_t t2 = archive->GetDate( best );
+                            if( ( t1 > t2 + 60 * 60 * 24 * 365 ) ||     // child message is year+ younger than parent
+                                ( t1 < t2 - 60 * 60 * 24 * 30 ) )       // child message is month+ older than parent
                             {
-                                cntsure++;
-                                found.emplace_back( i, best );
-                                SetRootTo( i, root[best] );
+                                cnttime++;
                             }
                             else
                             {
-                                cntbad++;
+                                if( IsSubjectMatch( archive->GetSubject( i ), archive->GetSubject( best ), kr ) )
+                                {
+                                    cntsure++;
+                                    found.emplace_back( i, best );
+                                    SetRootTo( i, root[best] );
+                                }
+                                else
+                                {
+                                    cntbad++;
+                                }
                             }
                         }
                     }
+                    resLock.unlock();
                 }
-                resLock.unlock();
-            }
-        } );
+            } );
+        }
+        tasks.Sync();
+        std::sort( found.begin(), found.end(), [] ( const auto& l, const auto& r ) { return l.first < r.first; } );
     }
-    tasks.Sync();
     printf( "%i/%i\n", topsize, topsize );
-
-    std::sort( found.begin(), found.end(), [] ( const auto& l, const auto& r ) { return l.first < r.first; } );
 
     std::unordered_set<uint32_t> bad;
 
