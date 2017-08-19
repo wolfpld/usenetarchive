@@ -82,6 +82,13 @@ static bool IsSubjectMatch( const char* s1, const char* s2, const KillRe& kill )
     return sz1 == sz2 && memcmp( r1, r2, sz1 ) == 0;
 }
 
+template<class T>
+static bool HasUniqueElements( std::vector<T>& v )
+{
+    std::sort( v.begin(), v.end() );
+    return std::adjacent_find( v.begin(), v.end() ) == v.end();
+}
+
 
 int main( int argc, char** argv )
 {
