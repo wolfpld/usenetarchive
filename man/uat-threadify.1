@@ -4,7 +4,7 @@ uat-threadify \- find missing connections between messages
 .SH SYNOPSIS
 .I uat-threadify
 <archive>
-[-i ignore]...
+( [-i ignore]... | [-g] )
 .SH DESCRIPTION
 Some messages do not have connectivity data embedded in headers. For example
 it's a common artifact of using news-email gateways. This tool parses
@@ -22,19 +22,30 @@ It is normal practice to add "Re:" prefix to replies to a message (RFC 2822,
 Some news readers were horribly broken and due to this
 .I uat-threadify
 will in fact ignore any number of the following prefixes: "Re:", "RE:",
-"re:", "Odp:", "Re[2]:", "Re[3]:", ..., "Re[9]:".
+"re:", "Odp:", "Re[2]:", "Re[3]:", etc.
+
+Some clients were mangling "Subject" field, which could result in a "te st"
+subject in child message, when parent had subject "test".
+.I uat-threadify
+is able to handle such broken messages.
+.SH THREAD GROUPING
+A second mode of operation merges threads that have common, but missing parent
+message.
 .SH OPTIONS
 .TP
 .BR -i\fI\ ignore
 Add
 .I ignore
 to prefix ignore list.
+.TP
+.BR -g
+Enable thread grouping mode.
 .SH NOTES
 Requires LZ4 archive processed using
 .I uat-lexsort
 
-Running this utility will invalidate archive lexicon and sorting order, if
-any matches are made.
+Running this utility will invalidate archive sorting orders (lexicon and
+chronological), if any matches are made.
 .SH "SEE ALSO"
 .ad l
 .nh
