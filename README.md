@@ -1,11 +1,22 @@
 # Usenet Archive Toolkit
 
-Usenet Archive Toolkit project aims to provide a set of tools to process various sources of usenet messages into a coherent, searchable archive.
+The *Usenet Archive Toolkit* project aims to provide a *set of tools* to process various sources of usenet messages into a coherent, searchable archive.
+
+Typically you will have two usage patterns:
+
+1. There is an *already created* archive file that you want to read. To do so, you *only* need to download or build the tbrowser utility.
+2. You want to *create* an archive file from the sources available to you. You will need to use most of the provided utilities. Following the workflow graph is a good starting point.
+
+**TL;DR: Download available archive files, use tbrowser to read them.**
 
 ![](doc/tbrowser1.png)
 ![](doc/tbrowser2.png)
 ![](doc/galaxy1.png)
 ![](doc/galaxy2.png)
+
+## List of UAT archive files
+
+- Archive of polish usenet: [https://archive.org/details/usenet-uat-pl](https://archive.org/details/usenet-uat-pl).
 
 ## Motivation
 
