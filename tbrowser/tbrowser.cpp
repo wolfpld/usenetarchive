@@ -60,19 +60,6 @@ int main( int argc, char** argv )
         return 1;
     }
 
-    {
-        auto toplevel = archive->GetTopLevel();
-        auto children = archive->GetChildren( uint32_t( 0 ) );
-        if( !(
-            ( toplevel.ptr[0] == 0 && toplevel.size == 1 ) ||
-            ( children.size == 0 && toplevel.ptr[1] == 1 ) ||
-            children.ptr[0] == 1 ) )
-        {
-            fprintf( stderr, "%s is not a sorted archive!\n", lastOpen.c_str() );
-            return 1;
-        }
-    }
-
     setlocale( LC_ALL, "" );
 
     initscr();
