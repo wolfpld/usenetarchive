@@ -67,6 +67,7 @@ const char* HelpContents =
 "                 ,: move cursor to previously viewed message\n"
 "                 .: reversal of the above\n"
 "                 i: view group information (charter)\n"
+"                 c: plot group charts\n"
 "                 t: switch between abbreviated and full headers list\n"
 "                 r: enable/disable ROT13 encoding\n"
 "                 g: go to specified message id\n"

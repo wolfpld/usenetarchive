@@ -21,6 +21,7 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     , m_tview( *m_archive, m_storage, m_galaxy, m_mview )
     , m_sview( this, m_bottom, *m_archive, m_storage )
     , m_textview( this )
+    , m_chartview( this )
     , m_fn( fn )
 {
     if( galaxy )
@@ -400,6 +401,11 @@ void Browser::Entry()
             doupdate();
             break;
         }
+        case 'c':
+            m_chartview.Entry();
+            RestoreDefaultView();
+            doupdate();
+            break;
         case 'o':
             if( m_galaxy )
             {

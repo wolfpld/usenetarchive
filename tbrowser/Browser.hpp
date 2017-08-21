@@ -5,6 +5,7 @@
 #include <string>
 
 #include "BottomBar.hpp"
+#include "ChartView.hpp"
 #include "HeaderBar.hpp"
 #include "MessageView.hpp"
 #include "TextView.hpp"
@@ -49,6 +50,7 @@ private:
     ThreadView m_tview;
     SearchView m_sview;
     TextView m_textview;
+    ChartView m_chartview;
     std::unique_ptr<GalaxyOpen> m_gopen;
     std::unique_ptr<GalaxyWarp> m_gwarp;
 

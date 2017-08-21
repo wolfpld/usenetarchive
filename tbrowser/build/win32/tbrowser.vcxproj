@@ -208,6 +208,7 @@
     <ClCompile Include="..\..\BitSet.cpp" />
     <ClCompile Include="..\..\BottomBar.cpp" />
     <ClCompile Include="..\..\Browser.cpp" />
+    <ClCompile Include="..\..\ChartView.cpp" />
     <ClCompile Include="..\..\GalaxyOpen.cpp" />
     <ClCompile Include="..\..\GalaxyWarp.cpp" />
     <ClCompile Include="..\..\HeaderBar.cpp" />
@@ -264,6 +265,7 @@
     <ClInclude Include="..\..\BitSet.hpp" />
     <ClInclude Include="..\..\BottomBar.hpp" />
     <ClInclude Include="..\..\Browser.hpp" />
+    <ClInclude Include="..\..\ChartView.hpp" />
     <ClInclude Include="..\..\GalaxyOpen.hpp" />
     <ClInclude Include="..\..\GalaxyState.hpp" />
     <ClInclude Include="..\..\GalaxyWarp.hpp" />
