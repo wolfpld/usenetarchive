@@ -3,7 +3,7 @@
 #include "Browser.hpp"
 #include "ChartView.hpp"
 
-enum { MarginW = 10 };
+enum { MarginW = 12 };
 enum { MarginH = 10 };
 
 // Proper 1/8 steps, broken on too many fonts
@@ -82,19 +82,28 @@ void ChartView::Draw()
     wprintw( m_win, "Activity chart" );
     wattroff( m_win, COLOR_PAIR( 4 ) | A_BOLD );
 
-    const auto x0 = MarginW / 2 - 1;
+    const auto x0 = MarginW - 3;
     const auto y0 = MarginH / 2 - 1;
     const auto xs = w - MarginW;
     const auto ys = h - MarginH;
 
-    wmove( m_win, y0-1, x0 );
+    char tmp[32];
+    sprintf( tmp, "%i", m_max );
+    wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+    wmove( m_win, y0 - 1, x0 - 1 - strlen( tmp ) );
+    wprintw( m_win, "%s ", tmp );
+    wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+
     waddch( m_win, ACS_UARROW );
     for( int y=y0; y<y0+ys+1; y++ )
     {
         wmove( m_win, y, x0 );
         waddch( m_win, ACS_VLINE );
     }
-    wmove( m_win, y0+ys+1, x0 );
+    wmove( m_win, y0+ys+1, x0 - 2 );
+    wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
+    wprintw( m_win, "0 " );
+    wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
     waddch( m_win, ACS_LLCORNER );
     for( int x=0; x<xs; x++ )
     {
@@ -103,6 +112,7 @@ void ChartView::Draw()
     waddch( m_win, ACS_RARROW );
 
     assert( m_data.size() == xs );
+    wattron( m_win, COLOR_PAIR( 7 ) );
     for( int x=0; x<xs; x++ )
     {
         const auto v = m_data[x];
@@ -120,6 +130,7 @@ void ChartView::Draw()
             wprintw( m_win, Block[r-1] );
         }
     }
+    wattroff( m_win, COLOR_PAIR( 7 ) );
 
     wnoutrefresh( m_win );
 }
@@ -157,12 +168,12 @@ void ChartView::Prepare()
         seg[s]++;
     }
 
-    uint32_t max = 0;
-    for( const auto& v : seg ) if( v > max ) max = v;
+    m_max = 0;
+    for( const auto& v : seg ) if( v > m_max ) m_max = v;
 
     const auto th = h - MarginH;
     m_data = std::vector<uint16_t>( segments );
-    const auto minv = 1. / ( max+1 );
+    const auto minv = 1. / ( m_max+1 );
     for( int i=0; i<segments; i++ )
     {
         m_data[i] = seg[i] * minv * th * 8;

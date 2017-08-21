@@ -24,6 +24,7 @@ private:
     bool m_active;
 
     std::vector<uint16_t> m_data;
+    uint32_t m_max;
 };
 
 #endif
