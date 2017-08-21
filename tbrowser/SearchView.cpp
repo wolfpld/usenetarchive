@@ -14,6 +14,7 @@
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
+#include "Help.hpp"
 #include "LevelColors.hpp"
 #include "SearchView.hpp"
 #include "UTF8.hpp"
@@ -121,6 +122,10 @@ void SearchView::Entry()
             Draw();
             doupdate();
             break;
+        case '?':
+            m_parent->DisplayTextView( SearchHelpContents );
+            Draw();
+            doupdate();
         default:
             break;
         }

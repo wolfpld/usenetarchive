@@ -91,3 +91,27 @@ const char* HelpContents =
 "Usenet Archive Toolkit uses the following libraries: LZ4, xxhash, zstd, LZMA,\n"
 "INN, TIN, GMime, terminator, sparsepp, libcurses."
 ;
+
+const char* SearchHelpContents =
+//345678901234567890123456789012345678901234567890123456789012345678901234567890
+"\n"
+"                            Usenet Archive Browser\n"
+"                           ========================\n"
+"\n"
+"                                  Search view\n"
+"                                 -------------\n"
+"\n"
+"  Enter keywords you wish to search for. Search hints:\n"
+"\n"
+"  - Quote words to disable fuzzy search.\n"
+"  - Prepend word with from: to search for author.\n"
+"  - Prepend word with subject: to search in subject.\n"
+"  - Prepend word with + to require this word.\n"
+"  - Prepend word with - to exclude this word.\n"
+"  - Append word with * to search for any word with such beginning.\n"
+"\n"
+"\n"
+"  For example, to require an exact match in a 'from' field, type:\n"
+"\n"
+"    +from:\"query\"\n"
+;
