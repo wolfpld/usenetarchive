@@ -171,7 +171,7 @@ void ChartView::Prepare()
     m_max = 0;
     for( const auto& v : seg ) if( v > m_max ) m_max = v;
 
-    const auto th = h - MarginH;
+    const auto th = h - MarginH + 2;
     m_data = std::vector<uint16_t>( segments );
     const auto minv = 1. / ( m_max+1 );
     for( int i=0; i<segments; i++ )
