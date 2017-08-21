@@ -381,9 +381,7 @@ void Browser::Entry()
             doupdate();
             break;
         case '?':
-            m_bottom.SetHelp( HelpSet::Text );
-            m_textview.Entry( HelpContents );
-            m_bottom.SetHelp( HelpSet::Default );
+            DisplayTextView( HelpContents );
             RestoreDefaultView();
             doupdate();
             break;
@@ -396,9 +394,7 @@ void Browser::Entry()
             }
             else
             {
-                m_bottom.SetHelp( HelpSet::Text );
-                m_textview.Entry( charter.first, charter.second );
-                m_bottom.SetHelp( HelpSet::Default );
+                DisplayTextView( charter.first, charter.second );
                 RestoreDefaultView();
             }
             doupdate();
@@ -542,4 +538,11 @@ void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::strin
     m_bottom.Status( "Archive opened." );
 
     doupdate();
+}
+
+void Browser::DisplayTextView( const char* text, int size )
+{
+    m_bottom.SetHelp( HelpSet::Text );
+    m_textview.Entry( text, size );
+    m_bottom.SetHelp( HelpSet::Default );
 }
