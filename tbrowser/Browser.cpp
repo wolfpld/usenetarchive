@@ -336,9 +336,9 @@ void Browser::Entry()
                             }
                             else
                             {
-                                m_bottom.SetHelp( HelpSet::GalaxyOpen );
+                                m_bottom.PushHelp( HelpSet::GalaxyOpen );
                                 m_gwarp->Entry( gpack, GalaxyState::Unknown, false, m_tview.GetThreadTree() );
-                                m_bottom.SetHelp( HelpSet::Default );
+                                m_bottom.PopHelp();
                                 RestoreDefaultView();
                             }
                         }
@@ -374,9 +374,9 @@ void Browser::Entry()
         }
         case '/':
         case 's':
-            m_bottom.SetHelp( HelpSet::Search );
+            m_bottom.PushHelp( HelpSet::Search );
             m_sview.Entry();
-            m_bottom.SetHelp( HelpSet::Default );
+            m_bottom.PopHelp();
             RestoreDefaultView();
             doupdate();
             break;
@@ -403,9 +403,9 @@ void Browser::Entry()
         case 'o':
             if( m_galaxy )
             {
-                m_bottom.SetHelp( HelpSet::GalaxyOpen );
+                m_bottom.PushHelp( HelpSet::GalaxyOpen );
                 m_gopen->Entry();
-                m_bottom.SetHelp( HelpSet::Default );
+                m_bottom.PopHelp();
                 RestoreDefaultView();
                 doupdate();
             }
@@ -435,11 +435,11 @@ void Browser::Entry()
                 }
                 else
                 {
-                    m_bottom.SetHelp( HelpSet::GalaxyOpen );
+                    m_bottom.PushHelp( HelpSet::GalaxyOpen );
                     uint8_t repack[2048];
                     m_galaxy->RepackMsgId( m_archive->GetMessageId( m_tview.GetCursor() ), repack, m_archive->GetCompress() );
                     m_gwarp->Entry( repack, state, true, m_tview.GetThreadTree() );
-                    m_bottom.SetHelp( HelpSet::Default );
+                    m_bottom.PopHelp();
                     RestoreDefaultView();
                 }
             }
@@ -542,7 +542,7 @@ void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::strin
 
 void Browser::DisplayTextView( const char* text, int size )
 {
-    m_bottom.SetHelp( HelpSet::Text );
+    m_bottom.PushHelp( HelpSet::Text );
     m_textview.Entry( text, size );
-    m_bottom.SetHelp( HelpSet::Default );
+    m_bottom.PopHelp();
 }

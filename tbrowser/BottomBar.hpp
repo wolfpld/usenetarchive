@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 #include "View.hpp"
 
@@ -28,7 +29,8 @@ public:
     std::string InteractiveQuery( const char* prompt, const std::function<void(const std::string&)>& cb, const char* entry = nullptr );
     int KeyQuery( const char* prompt );
     void Status( const char* status, int timeout = 2 );
-    void SetHelp( HelpSet set );
+    void PushHelp( HelpSet set );
+    void PopHelp();
 
 private:
     void PrintHelp();
@@ -37,7 +39,7 @@ private:
 
     Browser* m_parent;
     int m_reset;
-    HelpSet m_help;
+    std::vector<HelpSet> m_help;
 };
 
 #endif

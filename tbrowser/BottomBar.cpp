@@ -12,7 +12,7 @@ BottomBar::BottomBar( Browser* parent )
     : View( 0, LINES-1, 0, 1 )
     , m_parent( parent )
     , m_reset( 0 )
-    , m_help( HelpSet::Default )
+    , m_help( { HelpSet::Default } )
 {
     PrintHelp();
     wnoutrefresh( m_win );
@@ -257,9 +257,17 @@ void BottomBar::Status( const char* status, int timeout )
     wnoutrefresh( m_win );
 }
 
-void BottomBar::SetHelp( HelpSet set )
+void BottomBar::PushHelp( HelpSet set )
 {
-    m_help = set;
+    m_help.emplace_back( set );
+    PrintHelp();
+    wnoutrefresh( m_win );
+}
+
+void BottomBar::PopHelp()
+{
+    assert( m_help.size() > 1 );
+    m_help.pop_back();
     PrintHelp();
     wnoutrefresh( m_win );
 }
@@ -268,7 +276,7 @@ void BottomBar::PrintHelp()
 {
     m_reset = 0;
     werase( m_win );
-    switch( m_help )
+    switch( m_help.back() )
     {
     case HelpSet::Default:
         waddch( m_win, ACS_DARROW );
