@@ -385,7 +385,7 @@ void Browser::Entry()
             RestoreDefaultView();
             doupdate();
             break;
-        case 'c':
+        case 'i':
         {
             auto charter = m_archive->GetLongDescription();
             if( charter.second == 0 )
