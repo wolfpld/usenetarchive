@@ -88,9 +88,6 @@ const char* HelpContents =
 "  In the chart view you are presented with a group activity plot. You can see\n"
 "how the message numbers changed over the time.\n"
 "\n"
-"  An optional high-resolution mode can be activated by pressing the 'h' key.\n"
-"Be aware that it only looks good on a relatively small set of fonts.\n"
-"\n"
 "                                     About\n"
 "                                    -------\n"
 "\n"
@@ -124,4 +121,20 @@ const char* SearchHelpContents =
 "  For example, to require an exact match in a 'from' field, type:\n"
 "\n"
 "    +from:\"query\"\n"
+;
+
+const char* ChartHelpContents =
+//345678901234567890123456789012345678901234567890123456789012345678901234567890
+"\n"
+"                            Usenet Archive Browser\n"
+"                           ========================\n"
+"\n"
+"                                   Chart view\n"
+"                                 -------------\n"
+"\n"
+"  In the chart view you are presented with a group activity plot. You can see\n"
+"how the message numbers changed over the time.\n"
+"\n"
+"  An optional high-resolution mode can be activated by pressing the 'h' key.\n"
+"Be aware that it only looks good on a relatively small set of fonts."
 ;

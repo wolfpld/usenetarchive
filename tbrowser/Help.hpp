@@ -3,5 +3,6 @@
 
 extern const char* HelpContents;
 extern const char* SearchHelpContents;
+extern const char* ChartHelpContents;
 
 #endif

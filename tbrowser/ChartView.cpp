@@ -5,6 +5,7 @@
 
 #include "Browser.hpp"
 #include "ChartView.hpp"
+#include "Help.hpp"
 
 enum { MarginW = 16 };
 enum { MarginH = 14 };
@@ -66,6 +67,10 @@ void ChartView::Entry()
             Draw();
             doupdate();
             break;
+        case '?':
+            m_parent->DisplayTextView( ChartHelpContents );
+            Draw();
+            doupdate();
         default:
             break;
         }
