@@ -5,23 +5,31 @@
 
 #include "View.hpp"
 
+class Archive;
 class Browser;
+class SearchEngine;
 
 class ChartView : public View
 {
 public:
-    ChartView( Browser* parent );
+    ChartView( Browser* parent, Archive& archive );
 
     void Entry();
 
     void Resize();
     void Draw();
 
+    void Reset( Archive& archive );
+
 private:
     void Prepare();
 
     Browser* m_parent;
     bool m_active;
+
+    Archive* m_archive;
+    std::unique_ptr<SearchEngine> m_search;
+    std::string m_query;
 
     std::vector<uint16_t> m_data;
     std::vector<char[7]> m_label;

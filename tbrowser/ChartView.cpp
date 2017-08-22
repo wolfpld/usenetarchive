@@ -34,10 +34,12 @@ const char* Block[2][8] = {
     "\xE2\x96\x88"
 } };
 
-ChartView::ChartView( Browser* parent )
+ChartView::ChartView( Browser* parent, Archive& archive )
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_active( false )
+    , m_archive( &archive )
+    , m_search( std::make_unique<SearchEngine>( archive ) )
     , m_hires( 1 )
 {
 }
@@ -170,13 +172,12 @@ void ChartView::Prepare()
     wnoutrefresh( m_win );
     doupdate();
 
-    auto& archive = m_parent->GetArchive();
-    const auto msgsz = archive.NumberOfMessages();
+    const auto msgsz = m_archive->NumberOfMessages();
     uint32_t tbegin = std::numeric_limits<uint32_t>::max();
     uint32_t tend = std::numeric_limits<uint32_t>::min();
     for( uint32_t i=0; i<msgsz; i++ )
     {
-        const auto t = archive.GetDate( i );
+        const auto t = m_archive->GetDate( i );
         if( t != 0 )
         {
             if( t < tbegin ) tbegin = t;
@@ -192,7 +193,7 @@ void ChartView::Prepare()
 
     for( uint32_t i=0; i<msgsz; i++ )
     {
-        const auto t = archive.GetDate( i );
+        const auto t = m_archive->GetDate( i );
         if( t != 0 )
         {
             const auto s = uint32_t( ( t - tbegin ) * tinv );
@@ -218,4 +219,11 @@ void ChartView::Prepare()
         auto dlen = strftime( buf, 16, "%Y-%m", lt );
         memcpy( m_label[i], buf, 7 );
     }
+}
+
+void ChartView::Reset( Archive& archive )
+{
+    m_archive = &archive;
+    m_search = std::make_unique<SearchEngine>( archive );
+    m_query.clear();
 }

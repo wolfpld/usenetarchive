@@ -21,7 +21,7 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     , m_tview( *m_archive, m_storage, m_galaxy, m_mview )
     , m_sview( this, m_bottom, *m_archive, m_storage )
     , m_textview( this )
-    , m_chartview( this )
+    , m_chartview( this, *m_archive )
     , m_fn( fn )
 {
     if( galaxy )
@@ -539,6 +539,7 @@ void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::strin
     m_mview.Reset( *m_archive );
     m_sview.Reset( *m_archive );
     m_tview.Reset( *m_archive );
+    m_chartview.Reset( *m_archive );
 
     auto& history = m_storage.GetArticleHistory();
     if( m_storage.ReadArticleHistory( m_fn.c_str() ) )

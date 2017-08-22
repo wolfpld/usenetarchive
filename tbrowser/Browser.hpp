@@ -31,7 +31,6 @@ public:
     void SwitchToMessage( int msgidx );
 
     const char* GetArchiveFilename() const { return m_fn.c_str(); }
-    const Archive& GetArchive() const { return *m_archive; }
 
     void SwitchArchive( const std::shared_ptr<Archive>& archive, std::string&& fn );
     void DisplayTextView( const char* text, int size = -1 );
