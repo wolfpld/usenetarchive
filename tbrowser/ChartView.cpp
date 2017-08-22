@@ -56,6 +56,8 @@ void ChartView::Entry()
         {
         case KEY_RESIZE:
             m_parent->Resize();
+            Resize();
+            doupdate();
             break;
         case 'q':
             m_active = false;
