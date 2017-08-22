@@ -214,11 +214,6 @@ void ChartView::Prepare()
     int w, h;
     getmaxyx( m_win, h, w );
 
-    werase( m_win );
-    mvwprintw( m_win, h/2, (w-14)/2, "Please wait..." );
-    wnoutrefresh( m_win );
-    doupdate();
-
     uint32_t tbegin = std::numeric_limits<uint32_t>::max();
     uint32_t tend = std::numeric_limits<uint32_t>::min();
 
