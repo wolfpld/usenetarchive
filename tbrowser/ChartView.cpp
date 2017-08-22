@@ -174,12 +174,14 @@ void ChartView::Draw()
     }
     waddch( m_win, ACS_RARROW );
 
+    const auto color = m_posts.empty() ? 7 : 5;
+
     assert( m_data.size() == xs );
     for( int x=0; x<xs; x++ )
     {
         if( x % 4 == 0 )
         {
-            wattroff( m_win, COLOR_PAIR( 7 ) );
+            wattroff( m_win, COLOR_PAIR( color ) );
             wattron( m_win, COLOR_PAIR( 4 ) );
             for( int j=0; j<7; j++ )
             {
@@ -187,7 +189,7 @@ void ChartView::Draw()
                 waddch( m_win, m_label[x][j] );
             }
             wattroff( m_win, COLOR_PAIR( 4 ) );
-            wattron( m_win, COLOR_PAIR( 7 ) );
+            wattron( m_win, COLOR_PAIR( color ) );
         }
         const auto v = m_data[x];
         if( v == 0 ) continue;
@@ -204,7 +206,7 @@ void ChartView::Draw()
             wprintw( m_win, Block[m_hires][r-1] );
         }
     }
-    wattroff( m_win, COLOR_PAIR( 7 ) );
+    wattroff( m_win, COLOR_PAIR( color ) );
 
     wnoutrefresh( m_win );
 }
