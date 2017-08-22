@@ -160,6 +160,7 @@ void ChartView::Prepare()
             if( t > tend ) tend = t;
         }
     }
+    assert( tbegin <= tend );
     const auto trange = tend - tbegin + 1;
     const auto segments = w - MarginW;
     const auto tinv = double( segments-1 ) / trange;
