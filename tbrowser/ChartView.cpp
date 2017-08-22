@@ -1,12 +1,13 @@
 #include <limits>
+#include <time.h>
 
 #include "../libuat/Archive.hpp"
 
 #include "Browser.hpp"
 #include "ChartView.hpp"
 
-enum { MarginW = 12 };
-enum { MarginH = 10 };
+enum { MarginW = 16 };
+enum { MarginH = 14 };
 
 // Proper 1/8 steps, broken on too many fonts
 /*
@@ -84,8 +85,8 @@ void ChartView::Draw()
     wprintw( m_win, "Activity chart" );
     wattroff( m_win, COLOR_PAIR( 4 ) | A_BOLD );
 
-    const auto x0 = MarginW - 3;
-    const auto y0 = MarginH / 2 - 1;
+    const auto x0 = 9;
+    const auto y0 = 4;
     const auto xs = w - MarginW;
     const auto ys = h - MarginH;
 
@@ -114,9 +115,20 @@ void ChartView::Draw()
     waddch( m_win, ACS_RARROW );
 
     assert( m_data.size() == xs );
-    wattron( m_win, COLOR_PAIR( 7 ) );
     for( int x=0; x<xs; x++ )
     {
+        if( x % 4 == 0 )
+        {
+            wattroff( m_win, COLOR_PAIR( 7 ) );
+            wattron( m_win, COLOR_PAIR( 4 ) );
+            for( int j=0; j<7; j++ )
+            {
+                wmove( m_win, y0+2+ys+j, x0+1+x+j );
+                waddch( m_win, m_label[x][j] );
+            }
+            wattroff( m_win, COLOR_PAIR( 4 ) );
+            wattron( m_win, COLOR_PAIR( 7 ) );
+        }
         const auto v = m_data[x];
         if( v == 0 ) continue;
         const auto f = v / 8;
@@ -183,9 +195,16 @@ void ChartView::Prepare()
 
     const auto th = h - MarginH + 2;
     m_data = std::vector<uint16_t>( segments );
+    m_label = std::vector<char[7]>( segments );
     const auto minv = 1. / ( m_max+1 );
+    const auto sinv = 1. / tinv;
     for( int i=0; i<segments; i++ )
     {
         m_data[i] = seg[i] * minv * th * 8;
+        const time_t ts = uint32_t( i * sinv ) + tbegin;
+        auto lt = localtime( &ts );
+        char buf[16];
+        auto dlen = strftime( buf, 16, "%Y-%m", lt );
+        memcpy( m_label[i], buf, 7 );
     }
 }
