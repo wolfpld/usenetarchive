@@ -40,6 +40,7 @@ v0.5 (xxxx-xx-xx)
   - Add decorations to URLs.
   - "Go to message" functionality now accepts negative numbers to go to the
     most recent messages.
+  - Group activity chart has been added.
 - Bump package version to 3.
   - Required by changes to the hashing algorithm.
   - Required to save Message ID compression codebook.
