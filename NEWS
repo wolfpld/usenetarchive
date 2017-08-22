@@ -242,4 +242,7 @@ v0.2 (2016-11-17)
 v0.1 (2016-08-23)
 -----------------
 
-Initial release. Package version 0.
+- Initial release.
+- Package version 0.
+- Qt-based browser.
+- Many bugs.
