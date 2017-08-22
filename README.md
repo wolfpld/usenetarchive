@@ -18,6 +18,7 @@ Typically you will have two usage patterns:
 ## List of UAT archive files
 
 - Archive of polish usenet: [https://archive.org/details/usenet-uat-pl](https://archive.org/details/usenet-uat-pl).
+- PC games usenet archive: [https://archive.org/details/usenet-uat-pc-games](https://archive.org/details/usenet-uat-pc-games).
 
 ## Motivation
 
