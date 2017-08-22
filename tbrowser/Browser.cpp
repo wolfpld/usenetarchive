@@ -409,7 +409,9 @@ void Browser::Entry()
             break;
         }
         case 'c':
+            m_bottom.PushHelp( HelpSet::Chart );
             m_chartview.Entry();
+            m_bottom.PopHelp();
             RestoreDefaultView();
             doupdate();
             break;

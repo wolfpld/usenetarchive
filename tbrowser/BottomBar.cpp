@@ -303,6 +303,9 @@ void BottomBar::PrintHelp()
         waddch( m_win, ACS_UARROW );
         wprintw( m_win, ":Move q:Quit RET:Open s:Filter" );
         break;
+    case HelpSet::Chart:
+        wprintw( m_win, "q:Quit" );
+        break;
     default:
         assert( false );
         break;

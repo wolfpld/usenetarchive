@@ -14,7 +14,8 @@ enum class HelpSet
     Default,
     Search,
     Text,
-    GalaxyOpen
+    GalaxyOpen,
+    Chart
 };
 
 class BottomBar : public View
