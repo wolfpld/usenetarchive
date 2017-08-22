@@ -135,6 +135,11 @@ const char* ChartHelpContents =
 "  In the chart view you are presented with a group activity plot. You can see\n"
 "how the message numbers changed over the time.\n"
 "\n"
+"  In addition to plotting all messages posted to the newsgroup, you can also\n"
+"view result of the search query, which will display trends over time for given\n"
+"terms. To do so, press the 's' key and enter what you are searching for. To go\n"
+"back to the default (all posts) view, press 'a'.\n"
+"\n"
 "  An optional high-resolution mode can be activated by pressing the 'h' key.\n"
 "Be aware that it only looks good on a relatively small set of fonts."
 ;
