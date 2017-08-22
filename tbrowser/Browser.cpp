@@ -21,7 +21,7 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     , m_tview( *m_archive, m_storage, m_galaxy, m_mview )
     , m_sview( this, m_bottom, *m_archive, m_storage )
     , m_textview( this )
-    , m_chartview( this, *m_archive )
+    , m_chartview( this, *m_archive, m_bottom )
     , m_fn( fn )
 {
     if( galaxy )

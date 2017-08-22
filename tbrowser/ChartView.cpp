@@ -3,6 +3,7 @@
 
 #include "../libuat/Archive.hpp"
 
+#include "BottomBar.hpp"
 #include "Browser.hpp"
 #include "ChartView.hpp"
 #include "Help.hpp"
@@ -34,12 +35,13 @@ const char* Block[2][8] = {
     "\xE2\x96\x88"
 } };
 
-ChartView::ChartView( Browser* parent, Archive& archive )
+ChartView::ChartView( Browser* parent, Archive& archive, BottomBar& bar )
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_active( false )
     , m_archive( &archive )
     , m_search( std::make_unique<SearchEngine>( archive ) )
+    , m_bar( bar )
     , m_hires( 1 )
 {
 }
@@ -73,9 +75,44 @@ void ChartView::Entry()
             m_parent->DisplayTextView( ChartHelpContents );
             Draw();
             doupdate();
+        case 's':
+        case '/':
+        {
+            auto query = m_bar.Query( "Search: ", m_query.c_str() );
+            if( !query.empty() )
+            {
+                m_posts.clear();
+                std::swap( m_query, query );
+                const auto res = m_search->Search( m_query.c_str(), SearchEngine::SF_AdjacentWords | SearchEngine::SF_FuzzySearch | SearchEngine::SF_SetLogic );
+                const auto sz = res.results.size();
+                if( sz > 1 )
+                {
+                    m_posts.reserve( sz );
+                    for( auto& v : res.results )
+                    {
+                        m_posts.emplace_back( v.postid );
+                    }
+                }
+                Prepare();
+            }
+            else
+            {
+                m_bar.Update();
+            }
+            Draw();
+            doupdate();
+            break;
+        }
+        case 'a':
+            m_posts.clear();
+            Prepare();
+            Draw();
+            doupdate();
+            break;
         default:
             break;
         }
+        m_bar.Update();
     }
 }
 
@@ -172,33 +209,68 @@ void ChartView::Prepare()
     wnoutrefresh( m_win );
     doupdate();
 
-    const auto msgsz = m_archive->NumberOfMessages();
     uint32_t tbegin = std::numeric_limits<uint32_t>::max();
     uint32_t tend = std::numeric_limits<uint32_t>::min();
-    for( uint32_t i=0; i<msgsz; i++ )
+
+    size_t msgsz;
+    if( m_posts.empty() )
     {
-        const auto t = m_archive->GetDate( i );
-        if( t != 0 )
+        msgsz = m_archive->NumberOfMessages();
+        for( uint32_t i=0; i<msgsz; i++ )
         {
-            if( t < tbegin ) tbegin = t;
-            if( t > tend ) tend = t;
+            const auto t = m_archive->GetDate( i );
+            if( t != 0 )
+            {
+                if( t < tbegin ) tbegin = t;
+                if( t > tend ) tend = t;
+            }
+        }
+    }
+    else
+    {
+        msgsz = m_posts.size();
+        for( uint32_t i=0; i<msgsz; i++ )
+        {
+            const auto t = m_archive->GetDate( m_posts[i] );
+            if( t != 0 )
+            {
+                if( t < tbegin ) tbegin = t;
+                if( t > tend ) tend = t;
+            }
         }
     }
     assert( tbegin <= tend );
+
     const auto trange = tend - tbegin + 1;
     const auto segments = w - MarginW;
     const auto tinv = double( segments-1 ) / trange;
 
     std::vector<uint32_t> seg( segments );
 
-    for( uint32_t i=0; i<msgsz; i++ )
+    if( m_posts.empty() )
     {
-        const auto t = m_archive->GetDate( i );
-        if( t != 0 )
+        for( uint32_t i=0; i<msgsz; i++ )
         {
-            const auto s = uint32_t( ( t - tbegin ) * tinv );
-            assert( s >= 0 && s < segments );
-            seg[s]++;
+            const auto t = m_archive->GetDate( i );
+            if( t != 0 )
+            {
+                const auto s = uint32_t( ( t - tbegin ) * tinv );
+                assert( s >= 0 && s < segments );
+                seg[s]++;
+            }
+        }
+    }
+    else
+    {
+        for( uint32_t i=0; i<msgsz; i++ )
+        {
+            const auto t = m_archive->GetDate( m_posts[i] );
+            if( t != 0 )
+            {
+                const auto s = uint32_t( ( t - tbegin ) * tinv );
+                assert( s >= 0 && s < segments );
+                seg[s]++;
+            }
         }
     }
 
