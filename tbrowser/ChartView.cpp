@@ -75,6 +75,7 @@ void ChartView::Entry()
             m_parent->DisplayTextView( ChartHelpContents );
             Draw();
             doupdate();
+            break;
         case 's':
         case '/':
         {
