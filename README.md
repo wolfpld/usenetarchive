@@ -13,6 +13,7 @@ Typically you will have two usage patterns:
 ![](doc/tbrowser2.png)
 ![](doc/galaxy1.png)
 ![](doc/galaxy2.png)
+![](doc/tbrowser3.png)
 
 ## List of UAT archive files
 
