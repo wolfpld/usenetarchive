@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "../libuat/Archive.hpp"
 
 #include "Browser.hpp"
@@ -147,12 +149,16 @@ void ChartView::Prepare()
 
     auto& archive = m_parent->GetArchive();
     const auto msgsz = archive.NumberOfMessages();
-    const auto tbegin = archive.GetDate( uint32_t( 0 ) );
-    uint32_t tend = tbegin;
-    for( uint32_t i=1; i<msgsz; i++ )
+    uint32_t tbegin = std::numeric_limits<uint32_t>::max();
+    uint32_t tend = std::numeric_limits<uint32_t>::min();
+    for( uint32_t i=0; i<msgsz; i++ )
     {
         const auto t = archive.GetDate( i );
-        if( t > tend ) tend = t;
+        if( t != 0 )
+        {
+            if( t < tbegin ) tbegin = t;
+            if( t > tend ) tend = t;
+        }
     }
     const auto trange = tend - tbegin + 1;
     const auto segments = w - MarginW;
@@ -163,9 +169,12 @@ void ChartView::Prepare()
     for( uint32_t i=0; i<msgsz; i++ )
     {
         const auto t = archive.GetDate( i );
-        const auto s = uint32_t( ( t - tbegin ) * tinv );
-        assert( s >= 0 && s < segments );
-        seg[s]++;
+        if( t != 0 )
+        {
+            const auto s = uint32_t( ( t - tbegin ) * tinv );
+            assert( s >= 0 && s < segments );
+            seg[s]++;
+        }
     }
 
     m_max = 0;
