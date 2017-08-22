@@ -9,9 +9,9 @@
 enum { MarginW = 16 };
 enum { MarginH = 14 };
 
+const char* Block[2][8] = {
 // Proper 1/8 steps, broken on too many fonts
-/*
-const char* Block[8] = {
+{
     "\xE2\x96\x81",
     "\xE2\x96\x82",
     "\xE2\x96\x83",
@@ -20,11 +20,9 @@ const char* Block[8] = {
     "\xE2\x96\x86",
     "\xE2\x96\x87",
     "\xE2\x96\x88"
-};
-*/
-
+},
 // Double vertical resolution
-const char* Block[8] = {
+{
     "",
     "",
     "",
@@ -33,12 +31,13 @@ const char* Block[8] = {
     "\xE2\x96\x84",
     "\xE2\x96\x84",
     "\xE2\x96\x88"
-};
+} };
 
 ChartView::ChartView( Browser* parent )
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_active( false )
+    , m_hires( 1 )
 {
 }
 
@@ -62,6 +61,11 @@ void ChartView::Entry()
         case 'q':
             m_active = false;
             return;
+        case 'h':
+            m_hires = 1 - m_hires;
+            Draw();
+            doupdate();
+            break;
         default:
             break;
         }
@@ -138,12 +142,12 @@ void ChartView::Draw()
         for( int y=0; y<f; y++ )
         {
             wmove( m_win, y0+1+ys-y-1, x0+1+x );
-            wprintw( m_win, Block[7] );
+            wprintw( m_win, Block[m_hires][7] );
         }
         if( r > 0 )
         {
             wmove( m_win, y0+1+ys-f-1, x0+1+x );
-            wprintw( m_win, Block[r-1] );
+            wprintw( m_win, Block[m_hires][r-1] );
         }
     }
     wattroff( m_win, COLOR_PAIR( 7 ) );
