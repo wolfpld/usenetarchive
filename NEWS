@@ -38,6 +38,8 @@ v0.5 (xxxx-xx-xx)
     handled.
   - Add decorations to *bold*, _underlined_ and /italics/ text segments.
   - Add decorations to URLs.
+  - "Go to message" functionality now accepts negative numbers to go to the
+    most recent messages.
 - Bump package version to 3.
   - Required by changes to the hashing algorithm.
   - Required to save Message ID compression codebook.

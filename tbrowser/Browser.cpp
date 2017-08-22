@@ -368,7 +368,14 @@ void Browser::Entry()
             if( !msgid.empty() )
             {
                 auto idx = atoi( msgid.c_str() );
-                SwitchToMessage( std::min<int>( std::max( 0, idx ), m_archive->NumberOfMessages() - 1 ) );
+                if( idx < 0 )
+                {
+                    SwitchToMessage( std::max<int>( m_archive->NumberOfMessages() + idx, 0 ) );
+                }
+                else
+                {
+                    SwitchToMessage( std::min<int>( idx, m_archive->NumberOfMessages() - 1 ) );
+                }
                 doupdate();
             }
             break;
