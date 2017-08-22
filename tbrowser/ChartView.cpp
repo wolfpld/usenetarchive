@@ -9,7 +9,7 @@
 #include "Help.hpp"
 
 enum { MarginW = 16 };
-enum { MarginH = 14 };
+enum { MarginH = 16 };
 
 const char* Block[2][8] = {
 // Proper 1/8 steps, broken on too many fonts
@@ -135,8 +135,18 @@ void ChartView::Draw()
     wprintw( m_win, "Activity chart" );
     wattroff( m_win, COLOR_PAIR( 4 ) | A_BOLD );
 
+    wmove( m_win, 3, 4 );
+    if( m_posts.empty() )
+    {
+        wprintw( m_win, "Showing all posts." );
+    }
+    else
+    {
+        wprintw( m_win, "Results for: %s", m_query.c_str() );
+    }
+
     const auto x0 = 9;
-    const auto y0 = 4;
+    const auto y0 = 6;
     const auto xs = w - MarginW;
     const auto ys = h - MarginH;
 
@@ -298,4 +308,5 @@ void ChartView::Reset( Archive& archive )
     m_archive = &archive;
     m_search = std::make_unique<SearchEngine>( archive );
     m_query.clear();
+    m_posts.clear();
 }
