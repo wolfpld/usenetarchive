@@ -304,7 +304,7 @@ void BottomBar::PrintHelp()
         wprintw( m_win, ":Move q:Quit RET:Open s:Filter" );
         break;
     case HelpSet::Chart:
-        wprintw( m_win, "q:Quit h:HiRes a:AllPosts s:Search" );
+        wprintw( m_win, "q:Quit h:HiRes a:AllPosts s:Search o:Overlay" );
         break;
     default:
         assert( false );

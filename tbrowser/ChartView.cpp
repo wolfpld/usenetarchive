@@ -25,8 +25,8 @@ const char* Block[2][8] = {
 },
 // Double vertical resolution
 {
-    "",
-    "",
+    " ",
+    " ",
     "\xE2\x96\x84",
     "\xE2\x96\x84",
     "\xE2\x96\x84",
@@ -42,7 +42,8 @@ ChartView::ChartView( Browser* parent, Archive& archive, BottomBar& bar )
     , m_archive( &archive )
     , m_search( std::make_unique<SearchEngine>( archive ) )
     , m_bar( bar )
-    , m_hires( 1 )
+    , m_hires( false )
+    , m_trend( false )
 {
 }
 
@@ -67,7 +68,13 @@ void ChartView::Entry()
             m_active = false;
             return;
         case 'h':
-            m_hires = 1 - m_hires;
+            m_hires = !m_hires;
+            Draw();
+            doupdate();
+            break;
+        case 'o':
+            m_trend = !m_trend;
+            Prepare();
             Draw();
             doupdate();
             break;
@@ -196,15 +203,51 @@ void ChartView::Draw()
         if( v == 0 ) continue;
         const auto f = v / 8;
         const auto r = v % 8;
-        for( int y=0; y<f; y++ )
+        if( m_posts.empty() || !m_trend )
         {
-            wmove( m_win, y0+1+ys-y-1, x0+1+x );
-            wprintw( m_win, Block[m_hires][7] );
+            for( int y=0; y<f; y++ )
+            {
+                wmove( m_win, y0+1+ys-y-1, x0+1+x );
+                wprintw( m_win, Block[m_hires ? 0 : 1][7] );
+            }
+            if( r > 0 )
+            {
+                wmove( m_win, y0+1+ys-f-1, x0+1+x );
+                wprintw( m_win, Block[m_hires ? 0 : 1][r-1] );
+            }
         }
-        if( r > 0 )
+        else
         {
-            wmove( m_win, y0+1+ys-f-1, x0+1+x );
-            wprintw( m_win, Block[m_hires][r-1] );
+            const auto t = m_trendData[x];
+            auto tf = t / 8;
+            const auto tr = t % 8;
+            for( int y=0; y<tf; y++ )
+            {
+                wmove( m_win, y0+1+ys-y-1, x0+1+x );
+                wprintw( m_win, Block[m_hires ? 0 : 1][7] );
+            }
+            wattroff( m_win, COLOR_PAIR( color ) );
+            if( tr > 0 )
+            {
+                wattron( m_win, COLOR_PAIR( 17 ) );
+                wmove( m_win, y0+1+ys-tf-1, x0+1+x );
+                wprintw( m_win, Block[m_hires ? 0 : 1][tr-1] );
+                wattroff( m_win, COLOR_PAIR( 17 ) );
+                tf++;
+            }
+            wattron( m_win, COLOR_PAIR( 7 ) );
+            for( int y=tf; y<f; y++ )
+            {
+                wmove( m_win, y0+1+ys-y-1, x0+1+x );
+                wprintw( m_win, Block[m_hires ? 0 : 1][7] );
+            }
+            if( r > 0 )
+            {
+                wmove( m_win, y0+1+ys-f-1, x0+1+x );
+                wprintw( m_win, Block[m_hires ? 0 : 1][r-1] );
+            }
+            wattroff( m_win, COLOR_PAIR( 7 ) );
+            wattron( m_win, COLOR_PAIR( color ) );
         }
     }
     wattroff( m_win, COLOR_PAIR( color ) );
@@ -221,7 +264,7 @@ void ChartView::Prepare()
     uint32_t tend = std::numeric_limits<uint32_t>::min();
 
     size_t msgsz;
-    if( m_posts.empty() )
+    if( m_posts.empty() || m_trend )
     {
         msgsz = m_archive->NumberOfMessages();
         for( uint32_t i=0; i<msgsz; i++ )
@@ -255,7 +298,7 @@ void ChartView::Prepare()
 
     std::vector<uint32_t> seg( segments );
 
-    if( m_posts.empty() )
+    if( m_posts.empty() || m_trend )
     {
         for( uint32_t i=0; i<msgsz; i++ )
         {
@@ -298,6 +341,28 @@ void ChartView::Prepare()
         char buf[16];
         auto dlen = strftime( buf, 16, "%Y-%m", lt );
         memcpy( m_label[i], buf, 7 );
+    }
+
+    if( !m_posts.empty() && m_trend )
+    {
+        memset( seg.data(), 0, sizeof( uint32_t ) * segments );
+        msgsz = m_posts.size();
+        for( uint32_t i=0; i<msgsz; i++ )
+        {
+            const auto t = m_archive->GetDate( m_posts[i] );
+            if( t != 0 )
+            {
+                const auto s = uint32_t( ( t - tbegin ) * tinv );
+                assert( s >= 0 && s < segments );
+                seg[s]++;
+            }
+        }
+
+        m_trendData = std::vector<uint16_t>( segments );
+        for( int i=0; i<segments; i++ )
+        {
+            m_trendData[i] = seg[i] * minv * th * 8;
+        }
     }
 }
 
