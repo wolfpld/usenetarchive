@@ -40,6 +40,7 @@ private:
     std::vector<uint16_t> m_trendData;
     std::vector<char[7]> m_label;
     uint32_t m_max;
+    uint32_t m_daysPerGrid;
     bool m_hires;
     bool m_trend;
     bool m_galaxyMode;

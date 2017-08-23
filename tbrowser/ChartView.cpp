@@ -166,15 +166,15 @@ void ChartView::Draw()
     wmove( m_win, 3, 4 );
     if( m_galaxyMode )
     {
-        wprintw( m_win, "Showing all posts in galaxy." );
+        wprintw( m_win, "Showing all posts in galaxy. %i days per column.", m_daysPerGrid );
     }
     else if( m_posts.empty() )
     {
-        wprintw( m_win, "Showing all posts." );
+        wprintw( m_win, "Showing all posts. %i days per column.", m_daysPerGrid );
     }
     else
     {
-        wprintw( m_win, "Results for: %s", m_query.c_str() );
+        wprintw( m_win, "Results for: %s. %i days per column.", m_query.c_str(), m_daysPerGrid );
     }
 
     const auto x0 = 9;
@@ -341,6 +341,8 @@ void ChartView::Prepare()
     const auto trange = tend - tbegin + 1;
     const auto segments = w - MarginW;
     const auto tinv = double( segments-1 ) / trange;
+
+    m_daysPerGrid = uint32_t( 1. / tinv / ( 60*60*24 ) );
 
     std::vector<uint32_t> seg( segments );
 
