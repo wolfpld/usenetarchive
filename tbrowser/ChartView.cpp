@@ -2,6 +2,7 @@
 #include <time.h>
 
 #include "../libuat/Archive.hpp"
+#include "../libuat/Galaxy.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
@@ -35,15 +36,17 @@ const char* Block[2][8] = {
     "\xE2\x96\x88"
 } };
 
-ChartView::ChartView( Browser* parent, Archive& archive, BottomBar& bar )
+ChartView::ChartView( Browser* parent, Archive& archive, BottomBar& bar, Galaxy* galaxy )
     : View( 0, 1, 0, -2 )
     , m_parent( parent )
     , m_active( false )
     , m_archive( &archive )
     , m_search( std::make_unique<SearchEngine>( archive ) )
     , m_bar( bar )
+    , m_galaxy( galaxy )
     , m_hires( false )
     , m_trend( false )
+    , m_galaxyMode( false )
 {
 }
 
@@ -74,6 +77,7 @@ void ChartView::Entry()
             break;
         case 'o':
             m_trend = !m_trend;
+            m_galaxyMode = false;
             Prepare();
             Draw();
             doupdate();
@@ -89,6 +93,7 @@ void ChartView::Entry()
             auto query = m_bar.Query( "Search: ", m_query.c_str() );
             if( !query.empty() )
             {
+                m_galaxyMode = false;
                 m_posts.clear();
                 std::swap( m_query, query );
                 const auto res = m_search->Search( m_query.c_str(), SearchEngine::SF_AdjacentWords | SearchEngine::SF_FuzzySearch | SearchEngine::SF_SetLogic );
@@ -112,10 +117,25 @@ void ChartView::Entry()
             break;
         }
         case 'a':
+            m_galaxyMode = false;
             m_posts.clear();
             Prepare();
             Draw();
             doupdate();
+            break;
+        case 'g':
+            if( !m_galaxy )
+            {
+                m_bar.Status( "Galaxy not available." );
+            }
+            else if( !m_galaxyMode )
+            {
+                m_galaxyMode = true;
+                m_posts.clear();
+                Prepare();
+                Draw();
+                doupdate();
+            }
             break;
         default:
             break;
@@ -144,7 +164,11 @@ void ChartView::Draw()
     wattroff( m_win, COLOR_PAIR( 4 ) | A_BOLD );
 
     wmove( m_win, 3, 4 );
-    if( m_posts.empty() )
+    if( m_galaxyMode )
+    {
+        wprintw( m_win, "Showing all posts in galaxy." );
+    }
+    else if( m_posts.empty() )
     {
         wprintw( m_win, "Showing all posts." );
     }
@@ -264,7 +288,29 @@ void ChartView::Prepare()
     uint32_t tend = std::numeric_limits<uint32_t>::min();
 
     size_t msgsz;
-    if( m_posts.empty() || m_trend )
+    if( m_galaxyMode )
+    {
+        assert( m_galaxy );
+        msgsz = 0;
+        const auto archsz = m_galaxy->GetNumberOfArchives();
+        for( size_t i=0; i<archsz; i++ )
+        {
+            if( !m_galaxy->IsArchiveAvailable( i ) ) continue;
+            auto& arch = m_galaxy->GetArchive( i, false );
+            const auto sz = arch->NumberOfMessages();
+            for( uint32_t i=0; i<sz; i++ )
+            {
+                const auto t = arch->GetDate( i );
+                if( t != 0 )
+                {
+                    if( t < tbegin ) tbegin = t;
+                    if( t > tend ) tend = t;
+                }
+            }
+            msgsz += sz;
+        }
+    }
+    else if( m_posts.empty() || m_trend )
     {
         msgsz = m_archive->NumberOfMessages();
         for( uint32_t i=0; i<msgsz; i++ )
@@ -298,7 +344,27 @@ void ChartView::Prepare()
 
     std::vector<uint32_t> seg( segments );
 
-    if( m_posts.empty() || m_trend )
+    if( m_galaxyMode )
+    {
+        const auto archsz = m_galaxy->GetNumberOfArchives();
+        for( size_t i=0; i<archsz; i++ )
+        {
+            if( !m_galaxy->IsArchiveAvailable( i ) ) continue;
+            auto& arch = m_galaxy->GetArchive( i, false );
+            const auto sz = arch->NumberOfMessages();
+            for( uint32_t i=0; i<sz; i++ )
+            {
+                const auto t = arch->GetDate( i );
+                if( t != 0 )
+                {
+                    const auto s = uint32_t( ( t - tbegin ) * tinv );
+                    assert( s >= 0 && s < segments );
+                    seg[s]++;
+                }
+            }
+        }
+    }
+    else if( m_posts.empty() || m_trend )
     {
         for( uint32_t i=0; i<msgsz; i++ )
         {

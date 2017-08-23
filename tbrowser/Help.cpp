@@ -143,4 +143,6 @@ const char* ChartHelpContents =
 "\n"
 "  An optional high-resolution mode can be activated by pressing the 'h' key.\n"
 "Be aware that it only looks good on a relatively small set of fonts."
+"\n"
+"  You can view a chart of all messages in the galaxy by pressing the 'g' key.\n"
 ;
