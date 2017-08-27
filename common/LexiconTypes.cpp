@@ -12,12 +12,12 @@ const char* LexiconNames[] = {
 };
 
 float const LexiconWeights[] = {
-    1.0f,
-    0.7f,
+    1000.f,
+    150.f,
+    25.f,
+    4.f,
     0.5f,
-    0.3f,
-    0.25f,
-    0.15f,
+    1.f,
     0.1f,
     0.05f
 };
