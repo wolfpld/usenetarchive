@@ -36,6 +36,7 @@ private:
 
     void FillPreview( int idx );
     void MoveCursor( int offset );
+    void FixupRank();
 
     ExpandingBuffer m_eb;
     Browser* m_parent;

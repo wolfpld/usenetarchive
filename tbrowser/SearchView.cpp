@@ -61,6 +61,7 @@ void SearchView::Entry()
                 auto start = std::chrono::high_resolution_clock::now();
                 m_result = m_search->Search( m_query.c_str(), SearchEngine::SF_AdjacentWords | SearchEngine::SF_FuzzySearch | SearchEngine::SF_SetLogic );
                 m_queryTime = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - start ).count() / 1000.f;
+                FixupRank();
                 m_preview.clear();
                 m_preview.reserve( m_result.results.size() );
                 m_top = m_bottom = m_cursor = 0;
@@ -602,4 +603,14 @@ void SearchView::MoveCursor( int offset )
         offset--;
     }
     Draw();
+}
+
+void SearchView::FixupRank()
+{
+    if( m_result.results.empty() ) return;
+    float max = 0.f;
+    for( auto& v : m_result.results ) if( v.rank > max ) max = v.rank;
+    assert( max != 0.f );
+    float inv = 1.f / max;
+    for( auto& v : m_result.results ) v.rank *= inv;
 }
