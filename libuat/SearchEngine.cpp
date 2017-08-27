@@ -332,7 +332,7 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                             wordset.emplace( res2 );
                             const auto dist = data >> 30;
                             assert( dist > 0 && dist <= 3 );
-                            static const float DistMod[] = { 0.125f, 0.5f, 0.25f, 0.125f };
+                            static const float DistMod[] = { 0.f, 0.01f, 0.001f, 0.0001f };
                             wordMod.emplace_back( DistMod[dist] );
                             matched.emplace_back( word );
                         }
