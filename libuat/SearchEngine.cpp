@@ -220,11 +220,10 @@ static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize )
     return ret;
 }
 
-bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<uint32_t>& words, std::vector<int>& wordFlags, std::vector<float>& wordMod, std::vector<const char*>& matched ) const
+bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const
 {
     std::unordered_set<uint32_t> wordset;
     words.reserve( terms.size() );
-    wordFlags.reserve( terms.size() );
     for( auto& v : terms )
     {
         int wf = WF_None;
@@ -307,10 +306,8 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
             auto res = m_archive.m_lexhash.Search( word.c_str() );
             if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
-                words.emplace_back( res );
-                wordFlags.emplace_back( wf );
+                words.emplace_back( WordData { uint32_t( res ), wf, 1 } );
                 wordset.emplace( res );
-                wordMod.emplace_back( 1 );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
 
                 if( flags & SF_FuzzySearch && !strictMatch && !( wf & ( WF_Must | WF_Cant ) ) )
@@ -327,13 +324,11 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                         if( wordset.find( res2 ) == wordset.end() )
                         {
                             assert( !( wf & ( WF_Must | WF_Cant ) ) );
-                            words.emplace_back( res2 );
-                            wordFlags.emplace_back( wf );
                             wordset.emplace( res2 );
                             const auto dist = data >> 30;
                             assert( dist > 0 && dist <= 3 );
                             static const float DistMod[] = { 0.f, 0.01f, 0.001f, 0.0001f };
-                            wordMod.emplace_back( DistMod[dist] );
+                            words.emplace_back( WordData { uint32_t( res2 ), wf, DistMod[dist] } );
                             matched.emplace_back( word );
                         }
                     }
@@ -345,15 +340,15 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
     return !words.empty();
 }
 
-std::vector<SearchEngine::PostDataVec> SearchEngine::GetPostsForWords( const std::vector<uint32_t>& words, const std::vector<int>& wordFlags, int filter ) const
+std::vector<SearchEngine::PostDataVec> SearchEngine::GetPostsForWords( const std::vector<WordData>& words, int filter ) const
 {
     std::vector<PostDataVec> wdata;
     wdata.reserve( words.size() );
 
     for( int w=0; w<words.size(); w++ )
     {
-        const auto v = words[w];
-        const auto wf = wordFlags[w];
+        const auto v = words[w].word;
+        const auto wf = words[w].flags;
 
         auto meta = m_archive.m_lexmeta[v];
         auto data = m_archive.m_lexdata + ( meta.data / sizeof( LexiconDataPacket ) );
@@ -524,7 +519,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<float>& wordMod, const std::vector<int>& wordFlags, int flags ) const
+std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<WordData>& words, int flags ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = std::min<size_t>( 1024, wdata.size() );
@@ -536,8 +531,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
         bool hasMust = false;
         bool hasCant = false;
 
-        for( auto& flag : wordFlags )
+        for( auto& word : words )
         {
+            auto flag = word.flags;
             if( flag & ( WF_Must | WF_Cant ) )
             {
                 checkInclude = true;
@@ -559,7 +555,7 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
                 int i;
                 for( i=0; i<wdata.size(); i++ )
                 {
-                    if( wordFlags[i] & WF_Must )
+                    if( words[i].flags & WF_Must )
                     {
                         for( int j=0; j<wdata[i].first; j++ )
                         {
@@ -571,7 +567,7 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
                 }
                 for( i=i+1; i<wdata.size(); i++ )
                 {
-                    if( wordFlags[i] & WF_Must )
+                    if( words[i].flags & WF_Must )
                     {
                         auto& vtest = wdata[i];
                         auto begin = vtest.second;
@@ -596,9 +592,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
             {
                 for( int i=0; i<wdata.size(); i++ )
                 {
-                    if( !( wordFlags[i] & WF_Cant ) )
+                    if( !( words[i].flags & WF_Cant ) )
                     {
-                        assert( !( wordFlags[i] & WF_Must ) );
+                        assert( !( words[i].flags & WF_Must ) );
                         for( int j=0; j<wdata[i].first; j++ )
                         {
                             auto& v = wdata[i].second[j];
@@ -613,7 +609,7 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
             {
                 for( int i=0; i<wdata.size(); i++ )
                 {
-                    if( wordFlags[i] & WF_Cant )
+                    if( words[i].flags & WF_Cant )
                     {
                         for( int j=0; j<wdata[i].first; j++ )
                         {
@@ -694,7 +690,7 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
         for( int m=0; m<pnum[k]; m++ )
         {
             auto& v = pdata[k*wsize + m];
-            rank += HitRank( *v.data ) * wordMod[v.word];
+            rank += HitRank( *v.data ) * words[v.word].mod;
             for( int i=0; i<v.data->hitnum; i++ )
             {
                 wordlist.emplace_back( v.word );
@@ -778,15 +774,13 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
 
     flags = FixupFlags( flags );
 
-    std::vector<uint32_t> words;
-    std::vector<int> wordFlags;
-    std::vector<float> wordMod;
+    std::vector<WordData> words;
     std::vector<const char*> matched;
 
-    if( !ExtractWords( terms, flags, words, wordFlags, wordMod, matched ) ) return ret;
-    if( wordFlags.size() == 1 && wordFlags[0] & WF_Cant ) return ret;
+    if( !ExtractWords( terms, flags, words, matched ) ) return ret;
+    if( words.size() == 1 && words[0].flags & WF_Cant ) return ret;
 
-    const auto wdata = GetPostsForWords( words, wordFlags, filter );
+    const auto wdata = GetPostsForWords( words, filter );
 
     std::vector<SearchResult> result;
 
@@ -801,7 +795,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     }
     else
     {
-        result = GetFullResult( wdata, wordMod, wordFlags, flags );
+        result = GetFullResult( wdata, words, flags );
     }
 
     slab.Reset();
