@@ -30,6 +30,7 @@ struct WordData
     uint32_t word;
     int flags;
     float mod;
+    int group;
 };
 
 struct PostData;

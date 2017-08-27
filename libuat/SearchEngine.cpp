@@ -223,6 +223,7 @@ static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize )
 bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const
 {
     std::unordered_set<uint32_t> wordset;
+    int group = 0;
     words.reserve( terms.size() );
     for( auto& v : terms )
     {
@@ -306,7 +307,7 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
             auto res = m_archive.m_lexhash.Search( word.c_str() );
             if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
-                words.emplace_back( WordData { uint32_t( res ), wf, 1 } );
+                words.emplace_back( WordData { uint32_t( res ), wf, 1, group } );
                 wordset.emplace( res );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
 
@@ -328,11 +329,13 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                             const auto dist = data >> 30;
                             assert( dist > 0 && dist <= 3 );
                             static const float DistMod[] = { 0.f, 0.01f, 0.001f, 0.0001f };
-                            words.emplace_back( WordData { uint32_t( res2 ), wf, DistMod[dist] } );
+                            words.emplace_back( WordData { uint32_t( res2 ), wf, DistMod[dist], group } );
                             matched.emplace_back( word );
                         }
                     }
                 }
+
+                group++;
             }
         }
     }
