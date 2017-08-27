@@ -52,7 +52,7 @@ static float HitRank( const PostData& data )
 
 static float PostRank( const PostData& data )
 {
-    return ( float( data.children ) / LexiconChildMax ) * 0.9f + 0.1f;
+    return ( float( data.children ) / LexiconChildMax ) * 0.75f + 0.25f;
 }
 
 static float GetWordDistance( const std::vector<const PostData*>& list )
