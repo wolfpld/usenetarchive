@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <limits>
 #include <unordered_set>
 
 #include "Archive.hpp"
@@ -43,7 +44,8 @@ SearchData SearchEngine::Search( const char* query, int flags, int filter ) cons
 static float HitRank( const PostData& data )
 {
     auto ptr = data.hits;
-    float rank = LexiconHitRank( *ptr );
+    float ramp = 1.f + 2.0f * float( data.hitnum ) / std::numeric_limits<uint8_t>::max();
+    float rank = LexiconHitRank( *ptr ) * ramp;
     for( int i=1; i<data.hitnum; i++ ) assert( LexiconHitRank( *ptr++ ) <= rank );
     return rank;
 }
