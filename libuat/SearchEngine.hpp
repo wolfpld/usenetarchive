@@ -28,10 +28,12 @@ struct SearchData
 struct WordData
 {
     uint32_t word;
-    int flags;
     float mod;
-    int group;
+    uint32_t flags : 4;     // WordFlags
+    uint32_t group : 27;
+    uint32_t strict : 1;
 };
+static_assert( sizeof( WordData ) == 12, "Wrong word data struct size" );
 
 struct PostData;
 
