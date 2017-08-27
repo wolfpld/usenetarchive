@@ -334,6 +334,7 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
                     auto word = m_archive.m_lexstr + offset;
                     auto res2 = m_archive.m_lexhash.Search( word );
                     assert( res2 >= 0 );
+                    // todo: check if distance modifier is higher than already stored one
                     if( wordset.find( res2 ) == wordset.end() )
                     {
                         wordset.emplace( res2 );
