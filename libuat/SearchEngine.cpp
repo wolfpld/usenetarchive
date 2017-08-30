@@ -289,7 +289,7 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
             auto res = m_archive.m_lexhash.Search( word.c_str() );
             if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
-                words.emplace_back( WordData { uint32_t( res ), 1.f, wf, group, strictMatch } );
+                words.emplace_back( WordData { uint32_t( res ), 1.f, wf, group++, strictMatch } );
                 wordset.emplace( res );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
             }
