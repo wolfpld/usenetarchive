@@ -150,16 +150,13 @@ static float GetWordDistance( const std::vector<const PostData*>& list )
                         {
                             auto diff = p1 - p2;
                             auto ad = abs( diff );
-                            if( ad < min )
+                            if( ad < 2 )
                             {
-                                if( ad < 2 )
-                                {
-                                    return 1;
-                                }
-                                else
-                                {
-                                    min = ad;
-                                }
+                                return 1;
+                            }
+                            else if( ad < min )
+                            {
+                                min = ad;
                             }
                             if( diff < 0 )
                             {
