@@ -57,39 +57,10 @@ static float PostRank( const PostData& data )
 
 static float GetWordDistance( const std::vector<const PostData*>& list )
 {
-    const auto listsize = list.size();
-
-    static thread_local std::vector<std::vector<uint8_t>> hits;
-    const auto hs = hits.size();
-
-    for( int i=0; i<listsize; i++ )
-    {
-        const auto& post = list[i];
-
-        if( i < hs )
-        {
-            hits[i].clear();
-        }
-        else
-        {
-            hits.emplace_back();
-        }
-        auto& v = hits[i];
-
-        for( int i=0; i<post->hitnum; i++ )
-        {
-            auto pos = LexiconHitPos( post->hits[i] );
-            if( pos < LexiconHitPosMask[LexiconDecodeType( post->hits[i] )] )
-            {
-                v.emplace_back( post->hits[i] );
-            }
-        }
-        std::sort( v.begin(), v.end(), []( const uint8_t l, const uint8_t r ) { return LexiconHitPos( l ) < LexiconHitPos( r ); } );
-    }
-
     static thread_local std::vector<int> start[NUM_LEXICON_TYPES];
     static thread_local std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
 
+    const auto listsize = list.size();
     const auto hops = hop[0].size();
     for( int i=0; i<NUM_LEXICON_TYPES; i++ )
     {
@@ -120,9 +91,23 @@ static float GetWordDistance( const std::vector<const PostData*>& list )
 
     for( int i=0; i<listsize; i++ )
     {
-        auto& post = hits[i];
-        for( auto& hit : post )
+        uint8_t data[256];
+        int cnt = 0;
+        const auto& src = list[i];
+        for( int j=0; j<src->hitnum; j++ )
         {
+            auto pos = LexiconHitPos( src->hits[j] );
+            if( pos < LexiconHitPosMask[LexiconDecodeType( src->hits[j] )] )
+            {
+                data[cnt++] = src->hits[j];
+            }
+        }
+        std::sort( data, data+cnt, []( const uint8_t l, const uint8_t r ) { return LexiconHitPos( l ) < LexiconHitPos( r ); } );
+
+        for( int j=0; j<cnt; j++ )
+        {
+            auto& hit = data[j];
+
             auto type = LexiconDecodeType( hit );
             auto pos = LexiconHitPos( hit );
             if( start[type][i] == -1 )
