@@ -202,7 +202,7 @@ static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize )
     return ret;
 }
 
-bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const
+uint32_t SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const
 {
     std::unordered_set<uint32_t> wordset;
     uint32_t group = 0;
@@ -331,7 +331,7 @@ bool SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flag
         }
     }
 
-    return !words.empty();
+    return group;
 }
 
 std::vector<SearchEngine::PostDataVec> SearchEngine::GetPostsForWords( const std::vector<WordData>& words, int filter ) const
@@ -771,7 +771,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     std::vector<WordData> words;
     std::vector<const char*> matched;
 
-    if( !ExtractWords( terms, flags, words, matched ) ) return ret;
+    if( ExtractWords( terms, flags, words, matched ) == 0 ) return ret;
     if( words.size() == 1 && words[0].flags & WF_Cant ) return ret;
 
     const auto wdata = GetPostsForWords( words, filter );

@@ -57,7 +57,7 @@ public:
 private:
     using PostDataVec = std::pair<uint32_t, PostData*>;
 
-    bool ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const;
+    uint32_t ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const;
     std::vector<PostDataVec> GetPostsForWords( const std::vector<WordData>& words, int filter ) const;
     int FixupFlags( int flags ) const;
 
