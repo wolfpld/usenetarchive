@@ -457,7 +457,7 @@ std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<Searc
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, int flags ) const
+std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, int flags, uint32_t groups, uint32_t missing ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = wdata.size();
@@ -515,7 +515,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<WordData>& words, int flags ) const
+std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<WordData>& words, int flags, uint32_t groups, uint32_t missing ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = std::min<size_t>( 1024, wdata.size() );
@@ -790,11 +790,11 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         assert( !( flags & SF_SetLogic ) );
         assert( !( flags & SF_FuzzySearch ) );
-        result = GetAllWordResult( wdata, flags );
+        result = GetAllWordResult( wdata, flags, groups, terms.size() - groups );
     }
     else
     {
-        result = GetFullResult( wdata, words, flags );
+        result = GetFullResult( wdata, words, flags, groups, terms.size() - groups );
     }
 
     slab.Reset();
