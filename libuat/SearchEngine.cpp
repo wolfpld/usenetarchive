@@ -786,6 +786,8 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     else if( flags & SF_RequireAllWords )
     {
         assert( !( flags & SF_SetLogic ) );
+        assert( !( flags & SF_FuzzySearch ) );
+        assert( groups <= terms.size() );
         result = GetAllWordResult( wdata, flags );
     }
     else
