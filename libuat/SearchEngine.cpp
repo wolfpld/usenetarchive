@@ -289,11 +289,13 @@ uint32_t SearchEngine::ExtractWords( const std::vector<std::string>& terms, int 
             auto res = m_archive.m_lexhash.Search( word.c_str() );
             if( res >= 0 && wordset.find( res ) == wordset.end() )
             {
-                words.emplace_back( WordData { uint32_t( res ), 1.f, wf, group++, strictMatch } );
+                words.emplace_back( WordData { uint32_t( res ), 1.f, wf, group, strictMatch } );
                 wordset.emplace( res );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
             }
         }
+
+        if( !processed.empty() ) group++;
     }
 
     if( flags & SF_FuzzySearch )
@@ -772,6 +774,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     std::vector<const char*> matched;
 
     auto groups = ExtractWords( terms, flags, words, matched );
+    assert( groups <= terms.size() );
     if( groups == 0 ) return ret;
     if( words.size() == 1 && words[0].flags & WF_Cant ) return ret;
 
@@ -787,7 +790,6 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         assert( !( flags & SF_SetLogic ) );
         assert( !( flags & SF_FuzzySearch ) );
-        assert( groups <= terms.size() );
         result = GetAllWordResult( wdata, flags );
     }
     else
