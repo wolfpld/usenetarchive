@@ -779,6 +779,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     if( words.size() == 1 && words[0].flags & WF_Cant ) return ret;
 
     const auto wdata = GetPostsForWords( words, filter );
+    assert( wdata.size() == words.size() );
 
     std::vector<SearchResult> result;
 
