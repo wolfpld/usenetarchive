@@ -691,14 +691,14 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
                             list1.emplace_back( v.data );
                         }
                     }
-                    if( !list1.empty() ) break;
+                    if( !list1.empty() )
+                    {
+                        g++;
+                        break;
+                    }
                     drank += 127;
                 }
-                if( g == groups-1 )
-                {
-                    drank += 127;
-                }
-                else
+                if( !list1.empty() )
                 {
                     for( ; g<groups; g++ )
                     {
