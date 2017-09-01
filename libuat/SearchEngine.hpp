@@ -62,7 +62,7 @@ private:
     int FixupFlags( int flags ) const;
 
     std::vector<SearchResult> GetSingleResult( const std::vector<PostDataVec>& wdata ) const;
-    std::vector<SearchResult> GetAllWordResult( const std::vector<PostDataVec>& wdata, const std::vector<WordData>& words, int flags, uint32_t groups, uint32_t missing ) const;
+    std::vector<SearchResult> GetAllWordResult( const std::vector<PostDataVec>& wdata, int flags, uint32_t groups, uint32_t missing ) const;
     std::vector<SearchResult> GetFullResult( const std::vector<PostDataVec>& wdata, const std::vector<WordData>& words, int flags, uint32_t groups, uint32_t missing ) const;
 
     const Archive& m_archive;

@@ -437,8 +437,10 @@ std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<Searc
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<WordData>& words, int flags, uint32_t groups, uint32_t missing ) const
+std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, int flags, uint32_t groups, uint32_t missing ) const
 {
+    assert( !( flags & SF_FuzzySearch ) );
+
     std::vector<SearchResult> result;
     const auto wsize = wdata.size();
 
@@ -451,6 +453,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
     {
         auto& post = vec.second[i];
         list.clear();
+        list.emplace_back( &post );
         bool ok = true;
         for( size_t i=1; i<wsize; i++ )
         {
@@ -470,7 +473,7 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
         }
         if( ok )
         {
-            list.emplace_back( &post );
+            assert( groups == list.size() );
             float rank = 0;
             for( auto& v : list )
             {
@@ -478,15 +481,13 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
             }
             if( flags & SF_AdjacentWords )
             {
-                if( list.size() != 1 )
+                int drank = 127 * missing;
+                for( int g=0; g<groups-1; g++ )
                 {
-                    // TODO
-                    //rank /= GetWordDistance( list );
+                    drank += GetWordDistance( std::vector<const PostData*> { list[g] }, std::vector<const PostData*> { list[g+1] } );
                 }
-                else
-                {
-                    rank /= 127;
-                }
+                assert( drank != 0 );
+                rank /= drank;
             }
             // only used in threadify, no need to output hit data
             result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0 ) );
@@ -809,7 +810,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         assert( !( flags & SF_SetLogic ) );
         assert( !( flags & SF_FuzzySearch ) );
-        result = GetAllWordResult( wdata, words, flags, groups, terms.size() - groups );
+        result = GetAllWordResult( wdata, flags, groups, terms.size() - groups );
     }
     else
     {
