@@ -262,6 +262,7 @@ uint32_t SearchEngine::ExtractWords( const std::vector<std::string>& terms, int 
             }
         }
 
+        bool added = false;
         for( auto& word : processed )
         {
             auto res = m_archive.m_lexhash.Search( word.c_str() );
@@ -270,10 +271,11 @@ uint32_t SearchEngine::ExtractWords( const std::vector<std::string>& terms, int 
                 words.emplace_back( WordData { uint32_t( res ), 1.f, wf, group, strictMatch } );
                 wordset.emplace( res );
                 matched.emplace_back( m_archive.m_lexstr + m_archive.m_lexmeta[res].str );
+                added = true;
             }
         }
 
-        if( !processed.empty() ) group++;
+        if( added ) group++;
     }
 
     if( flags & SF_FuzzySearch )
