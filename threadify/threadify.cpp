@@ -381,7 +381,7 @@ int main( int argc, char** argv )
                                     splitLock.unlock();
                                     if( !wordbuf.empty() )
                                     {
-                                        auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords, T_Content );
+                                        auto results = search.Search( wordbuf, SearchEngine::SF_RequireAllWords | SearchEngine::SF_SimpleSearch, T_Content );
                                         auto& res = results.results;
                                         if( !res.empty() )
                                         {
