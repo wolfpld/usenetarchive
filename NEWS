@@ -64,7 +64,12 @@ v0.5 (xxxx-xx-xx)
   - Lexicon data is now properly transformed after the messages are matched.
     Lexicon utility no longer needs to be run twice.
   - Added second mode of operation - thread grouping.
-- Change search in headers to search in 'From:' or 'Subject:' fields.
+  - Don't use irrelevant rank metrics.
+- Search improvements:
+  - Change search in headers to search in 'From:' or 'Subject:' fields.
+  - Give better score to messages that have more hits for search terms.
+  - General adjustments to search ranking weights.
+  - Take into account word distances between all words in the query.
 
 
 v0.4 (2017-07-19)
