@@ -55,51 +55,38 @@ static float PostRank( const PostData& data )
     return ( float( data.children ) / LexiconChildMax ) * 0.75f + 0.25f;
 }
 
-static float GetWordDistance( const std::vector<const PostData*>& list )
+static float GetWordDistance( const std::vector<const PostData*>& list1, const std::vector<const PostData*>& list2 )
 {
-    static thread_local std::vector<int> start[NUM_LEXICON_TYPES];
-    static thread_local std::vector<std::vector<uint8_t>> hop[NUM_LEXICON_TYPES];
+    assert( !list1.empty() && !list2.empty() );
 
-    const auto listsize = list.size();
-    const auto hops = hop[0].size();
+    static thread_local int8_t start[NUM_LEXICON_TYPES][2];
+    static thread_local std::vector<uint8_t> hop[NUM_LEXICON_TYPES][2];
+
     for( int i=0; i<NUM_LEXICON_TYPES; i++ )
     {
-        start[i].clear();
-        for( int j=0; j<listsize; j++ )
+        for( int j=0; j<2; j++ )
         {
-            start[i].emplace_back( -1 );
-        }
-        if( listsize < hops )
-        {
-            for( int j=0; j<listsize; j++ )
-            {
-                hop[i][j].clear();
-            }
-        }
-        else
-        {
-            for( int j=0; j<hops; j++ )
-            {
-                hop[i][j].clear();
-            }
-            for( int j=hops; j<listsize; j++ )
-            {
-                hop[i].emplace_back();
-            }
+            start[i][j] = -1;
+            hop[i][j].clear();
         }
     }
 
-    for( int i=0; i<listsize; i++ )
+    const std::vector<const PostData*>* list[] = { &list1, &list2 };
+
+    for( int i=0; i<2; i++ )
     {
         uint8_t data[256];
         int cnt = 0;
         const auto& src = list[i];
-        for( int j=0; j<src->hitnum; j++ )
+        for( auto& p : *src )
         {
-            auto pos = LexiconHitPos( src->hits[j] );
-            if( pos < LexiconHitPosMask[LexiconDecodeType( src->hits[j] )] )
+            for( int j=0; j<p->hitnum; j++ )
             {
-                data[cnt++] = src->hits[j];
+                auto pos = LexiconHitPos( p->hits[j] );
+                if( pos < LexiconHitPosMask[LexiconDecodeType( p->hits[j] )] )
+                {
+                    data[cnt++] = p->hits[j];
+                }
             }
         }
         std::sort( data, data+cnt, []( const uint8_t l, const uint8_t r ) { return LexiconHitPos( l ) < LexiconHitPos( r ); } );
@@ -129,58 +116,49 @@ static float GetWordDistance( const std::vector<const PostData*>& list )
     int min = 0x7F;
     for( int t=0; t<NUM_LEXICON_TYPES; t++ )
     {
-        for( int w1=0; w1<listsize - 1; w1++ )
+        if( start[t][0] != -1 && start[t][1] != -1 )
         {
-            if( start[t][w1] != -1 )
+            auto p1 = start[t][0];
+            auto p2 = start[t][1];
+
+            auto it1 = hop[t][0].begin();
+            auto it2 = hop[t][1].begin();
+
+            const auto end1 = hop[t][0].end();
+            const auto end2 = hop[t][1].end();
+
+            for(;;)
             {
-                for( int w2=w1+1; w2<listsize; w2++ )
+                auto diff = p1 - p2;
+                auto ad = abs( diff );
+                if( ad < 2 )
                 {
-                    if( start[t][w2] != -1 )
+                    return 1;
+                }
+                else if( ad < min )
+                {
+                    min = ad;
+                }
+                if( diff < 0 )
+                {
+                    if( it1 != end1 )
                     {
-                        auto p1 = start[t][w1];
-                        auto p2 = start[t][w2];
-
-                        auto it1 = hop[t][w1].begin();
-                        auto it2 = hop[t][w2].begin();
-
-                        const auto end1 = hop[t][w1].end();
-                        const auto end2 = hop[t][w2].end();
-
-                        for(;;)
-                        {
-                            auto diff = p1 - p2;
-                            auto ad = abs( diff );
-                            if( ad < 2 )
-                            {
-                                return 1;
-                            }
-                            else if( ad < min )
-                            {
-                                min = ad;
-                            }
-                            if( diff < 0 )
-                            {
-                                if( it1 != end1 )
-                                {
-                                    p1 += *it1++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                if( it2 != end2 )
-                                {
-                                    p2 += *it2++;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
+                        p1 += *it1++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if( it2 != end2 )
+                    {
+                        p2 += *it2++;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
@@ -457,7 +435,7 @@ std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<Searc
     return result;
 }
 
-std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, int flags, uint32_t groups, uint32_t missing ) const
+std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<SearchEngine::PostDataVec>& wdata, const std::vector<WordData>& words, int flags, uint32_t groups, uint32_t missing ) const
 {
     std::vector<SearchResult> result;
     const auto wsize = wdata.size();
@@ -500,7 +478,8 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
             {
                 if( list.size() != 1 )
                 {
-                    rank /= GetWordDistance( list );
+                    // TODO
+                    //rank /= GetWordDistance( list );
                 }
                 else
                 {
@@ -671,7 +650,9 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
 
     delete[] index;
 
-    std::vector<const PostData*> list;
+    std::vector<const PostData*> list1, list2;
+    list1.reserve( wsize );
+    list2.reserve( wsize );
     std::vector<uint8_t> hits;
     std::vector<uint32_t> wordlist;
     std::vector<uint32_t> idx;
@@ -695,20 +676,55 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
         }
         if( flags & SF_AdjacentWords )
         {
-            if( pnum[k] != 1 )
+            int drank = 127 * missing;
+            if( groups > 1 )
             {
-                list.clear();
-                list.reserve( pnum[k] );
-                for( int m=0; m<pnum[k]; m++ )
+                list1.clear();
+                int g;
+                for( g = 0; g < groups-1; g++ )
                 {
-                    list.emplace_back( pdata[k*wsize + m].data );
+                    for( int m=0; m<pnum[k]; m++ )
+                    {
+                        auto& v = pdata[k*wsize + m];
+                        if( words[v.word].group == g )
+                        {
+                            list1.emplace_back( v.data );
+                        }
+                    }
+                    if( !list1.empty() ) break;
+                    drank += 127;
                 }
-                rank /= GetWordDistance( list );
+                if( g == groups-1 )
+                {
+                    drank += 127;
+                }
+                else
+                {
+                    for( ; g<groups; g++ )
+                    {
+                        list2.clear();
+                        for( int m=0; m<pnum[k]; m++ )
+                        {
+                            auto& v = pdata[k*wsize + m];
+                            if( words[v.word].group == g )
+                            {
+                                list2.emplace_back( v.data );
+                            }
+                        }
+                        if( list2.empty() )
+                        {
+                            drank += 127;
+                        }
+                        else
+                        {
+                            drank += GetWordDistance( list1, list2 );
+                            std::swap( list1, list2 );
+                        }
+                    }
+                }
             }
-            else
-            {
-                rank /= 127;
-            }
+            assert( drank != 0 );
+            rank /= drank;
         }
         idx.reserve( hits.size() );
         for( int i=0; i<hits.size(); i++ )
@@ -791,7 +807,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
     {
         assert( !( flags & SF_SetLogic ) );
         assert( !( flags & SF_FuzzySearch ) );
-        result = GetAllWordResult( wdata, flags, groups, terms.size() - groups );
+        result = GetAllWordResult( wdata, words, flags, groups, terms.size() - groups );
     }
     else
     {
