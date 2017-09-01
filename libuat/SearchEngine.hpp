@@ -47,6 +47,7 @@ public:
         SF_RequireAllWords  = 1 << 1,   // Require all words to be present
         SF_FuzzySearch      = 1 << 2,   // Also search for similar words
         SF_SetLogic         = 1 << 3,   // Parse set logic functions (search in headers, search for exact words, etc.)
+        SF_SimpleSearch     = 1 << 4,   // Disable "advanced" ranking features (number of children, total number number of hits)
     };
 
     SearchEngine( const Archive& archive );
@@ -61,7 +62,7 @@ private:
     std::vector<PostDataVec> GetPostsForWords( const std::vector<WordData>& words, int filter ) const;
     int FixupFlags( int flags ) const;
 
-    std::vector<SearchResult> GetSingleResult( const std::vector<PostDataVec>& wdata ) const;
+    std::vector<SearchResult> GetSingleResult( const std::vector<PostDataVec>& wdata, int flags ) const;
     std::vector<SearchResult> GetAllWordResult( const std::vector<PostDataVec>& wdata, int flags, uint32_t groups, uint32_t missing ) const;
     std::vector<SearchResult> GetFullResult( const std::vector<PostDataVec>& wdata, const std::vector<WordData>& words, int flags, uint32_t groups, uint32_t missing ) const;
 

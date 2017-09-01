@@ -50,6 +50,14 @@ static float HitRank( const PostData& data )
     return rank;
 }
 
+static float HitRankSimple( const PostData& data )
+{
+    auto ptr = data.hits;
+    float rank = LexiconHitRank( *ptr );
+    for( int i=1; i<data.hitnum; i++ ) assert( LexiconHitRank( *ptr++ ) <= rank );
+    return rank;
+}
+
 static float PostRank( const PostData& data )
 {
     return ( float( data.children ) / LexiconChildMax ) * 0.75f + 0.25f;
@@ -414,7 +422,7 @@ int SearchEngine::FixupFlags( int flags ) const
     return flags;
 }
 
-std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<SearchEngine::PostDataVec>& wdata ) const
+std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<SearchEngine::PostDataVec>& wdata, int flags ) const
 {
     std::vector<SearchResult> result;
 
@@ -427,7 +435,14 @@ std::vector<SearchResult> SearchEngine::GetSingleResult( const std::vector<Searc
     while( ptr != end )
     {
         // hits are already sorted
-        result.emplace_back( PrepareResults( ptr->postid, PostRank( *ptr ) * HitRank( *ptr ), ptr->hitnum ) );
+        if( flags & SF_SimpleSearch )
+        {
+            result.emplace_back( PrepareResults( ptr->postid, HitRankSimple( *ptr ), ptr->hitnum ) );
+        }
+        else
+        {
+            result.emplace_back( PrepareResults( ptr->postid, PostRank( *ptr ) * HitRank( *ptr ), ptr->hitnum ) );
+        }
         auto& sr = result.back();
         memcpy( sr.hits, ptr->hits, sr.hitnum );
         memset( sr.words, 0, sr.hitnum * sizeof( uint32_t ) );
@@ -475,9 +490,19 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
         {
             assert( groups == list.size() );
             float rank = 0;
-            for( auto& v : list )
+            if( flags & SF_SimpleSearch )
             {
-                rank += HitRank( *v );
+                for( auto& v : list )
+                {
+                    rank += HitRankSimple( *v );
+                }
+            }
+            else
+            {
+                for( auto& v : list )
+                {
+                    rank += HitRank( *v );
+                }
             }
             if( flags & SF_AdjacentWords )
             {
@@ -490,7 +515,14 @@ std::vector<SearchResult> SearchEngine::GetAllWordResult( const std::vector<Sear
                 rank /= drank;
             }
             // only used in threadify, no need to output hit data
-            result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0 ) );
+            if( flags & SF_SimpleSearch )
+            {
+                result.emplace_back( PrepareResults( post.postid, rank, 0 ) );
+            }
+            else
+            {
+                result.emplace_back( PrepareResults( post.postid, rank * PostRank( post ), 0 ) );
+            }
         }
     }
 
@@ -670,7 +702,14 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
         for( int m=0; m<pnum[k]; m++ )
         {
             auto& v = pdata[k*wsize + m];
-            rank += HitRank( *v.data ) * words[v.word].mod;
+            if( flags & SF_SimpleSearch )
+            {
+                rank += HitRankSimple( *v.data ) * words[v.word].mod;
+            }
+            else
+            {
+                rank += HitRank( *v.data ) * words[v.word].mod;
+            }
             for( int i=0; i<v.data->hitnum; i++ )
             {
                 wordlist.emplace_back( v.word );
@@ -766,7 +805,14 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
             }
         }
 
-        result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), idxsize ) );
+        if( flags & SF_SimpleSearch )
+        {
+            result.emplace_back( PrepareResults( postid[k], rank, idxsize ) );
+        }
+        else
+        {
+            result.emplace_back( PrepareResults( postid[k], rank * PostRank( *pdata[k*wsize].data ), idxsize ) );
+        }
         auto& sr = result.back();
         const auto n = sr.hitnum;
         for( int i=0; i<n; i++ )
@@ -804,7 +850,7 @@ SearchData SearchEngine::Search( const std::vector<std::string>& terms, int flag
 
     if( wdata.size() == 1 )
     {
-        result = GetSingleResult( wdata );
+        result = GetSingleResult( wdata, flags );
     }
     else if( flags & SF_RequireAllWords )
     {
