@@ -716,52 +716,49 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
                 hits.emplace_back( v.data->hits[i] );
             }
         }
-        if( flags & SF_AdjacentWords )
+        if( flags & SF_AdjacentWords && groups > 1 )
         {
             int drank = 127 * missing;
-            if( groups > 1 )
+            list1.clear();
+            int g;
+            for( g = 0; g < groups-1; g++ )
             {
-                list1.clear();
-                int g;
-                for( g = 0; g < groups-1; g++ )
+                for( int m=0; m<pnum[k]; m++ )
                 {
+                    auto& v = pdata[k*wsize + m];
+                    if( words[v.word].group == g )
+                    {
+                        list1.emplace_back( v.data );
+                    }
+                }
+                if( !list1.empty() )
+                {
+                    g++;
+                    break;
+                }
+                drank += 127;
+            }
+            if( !list1.empty() )
+            {
+                for( ; g<groups; g++ )
+                {
+                    list2.clear();
                     for( int m=0; m<pnum[k]; m++ )
                     {
                         auto& v = pdata[k*wsize + m];
                         if( words[v.word].group == g )
                         {
-                            list1.emplace_back( v.data );
+                            list2.emplace_back( v.data );
                         }
                     }
-                    if( !list1.empty() )
+                    if( list2.empty() )
                     {
-                        g++;
-                        break;
+                        drank += 127;
                     }
-                    drank += 127;
-                }
-                if( !list1.empty() )
-                {
-                    for( ; g<groups; g++ )
+                    else
                     {
-                        list2.clear();
-                        for( int m=0; m<pnum[k]; m++ )
-                        {
-                            auto& v = pdata[k*wsize + m];
-                            if( words[v.word].group == g )
-                            {
-                                list2.emplace_back( v.data );
-                            }
-                        }
-                        if( list2.empty() )
-                        {
-                            drank += 127;
-                        }
-                        else
-                        {
-                            drank += GetWordDistance( list1, list2 );
-                            std::swap( list1, list2 );
-                        }
+                        drank += GetWordDistance( list1, list2 );
+                        std::swap( list1, list2 );
                     }
                 }
             }
