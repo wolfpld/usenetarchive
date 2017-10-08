@@ -6,10 +6,9 @@
 
 PackageAccess* PackageAccess::Open( const std::string& fn )
 {
-    if( !IsFile( fn.c_str() ) ) return nullptr;
     char version;
     FILE* f = fopen( fn.c_str(), "rb" );
-    if( !f ) goto err;
+    if( !f ) return nullptr;
     char tmp[PackageHeaderSize];
     if( fread( tmp, 1, PackageHeaderSize, f ) != PackageHeaderSize ) goto err;
     if( memcmp( tmp, PackageHeader, PackageMagicSize ) != 0 ) goto err;
