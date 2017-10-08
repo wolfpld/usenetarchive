@@ -19,6 +19,7 @@ public:
 
     void Resize();
     void Draw();
+    void RecalcTopBottom();
 
     void MoveCursor( int offset );
     void GoNextUnread();

@@ -112,6 +112,20 @@ void ThreadView::Draw()
     wnoutrefresh( m_win );
 }
 
+void ThreadView::RecalcTopBottom()
+{
+    int w, h;
+    getmaxyx( m_win, h, w );
+
+    auto idx = m_top;
+    for( int i=0; i<h-1; i++ )
+    {
+        idx = GetNext( idx );
+        if( idx >= m_archive->NumberOfMessages() ) break;
+    }
+    m_bottom = idx;
+}
+
 void ThreadView::PageForward()
 {
     auto cnt = getmaxy( m_win ) - 2;

@@ -505,8 +505,8 @@ void Browser::SwitchToMessage( int msgidx )
     if( msgidx != root && m_tview.CanExpand( root ) && !m_tview.IsExpanded( root ) )
     {
         m_tview.Expand( root, true );
-        m_tview.Draw();
     }
+    m_tview.RecalcTopBottom();
     m_tview.SetCursor( msgidx );
     m_tview.FocusOn( msgidx );
 }
