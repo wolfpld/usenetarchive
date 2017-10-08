@@ -18,7 +18,6 @@ ThreadView::ThreadView( const Archive& archive, PersistentStorage& storage, cons
     , m_fillPos( 0 )
     , m_topLevelPos( 0 )
 {
-    Draw();
 }
 
 void ThreadView::Reset( const Archive& archive )

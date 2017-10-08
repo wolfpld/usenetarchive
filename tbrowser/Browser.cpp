@@ -35,6 +35,10 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     {
         SwitchToMessage( std::min<int>( m_archive->NumberOfMessages() - 1, history.back() ) );
     }
+    else
+    {
+        m_tview.Draw();
+    }
     m_historyIdx = history.size() - 1;
 
     m_bottom.Status( "Press '?' for help.", 1 );
