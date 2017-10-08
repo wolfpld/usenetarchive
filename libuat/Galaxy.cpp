@@ -48,14 +48,11 @@ Galaxy::Galaxy( const std::string& fn )
         else
         {
             const auto relative = m_base + path;
-            if( Exists( relative ) )
+            auto arch = Archive::Open( relative );
+            m_arch.emplace_back( arch );
+            if( arch )
             {
-                m_arch.emplace_back( Archive::Open( relative ) );
                 m_available.emplace_back( i );
-            }
-            else
-            {
-                m_arch.emplace_back( nullptr );
             }
         }
     }
