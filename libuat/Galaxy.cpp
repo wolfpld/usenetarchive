@@ -1,6 +1,8 @@
 #include <algorithm>
 
 #include "../common/Filesystem.hpp"
+#include "../common/TaskDispatch.hpp"
+#include "../common/System.hpp"
 
 #include "Galaxy.hpp"
 
@@ -35,27 +37,41 @@ Galaxy::Galaxy( const std::string& fn )
     , m_indirect( fn + "indirect.offset", fn + "indirect" )
     , m_indirectDense( fn + "indirect.dense" )
     , m_compress( fn + "msgid.codebook" )
+    , m_arch( m_archives.Size() / 2 )
 {
     const auto size = m_archives.Size() / 2;
+    m_available.reserve( size );
+    const auto cpus = System::CPUCores();
+    TaskDispatch td( cpus );
+    std::mutex lock;
     for( int i=0; i<size; i++ )
     {
-        const auto path = std::string( m_archives[i*2], m_archives[i*2+1] );
-        if( Exists( path ) )
-        {
-            m_arch.emplace_back( Archive::Open( path ) );
-            m_available.emplace_back( i );
-        }
-        else
-        {
-            const auto relative = m_base + path;
-            auto arch = Archive::Open( relative );
-            m_arch.emplace_back( arch );
-            if( arch )
+        td.Queue( [this, i, &lock] {
+            const auto path = std::string( m_archives[i*2], m_archives[i*2+1] );
+            if( Exists( path ) )
             {
-                m_available.emplace_back( i );
+                auto arch = Archive::Open( path );
+                if( arch )
+                {
+                    m_arch[i].reset( arch );
+                    std::lock_guard<std::mutex> lg( lock );
+                    m_available.emplace_back( i );
+                }
             }
-        }
+            else
+            {
+                const auto relative = m_base + path;
+                auto arch = Archive::Open( relative );
+                if( arch )
+                {
+                    m_arch[i].reset( arch );
+                    std::lock_guard<std::mutex> lg( lock );
+                    m_available.emplace_back( i );
+                }
+            }
+        } );
     }
+    td.Sync();
 }
 
 const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )

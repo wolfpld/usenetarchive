@@ -276,6 +276,12 @@
     <ClCompile Include="..\..\ChartView.cpp">
       <Filter>tbrowser</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\System.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -448,6 +454,12 @@
     </ClInclude>
     <ClInclude Include="..\..\ChartView.hpp">
       <Filter>tbrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\System.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\TaskDispatch.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
