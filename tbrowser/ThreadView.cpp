@@ -160,16 +160,8 @@ void ThreadView::MoveCursorBottom()
 
 void ThreadView::FocusOn( int cursor )
 {
-    while( cursor >= m_bottom )
-    {
-        m_top = GetNext( m_top );
-        m_bottom = GetNext( m_bottom );
-    }
-    while( cursor < m_top )
-    {
-        m_top = GetPrev( m_top );
-        m_bottom = GetPrev( m_bottom );
-    }
+    m_top = cursor;
+    RecalcTopBottom();
     const auto limit = m_archive->NumberOfMessages();
     if( m_bottom != limit )
     {
