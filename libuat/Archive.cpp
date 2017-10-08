@@ -16,7 +16,6 @@
 
 Archive* Archive::Open( const std::string& fn )
 {
-    if( !Exists( fn ) ) return nullptr;
     if( IsFile( fn ) )
     {
         auto pkg = PackageAccess::Open( fn );
