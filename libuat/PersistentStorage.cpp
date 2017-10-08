@@ -57,6 +57,7 @@ PersistentStorage::PersistentStorage()
     , m_bufLeft( 0 )
     , m_articleHistory( 256 )
 {
+    m_visited.reserve( 64 * 1024 );
     LoadScore();
 }
 
