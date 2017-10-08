@@ -506,7 +506,6 @@ void Browser::SwitchToMessage( int msgidx )
     {
         m_tview.Expand( root, true );
     }
-    m_tview.RecalcTopBottom();
     m_tview.SetCursor( msgidx );
     m_tview.FocusOn( msgidx );
 }
