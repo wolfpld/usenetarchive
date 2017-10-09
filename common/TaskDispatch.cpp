@@ -11,6 +11,10 @@ TaskDispatch::TaskDispatch( size_t workers )
     assert( workers >= 1 );
     workers--;
 
+#ifdef __CYGWIN__
+    if( workers > 7 ) workers = 7;
+#endif
+
     m_workers.reserve( workers );
     for( size_t i=0; i<workers; i++ )
     {
