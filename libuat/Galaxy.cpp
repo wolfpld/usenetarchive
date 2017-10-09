@@ -44,29 +44,35 @@ Galaxy::Galaxy( const std::string& fn )
     const auto cpus = System::CPUCores();
     TaskDispatch td( cpus );
     std::mutex lock;
-    for( int i=0; i<size; i++ )
+    std::atomic<int> cnt( 0 );
+    for( int i=0; i<cpus; i++ )
     {
-        td.Queue( [this, i, &lock] {
-            const auto path = std::string( m_archives[i*2], m_archives[i*2+1] );
-            if( Exists( path ) )
+        td.Queue( [this, &cnt, &lock, size] {
+            for(;;)
             {
-                auto arch = Archive::Open( path );
-                if( arch )
+                const auto i = cnt.fetch_add( 1, std::memory_order_relaxed );
+                if( i >= size ) return;
+                const auto path = std::string( m_archives[i*2], m_archives[i*2+1] );
+                if( Exists( path ) )
                 {
-                    m_arch[i].reset( arch );
-                    std::lock_guard<std::mutex> lg( lock );
-                    m_available.emplace_back( i );
+                    auto arch = Archive::Open( path );
+                    if( arch )
+                    {
+                        m_arch[i].reset( arch );
+                        std::lock_guard<std::mutex> lg( lock );
+                        m_available.emplace_back( i );
+                    }
                 }
-            }
-            else
-            {
-                const auto relative = m_base + path;
-                auto arch = Archive::Open( relative );
-                if( arch )
+                else
                 {
-                    m_arch[i].reset( arch );
-                    std::lock_guard<std::mutex> lg( lock );
-                    m_available.emplace_back( i );
+                    const auto relative = m_base + path;
+                    auto arch = Archive::Open( relative );
+                    if( arch )
+                    {
+                        m_arch[i].reset( arch );
+                        std::lock_guard<std::mutex> lg( lock );
+                        m_available.emplace_back( i );
+                    }
                 }
             }
         } );
