@@ -31,6 +31,8 @@ int main( int argc, char** argv )
         lastOpen = argv[1];
     }
 
+    storage.Preload();
+
     galaxy.reset( Galaxy::Open( lastOpen ) );
     if( galaxy )
     {
@@ -85,6 +87,8 @@ int main( int argc, char** argv )
     init_pair( 15, COLOR_YELLOW, COLOR_BLUE );
     init_pair( 16, COLOR_WHITE, COLOR_RED );
     init_pair( 17, COLOR_RED, COLOR_CYAN );
+
+    storage.WaitPreload();
 
     Browser browser( std::move( archive ), storage, galaxy.get(), lastOpen );
     browser.Entry();

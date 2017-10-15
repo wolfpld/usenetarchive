@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string>
 #include <string.h>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -38,6 +39,9 @@ public:
 
     const std::vector<ScoreEntry>& GetScoreList() const { return m_scoreList; }
 
+    void Preload();
+    void WaitPreload();
+
 private:
     struct hash { size_t operator()( const char* v ) const { return XXH32( v, strlen( v ), 0 ); } };
     struct equal_to { bool operator()( const char* l, const char* r ) const { return strcmp( l, r ) == 0; } };
@@ -60,6 +64,8 @@ private:
 
     ring_buffer<uint32_t> m_articleHistory;
     std::vector<ScoreEntry> m_scoreList;
+
+    std::thread m_preloadThread;
 };
 
 #endif

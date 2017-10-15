@@ -58,7 +58,6 @@ PersistentStorage::PersistentStorage()
     , m_articleHistory( 256 )
 {
     m_visited.reserve( 64 * 1024 );
-    LoadScore();
 }
 
 PersistentStorage::~PersistentStorage()
@@ -346,4 +345,16 @@ void PersistentStorage::LoadScore()
 
         m_scoreList.emplace_back( ScoreEntry { score, exact, ignoreCase, field, std::move( match ) } );
     }
+}
+
+void PersistentStorage::Preload()
+{
+    m_preloadThread = std::thread( [this] {
+        LoadScore();
+    } );
+}
+
+void PersistentStorage::WaitPreload()
+{
+    m_preloadThread.join();
 }
