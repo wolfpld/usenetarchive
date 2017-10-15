@@ -33,6 +33,7 @@ Browser::Browser( std::shared_ptr<Archive>&& archive, PersistentStorage& storage
     auto& history = m_storage.GetArticleHistory();
     if( m_storage.ReadArticleHistory( m_fn.c_str() ) )
     {
+        m_tview.RecalcTopBottom();
         SwitchToMessage( std::min<int>( m_archive->NumberOfMessages() - 1, history.back() ) );
     }
     else
