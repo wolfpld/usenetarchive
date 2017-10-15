@@ -17,6 +17,7 @@ int main( int argc, char** argv )
     PersistentStorage storage;
 
     auto lastOpen = storage.ReadLastOpenArchive();
+    bool lastOpenFromStorage = !lastOpen.empty();
 
     if( argc != 2 )
     {
@@ -29,6 +30,7 @@ int main( int argc, char** argv )
     else
     {
         lastOpen = argv[1];
+        lastOpenFromStorage = false;
     }
 
     storage.Preload();
@@ -47,7 +49,10 @@ int main( int argc, char** argv )
         {
             galaxyLast = available.front();
         }
-        storage.WriteLastOpenArchive( lastOpen.c_str() );
+        if( !lastOpenFromStorage )
+        {
+            storage.WriteLastOpenArchive( lastOpen.c_str() );
+        }
         lastOpen = galaxy->GetArchiveFilename( galaxyLast );
         archive = galaxy->GetArchive( galaxyLast );
     }
