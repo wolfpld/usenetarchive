@@ -10,6 +10,7 @@
 #include "../common/HashSearchBig.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/StringCompress.hpp"
+#include "../common/TaskDispatch.hpp"
 
 #include "Archive.hpp"
 #include "ViewReference.hpp"
@@ -55,6 +56,9 @@ public:
 
 private:
     Galaxy( const std::string& dir );
+
+    int m_cpus;
+    TaskDispatch m_td;
 
     std::string m_base;
     const MetaView<uint64_t, uint8_t> m_middb;

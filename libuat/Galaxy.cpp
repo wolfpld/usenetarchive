@@ -1,7 +1,6 @@
 #include <algorithm>
 
 #include "../common/Filesystem.hpp"
-#include "../common/TaskDispatch.hpp"
 #include "../common/System.hpp"
 
 #include "Galaxy.hpp"
@@ -28,7 +27,9 @@ Galaxy* Galaxy::Open( const std::string& fn )
 }
 
 Galaxy::Galaxy( const std::string& fn )
-    : m_base( fn )
+    : m_cpus( System::CPUCores() )
+    , m_td( m_cpus )
+    , m_base( fn )
     , m_middb( fn + "msgid.meta", fn + "msgid" )
     , m_midhash( fn + "msgid", fn + "midhash.meta", fn + "midhash" )
     , m_archives( fn + "archives.meta", fn + "archives" )
@@ -41,13 +42,11 @@ Galaxy::Galaxy( const std::string& fn )
 {
     const auto size = m_archives.Size() / 2;
     m_available.reserve( size );
-    const auto cpus = System::CPUCores();
-    TaskDispatch td( cpus );
     std::mutex lock;
     std::atomic<int> cnt( 0 );
-    for( int i=0; i<cpus; i++ )
+    for( int i=0; i<m_cpus; i++ )
     {
-        td.Queue( [this, &cnt, &lock, size] {
+        m_td.Queue( [this, &cnt, &lock, size] {
             for(;;)
             {
                 const auto i = cnt.fetch_add( 1, std::memory_order_relaxed );
@@ -77,7 +76,7 @@ Galaxy::Galaxy( const std::string& fn )
             }
         } );
     }
-    td.Sync();
+    m_td.Sync();
 }
 
 const std::shared_ptr<Archive>& Galaxy::GetArchive( int idx, bool change )
