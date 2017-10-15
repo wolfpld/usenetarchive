@@ -351,6 +351,8 @@ void PersistentStorage::Preload()
 {
     m_preloadThread = std::thread( [this] {
         LoadScore();
+        std::lock_guard<LockedFile> lg( m_visitedGuard );
+        VerifyVisitedAreValid( m_visitedGuard );
     } );
 }
 
