@@ -43,7 +43,7 @@ static void SplitICU( const char* ptr, const char* end, std::vector<std::string>
 {
     assert( ptr != end );
 
-    auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, end-ptr ) );
+    auto us = icu::UnicodeString::fromUTF8( icu::StringPiece( ptr, end-ptr ) );
     icu::UnicodeString lower;
 
     if( toLower )
@@ -193,7 +193,7 @@ std::string ToLower( const char* ptr, const char* end )
     const auto size = end - ptr;
     if( IsUtf( ptr, end ) )
     {
-        auto us = icu::UnicodeString::fromUTF8( StringPiece( ptr, size ) );
+        auto us = icu::UnicodeString::fromUTF8( icu::StringPiece( ptr, size ) );
         icu::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
         std::string ret;
         lower.toUTF8String( ret );
