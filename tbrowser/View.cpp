@@ -32,6 +32,6 @@ int View::GetKey() const
 void View::ResizeView( int x, int y, int w, int h ) const
 {
     AdaptWidthHeight( w, h );
-    mvwin( m_win, y, x );
     wresize( m_win, h, w );
+    mvwin( m_win, y, x );
 }
