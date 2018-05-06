@@ -1,3 +1,20 @@
+v0.6 (xxxx-xx-xx)
+-----------------
+
+- Performance improvements.
+  - Removed needless checks for file existence.
+  - Parallel initialization of archives in galaxy mode.
+  - Browser won't do things twice (e.g. thread list redraw).
+  - Browser will calculate top and bottom message index without screen
+    redraw.
+  - Browser won't "scroll" through messages when going to a specific one.
+  - Score file is loaded on a separate thread.
+  - Visited messages list is loaded on a separate thread.
+  - Browser won't write last open archive file, if it was just read from
+    disk.
+- Updated pdcurses to a recent version (includes resizing windows console).
+
+
 v0.5 (2017-09-04)
 -----------------
 
