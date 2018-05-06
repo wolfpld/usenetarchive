@@ -76,7 +76,7 @@
     <ProjectGuid>{0362A7C9-92E4-4D0B-9AC7-375A23F8CEE5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>updatezstd</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
