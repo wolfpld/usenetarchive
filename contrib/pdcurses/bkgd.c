@@ -2,58 +2,61 @@
 
 #include <curspriv.h>
 
-RCSID("$Id: bkgd.c,v 1.39 2008/07/13 16:08:18 wmcbrine Exp $")
-
 /*man-start**************************************************************
 
-  Name:                                                         bkgd
+bkgd
+----
 
-  Synopsis:
-        int bkgd(chtype ch);
-        void bkgdset(chtype ch);
-        chtype getbkgd(WINDOW *win);
-        int wbkgd(WINDOW *win, chtype ch);
-        void wbkgdset(WINDOW *win, chtype ch);
+### Synopsis
 
-        int bkgrnd(const cchar_t *wch);
-        void bkgrndset(const cchar_t *wch);
-        int getbkgrnd(cchar_t *wch);
-        int wbkgrnd(WINDOW *win, const cchar_t *wch);
-        void wbkgrndset(WINDOW *win, const cchar_t *wch);
-        int wgetbkgrnd(WINDOW *win, cchar_t *wch);
+    int bkgd(chtype ch);
+    void bkgdset(chtype ch);
+    chtype getbkgd(WINDOW *win);
+    int wbkgd(WINDOW *win, chtype ch);
+    void wbkgdset(WINDOW *win, chtype ch);
 
-  Description:
-        bkgdset() and wbkgdset() manipulate the background of a window.
-        The background is a chtype consisting of any combination of
-        attributes and a character; it is combined with each chtype
-        added or inserted to the window by waddch() or winsch(). Only
-        the attribute part is used to set the background of non-blank
-        characters, while both character and attributes are used for
-        blank positions.
+    int bkgrnd(const cchar_t *wch);
+    void bkgrndset(const cchar_t *wch);
+    int getbkgrnd(cchar_t *wch);
+    int wbkgrnd(WINDOW *win, const cchar_t *wch);
+    void wbkgrndset(WINDOW *win, const cchar_t *wch);
+    int wgetbkgrnd(WINDOW *win, cchar_t *wch);
 
-        bkgd() and wbkgd() not only change the background, but apply it
-        immediately to every cell in the window.
+### Description
 
-        The attributes that are defined with the attrset()/attron() set
-        of functions take precedence over the background attributes if
-        there is a conflict (e.g., different color pairs).
+   bkgdset() and wbkgdset() manipulate the background of a window.
+   The background is a chtype consisting of any combination of
+   attributes and a character; it is combined with each chtype
+   added or inserted to the window by waddch() or winsch(). Only
+   the attribute part is used to set the background of non-blank
+   characters, while both character and attributes are used for
+   blank positions.
 
-  Return Value:
-        bkgd() and wbkgd() return OK, unless the window is NULL, in 
-        which case they return ERR.
+   bkgd() and wbkgd() not only change the background, but apply it
+   immediately to every cell in the window.
 
-  Portability                                X/Open    BSD    SYS V
-        bkgd                                    Y       -      4.0
-        bkgdset                                 Y       -      4.0
-        getbkgd                                 Y
-        wbkgd                                   Y       -      4.0
-        wbkgdset                                Y       -      4.0
-        bkgrnd                                  Y
-        bkgrndset                               Y
-        getbkgrnd                               Y
-        wbkgrnd                                 Y
-        wbkgrndset                              Y
-        wgetbkgrnd                              Y
+   The attributes that are defined with the attrset()/attron() set
+   of functions take precedence over the background attributes if
+   there is a conflict (e.g., different color pairs).
+
+### Return Value
+
+   bkgd() and wbkgd() return OK, unless the window is NULL, in
+   which case they return ERR.
+
+### Portability
+                             X/Open    BSD    SYS V
+    bkgd                        Y       -      4.0
+    bkgdset                     Y       -      4.0
+    getbkgd                     Y
+    wbkgd                       Y       -      4.0
+    wbkgdset                    Y       -      4.0
+    bkgrnd                      Y
+    bkgrndset                   Y
+    getbkgrnd                   Y
+    wbkgrnd                     Y
+    wbkgrndset                  Y
+    wgetbkgrnd                  Y
 
 **man-end****************************************************************/
 
@@ -86,7 +89,7 @@ int wbkgd(WINDOW *win, chtype ch)
 
     newch = win->_bkgd & A_CHARTEXT;
 
-    /* what follows is what seems to occur in the System V 
+    /* what follows is what seems to occur in the System V
        implementation of this routine */
 
     for (y = 0; y < win->_maxy; y++)
@@ -97,26 +100,26 @@ int wbkgd(WINDOW *win, chtype ch)
 
             ch = *winptr;
 
-            /* determine the colors and attributes of the character read 
+            /* determine the colors and attributes of the character read
                from the window */
 
             colr = ch & A_COLOR;
             attr = ch & (A_ATTRIBUTES ^ A_COLOR);
 
-            /* if the color is the same as the old background color, 
+            /* if the color is the same as the old background color,
                then make it the new background color, otherwise leave it */
 
             if (colr == oldcolr)
                 colr = newcolr;
 
-            /* remove any attributes (non color) from the character that 
-               were part of the old background, then combine the 
+            /* remove any attributes (non color) from the character that
+               were part of the old background, then combine the
                remaining ones with the new background */
 
             attr ^= oldattr;
             attr |= newattr;
 
-            /* change character if it is there because it was the old 
+            /* change character if it is there because it was the old
                background character */
 
             ch &= A_CHARTEXT;

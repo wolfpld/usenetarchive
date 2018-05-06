@@ -1,28 +1,20 @@
 /* Public Domain Curses */
 
-#include <stdlib.h>
-#include <malloc.h>
-
 #include "pdcwin.h"
 
-RCSID("$Id: pdcscrn.c,v 1.92 2008/07/20 20:12:04 wmcbrine Exp $")
-
-#ifdef CHTYPE_LONG
-# define PDC_OFFSET 32
-#else
-# define PDC_OFFSET  8
-#endif
+#include <stdlib.h>
 
 /* COLOR_PAIR to attribute encoding table. */
 
-unsigned char *pdc_atrtab = (unsigned char *)NULL;
+static struct {short f, b;} atrtab[PDC_COLOR_PAIRS];
 
+HANDLE std_con_out = INVALID_HANDLE_VALUE;
 HANDLE pdc_con_out = INVALID_HANDLE_VALUE;
 HANDLE pdc_con_in = INVALID_HANDLE_VALUE;
 
 DWORD pdc_quick_edit;
 
-static short curstoreal[16], realtocurs[16] =
+static short realtocurs[16] =
 {
     COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_CYAN, COLOR_RED,
     COLOR_MAGENTA, COLOR_YELLOW, COLOR_WHITE, COLOR_BLACK + 8,
@@ -30,10 +22,22 @@ static short curstoreal[16], realtocurs[16] =
     COLOR_MAGENTA + 8, COLOR_YELLOW + 8, COLOR_WHITE + 8
 };
 
-enum { PDC_RESTORE_NONE, PDC_RESTORE_BUFFER, PDC_RESTORE_WINDOW };
+static short ansitocurs[16] =
+{
+    COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE,
+    COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE, COLOR_BLACK + 8,
+    COLOR_RED + 8, COLOR_GREEN + 8, COLOR_YELLOW + 8, COLOR_BLUE + 8,
+    COLOR_MAGENTA + 8, COLOR_CYAN + 8, COLOR_WHITE + 8
+};
 
-/* Struct for storing console registry keys, and for use with the 
-   undocumented WM_SETCONSOLEINFO message. Originally by James Brown, 
+short pdc_curstoreal[16], pdc_curstoansi[16];
+short pdc_oldf, pdc_oldb, pdc_oldu;
+bool pdc_conemu, pdc_ansi;
+
+enum { PDC_RESTORE_NONE, PDC_RESTORE_BUFFER };
+
+/* Struct for storing console registry keys, and for use with the
+   undocumented WM_SETCONSOLEINFO message. Originally by James Brown,
    www.catch22.net. */
 
 static struct
@@ -54,13 +58,13 @@ static struct
     ULONG    QuickEdit;
     ULONG    AutoPosition;
     ULONG    InsertMode;
-    
+
     USHORT   ScreenColors;
     USHORT   PopupColors;
     ULONG    HistoryNoDup;
     ULONG    HistoryBufferSize;
     ULONG    NumberOfHistoryBuffers;
-    
+
     COLORREF ColorTable[16];
 
     ULONG    CodePage;
@@ -69,12 +73,29 @@ static struct
     WCHAR    ConsoleTitle[0x100];
 } console_info;
 
-static CONSOLE_SCREEN_BUFFER_INFO orig_scr;
+typedef BOOL (WINAPI *SetConsoleScreenBufferInfoExFn)(HANDLE hConsoleOutput,
+    PCONSOLE_SCREEN_BUFFER_INFOEX lpConsoleScreenBufferInfoEx);
+typedef BOOL (WINAPI *GetConsoleScreenBufferInfoExFn)(HANDLE hConsoleOutput,
+    PCONSOLE_SCREEN_BUFFER_INFOEX lpConsoleScreenBufferInfoEx);
 
-static CHAR_INFO *ci_save = NULL;
+static SetConsoleScreenBufferInfoExFn pSetConsoleScreenBufferInfoEx = NULL;
+static GetConsoleScreenBufferInfoExFn pGetConsoleScreenBufferInfoEx = NULL;
+
+static CONSOLE_SCREEN_BUFFER_INFO orig_scr;
+static CONSOLE_SCREEN_BUFFER_INFOEX console_infoex;
+
+static LPTOP_LEVEL_EXCEPTION_FILTER xcpt_filter;
+
 static DWORD old_console_mode = 0;
 
 static bool is_nt;
+
+static void _reset_old_colors(void)
+{
+    pdc_oldf = -1;
+    pdc_oldb = -1;
+    pdc_oldu = 0;
+}
 
 static HWND _find_console_handle(void)
 {
@@ -99,8 +120,8 @@ static HWND _find_console_handle(void)
 
 #define WM_SETCONSOLEINFO (WM_USER + 201)
 
-/* Wrapper around WM_SETCONSOLEINFO. We need to create the necessary 
-   section (file-mapping) object in the context of the process which 
+/* Wrapper around WM_SETCONSOLEINFO. We need to create the necessary
+   section (file-mapping) object in the context of the process which
    owns the console, before posting the message. Originally by JB. */
 
 static void _set_console_info(void)
@@ -129,7 +150,7 @@ static void _set_console_info(void)
     /* Open the process which "owns" the console */
 
     GetWindowThreadProcessId(console_info.Hwnd, &dwConsoleOwnerPid);
-    
+
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwConsoleOwnerPid);
 
     /* Create a SECTION object backed by page-file, then map a view of
@@ -161,6 +182,28 @@ static void _set_console_info(void)
     CloseHandle(hProcess);
 }
 
+static int _set_console_infoex(void)
+{
+    if (!pSetConsoleScreenBufferInfoEx(pdc_con_out, &console_infoex))
+        return ERR;
+
+    return OK;
+}
+
+static int _set_colors(void)
+{
+    SetConsoleTextAttribute(pdc_con_out, 7);
+    _reset_old_colors();
+
+    if (pSetConsoleScreenBufferInfoEx)
+        return _set_console_infoex();
+    else
+    {
+        _set_console_info();
+        return OK;
+    }
+}
+
 /* One-time initialization for console_info -- color table and font info
    from the registry; other values from functions. */
 
@@ -181,7 +224,7 @@ static void _init_console_info(void)
     console_info.AutoPosition = 0x10000;
     console_info.ScreenColors = SP->orig_back << 4 | SP->orig_fore;
     console_info.PopupColors = 0xf5;
-    
+
     console_info.HistoryNoDup = FALSE;
     console_info.HistoryBufferSize = 50;
     console_info.NumberOfHistoryBuffers = 4;
@@ -220,57 +263,97 @@ static void _init_console_info(void)
     RegCloseKey(reghnd);
 }
 
+static int _init_console_infoex(void)
+{
+    console_infoex.cbSize = sizeof(console_infoex);
+
+    if (!pGetConsoleScreenBufferInfoEx(pdc_con_out, &console_infoex))
+        return ERR;
+
+    console_infoex.srWindow.Right++;
+    console_infoex.srWindow.Bottom++;
+
+    return OK;
+}
+
+static COLORREF *_get_colors(void)
+{
+    if (pGetConsoleScreenBufferInfoEx)
+    {
+        int status = OK;
+        if (!console_infoex.cbSize)
+            status = _init_console_infoex();
+        return (status == ERR) ? NULL :
+            (COLORREF *)(&(console_infoex.ColorTable));
+    }
+    else
+    {
+        if (!console_info.Hwnd)
+            _init_console_info();
+        return (COLORREF *)(&(console_info.ColorTable));
+    }
+}
+
+/* restore the original console buffer in the event of a crash */
+
+static LONG WINAPI _restore_console(LPEXCEPTION_POINTERS ep)
+{
+    PDC_scr_close();
+
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+/* restore the original console buffer on Ctrl+Break (or Ctrl+C,
+   if it gets re-enabled) */
+
+static BOOL WINAPI _ctrl_break(DWORD dwCtrlType)
+{
+    if (dwCtrlType == CTRL_BREAK_EVENT || dwCtrlType == CTRL_C_EVENT)
+        PDC_scr_close();
+
+    return FALSE;
+}
+
 /* close the physical screen -- may restore the screen to its state
    before PDC_scr_open(); miscellaneous cleanup */
 
 void PDC_scr_close(void)
 {
-    COORD origin;
-    SMALL_RECT rect;
-
     PDC_LOG(("PDC_scr_close() - called\n"));
-
-    PDC_reset_shell_mode();
-
-    if (SP->_restore != PDC_RESTORE_NONE)
-    {
-        if (SP->_restore == PDC_RESTORE_WINDOW)
-        {
-            rect.Top = orig_scr.srWindow.Top;
-            rect.Left = orig_scr.srWindow.Left;
-            rect.Bottom = orig_scr.srWindow.Bottom;
-            rect.Right = orig_scr.srWindow.Right;
-        }
-        else    /* PDC_RESTORE_BUFFER */
-        {
-            rect.Top = rect.Left = 0;
-            rect.Bottom = orig_scr.dwSize.Y - 1;
-            rect.Right = orig_scr.dwSize.X - 1;
-        }
-
-        origin.X = origin.Y = 0;
-
-        if (!WriteConsoleOutput(pdc_con_out, ci_save, orig_scr.dwSize, 
-                                origin, &rect))
-            return;
-    }
 
     if (SP->visibility != 1)
         curs_set(1);
 
+    PDC_reset_shell_mode();
+
     /* Position cursor to the bottom left of the screen. */
 
-    PDC_gotoyx(PDC_get_buffer_rows() - 2, 0);
+    if (SP->_restore == PDC_RESTORE_NONE)
+    {
+        SMALL_RECT win;
+
+        win.Left = orig_scr.srWindow.Left;
+        win.Right = orig_scr.srWindow.Right;
+        win.Top = 0;
+        win.Bottom = orig_scr.srWindow.Bottom - orig_scr.srWindow.Top;
+        SetConsoleWindowInfo(pdc_con_out, TRUE, &win);
+        PDC_gotoyx(win.Bottom, 0);
+    }
 }
 
 void PDC_scr_free(void)
 {
     if (SP)
         free(SP);
-    if (pdc_atrtab)
-        free(pdc_atrtab);
 
-    pdc_atrtab = (unsigned char *)NULL;
+    if (pdc_con_out != std_con_out)
+    {
+        CloseHandle(pdc_con_out);
+        pdc_con_out = std_con_out;
+    }
+
+    SetUnhandledExceptionFilter(xcpt_filter);
+    SetConsoleCtrlHandler(_ctrl_break, FALSE);
 }
 
 /* open the physical screen -- allocate SP, miscellaneous intialization,
@@ -278,23 +361,27 @@ void PDC_scr_free(void)
 
 int PDC_scr_open(int argc, char **argv)
 {
-    COORD bufsize, origin;
-    SMALL_RECT rect;
     const char *str;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
+    HMODULE h_kernel;
+    BOOL result;
     int i;
 
     PDC_LOG(("PDC_scr_open() - called\n"));
 
     SP = calloc(1, sizeof(SCREEN));
-    pdc_atrtab = calloc(PDC_COLOR_PAIRS * PDC_OFFSET, 1);
 
-    if (!SP || !pdc_atrtab)
+    if (!SP)
         return ERR;
 
     for (i = 0; i < 16; i++)
-        curstoreal[realtocurs[i]] = i;
+    {
+        pdc_curstoreal[realtocurs[i]] = i;
+        pdc_curstoansi[ansitocurs[i]] = i;
+    }
+    _reset_old_colors();
 
+    std_con_out =
     pdc_con_out = GetStdHandle(STD_OUTPUT_HANDLE);
     pdc_con_in = GetStdHandle(STD_INPUT_HANDLE);
 
@@ -305,6 +392,10 @@ int PDC_scr_open(int argc, char **argv)
     }
 
     is_nt = !(GetVersion() & 0x80000000);
+
+    str = getenv("ConEmuANSI");
+    pdc_conemu = !!str;
+    pdc_ansi = pdc_conemu ? !strcmp(str, "ON") : FALSE;
 
     GetConsoleScreenBufferInfo(pdc_con_out, &csbi);
     GetConsoleScreenBufferInfo(pdc_con_out, &orig_scr);
@@ -321,6 +412,8 @@ int PDC_scr_open(int argc, char **argv)
 
     SP->mouse_wait = PDC_CLICK_PERIOD;
     SP->audible = TRUE;
+
+    SP->termattrs = A_COLOR | A_REVERSE;
 
     if (SP->lines < 2 || SP->lines > csbi.dwMaximumWindowSize.Y)
     {
@@ -345,91 +438,52 @@ int PDC_scr_open(int argc, char **argv)
 
     SP->_restore = PDC_RESTORE_NONE;
 
-    if (getenv("PDC_RESTORE_SCREEN"))
+    if ((str = getenv("PDC_RESTORE_SCREEN")) == NULL || *str != '0')
     {
-        /* Attempt to save the complete console buffer */
+        /* Create a new console buffer */
 
-        ci_save = malloc(orig_scr.dwSize.X * orig_scr.dwSize.Y *
-                         sizeof(CHAR_INFO));
+        pdc_con_out =
+            CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+                                      FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                      NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 
-        if (!ci_save)
+        if (pdc_con_out == INVALID_HANDLE_VALUE)
         {
-            PDC_LOG(("PDC_scr_open() - malloc failure (1)\n"));
+            PDC_LOG(("PDC_scr_open() - screen buffer failure\n"));
 
-            return ERR;
-        }
-
-        bufsize.X = orig_scr.dwSize.X;
-        bufsize.Y = orig_scr.dwSize.Y;
-
-        origin.X = origin.Y = 0;
-
-        rect.Top = rect.Left = 0;
-        rect.Bottom = orig_scr.dwSize.Y  - 1;
-        rect.Right = orig_scr.dwSize.X - 1;
-
-        if (!ReadConsoleOutput(pdc_con_out, ci_save, bufsize, origin, &rect))
-        {
-            /* We can't save the complete buffer, so try and save just 
-               the displayed window */
-
-            free(ci_save);
-            ci_save = NULL;
-
-            bufsize.X = orig_scr.srWindow.Right - orig_scr.srWindow.Left + 1;
-            bufsize.Y = orig_scr.srWindow.Bottom - orig_scr.srWindow.Top + 1;
-
-            ci_save = malloc(bufsize.X * bufsize.Y * sizeof(CHAR_INFO));
-
-            if (!ci_save)
-            {
-                PDC_LOG(("PDC_scr_open() - malloc failure (2)\n"));
-
-                return ERR;
-            }
-
-            origin.X = origin.Y = 0;
-
-            rect.Top = orig_scr.srWindow.Top;
-            rect.Left = orig_scr.srWindow.Left;
-            rect.Bottom = orig_scr.srWindow.Bottom;
-            rect.Right = orig_scr.srWindow.Right;
-
-            if (!ReadConsoleOutput(pdc_con_out, ci_save, bufsize, 
-                                   origin, &rect))
-            {
-#ifdef PDCDEBUG
-                CHAR LastError[256];
-
-                FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, 
-                              GetLastError(), MAKELANGID(LANG_NEUTRAL, 
-                              SUBLANG_DEFAULT), LastError, 256, NULL);
-
-                PDC_LOG(("PDC_scr_open() - %s\n", LastError));
-#endif
-                free(ci_save);
-                ci_save = NULL;
-
-                return ERR;
-            }
-
-            SP->_restore = PDC_RESTORE_WINDOW;
+            pdc_con_out = std_con_out;
         }
         else
             SP->_restore = PDC_RESTORE_BUFFER;
     }
 
+    xcpt_filter = SetUnhandledExceptionFilter(_restore_console);
+    SetConsoleCtrlHandler(_ctrl_break, TRUE);
+
     SP->_preserve = (getenv("PDC_PRESERVE_SCREEN") != NULL);
+
+    /* ENABLE_LVB_GRID_WORLDWIDE */
+    result = SetConsoleMode(pdc_con_out, 0x0010);
+    if (result)
+        SP->termattrs |= A_UNDERLINE | A_LEFT | A_RIGHT;
 
     PDC_reset_prog_mode();
 
     SP->mono = FALSE;
 
+    h_kernel = GetModuleHandleA("kernel32.dll");
+    pGetConsoleScreenBufferInfoEx =
+        (GetConsoleScreenBufferInfoExFn)GetProcAddress(h_kernel,
+        "GetConsoleScreenBufferInfoEx");
+    pSetConsoleScreenBufferInfoEx =
+        (SetConsoleScreenBufferInfoExFn)GetProcAddress(h_kernel,
+        "SetConsoleScreenBufferInfoEx");
+
     return OK;
 }
 
- /* Calls SetConsoleWindowInfo with the given parameters, but fits them 
-    if a scoll bar shrinks the maximum possible value. The rectangle 
+ /* Calls SetConsoleWindowInfo with the given parameters, but fits them
+    if a scoll bar shrinks the maximum possible value. The rectangle
     must at least fit in a half-sized window. */
 
 static BOOL _fit_console_window(HANDLE con_out, CONST SMALL_RECT *rect)
@@ -471,6 +525,14 @@ int PDC_resize_screen(int nlines, int ncols)
     SMALL_RECT rect;
     COORD size, max;
 
+    bool prog_resize = nlines || ncols;
+
+    if (!prog_resize)
+    {
+        nlines = PDC_get_rows();
+        ncols = PDC_get_columns();
+    }
+
     if (nlines < 2 || ncols < 2)
         return ERR;
 
@@ -492,9 +554,18 @@ int PDC_resize_screen(int nlines, int ncols)
 
     _fit_console_window(pdc_con_out, &rect);
     SetConsoleScreenBufferSize(pdc_con_out, size);
-    _fit_console_window(pdc_con_out, &rect);
-    SetConsoleScreenBufferSize(pdc_con_out, size);
+
+    if (prog_resize)
+    {
+        _fit_console_window(pdc_con_out, &rect);
+        SetConsoleScreenBufferSize(pdc_con_out, size);
+    }
     SetConsoleActiveScreenBuffer(pdc_con_out);
+
+    PDC_flushinp();
+
+    SP->resized = FALSE;
+    SP->cursrow = SP->curscol = 0;
 
     return OK;
 }
@@ -503,7 +574,9 @@ void PDC_reset_prog_mode(void)
 {
     PDC_LOG(("PDC_reset_prog_mode() - called.\n"));
 
-    if (is_nt)
+    if (pdc_con_out != std_con_out)
+        SetConsoleActiveScreenBuffer(pdc_con_out);
+    else if (is_nt)
     {
         COORD bufsize;
         SMALL_RECT rect;
@@ -528,7 +601,9 @@ void PDC_reset_shell_mode(void)
 {
     PDC_LOG(("PDC_reset_shell_mode() - called.\n"));
 
-    if (is_nt)
+    if (pdc_con_out != std_con_out)
+        SetConsoleActiveScreenBuffer(std_con_out);
+    else if (is_nt)
     {
         SetConsoleScreenBufferSize(pdc_con_out, orig_scr.dwSize);
         SetConsoleWindowInfo(pdc_con_out, TRUE, &orig_scr.srWindow);
@@ -550,74 +625,60 @@ void PDC_save_screen_mode(int i)
 
 void PDC_init_pair(short pair, short fg, short bg)
 {
-    unsigned char att, temp_bg;
-    chtype i;
-
-    fg = curstoreal[fg];
-    bg = curstoreal[bg];
-
-    for (i = 0; i < PDC_OFFSET; i++)
-    {
-        att = fg | (bg << 4);
-
-        if (i & (A_REVERSE >> PDC_ATTR_SHIFT))
-            att = bg | (fg << 4);
-        if (i & (A_UNDERLINE >> PDC_ATTR_SHIFT))
-            att = 1;
-        if (i & (A_INVIS >> PDC_ATTR_SHIFT))
-        {
-            temp_bg = att >> 4;
-            att = temp_bg << 4 | temp_bg;
-        }
-        if (i & (A_BOLD >> PDC_ATTR_SHIFT))
-            att |= 8;
-        if (i & (A_BLINK >> PDC_ATTR_SHIFT))
-            att |= 128;
-
-        pdc_atrtab[pair * PDC_OFFSET + i] = att;
-    }
+    atrtab[pair].f = fg;
+    atrtab[pair].b = bg;
 }
 
 int PDC_pair_content(short pair, short *fg, short *bg)
 {
-    *fg = realtocurs[pdc_atrtab[pair * PDC_OFFSET] & 0x0F];
-    *bg = realtocurs[(pdc_atrtab[pair * PDC_OFFSET] & 0xF0) >> 4];
+    *fg = atrtab[pair].f;
+    *bg = atrtab[pair].b;
 
     return OK;
 }
 
 bool PDC_can_change_color(void)
 {
-    return is_nt;
+    return is_nt && !pdc_conemu;
 }
 
 int PDC_color_content(short color, short *red, short *green, short *blue)
 {
-    DWORD col;
+    if (color < 16)
+    {
+        COLORREF *color_table = _get_colors();
 
-    if (!console_info.Hwnd)
-        _init_console_info();
+        if (color_table)
+        {
+            DWORD col = color_table[pdc_curstoreal[color]];
 
-    col = console_info.ColorTable[curstoreal[color]];
+            *red = DIVROUND(GetRValue(col) * 1000, 255);
+            *green = DIVROUND(GetGValue(col) * 1000, 255);
+            *blue = DIVROUND(GetBValue(col) * 1000, 255);
 
-    *red = DIVROUND(GetRValue(col) * 1000, 255);
-    *green = DIVROUND(GetGValue(col) * 1000, 255);
-    *blue = DIVROUND(GetBValue(col) * 1000, 255);
+            return OK;
+        }
+    }
 
-    return OK;
+    return ERR;
 }
 
 int PDC_init_color(short color, short red, short green, short blue)
 {
-    if (!console_info.Hwnd)
-        _init_console_info();
+    if (color < 16)
+    {
+        COLORREF *color_table = _get_colors();
 
-    console_info.ColorTable[curstoreal[color]] =
-        RGB(DIVROUND(red * 255, 1000),
-            DIVROUND(green * 255, 1000),
-            DIVROUND(blue * 255, 1000));
+        if (color_table)
+        {
+            color_table[pdc_curstoreal[color]] =
+                RGB(DIVROUND(red * 255, 1000),
+                    DIVROUND(green * 255, 1000),
+                    DIVROUND(blue * 255, 1000));
 
-    _set_console_info();
+            return _set_colors();
+        }
+    }
 
-    return OK;
+    return ERR;
 }

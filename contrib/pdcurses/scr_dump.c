@@ -2,56 +2,59 @@
 
 #include <curspriv.h>
 
-RCSID("$Id: scr_dump.c,v 1.30 2008/07/13 16:08:18 wmcbrine Exp $")
-
 /*man-start**************************************************************
 
-  Name:                                                         scr_dump
+scr_dump
+--------
 
-  Synopsis:
-        int putwin(WINDOW *win, FILE *filep);
-        WINDOW *getwin(FILE *filep);
-        int scr_dump(const char *filename);
-        int scr_init(const char *filename);
-        int scr_restore(const char *filename);
-        int scr_set(const char *filename);
+### Synopsis
 
-  Description:
-        getwin() reads window-related data previously stored in a file 
-        by putwin(). It then creates and initialises a new window using 
-        that data.
+    int putwin(WINDOW *win, FILE *filep);
+    WINDOW *getwin(FILE *filep);
+    int scr_dump(const char *filename);
+    int scr_init(const char *filename);
+    int scr_restore(const char *filename);
+    int scr_set(const char *filename);
 
-        putwin() writes all data associated with a window into a file, 
-        using an unspecified format. This information can be retrieved 
-        later using getwin().
+### Description
 
-        scr_dump() writes the current contents of the virtual screen to 
-        the file named by filename in an unspecified format.
+   getwin() reads window-related data previously stored in a file
+   by putwin(). It then creates and initialises a new window using
+   that data.
 
-        scr_restore() function sets the virtual screen to the contents 
-        of the file named by filename, which must have been written 
-        using scr_dump(). The next refresh operation restores the screen 
-        to the way it looked in the dump file.
+   putwin() writes all data associated with a window into a file,
+   using an unspecified format. This information can be retrieved
+   later using getwin().
 
-        In PDCurses, scr_init() does nothing, and scr_set() is a synonym 
-        for scr_restore(). Also, scr_dump() and scr_restore() save and 
-        load from curscr. This differs from some other implementations, 
-        where scr_init() works with curscr, and scr_restore() works with 
-        newscr; but the effect should be the same. (PDCurses has no 
-        newscr.)
+   scr_dump() writes the current contents of the virtual screen to
+   the file named by filename in an unspecified format.
 
-  Return Value:
-        On successful completion, getwin() returns a pointer to the 
-        window it created. Otherwise, it returns a null pointer. Other 
-        functions return OK or ERR.
+   scr_restore() function sets the virtual screen to the contents
+   of the file named by filename, which must have been written
+   using scr_dump(). The next refresh operation restores the screen
+   to the way it looked in the dump file.
 
-  Portability                                X/Open    BSD    SYS V
-        putwin                                  Y
-        getwin                                  Y
-        scr_dump                                Y
-        scr_init                                Y
-        scr_restore                             Y
-        scr_set                                 Y
+   In PDCurses, scr_init() does nothing, and scr_set() is a synonym
+   for scr_restore(). Also, scr_dump() and scr_restore() save and
+   load from curscr. This differs from some other implementations,
+   where scr_init() works with curscr, and scr_restore() works with
+   newscr; but the effect should be the same. (PDCurses has no
+   newscr.)
+
+### Return Value
+
+   On successful completion, getwin() returns a pointer to the
+   window it created. Otherwise, it returns a null pointer. Other
+   functions return OK or ERR.
+
+### Portability
+                             X/Open    BSD    SYS V
+    putwin                      Y
+    getwin                      Y
+    scr_dump                    Y
+    scr_init                    Y
+    scr_restore                 Y
+    scr_set                     Y
 
 **man-end****************************************************************/
 
@@ -96,7 +99,8 @@ WINDOW *getwin(FILE *filep)
 
     PDC_LOG(("getwin() - called\n"));
 
-    if ( !(win = malloc(sizeof(WINDOW))) )
+    win = malloc(sizeof(WINDOW));
+    if (!win)
         return (WINDOW *)NULL;
 
     /* check for the marker, and load the WINDOW struct */
@@ -113,7 +117,8 @@ WINDOW *getwin(FILE *filep)
 
     /* allocate the line pointer array */
 
-    if ( !(win->_y = malloc(nlines * sizeof(chtype *))) )
+    win->_y = malloc(nlines * sizeof(chtype *));
+    if (!win->_y)
     {
         free(win);
         return (WINDOW *)NULL;
@@ -121,14 +126,16 @@ WINDOW *getwin(FILE *filep)
 
     /* allocate the minchng and maxchng arrays */
 
-    if ( !(win->_firstch = malloc(nlines * sizeof(int))) )
+    win->_firstch = malloc(nlines * sizeof(int));
+    if (!win->_firstch)
     {
         free(win->_y);
         free(win);
         return (WINDOW *)NULL;
     }
 
-    if ( !(win->_lastch = malloc(nlines * sizeof(int))) )
+    win->_lastch = malloc(nlines * sizeof(int));
+    if (!win->_lastch)
     {
         free(win->_firstch);
         free(win->_y);
@@ -138,7 +145,8 @@ WINDOW *getwin(FILE *filep)
 
     /* allocate the lines */
 
-    if ( !(win = PDC_makelines(win)) )
+    win = PDC_makelines(win);
+    if (!win)
         return (WINDOW *)NULL;
 
     /* read them */

@@ -1,10 +1,8 @@
 /* Public Domain Curses */
 
-/* $Id: term.h,v 1.16 2008/07/13 16:08:16 wmcbrine Exp $ */
-
-/* PDCurses doesn't operate with terminfo, but we need these functions for 
-   compatibility, to allow some things (notably, interface libraries for 
-   other languages) to be compiled. Anyone who tries to actually _use_ 
+/* PDCurses doesn't operate with terminfo, but we need these functions for
+   compatibility, to allow some things (notably, interface libraries for
+   other languages) to be compiled. Anyone who tries to actually _use_
    them will be disappointed, since they only return ERR. */
 
 #ifndef __PDCURSES_TERM_H__
@@ -22,33 +20,25 @@ typedef struct
     const char *_termname;
 } TERMINAL;
 
-#ifdef PDC_DLL_BUILD
-# ifndef CURSES_LIBRARY
-__declspec(dllimport)  TERMINAL *cur_term;
-# else
-__declspec(dllexport) extern TERMINAL *cur_term;
-# endif
-#else
-extern TERMINAL *cur_term;
-#endif
+PDCEX  TERMINAL *cur_term;
 
-int     del_curterm(TERMINAL *);
-int     putp(const char *);
-int     restartterm(const char *, int, int *);
-TERMINAL *set_curterm(TERMINAL *);
-int     setterm(const char *);
-int     setupterm(const char *, int, int *);
-int     tgetent(char *, const char *);
-int     tgetflag(const char *);
-int     tgetnum(const char *);
-char   *tgetstr(const char *, char **);
-char   *tgoto(const char *, int, int);
-int     tigetflag(const char *);
-int     tigetnum(const char *);
-char   *tigetstr(const char *);
-char   *tparm(const char *, long, long, long, long, long, 
-              long, long, long, long);
-int     tputs(const char *, int, int (*)(int));
+PDCEX  int     del_curterm(TERMINAL *);
+PDCEX  int     putp(const char *);
+PDCEX  int     restartterm(const char *, int, int *);
+PDCEX  TERMINAL *set_curterm(TERMINAL *);
+PDCEX  int     setterm(const char *);
+PDCEX  int     setupterm(const char *, int, int *);
+PDCEX  int     tgetent(char *, const char *);
+PDCEX  int     tgetflag(const char *);
+PDCEX  int     tgetnum(const char *);
+PDCEX  char   *tgetstr(const char *, char **);
+PDCEX  char   *tgoto(const char *, int, int);
+PDCEX  int     tigetflag(const char *);
+PDCEX  int     tigetnum(const char *);
+PDCEX  char   *tigetstr(const char *);
+PDCEX  char   *tparm(const char *, long, long, long, long, long,
+                     long, long, long, long);
+PDCEX  int     tputs(const char *, int, int (*)(int));
 
 #if defined(__cplusplus) || defined(__cplusplus__) || defined(__CPLUSPLUS)
 }
