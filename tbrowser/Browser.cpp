@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <assert.h>
 #include <curses.h>
 
 #include "../common/MessageLogic.hpp"
@@ -468,6 +469,32 @@ void Browser::Entry()
                 m_bottom.Status( "Galaxy mode is not active." );
             }
             doupdate();
+            break;
+        case 'z':
+        {
+            auto vs = m_mview.NextViewSplit();
+            switch( vs )
+            {
+            case ViewSplit::Auto:
+                m_bottom.Status( "View split mode: AUTO" );
+                break;
+            case ViewSplit::Vertical:
+                m_bottom.Status( "View split mode: VERTICAL" );
+                break;
+            case ViewSplit::Horizontal:
+                m_bottom.Status( "View split mode: HORIZONTAL" );
+                break;
+            default:
+                assert( false );
+                break;
+            }
+            if( m_mview.IsActive() )
+            {
+                m_mview.Resize();
+                m_tview.Resize();
+            }
+            doupdate();
+        }
             break;
         default:
             break;

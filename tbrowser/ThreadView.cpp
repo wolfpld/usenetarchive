@@ -32,7 +32,23 @@ void ThreadView::Resize()
     if( m_mview.IsActive() )
     {
         int sw = getmaxx( stdscr );
-        if( sw > 160 )
+        bool vertical;
+        switch( m_mview.GetViewSplit() )
+        {
+        case ViewSplit::Auto:
+            vertical = sw > 160;
+            break;
+        case ViewSplit::Vertical:
+            vertical = true;
+            break;
+        case ViewSplit::Horizontal:
+            vertical = false;
+            break;
+        default:
+            assert( false );
+            break;
+        }
+        if( vertical )
         {
             ResizeView( 0, 1, sw / 2, -2 );
         }

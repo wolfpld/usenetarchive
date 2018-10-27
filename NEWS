@@ -1,5 +1,11 @@
+v0.x.y (xxxx-xx-xx)
+-------------------
+
+- Allow manual control of view split (auto/vertical/horizontal) by pressing
+  the 'z' key.
+
 v0.5.1 (2018-05-06)
------------------
+-------------------
 
 - Performance improvements.
   - Removed needless checks for file existence.

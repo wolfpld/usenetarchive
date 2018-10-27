@@ -10,6 +10,15 @@
 class Archive;
 class PersistentStorage;
 
+enum class ViewSplit
+{
+    Auto,
+    Vertical,
+    Horizontal,
+
+    NUM_VIEW_SPLIT
+};
+
 class MessageView : public View
 {
 public:
@@ -26,6 +35,9 @@ public:
 
     bool IsActive() const { return m_active; }
     uint32_t DisplayedMessage() const { return m_idx; }
+
+    ViewSplit NextViewSplit();
+    ViewSplit GetViewSplit() const { return m_viewSplit; }
 
 private:
     enum Flags
@@ -99,6 +111,7 @@ private:
     bool m_vertical;
     bool m_allHeaders;
     bool m_rot13;
+    ViewSplit m_viewSplit;
 
     static_assert( sizeof( LinePart ) == sizeof( uint64_t ), "Size of LinePart greater than 8 bytes." );
     static_assert( sizeof( Line ) == sizeof( uint32_t ), "Size of Line greater than 4 bytes." );

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <assert.h>
 #include <ctype.h>
 
 #include "../common/Alloc.hpp"
@@ -20,6 +21,7 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_active( false )
     , m_allHeaders( false )
     , m_rot13( false )
+    , m_viewSplit( ViewSplit::Auto )
 {
     m_lineParts.reserve( 2048 );
     m_lines.reserve( 1024 );
@@ -39,7 +41,21 @@ void MessageView::Resize()
     if( !m_active ) return;
     ResizeView( 0, 0, 1, 1 );   // fucking stupid screen size is wrong without doing this shit first
     int sw = getmaxx( stdscr );
-    m_vertical = sw > 160;
+    switch( m_viewSplit )
+    {
+    case ViewSplit::Auto:
+        m_vertical = sw > 160;
+        break;
+    case ViewSplit::Vertical:
+        m_vertical = true;
+        break;
+    case ViewSplit::Horizontal:
+        m_vertical = false;
+        break;
+    default:
+        assert( false );
+        break;
+    }
     if( m_vertical )
     {
         ResizeView( sw / 2, 1, sw - (sw / 2), -2 );
@@ -680,4 +696,13 @@ void MessageView::Decorate( const char* begin, const char* end, uint64_t flags, 
         if( begin >= end ) return;
         str = begin;
     }
+}
+
+ViewSplit MessageView::NextViewSplit()
+{
+    auto i = (int)m_viewSplit;
+    i++;
+    if( i == (int)ViewSplit::NUM_VIEW_SPLIT ) i = 0;
+    m_viewSplit = (ViewSplit)i;
+    return m_viewSplit;
 }
