@@ -56,16 +56,19 @@ void MessageView::Resize()
         assert( false );
         break;
     }
+    int rsw;
     if( m_vertical )
     {
-        ResizeView( sw / 2, 1, sw - (sw / 2), -2 );
+        rsw = sw - (sw / 2);
+        ResizeView( sw / 2, 1, rsw, -2 );
     }
     else
     {
         int sh = getmaxy( stdscr ) - 2;
         ResizeView( 0, 1 + sh * 20 / 100, 0, sh - ( sh * 20 / 100 ) );
+        rsw = sw;
     }
-    if( sw != m_linesWidth )
+    if( rsw != m_linesWidth )
     {
         PrepareLines();
     }
@@ -333,7 +336,7 @@ void MessageView::PrepareLines()
 {
     // window width may be invalid here
     m_linesWidth = getmaxx( stdscr );
-    if( m_linesWidth > 160 )
+    if( m_vertical )
     {
         m_linesWidth = m_linesWidth - (m_linesWidth/2) - 1;
     }
