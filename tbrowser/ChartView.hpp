@@ -35,10 +35,15 @@ private:
     BottomBar& m_bar;
     Galaxy* m_galaxy;
 
+    struct Label
+    {
+        char data[7];
+    };
+
     std::vector<uint32_t> m_posts;
     std::vector<uint16_t> m_data;
     std::vector<uint16_t> m_trendData;
-    std::vector<char[7]> m_label;
+    std::vector<Label> m_label;
     uint32_t m_max;
     uint32_t m_daysPerGrid;
     bool m_hires;

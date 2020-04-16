@@ -218,7 +218,7 @@ void ChartView::Draw()
             for( int j=0; j<7; j++ )
             {
                 wmove( m_win, y0+2+ys+j, x0+1+x+j );
-                waddch( m_win, m_label[x][j] );
+                waddch( m_win, m_label[x].data[j] );
             }
             wattroff( m_win, COLOR_PAIR( 4 ) );
             wattron( m_win, COLOR_PAIR( color ) );
@@ -398,7 +398,7 @@ void ChartView::Prepare()
 
     const auto th = h - MarginH + 2;
     m_data = std::vector<uint16_t>( segments );
-    m_label = std::vector<char[7]>( segments );
+    m_label = std::vector<Label>( segments );
     const auto minv = 1. / ( m_max+1 );
     const auto sinv = 1. / tinv;
     for( int i=0; i<segments; i++ )
@@ -408,7 +408,7 @@ void ChartView::Prepare()
         auto lt = localtime( &ts );
         char buf[16];
         auto dlen = strftime( buf, 16, "%Y-%m", lt );
-        memcpy( m_label[i], buf, 7 );
+        memcpy( m_label[i].data, buf, 7 );
     }
 
     if( !m_posts.empty() && m_trend )
