@@ -1,14 +1,14 @@
-# Maintainer: Bartosz Taudul <wolf.pld@gmail.com>
+# Maintainer: Bartosz Taudul <wolf@nereid.pl>
 pkgname=uat-git
 pkgver=1
 pkgrel=1
 pkgdesc="Usenet Archive Toolkit"
 arch=('x86_64' 'aarch64')
-url="https://bitbucket.org/wolfpld/usenetarchive"
+url="https://github.com/wolfpld/usenetarchive/"
 license=('AGPL3')
 makedepends=('git' 'ncurses' 'curl' 'icu' 'gmime')
 options=('strip' 'zipman')
-source=('uat::git+https://bitbucket.org/wolfpld/usenetarchive.git')
+source=('uat::git+https://github.com/wolfpld/usenetarchive.git')
 md5sums=('SKIP')
 
 pkgver() {

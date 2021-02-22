@@ -178,7 +178,7 @@ UAT only works on 64 bit machines.
 ## License
 
     Usenet Archive
-    Copyright (C) 2016  Bartosz Taudul <wolf.pld@gmail.com>
+    Copyright (C) 2016-2021  Bartosz Taudul <wolf@nereid.pl>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as

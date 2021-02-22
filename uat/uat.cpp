@@ -4,8 +4,8 @@
 
 static const char* s_help =
 "Usenet Archive Toolkit\n\n"
-"Created by Bartosz Taudul <wolf.pld@gmail.com>\n"
-"https://bitbucket.org/wolfpld/usenetarchive\n"
+"Created by Bartosz Taudul <wolf@nereid.pl>\n"
+"https://github.com/wolfpld/usenetarchive/\n"
 "Licensed under GNU AGPL3\n\n"
 "Usage: uat <command> [<args>]\n\n"
 "The following commands are available:\n";
