@@ -70,9 +70,6 @@
     <ClInclude Include="..\..\..\libuat\SearchEngine.hpp" />
     <ClInclude Include="..\..\..\libuat\ViewReference.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{93148ED5-C442-4486-A309-B84BF02C61E1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -209,13 +206,4 @@
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets" Condition="Exists('packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\ICU4C_58_2.1.0.0\build\native\ICU4C_58_2.targets'))" />
-  </Target>
 </Project>
