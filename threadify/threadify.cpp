@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "../libuat/Archive.hpp"
@@ -193,8 +192,8 @@ int main( int argc, char** argv )
         };
 
         ExpandingBuffer eb;
-        std::unordered_map<uint32_t, Group> groups;
-        std::unordered_map<std::string, uint32_t> refgroup;
+        robin_hood::unordered_flat_map<uint32_t, Group> groups;
+        robin_hood::unordered_flat_map<std::string, uint32_t> refgroup;
         uint32_t curgroup = 0;
 
         for( int j=0; j<topsize; j++ )
@@ -325,7 +324,7 @@ int main( int argc, char** argv )
         {
             tasks.Queue( [&cnt, &topsize, &toplevel, &viewLock, &resLock, &splitLock, &archive, &search, &found, &cntnew, &cntsure, &cntbad, &cnttime, &kr] {
                 ExpandingBuffer eb;
-                std::unordered_map<uint32_t, float> hits;
+                robin_hood::unordered_flat_map<uint32_t, float> hits;
                 std::vector<std::string> wordbuf;
 
                 for(;;)
