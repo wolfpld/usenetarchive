@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <thread>
 #include <vector>
 
 #ifndef _WIN32
@@ -126,12 +127,14 @@ int main( int argc, char** argv )
         printf( "\nWorking...\n" );
         fflush( stdout );
 
-        ZDICT_params_t params;
-        memset( &params, 0, sizeof( ZDICT_params_t ) );
-        params.notificationLevel = 3;
-        params.compressionLevel = zlevel;
-        params.selectivityLevel = selectivity;
-        realDictSize = ZDICT_trainFromBuffer_advanced( dict, DictSize, samplesBuf, samplesSizes, samples, params );
+        ZDICT_fastCover_params_t params = {};
+        params.d = 6;
+        params.k = 50;
+        params.f = 30;
+        params.nbThreads = std::thread::hardware_concurrency();
+        params.zParams.compressionLevel = zlevel;
+
+        realDictSize = ZDICT_optimizeTrainFromBuffer_fastCover( dict, DictSize, samplesBuf, samplesSizes, samples, &params );
     }
 
     unlink( buf1fn.c_str() );

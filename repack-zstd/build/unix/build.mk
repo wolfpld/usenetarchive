@@ -1,6 +1,6 @@
 CFLAGS +=
 CXXFLAGS := $(CFLAGS) -std=c++14
-DEFINES += -DZDICT_STATIC_LINKING_ONLY
+DEFINES += -DZDICT_STATIC_LINKING_ONLY -DZSTD_MULTITHREAD
 INCLUDES := -I../../../contrib/zstd/common -I../../../contrib/zstd
 LIBS := -lpthread
 IMAGE := repack-zstd
