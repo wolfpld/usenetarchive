@@ -9,10 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../common/CharUtil.hpp"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
@@ -355,7 +354,7 @@ int main( int argc, char** argv )
             }
         };
 
-        std::unordered_map<std::vector<int>, uint32_t, VectorHasher> mapdata;
+        robin_hood::unordered_flat_map<std::vector<int>, uint32_t, VectorHasher> mapdata;
         std::vector<int> groups;
 
         uint32_t offset32 = 0;
