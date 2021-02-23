@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "../libuat/Archive.hpp"

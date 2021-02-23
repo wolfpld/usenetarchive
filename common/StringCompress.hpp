@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <string>
 #include <string.h>
-#include <unordered_map>
 #include <vector>
 
 #include "../contrib/martinus/robin_hood.h"
