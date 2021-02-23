@@ -158,7 +158,6 @@
     <ClCompile Include="..\..\..\contrib\pdcurses\debug.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\delch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\deleteln.c" />
-    <ClCompile Include="..\..\..\contrib\pdcurses\deprec.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\getch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\getstr.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\getyx.c" />
@@ -191,7 +190,6 @@
     <ClCompile Include="..\..\..\contrib\pdcurses\scr_dump.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\slk.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\termattr.c" />
-    <ClCompile Include="..\..\..\contrib\pdcurses\terminfo.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\touch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\util.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\window.c" />
@@ -246,7 +244,6 @@
     <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\panel.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\pdcwin.h" />
-    <ClInclude Include="..\..\..\contrib\pdcurses\term.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_public.h" />

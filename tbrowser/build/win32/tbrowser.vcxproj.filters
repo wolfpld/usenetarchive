@@ -60,9 +60,6 @@
     <ClCompile Include="..\..\..\contrib\pdcurses\deleteln.c">
       <Filter>pdcurses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\pdcurses\deprec.c">
-      <Filter>pdcurses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\contrib\pdcurses\getch.c">
       <Filter>pdcurses</Filter>
     </ClCompile>
@@ -157,9 +154,6 @@
       <Filter>pdcurses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\pdcurses\termattr.c">
-      <Filter>pdcurses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\pdcurses\terminfo.c">
       <Filter>pdcurses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\contrib\pdcurses\touch.c">
@@ -291,9 +285,6 @@
       <Filter>pdcurses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\pdcurses\panel.h">
-      <Filter>pdcurses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\contrib\pdcurses\term.h">
       <Filter>pdcurses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\pdcurses\pdcwin.h">
@@ -461,8 +452,5 @@
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp">
       <Filter>common</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
