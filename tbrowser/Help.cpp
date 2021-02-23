@@ -97,7 +97,7 @@ const char* HelpContents =
 "Licensed under GNU Affero General Public License 3\n"
 "\n"
 "Usenet Archive Toolkit uses the following libraries: LZ4, xxhash, zstd, LZMA,\n"
-"INN, TIN, GMime, terminator, sparsepp, libcurses."
+"INN, TIN, GMime, terminator, robin-hood-hashing, libcurses."
 ;
 
 const char* SearchHelpContents =
