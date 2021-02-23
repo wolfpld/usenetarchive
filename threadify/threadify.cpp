@@ -9,8 +9,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
-#include <unordered_set>
-#include <unordered_map>
 #include <vector>
 
 #include "../libuat/Archive.hpp"
@@ -23,6 +21,7 @@
 #include "../common/String.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
+#include "../contrib/martinus/robin_hood.h"
 
 struct Message
 {
@@ -463,7 +462,7 @@ int main( int argc, char** argv )
     }
     printf( "%i/%i\n", topsize, topsize );
 
-    std::unordered_set<uint32_t> bad;
+    robin_hood::unordered_flat_set<uint32_t> bad;
 
     printf( "Applying changes...\n" );
     fflush( stdout );
