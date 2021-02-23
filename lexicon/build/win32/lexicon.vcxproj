@@ -24,8 +24,6 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
-    <ClCompile Include="..\..\..\contrib\rpmalloc\new.cpp" />
-    <ClCompile Include="..\..\..\contrib\rpmalloc\rpmalloc.c" />
     <ClCompile Include="..\..\..\contrib\xxhash\xxhash.c" />
     <ClCompile Include="..\..\lexicon.cpp" />
   </ItemGroup>
@@ -42,7 +40,6 @@
     <ClInclude Include="..\..\..\common\Slab.hpp" />
     <ClInclude Include="..\..\..\common\String.hpp" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
-    <ClInclude Include="..\..\..\contrib\rpmalloc\rpmalloc.h" />
     <ClInclude Include="..\..\..\contrib\xxhash\xxhash.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

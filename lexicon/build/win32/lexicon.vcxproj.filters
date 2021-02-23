@@ -13,9 +13,6 @@
     <Filter Include="xxhash">
       <UniqueIdentifier>{3ba565ec-913a-4cbe-9c55-56363b312097}</UniqueIdentifier>
     </Filter>
-    <Filter Include="rpmalloc">
-      <UniqueIdentifier>{060cbba9-83ec-4f16-9aad-66bbdda59f55}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lexicon.cpp">
@@ -38,12 +35,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\common\MessageLogic.cpp">
       <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\rpmalloc\rpmalloc.c">
-      <Filter>rpmalloc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\contrib\rpmalloc\new.cpp">
-      <Filter>rpmalloc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,11 +77,5 @@
     <ClInclude Include="..\..\..\common\Slab.hpp">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\contrib\rpmalloc\rpmalloc.h">
-      <Filter>rpmalloc</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

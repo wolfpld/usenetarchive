@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
-#include <unordered_map>
 #include <vector>
 
 #include "../contrib/xxhash/xxhash.h"
@@ -19,9 +18,7 @@
 #include "../common/MsgIdHash.hpp"
 #include "../common/String.hpp"
 
-#define SPP_GROUP_SIZE 64
-#include "../contrib/sparsepp/spp.h"
-#include "../contrib/rpmalloc/rpmalloc.h"
+#include "../contrib/martinus/robin_hood.h"
 
 enum class HeaderType
 {
@@ -67,7 +64,7 @@ HeaderType IsHeaderAllowed( const char* hdr, const char* end )
     return HeaderType::Invalid;
 }
 
-using HitData = std::unordered_map<std::string, spp::sparse_hash_map<uint32_t, std::vector<uint8_t>>>;
+using HitData = robin_hood::unordered_flat_map<std::string, robin_hood::unordered_flat_map<uint32_t, std::vector<uint8_t>>>;
 
 static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, int type, int basePos, int childCount )
 {
@@ -83,7 +80,7 @@ static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, i
         if( it == data.end() )
         {
             uint8_t hit = enc | std::min<uint8_t>( max, basePos++ );
-            data.emplace( std::move( w ), spp::sparse_hash_map<uint32_t, std::vector<uint8_t>> { std::make_pair( idx, std::vector<uint8_t> { hit } ) } );
+            data.emplace( std::move( w ), robin_hood::unordered_flat_map<uint32_t, std::vector<uint8_t>>( { { idx, std::vector<uint8_t> { hit } } } ) );
         }
         else
         {
@@ -110,8 +107,6 @@ static void Add( HitData& data, std::vector<std::string>& words, uint32_t idx, i
 
 int main( int argc, char** argv )
 {
-    rpmalloc_initialize();
-
     if( argc != 2 )
     {
         fprintf( stderr, "USAGE: %s raw\n", argv[0] );
