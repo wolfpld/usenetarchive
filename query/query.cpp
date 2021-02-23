@@ -1,11 +1,11 @@
 #include <chrono>
-#include <unordered_map>
 #include <memory>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <time.h>
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/MessageLogic.hpp"
@@ -321,7 +321,7 @@ int main( int argc, char** argv )
         const auto hlen = host ? strlen( host ) : 0;
 
         const auto num = archive->NumberOfMessages();
-        std::unordered_map<std::string, int> latest;
+        robin_hood::unordered_flat_map<std::string, int> latest;
         for( int i=0; i<num; i++ )
         {
             auto post = archive->GetMessage( i, eb );
