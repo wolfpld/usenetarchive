@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unordered_set>
 
 #include "../libuat/Archive.hpp"
+#include "../contrib/martinus/robin_hood.h"
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -52,7 +52,7 @@ void PrintInfo( State state, const char* message )
     }
 }
 
-void RecursiveRemove( int idx, std::unordered_set<uint32_t>& data, const Archive& archive )
+void RecursiveRemove( int idx, robin_hood::unordered_flat_set<uint32_t>& data, const Archive& archive )
 {
     auto it = data.find( idx );
     if( it == data.end() )
@@ -120,7 +120,7 @@ int main( int argc, char** argv )
 
     // message reachibility
     {
-        std::unordered_set<uint32_t> messages;
+        robin_hood::unordered_flat_set<uint32_t> messages;
         messages.reserve( size );
         for( int i=0; i<size; i++ )
         {
@@ -306,7 +306,7 @@ int main( int argc, char** argv )
 
     // duplicates
     {
-        std::unordered_set<std::string> unique;
+        robin_hood::unordered_flat_set<std::string> unique;
         bool ok = true;
         for( int i=0; i<size; i++ )
         {
