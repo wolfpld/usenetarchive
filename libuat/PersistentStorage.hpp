@@ -6,9 +6,9 @@
 #include <string>
 #include <string.h>
 #include <thread>
-#include <unordered_set>
 #include <vector>
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../contrib/xxhash/xxhash.h"
 #include "../common/ring_buffer.hpp"
 
@@ -53,7 +53,7 @@ private:
     void LoadScore();
 
     std::string m_base;
-    std::unordered_set<const char*, hash, equal_to> m_visited;
+    robin_hood::unordered_flat_set<const char*, hash, equal_to> m_visited;
     uint64_t m_visitedTimestamp;
     LockedFile m_visitedGuard;
     std::chrono::steady_clock::time_point m_visitedLastVerify;
