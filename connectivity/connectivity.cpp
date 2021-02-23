@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <string>
 #include <string.h>
-#include <unordered_set>
 #include <vector>
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../common/Filesystem.hpp"
 #include "../common/HashSearch.hpp"
 #include "../common/MessageLogic.hpp"
@@ -282,7 +282,7 @@ int main( int argc, char** argv )
     }
 
     unsigned int loopcnt = 0;
-    std::unordered_set<uint32_t> visited;
+    robin_hood::unordered_flat_set<uint32_t> visited;
     printf( "\nFixing loops...\n" );
     fflush( stdout );
     for( uint32_t i=0; i<size; i++ )
