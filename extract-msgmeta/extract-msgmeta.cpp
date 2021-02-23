@@ -1,15 +1,14 @@
 #include <algorithm>
 #include <assert.h>
 #include <limits>
-#include <unordered_map>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <string.h>
-#include <unordered_set>
 #include <vector>
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../common/CharUtil.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/MessageView.hpp"
@@ -43,7 +42,7 @@ int main( int argc, char** argv )
     std::vector<std::string> strings;
     Offsets* data = new Offsets[size];
 
-    std::unordered_map<std::string, uint32_t> refs;
+    robin_hood::unordered_flat_map<std::string, uint32_t> refs;
 
     for( uint32_t i=0; i<size; i++ )
     {
@@ -144,7 +143,7 @@ int main( int argc, char** argv )
     const int bufSize = 1024*1024*64;
     char* buf = new char[bufSize];
 
-    std::unordered_set<const char*, CharUtil::Hasher, CharUtil::Comparator> avail;
+    robin_hood::unordered_flat_set<const char*, CharUtil::Hasher, CharUtil::Comparator> avail;
     std::vector<uint32_t> outOffset( strings.size() );
 
     unsigned int savings = 0;
