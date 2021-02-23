@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <unordered_set>
 #include <random>
 #include <stdint.h>
 #include <stdio.h>
@@ -15,6 +14,7 @@
 #include <vector>
 
 #include "../contrib/terminator/terminator.h"
+#include "../contrib/martinus/robin_hood.h"
 
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
@@ -358,7 +358,7 @@ int main( int argc, char** argv )
     }
     else
     {
-        std::unordered_set<std::string> visited;
+        robin_hood::unordered_flat_set<std::string> visited;
 
         if( !Exists( dbdir ) )
         {
