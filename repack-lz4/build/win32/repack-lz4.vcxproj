@@ -25,13 +25,18 @@
     <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4.c" />
     <ClCompile Include="..\..\..\contrib\lz4\lz4hc.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\debug.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\fse_decompress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\pool.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\common\threading.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\decompress\huf_decompress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_ddict.c" />
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress.c" />
+    <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress_block.c" />
     <ClCompile Include="..\..\repack-lz4.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -46,14 +51,22 @@
     <ClInclude Include="..\..\..\contrib\lz4\lz4.h" />
     <ClInclude Include="..\..\..\contrib\lz4\lz4hc.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\bitstream.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\compiler.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\cpu.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\debug.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\error_private.h" />
-    <ClInclude Include="..\..\..\contrib\zstd\common\error_public.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\fse.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\huf.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\mem.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\pool.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\threading.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\xxhash.h" />
-    <ClInclude Include="..\..\..\contrib\zstd\common\zbuff.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_deps.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\common\zstd_errors.h" />
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_internal.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\decompress\zstd_ddict.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\decompress\zstd_decompress_block.h" />
+    <ClInclude Include="..\..\..\contrib\zstd\decompress\zstd_decompress_internal.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9983E1F2-8C5D-479F-9E01-7A9867B64171}</ProjectGuid>
