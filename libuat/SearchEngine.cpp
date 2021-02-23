@@ -1,11 +1,11 @@
 #include <assert.h>
 #include <iterator>
 #include <limits>
-#include <unordered_set>
 
 #include "Archive.hpp"
 #include "SearchEngine.hpp"
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../common/Slab.hpp"
 #include "../common/String.hpp"
 
@@ -191,7 +191,7 @@ static SearchResult PrepareResults( uint32_t postid, float rank, int hitsize )
 
 uint32_t SearchEngine::ExtractWords( const std::vector<std::string>& terms, int flags, std::vector<WordData>& words, std::vector<const char*>& matched ) const
 {
-    std::unordered_set<uint32_t> wordset;
+    robin_hood::unordered_flat_set<uint32_t> wordset;
     uint32_t group = 0;
     words.reserve( terms.size() );
     for( auto& v : terms )
@@ -536,7 +536,7 @@ std::vector<SearchResult> SearchEngine::GetFullResult( const std::vector<SearchE
     const auto wsize = std::min<size_t>( 1024, wdata.size() );
 
     bool checkInclude = false;
-    std::unordered_set<uint32_t> include;
+    robin_hood::unordered_flat_set<uint32_t> include;
     if( flags & SF_SetLogic )
     {
         bool hasMust = false;
