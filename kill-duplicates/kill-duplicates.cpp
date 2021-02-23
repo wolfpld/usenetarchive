@@ -6,9 +6,9 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unordered_set>
 #include <vector>
 
+#include "../contrib/martinus/robin_hood.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/FileMap.hpp"
@@ -65,7 +65,7 @@ int main( int argc, char** argv )
     uint32_t cntd = 0;
     uint32_t cntu = 0;
     uint32_t cntb = 0;
-    std::unordered_set<std::string> unique;
+    robin_hood::unordered_flat_set<std::string> unique;
     uint64_t offset = 0;
     for( uint32_t i=0; i<size; i++ )
     {
