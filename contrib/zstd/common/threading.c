@@ -1,26 +1,24 @@
-
 /**
  * Copyright (c) 2016 Tino Reichardt
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
  * You can contact the author at:
  * - zstdmt source repository: https://github.com/mcmilk/zstdmt
+ *
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
+ * You may select, at your option, one of the above-listed licenses.
  */
 
 /**
  * This file will hold wrapper for systems, which do not support pthreads
  */
 
-/* When ZSTD_MULTITHREAD is not defined, this file would become an empty translation unit.
-* Include some ISO C header code to prevent this and portably avoid related warnings.
-* (Visual C++: C4206 / GCC: -Wpedantic / Clang: -Wempty-translation-unit)
-*/
-#include <stddef.h>
+#include "threading.h"
 
+/* create fake symbol to avoid empty translation unit warning */
+int g_ZSTD_threading_useless_symbol;
 
 #if defined(ZSTD_MULTITHREAD) && defined(_WIN32)
 
@@ -33,19 +31,18 @@
 /* ===  Dependencies  === */
 #include <process.h>
 #include <errno.h>
-#include "threading.h"
 
 
 /* ===  Implementation  === */
 
 static unsigned __stdcall worker(void *arg)
 {
-    pthread_t* const thread = (pthread_t*) arg;
+    ZSTD_pthread_t* const thread = (ZSTD_pthread_t*) arg;
     thread->arg = thread->start_routine(thread->arg);
     return 0;
 }
 
-int pthread_create(pthread_t* thread, const void* unused,
+int ZSTD_pthread_create(ZSTD_pthread_t* thread, const void* unused,
             void* (*start_routine) (void*), void* arg)
 {
     (void)unused;
@@ -59,16 +56,16 @@ int pthread_create(pthread_t* thread, const void* unused,
         return 0;
 }
 
-int _pthread_join(pthread_t * thread, void **value_ptr)
+int ZSTD_pthread_join(ZSTD_pthread_t thread, void **value_ptr)
 {
     DWORD result;
 
-    if (!thread->handle) return 0;
+    if (!thread.handle) return 0;
 
-    result = WaitForSingleObject(thread->handle, INFINITE);
+    result = WaitForSingleObject(thread.handle, INFINITE);
     switch (result) {
     case WAIT_OBJECT_0:
-        if (value_ptr) *value_ptr = thread->arg;
+        if (value_ptr) *value_ptr = thread.arg;
         return 0;
     case WAIT_ABANDONED:
         return EINVAL;
@@ -78,3 +75,48 @@ int _pthread_join(pthread_t * thread, void **value_ptr)
 }
 
 #endif   /* ZSTD_MULTITHREAD */
+
+#if defined(ZSTD_MULTITHREAD) && DEBUGLEVEL >= 1 && !defined(_WIN32)
+
+#define ZSTD_DEPS_NEED_MALLOC
+#include "zstd_deps.h"
+
+int ZSTD_pthread_mutex_init(ZSTD_pthread_mutex_t* mutex, pthread_mutexattr_t const* attr)
+{
+    *mutex = (pthread_mutex_t*)ZSTD_malloc(sizeof(pthread_mutex_t));
+    if (!*mutex)
+        return 1;
+    return pthread_mutex_init(*mutex, attr);
+}
+
+int ZSTD_pthread_mutex_destroy(ZSTD_pthread_mutex_t* mutex)
+{
+    if (!*mutex)
+        return 0;
+    {
+        int const ret = pthread_mutex_destroy(*mutex);
+        ZSTD_free(*mutex);
+        return ret;
+    }
+}
+
+int ZSTD_pthread_cond_init(ZSTD_pthread_cond_t* cond, pthread_condattr_t const* attr)
+{
+    *cond = (pthread_cond_t*)ZSTD_malloc(sizeof(pthread_cond_t));
+    if (!*cond)
+        return 1;
+    return pthread_cond_init(*cond, attr);
+}
+
+int ZSTD_pthread_cond_destroy(ZSTD_pthread_cond_t* cond)
+{
+    if (!*cond)
+        return 0;
+    {
+        int const ret = pthread_cond_destroy(*cond);
+        ZSTD_free(*cond);
+        return ret;
+    }
+}
+
+#endif
