@@ -9,6 +9,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../contrib/martinus/robin_hood.h"
+
 #include "CharUtil.hpp"
 #include "FileMap.hpp"
 
@@ -54,7 +56,7 @@ private:
 template<class T>
 StringCompress::StringCompress( const T& strings )
 {
-    std::unordered_map<const char*, uint64_t, CharUtil::Hasher, CharUtil::Comparator> hosts;
+    robin_hood::unordered_flat_map<const char*, uint64_t, CharUtil::Hasher, CharUtil::Comparator> hosts;
 
     for( auto v : strings )
     {
@@ -74,7 +76,7 @@ StringCompress::StringCompress( const T& strings )
         }
     }
 
-    std::vector<std::unordered_map<const char*, uint64_t, CharUtil::Hasher, CharUtil::Comparator>::iterator> hvec;
+    std::vector<robin_hood::unordered_flat_map<const char*, uint64_t, CharUtil::Hasher, CharUtil::Comparator>::iterator> hvec;
     hvec.reserve( hosts.size() );
     for( auto it = hosts.begin(); it != hosts.end(); ++it )
     {
