@@ -31,14 +31,12 @@ int main( int argc, char** argv )
 {
     int zlevel = 16;
     int dpower = 31;
-    int selectivity = 9;
 
     if( argc < 2 )
     {
         fprintf( stderr, "USAGE: %s [params] directory\nParams:\n", argv[0] );
         fprintf( stderr, " -z level        - set compression level (default: %i)\n", zlevel );
         fprintf( stderr, " -s power        - set max sample size to 2^power (default: %i)\n", dpower );
-        fprintf( stderr, " -S selectivity  - set selectivity  (default: %i)\n", selectivity );
         exit( 1 );
     }
 
@@ -52,11 +50,6 @@ int main( int argc, char** argv )
         else if( strcmp( argv[1], "-s" ) == 0 )
         {
             dpower = std::min( 31, std::max( 10, atoi( argv[2] ) ) );
-            argv += 2;
-        }
-        else if( strcmp( argv[1], "-S" ) == 0 )
-        {
-            selectivity = atoi( argv[2] );
             argv += 2;
         }
         else
