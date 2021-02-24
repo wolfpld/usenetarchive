@@ -1,8 +1,10 @@
-v0.x.y (xxxx-xx-xx)
+v0.5.2 (2021-02-24)
 -------------------
 
 - Allow manual control of view split (auto/vertical/horizontal) by pressing
   the 'z' key.
+- Updated contrib libraries.
+- Replaced hash map with a faster one.
 
 v0.5.1 (2018-05-06)
 -------------------
