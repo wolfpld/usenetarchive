@@ -109,6 +109,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
         }
     }
     printf( "%s \"%.*s %.*s\" %i %i \"%.*s\"\n", remoteAddr, (int)hm->method.len, hm->method.p, (int)hm->uri.len, hm->uri.p, code, size, ua ? (int)ua->len : 0, ua ? ua->p : "" );
+    fflush( stdout );
 }
 
 int main( int argc, char** argv )
@@ -116,6 +117,7 @@ int main( int argc, char** argv )
     if( argc != 2 )
     {
         fprintf( stderr, "Usage: %s /path/to/config.ini\n", argv[0] );
+        fflush( stderr );
         return 1;
     }
 
@@ -123,6 +125,7 @@ int main( int argc, char** argv )
     if( !config )
     {
         fprintf( stderr, "Cannot open config file %s!\n", argv[1] );
+        fflush( stderr );
         return 2;
     }
 
@@ -138,6 +141,7 @@ int main( int argc, char** argv )
     if( !galaxy )
     {
         fprintf( stderr, "Cannot access galaxy at %s!\n", galaxyPath );
+        fflush( stderr );
         ini_free( config );
         return 3;
     }
@@ -151,12 +155,14 @@ int main( int argc, char** argv )
     if( !conn )
     {
         fprintf( stderr, "Cannot bind to %s!\n", address );
+        fflush( stderr );
         ini_free( config );
         return 4;
     }
     mg_set_protocol_http_websocket( conn );
 
     printf( "Listening on %s...\n", address );
+    fflush( stdout );
     for(;;)
     {
         mg_mgr_poll( &mgr, std::numeric_limits<int>::max() );
