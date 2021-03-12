@@ -96,6 +96,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                         mg_send_head( nc, 200, size, "Content-Type: text" );
                         mg_printf( nc, "%.*s", size, message );
 
+                        found = true;
                         break;
                     }
                 }
