@@ -36,6 +36,7 @@ static const std::string IntroPage( R"WEB(
 
 static ExpandingBuffer eb;
 static std::unique_ptr<Galaxy> galaxy;
+static int chomp;
 
 static void Handler( struct mg_connection* nc, int ev, void* data )
 {
@@ -46,7 +47,12 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
     std::string uri( hm->uri.p, hm->uri.len );
     auto ua = mg_get_http_header( hm, "User-Agent" );
     int code = 0, size = 0;
-    if( uri == "/" )
+    if( uri.size() <= chomp )
+    {
+        code = 500;
+        mg_http_send_error( nc, code, nullptr );
+    }
+    else if( strcmp( uri.c_str() + chomp, "/" ) == 0 )
     {
         if( hm->body.len == 0 )
         {
@@ -74,10 +80,10 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
     else
     {
         bool found = false;
-        if( IsMsgId( uri.c_str() + 1, uri.c_str() + uri.size() ) )
+        if( IsMsgId( uri.c_str() + chomp + 1, uri.c_str() + uri.size() ) )
         {
             uint8_t packed[4096];
-            galaxy->PackMsgId( uri.c_str() + 1, packed );
+            galaxy->PackMsgId( uri.c_str() + chomp + 1, packed );
             auto idx = galaxy->GetMessageIndex( packed );
             if( idx >= 0 )
             {
@@ -133,10 +139,14 @@ int main( int argc, char** argv )
     const char* bind = "127.0.0.1";
     const char* port = "8119";
     const char* galaxyPath = "news/galaxy";
+    const char* chompStr = "0";
 
     TryIni( bind, config, "server", "bind" );
     TryIni( port, config, "server", "port" );
+    TryIni( chompStr, config, "server", "chomp" );
     TryIni( galaxyPath, config, "galaxy", "path" );
+
+    chomp = atoi( chompStr );
 
     galaxy.reset( Galaxy::Open( galaxyPath ) );
     if( !galaxy )
