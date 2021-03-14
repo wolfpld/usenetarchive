@@ -21,13 +21,15 @@ static const std::string IntroPage( R"WEB(
 <!doctype html>
 <html>
 <head>
+<style>
+body { position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); text-align: center; }
+</style>
 <meta charset="utf-8">
-<title>Usenet Archive msg-id search</title>
+<title>Usenet Archive Message-ID search</title>
 </head>
 <body>
 <form method="post">
-<label for="msgid">Message-ID:</label><br/>
-<input type="text" size=60 name="msgid"/><br/>
+<input type="text" size=60 name="msgid" placeholder="Message-ID"/><br><br>
 <input type="submit" value="View">
 </form>
 </body>
