@@ -216,7 +216,14 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                                 else if( dl )
                                 {
                                     tmpStr += "<a href=\"";
-                                    tmpStr += Encode( message + part.offset, message + part.offset + part.len );
+                                    if( part.len > 5 && memcmp( message + part.offset, "news:", 5 ) == 0 )
+                                    {
+                                        tmpStr += Encode( message + part.offset, message + part.offset + part.len ).c_str() + 5;
+                                    }
+                                    else
+                                    {
+                                        tmpStr += Encode( message + part.offset, message + part.offset + part.len );
+                                    }
                                     tmpStr += "\">";
                                 }
 
