@@ -227,6 +227,7 @@
     <ClCompile Include="..\..\TextView.cpp" />
     <ClCompile Include="..\..\ThreadTree.cpp" />
     <ClCompile Include="..\..\ThreadView.cpp" />
+    <ClCompile Include="..\..\Utf8Print.cpp" />
     <ClCompile Include="..\..\View.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +298,7 @@
     <ClInclude Include="..\..\ThreadData.hpp" />
     <ClInclude Include="..\..\ThreadTree.hpp" />
     <ClInclude Include="..\..\ThreadView.hpp" />
+    <ClInclude Include="..\..\Utf8Print.hpp" />
     <ClInclude Include="..\..\View.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

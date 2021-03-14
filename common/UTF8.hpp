@@ -3,7 +3,6 @@
 
 #include <assert.h>
 #include <stdlib.h>
-#include <curses.h>
 
 inline bool iscontinuationbyte( char c )
 {
@@ -26,8 +25,5 @@ const char* utfend( const char* str, int len );
 const char* utfendl( const char* str, int& len );
 const char* utfendcrlf( const char* str, int len );
 const char* utfendcrlfl( const char* str, int& len );
-
-void utfprint( WINDOW* win, const char* str );
-void utfprint( WINDOW* win, const char* str, const char* end );
 
 #endif

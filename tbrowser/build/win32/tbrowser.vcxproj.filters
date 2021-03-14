@@ -297,6 +297,9 @@
     <ClCompile Include="..\..\..\common\UTF8.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Utf8Print.cpp">
+      <Filter>tbrowser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h">
@@ -502,6 +505,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\common\UTF8.hpp">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utf8Print.hpp">
+      <Filter>tbrowser</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

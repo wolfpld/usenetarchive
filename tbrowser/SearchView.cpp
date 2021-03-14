@@ -18,6 +18,7 @@
 #include "Help.hpp"
 #include "LevelColors.hpp"
 #include "SearchView.hpp"
+#include "Utf8Print.hpp"
 
 SearchView::SearchView( Browser* parent, BottomBar& bar, Archive& archive, PersistentStorage& storage )
     : View( 0, 1, 0, -2 )

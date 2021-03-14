@@ -11,6 +11,7 @@
 #include "../common/UTF8.hpp"
 
 #include "ThreadTree.hpp"
+#include "Utf8Print.hpp"
 
 ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy )
     : m_archive( &archive )

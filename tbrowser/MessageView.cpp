@@ -9,6 +9,7 @@
 
 #include "LevelColors.hpp"
 #include "MessageView.hpp"
+#include "Utf8Print.hpp"
 
 MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     : View( 0, 0, 1, 1 )
