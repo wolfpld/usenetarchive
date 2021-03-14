@@ -26,7 +26,6 @@ static const std::string IntroPage( R"WEB(<!doctype html>
 body { position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); text-align: center; background-color: #111111; }
 div { background-color: #222222; padding: 2em; }
 </style>
-<meta charset="utf-8">
 <title>Usenet Archive Message-ID search</title>
 </head>
 <body>
@@ -71,7 +70,6 @@ a:visited { color: inherit }
 .signature { color: #767676 }
 .hide { display: none }
 </style>
-<meta charset="utf-8">
 <title>
 )WEB" );
 
@@ -137,7 +135,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
         {
             code = 200;
             size = IntroPage.size();
-            mg_send_head( nc, 200, size, "Content-Type: text/html" );
+            mg_send_head( nc, 200, size, "Content-Type: text/html; charset=utf-8" );
             mg_printf( nc, "%.*s", size, IntroPage.c_str() );
         }
         else
@@ -239,7 +237,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
 
                         code = 200;
                         size = tmpStr.size();
-                        mg_send_head( nc, 200, size, "Content-Type: text/html" );
+                        mg_send_head( nc, 200, size, "Content-Type: text/html; charset=utf-8" );
                         mg_printf( nc, "%.*s", size, tmpStr.c_str() );
 
                         ml.Reset();
