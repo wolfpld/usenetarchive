@@ -131,10 +131,6 @@ void MessageView::SwitchHeaders()
 void MessageView::SwitchROT13()
 {
     m_rot13 = !m_rot13;
-    if( m_idx != -1 )
-    {
-        PrepareLines();
-    }
     if( m_active )
     {
         Draw();
