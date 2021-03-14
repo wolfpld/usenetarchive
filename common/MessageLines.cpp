@@ -78,7 +78,7 @@ void MessageLines::PrepareLines( const char* text )
         if( *end == '\0' ) break;
         txt = end + 1;
     }
-    while( !m_lines.empty() && m_lines.back().empty ) m_lines.pop_back();
+    while( !m_lines.empty() && m_lines.back().parts == 0 ) m_lines.pop_back();
 
 }
 
@@ -90,7 +90,7 @@ void MessageLines::Reset()
 
 void MessageLines::AddEmptyLine()
 {
-    m_lines.emplace_back( Line { 0, 0, true } );
+    m_lines.emplace_back( Line { 0, 0 } );
 }
 
 void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& parts, const char* text )
@@ -115,7 +115,7 @@ void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std:
     auto ul = utflen( text + offset, text + offset + len );
     if( ul <= m_width )
     {
-        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), (uint32_t)parts.size(), false } );
+        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), (uint32_t)parts.size() } );
         for( auto& part : parts )
         {
             m_lineParts.emplace_back( part );
@@ -162,7 +162,7 @@ void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std:
                 partBr = false;
                 partsNum++;
             }
-            m_lines.emplace_back( Line { firstPart, partsNum, false } );
+            m_lines.emplace_back( Line { firstPart, partsNum } );
             ptr = e;
             if( !br )
             {

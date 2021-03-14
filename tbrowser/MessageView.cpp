@@ -152,7 +152,7 @@ void MessageView::Draw()
             waddch( m_win, ACS_VLINE );
             wattroff( m_win, COLOR_PAIR( 7 ) );
         }
-        if( m_lines.Lines()[line].empty ) continue;
+        if( m_lines.Lines()[line].parts == 0 ) continue;
         const MessageLines::LinePart* part = m_lines.Parts().data() + m_lines.Lines()[line].idx;
         const int pnum = m_lines.Lines()[line].parts;
         for( int p=0; p<pnum; p++, part++ )

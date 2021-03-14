@@ -53,7 +53,6 @@ public:
     {
         uint32_t idx        : 21;
         uint32_t parts      : 10;
-        uint32_t empty      : 1;
     };
 
     MessageLines();
