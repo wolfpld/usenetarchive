@@ -17,8 +17,7 @@ static void TryIni( const char*& value, ini_t* config, const char* section, cons
     if( tmp ) value = tmp;
 }
 
-static const std::string IntroPage( R"WEB(
-<!doctype html>
+static const std::string IntroPage( R"WEB(<!doctype html>
 <html>
 <head>
 <style>
