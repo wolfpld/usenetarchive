@@ -57,6 +57,9 @@ function toggleHide()
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/>
 <style>
 body { background-color: #111111; }
+a:link { text-decoration-style: dotted; color: inherit }
+a:hover { text-decoration-style: solid }
+a:visited { color: inherit }
 .message { font-family: 'Roboto Mono', Lucida Console, Courier, monospace; font-size: 15px; white-space: pre-wrap; width: 100%; min-width: 640px; max-width: 1024px; margin-left: auto; margin-right: auto; background-color: #222222; padding: 1em; color: #cccccc }
 .hdrName { color: #13a10e }
 .hdrBody { color: #3a96dd }
@@ -208,15 +211,23 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                                 const bool du = part.deco == MessageLines::D_Underline;
                                 const bool di = part.deco == MessageLines::D_Italics;
                                 const bool db = part.deco == MessageLines::D_Bold;
+                                const bool dl = part.deco == MessageLines::D_Url;
                                 if( du ) tmpStr += "<u>";
                                 else if( di ) tmpStr += "<i>";
-                                else if( di ) tmpStr += "<em>";
+                                else if( db ) tmpStr += "<em>";
+                                else if( dl )
+                                {
+                                    tmpStr += "<a href=\"";
+                                    tmpStr += Encode( message + part.offset, message + part.offset + part.len );
+                                    tmpStr += "\">";
+                                }
 
                                 tmpStr += Encode( message + part.offset, message + part.offset + part.len );
 
                                 if( du ) tmpStr += "</u>";
                                 else if( di ) tmpStr += "</i>";
-                                else if( di ) tmpStr += "</em>";
+                                else if( db ) tmpStr += "</em>";
+                                else if( dl ) tmpStr += "</a>";
 
                                 if( !noSpan ) tmpStr += "</span>";
                             }

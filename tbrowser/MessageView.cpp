@@ -195,8 +195,10 @@ void MessageView::Draw()
 #ifdef _MSC_VER
             case MessageLines::D_Underline:
             case MessageLines::D_Italics:
+            case MessageLines::D_Url:
 #else
             case MessageLines::D_Underline:
+            case MessageLines::D_Url:
                 wattron( m_win, A_UNDERLINE );
                 break;
             case MessageLines::D_Italics:
@@ -244,8 +246,10 @@ void MessageView::Draw()
 #ifdef _MSC_VER
             case MessageLines::D_Underline:
             case MessageLines::D_Italics:
+            case MessageLines::D_Url:
 #else
             case MessageLines::D_Underline:
+            case MessageLines::D_Url:
                 wattroff( m_win, A_UNDERLINE );
                 break;
             case MessageLines::D_Italics:

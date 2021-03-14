@@ -27,6 +27,7 @@ public:
         D_Underline,
         D_Italics,
         D_Bold,
+        D_Url,
         D_LAST
     };
 
@@ -38,9 +39,9 @@ public:
     };
 
     enum { OffsetBits = 28 };
-    enum { LenBits = 29 };
+    enum { LenBits = 28 };
     enum { FlagsBits = 4 };
-    enum { DecoBits = 2 };
+    enum { DecoBits = 3 };
     struct LinePart
     {
         uint64_t offset     : OffsetBits;

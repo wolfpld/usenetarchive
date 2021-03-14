@@ -272,7 +272,7 @@ void MessageLines::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePar
         {
             Decorate( str, test, L_Quote0 + level, parts, text );
         }
-        parts.emplace_back( LinePart { uint64_t( test - text ), uint64_t( urlsize ), uint64_t( L_Quote0 + level ), uint64_t( D_Underline ) } );
+        parts.emplace_back( LinePart { uint64_t( test - text ), uint64_t( urlsize ), uint64_t( L_Quote0 + level ), uint64_t( D_Url ) } );
 
         str = test + urlsize;
         test = str;
