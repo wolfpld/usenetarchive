@@ -35,9 +35,9 @@ div { background-color: #222222; padding: 2em; }
 <input type="submit" value="View">
 </form>
 </div>
-</body>
-</html>
 )WEB" );
+
+static const std::string IntroFooter( "</body></html>" );
 
 static const std::string MessageHeader( R"WEB(<!doctype html>
 <html>
@@ -79,6 +79,8 @@ static KillRe killre;
 static std::unique_ptr<Galaxy> galaxy;
 static int chomp;
 static std::string tmpStr;
+static const char* tracker = "";
+static size_t trackerLen;
 
 static std::string Encode( const char* txt, const char* end )
 {
@@ -134,9 +136,9 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
         if( hm->body.len == 0 )
         {
             code = 200;
-            size = IntroPage.size();
+            size = IntroPage.size() + IntroFooter.size() + trackerLen;
             mg_send_head( nc, 200, size, "Content-Type: text/html; charset=utf-8" );
-            mg_printf( nc, "%.*s", size, IntroPage.c_str() );
+            mg_printf( nc, "%s%s%s", IntroPage.c_str(), tracker, IntroFooter.c_str() );
         }
         else
         {
@@ -240,7 +242,9 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                             if( isHeader ) tmpStr += "</span>";
                         }
 
-                        tmpStr += "</div></body></html>";
+                        tmpStr += "</div>";
+                        tmpStr += tracker;
+                        tmpStr += "</body></html>";
 
                         code = 200;
                         size = tmpStr.size();
@@ -290,9 +294,11 @@ int main( int argc, char** argv )
     TryIni( bind, config, "server", "bind" );
     TryIni( port, config, "server", "port" );
     TryIni( chompStr, config, "server", "chomp" );
+    TryIni( tracker, config, "server", "tracker" );
     TryIni( galaxyPath, config, "galaxy", "path" );
 
     chomp = atoi( chompStr );
+    trackerLen = strlen( tracker );
 
     galaxy.reset( Galaxy::Open( galaxyPath ) );
     if( !galaxy )
