@@ -59,7 +59,7 @@ public:
     MessageLines();
 
     void SetWidth( int width ) { m_width = width; }
-    void PrepareLines( const char* text );
+    void PrepareLines( const char* text, bool skipHeaders );
     void Reset();
 
     const std::vector<Line>& Lines() const { return m_lines; }

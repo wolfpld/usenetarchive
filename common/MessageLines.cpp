@@ -14,7 +14,7 @@ MessageLines::MessageLines()
     m_lines.reserve( 1024 );
 }
 
-void MessageLines::PrepareLines( const char* text )
+void MessageLines::PrepareLines( const char* text, bool skipHeaders )
 {
     m_lineParts.clear();
     m_lines.clear();
@@ -48,7 +48,10 @@ void MessageLines::PrepareLines( const char* text )
                     strnicmpl( txt, "subject: ", 9 ) == 0 ||
                     strnicmpl( txt, "date: ", 6 ) == 0 ||
                     strnicmpl( txt, "to: ", 3 ) == 0;
-                BreakLine( offset, len, LineType::Header, partsTmpBuf, text, essentialHeader );
+                if( !skipHeaders || essentialHeader )
+                {
+                    BreakLine( offset, len, LineType::Header, partsTmpBuf, text, essentialHeader );
+                }
             }
         }
         else

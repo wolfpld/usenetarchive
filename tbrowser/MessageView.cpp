@@ -335,7 +335,7 @@ void MessageView::PrepareLines()
     m_lines.Reset();
     if( m_linesWidth < 2 ) return;
     m_lines.SetWidth( m_linesWidth );
-    m_lines.PrepareLines( m_text );
+    m_lines.PrepareLines( m_text, !m_allHeaders );
 }
 
 void MessageView::PrintRot13( const char* start, const char* end )
