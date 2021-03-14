@@ -141,6 +141,7 @@
     <ClCompile Include="..\..\..\common\ICU.cpp" />
     <ClCompile Include="..\..\..\common\KillRe.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
+    <ClCompile Include="..\..\..\common\MessageLines.cpp" />
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\common\StringCompress.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="..\..\..\common\ICU.hpp" />
     <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
+    <ClInclude Include="..\..\..\common\MessageLines.hpp" />
     <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />

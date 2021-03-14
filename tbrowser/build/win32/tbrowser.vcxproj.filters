@@ -291,6 +291,9 @@
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_trace.c">
       <Filter>zstd\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\MessageLines.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\common\UTF8.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -493,6 +496,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\zstd\common\zstd_trace.h">
       <Filter>zstd\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MessageLines.hpp">
+      <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\common\UTF8.hpp">
       <Filter>common</Filter>

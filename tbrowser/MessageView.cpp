@@ -3,8 +3,6 @@
 #include <ctype.h>
 
 #include "../common/Alloc.hpp"
-#include "../common/String.hpp"
-#include "../common/MessageLogic.hpp"
 #include "../common/UTF8.hpp"
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
@@ -23,8 +21,6 @@ MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     , m_rot13( false )
     , m_viewSplit( ViewSplit::Auto )
 {
-    m_lineParts.reserve( 2048 );
-    m_lines.reserve( 1024 );
 }
 
 void MessageView::Reset( Archive& archive )
@@ -32,8 +28,7 @@ void MessageView::Reset( Archive& archive )
     Close();
     m_archive = &archive;
     m_idx = -1;
-    m_lineParts.clear();
-    m_lines.clear();
+    m_lines.Reset();
 }
 
 void MessageView::Resize()
@@ -96,7 +91,7 @@ bool MessageView::Display( uint32_t idx, int move )
     {
         if( move > 0 )
         {
-            if( m_top + move >= m_lines.size() ) return true;
+            if( m_top + move >= m_lines.Lines().size() ) return true;
             m_top += move;
         }
         else if( move < 0 )
@@ -148,7 +143,7 @@ void MessageView::Draw()
     for( i=0; i<h-1; i++ )
     {
         int line = m_top + i;
-        if( line >= m_lines.size() ) break;
+        if( line >= m_lines.Lines().size() ) break;
 
         wmove( m_win, i, 0 );
         if( m_vertical )
@@ -157,9 +152,9 @@ void MessageView::Draw()
             waddch( m_win, ACS_VLINE );
             wattroff( m_win, COLOR_PAIR( 7 ) );
         }
-        if( m_lines[line].empty ) continue;
-        const LinePart* part = m_lineParts.data() + m_lines[line].idx;
-        const int pnum = m_lines[line].parts;
+        if( m_lines.Lines()[line].empty ) continue;
+        const MessageLines::LinePart* part = m_lines.Parts().data() + m_lines.Lines()[line].idx;
+        const int pnum = m_lines.Lines()[line].parts;
         for( int p=0; p<pnum; p++, part++ )
         {
             auto start = m_text + part->offset;
@@ -174,22 +169,22 @@ void MessageView::Draw()
             bool rot13allowed = true;
             switch( part->flags )
             {
-            case L_HeaderName:
+            case MessageLines::L_HeaderName:
                 rot13allowed = false;
                 wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
                 break;
-            case L_HeaderBody:
+            case MessageLines::L_HeaderBody:
                 wattron( m_win, COLOR_PAIR( 7 ) | A_BOLD );
                 break;
-            case L_Signature:
+            case MessageLines::L_Signature:
                 wattron( m_win, COLOR_PAIR( 8 ) | A_BOLD );
                 break;
-            case L_Quote1:
-            case L_Quote2:
-            case L_Quote3:
-            case L_Quote4:
-            case L_Quote5:
-                wattron( m_win, QuoteFlags[part->flags - L_Quote1] );
+            case MessageLines::L_Quote1:
+            case MessageLines::L_Quote2:
+            case MessageLines::L_Quote3:
+            case MessageLines::L_Quote4:
+            case MessageLines::L_Quote5:
+                wattron( m_win, QuoteFlags[part->flags - MessageLines::L_Quote1] );
                 break;
             default:
                 break;
@@ -197,20 +192,20 @@ void MessageView::Draw()
             switch( part->deco )
             {
 #ifdef _MSC_VER
-            case D_Underline:
-            case D_Italics:
+            case MessageLines::D_Underline:
+            case MessageLines::D_Italics:
 #else
-            case D_Underline:
+            case MessageLines::D_Underline:
                 wattron( m_win, A_UNDERLINE );
                 break;
-            case D_Italics:
+            case MessageLines::D_Italics:
                 wattron( m_win, A_ITALIC );
                 break;
 #endif
-            case D_Bold:
+            case MessageLines::D_Bold:
                 wattron( m_win, A_BOLD );
                 break;
-            case D_None:
+            case MessageLines::D_None:
             default:
                 break;
             }
@@ -224,21 +219,21 @@ void MessageView::Draw()
             }
             switch( part->flags )
             {
-            case L_HeaderName:
+            case MessageLines::L_HeaderName:
                 wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
                 break;
-            case L_HeaderBody:
+            case MessageLines::L_HeaderBody:
                 wattroff( m_win, COLOR_PAIR( 7 ) | A_BOLD );
                 break;
-            case L_Signature:
+            case MessageLines::L_Signature:
                 wattroff( m_win, COLOR_PAIR( 8 ) | A_BOLD );
                 break;
-            case L_Quote1:
-            case L_Quote2:
-            case L_Quote3:
-            case L_Quote4:
-            case L_Quote5:
-                wattroff( m_win, QuoteFlags[part->flags - L_Quote1] );
+            case MessageLines::L_Quote1:
+            case MessageLines::L_Quote2:
+            case MessageLines::L_Quote3:
+            case MessageLines::L_Quote4:
+            case MessageLines::L_Quote5:
+                wattroff( m_win, QuoteFlags[part->flags - MessageLines::L_Quote1] );
                 break;
             default:
                 break;
@@ -246,20 +241,20 @@ void MessageView::Draw()
             switch( part->deco )
             {
 #ifdef _MSC_VER
-            case D_Underline:
-            case D_Italics:
+            case MessageLines::D_Underline:
+            case MessageLines::D_Italics:
 #else
-            case D_Underline:
+            case MessageLines::D_Underline:
                 wattroff( m_win, A_UNDERLINE );
                 break;
-            case D_Italics:
+            case MessageLines::D_Italics:
                 wattroff( m_win, A_ITALIC );
                 break;
 #endif
-            case D_Bold:
+            case MessageLines::D_Bold:
                 wattroff( m_win, A_BOLD );
                 break;
-            case D_None:
+            case MessageLines::D_None:
             default:
                 break;
             }
@@ -318,7 +313,7 @@ void MessageView::Draw()
     }
     else
     {
-        sprintf( tmp, " (%.1f%%%%) ", 100.f * ( m_top + h - 1 ) / m_lines.size() );
+        sprintf( tmp, " (%.1f%%%%) ", 100.f * ( m_top + h - 1 ) / m_lines.Lines().size() );
     }
     len = strlen( tmp );
     wmove( m_win, h-1, w-len );
@@ -336,154 +331,11 @@ void MessageView::PrepareLines()
     {
         m_linesWidth = m_linesWidth - (m_linesWidth/2) - 1;
     }
-    m_lineParts.clear();
-    m_lines.clear();
+
+    m_lines.Reset();
     if( m_linesWidth < 2 ) return;
-    std::vector<LinePart> partsTmpBuf;
-    partsTmpBuf.reserve( 16 );
-    auto txt = m_text;
-    bool headers = true;
-    bool sig = false;
-    for(;;)
-    {
-        auto end = txt;
-        while( *end != '\n' && *end != '\0' ) end++;
-        const auto len = std::min<uint32_t>( end - txt, ( 1 << LenBits ) - 1 );
-        const auto offset = uint32_t( txt - m_text );
-        if( offset >= ( 1 << OffsetBits ) ) return;
-        if( headers )
-        {
-            if( len == 0 )
-            {
-                AddEmptyLine();
-                headers = false;
-                while( *end == '\n' ) end++;
-                end--;
-            }
-            else
-            {
-                if( m_allHeaders ||
-                    strnicmpl( txt, "from: ", 6 ) == 0 ||
-                    strnicmpl( txt, "newsgroups: ", 12 ) == 0 ||
-                    strnicmpl( txt, "subject: ", 9 ) == 0 ||
-                    strnicmpl( txt, "date: ", 6 ) == 0 ||
-                    strnicmpl( txt, "to: ", 3 ) == 0 )
-                {
-                    BreakLine( offset, len, LineType::Header, partsTmpBuf );
-                }
-            }
-        }
-        else
-        {
-            if( len == 0 )
-            {
-                AddEmptyLine();
-            }
-            else
-            {
-                if( strncmp( "-- \n", txt, 4 ) == 0 )
-                {
-                    sig = true;
-                }
-                if( sig )
-                {
-                    BreakLine( offset, len, LineType::Signature, partsTmpBuf );
-                }
-                else
-                {
-                    BreakLine( offset, len, LineType::Body, partsTmpBuf );
-                }
-            }
-        }
-        if( *end == '\0' ) break;
-        txt = end + 1;
-    }
-    while( !m_lines.empty() && m_lines.back().empty ) m_lines.pop_back();
-}
-
-void MessageView::AddEmptyLine()
-{
-    m_lines.emplace_back( Line { 0, 0, true } );
-}
-
-void MessageView::BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& parts )
-{
-    assert( len != 0 );
-
-    parts.clear();
-
-    switch( type )
-    {
-    case LineType::Header:
-        SplitHeader( offset, len, parts );
-        break;
-    case LineType::Body:
-        SplitBody( offset, len, parts );
-        break;
-    case LineType::Signature:
-        parts.emplace_back( LinePart { offset, len, L_Signature, D_None, false } );
-        break;
-    }
-
-    auto ul = utflen( m_text + offset, m_text + offset + len );
-    if( ul <= m_linesWidth )
-    {
-        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), (uint32_t)parts.size(), false } );
-        for( auto& part : parts )
-        {
-            m_lineParts.emplace_back( part );
-        }
-    }
-    else
-    {
-        bool br = false;
-        auto ptr = m_text + offset;
-        auto end = ptr + len;
-        auto w = m_linesWidth;
-        while( ptr != end )
-        {
-            if( br )
-            {
-                while( ptr < end && *ptr == ' ' ) ptr++;
-                if( ptr == end ) return;
-            }
-
-            auto lw = w;
-            auto e = utfendcrlfl( ptr, lw );
-
-            if( lw == w && *e != ' ' && *(e-1) != ' ' )
-            {
-                const auto original = e;
-                while( --e > ptr && *e != ' ' ) {}
-                if( e == ptr ) e = original;
-            }
-
-            const uint32_t firstPart = m_lineParts.size();
-            uint32_t partsNum = 0;
-            auto partBr = br;
-            for( const auto& v : parts )
-            {
-                auto ps = m_text + v.offset;
-                auto pe = ps + v.len;
-
-                if( ptr >= pe || e <= ps ) continue;
-
-                const auto ss = std::max( ptr, ps );
-                const auto se = std::min( e, pe );
-
-                m_lineParts.emplace_back( LinePart { uint32_t( ss - m_text ), uint32_t( se - ss ), v.flags, v.deco, partBr } );
-                partBr = false;
-                partsNum++;
-            }
-            m_lines.emplace_back( Line { firstPart, partsNum, false } );
-            ptr = e;
-            if( !br )
-            {
-                br = true;
-                w--;
-            }
-        }
-    }
+    m_lines.SetWidth( m_linesWidth );
+    m_lines.PrepareLines( m_text );
 }
 
 void MessageView::PrintRot13( const char* start, const char* end )
@@ -521,180 +373,6 @@ void MessageView::PrintRot13( const char* start, const char* end )
         }
     }
     wprintw( m_win, "%.*s", end - start, tmp );
-}
-
-void MessageView::SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts )
-{
-    auto origin = m_text + offset;
-    auto str = origin;
-    int i;
-    for( i=0; i<len; i++ )
-    {
-        if( *str++ == ':' ) break;
-    }
-
-    uint32_t nameLen = str - origin;
-    uint32_t bodyLen = len - nameLen;
-
-    if( bodyLen < 2 )
-    {
-        parts.emplace_back( LinePart { offset, len, L_HeaderBody } );
-    }
-    else
-    {
-        parts.emplace_back( LinePart { offset, nameLen, L_HeaderName } );
-        parts.emplace_back( LinePart { offset + nameLen, bodyLen, L_HeaderBody } );
-    }
-}
-
-static int FindUrl( const char*& start, const char* end )
-{
-    assert( start <= end );
-    for(;;)
-    {
-        auto ptr = start;
-        while( ptr < end && *ptr != ':' ) ptr++;
-        if( ptr >= end ) return -1;
-
-        auto tmp = ptr;
-        while( ptr > start && isalpha( ((unsigned char*)ptr)[-1] ) ) ptr--;
-
-        // slrn: "all registered and reserved scheme names are >= 3 chars long"
-        if( tmp - ptr < 3 )
-        {
-            start = tmp + 1;
-            continue;
-        }
-        if( tmp - ptr == 4 && end - tmp >= 4 && memcmp( ptr, "news:", 5 ) == 0 )     // end - tmp >= 4  ->  ':' + a@b
-        {
-            tmp++;
-            bool brackets = false;
-            if( *tmp == '<' )
-            {
-                brackets = true;
-                tmp++;
-            }
-            while( tmp < end && *tmp != ' ' && *tmp != '\t' && *tmp != '<' && *tmp != '>' ) tmp++;
-            if( tmp < end && brackets && *tmp == '>' ) tmp++;
-        }
-        else if( end - tmp < 3 || tmp[1] != '/' || tmp[2] != '/' )
-        {
-            start = tmp + 1;
-            continue;
-        }
-        else
-        {
-            assert( tmp[1] == '/' && tmp[2] == '/' );
-            tmp += 3;
-            while( tmp < end && *tmp != ' ' && *tmp != '\t' && *tmp != '"' && *tmp != '{' && *tmp != '}' && *tmp != '<' && *tmp != '>' ) tmp++;
-        }
-
-        while( tmp > ptr && ( *(tmp-1) == '.' || *(tmp-1) == ',' || *(tmp-1) == ';' || *(tmp-1) == ':' || *(tmp-1) == '(' || *(tmp-1) == ')' ) ) tmp--;
-
-        start = tmp;
-        if( tmp - ptr < 6 ) continue;
-        if( tmp[-3] == ':' && tmp[-2] == '/' && tmp[-1] == '/' ) continue;
-
-        start = ptr;
-        return tmp - ptr;
-    }
-}
-
-void MessageView::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart>& parts )
-{
-    auto str = m_text + offset;
-    const auto end = str + len;
-    auto test = str;
-    int level = std::min( QuotationLevel( test, end ), 5 );
-
-    for( int i=0; i<level; i++ )
-    {
-        const auto end = NextQuotationLevel( str ) + 1;
-        parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( end - str ), uint64_t( L_Quote1 + i ) } );
-        str = end;
-    }
-
-    test = str;
-    int urlsize;
-    while( ( urlsize = FindUrl( test, end ) ) != -1 )
-    {
-        if( test != str )
-        {
-            Decorate( str, test, L_Quote0 + level, parts );
-        }
-        parts.emplace_back( LinePart { uint64_t( test - m_text ), uint64_t( urlsize ), uint64_t( L_Quote0 + level ), uint64_t( D_Underline ) } );
-
-        str = test + urlsize;
-        test = str;
-    }
-
-    Decorate( str, end, L_Quote0 + level, parts );
-}
-
-void MessageView::Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts )
-{
-    assert( begin <= end );
-    auto str = begin;
-    for(;;)
-    {
-        while( str < end && *str != '_' && *str != '*' && *str != '/' ) str++;
-        if( str >= end )
-        {
-            parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( end - begin ), flags } );
-            return;
-        }
-        auto ch = *str;
-        if( ( str > begin && ( str[-1] == ch || isalnum( ((unsigned char*)str)[-1] ) ) ) ||
-            ( end - str > 1 && !isalnum( ((unsigned char*)str)[1] ) ) )
-        {
-            str++;
-            continue;
-        }
-
-        auto tmp = str + 1;
-        while( tmp < end && *tmp != '_' && *tmp != '*' && *tmp != '/' ) tmp++;
-        if( tmp >= end )
-        {
-            parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( end - begin ), flags } );
-            return;
-        }
-        if( *tmp != ch ||
-            ( tmp > begin && !isalnum( ((unsigned char*)tmp)[-1] ) && !ispunct( ((unsigned char*)tmp)[-1] ) ) ||
-            ( end - tmp > 1 && ( tmp[1] == ch || isalnum( ((unsigned char*)tmp)[1] ) ) ) )
-        {
-            str++;
-            continue;
-        }
-
-        DecoType deco;
-        switch( ch )
-        {
-        case '_':
-            deco = D_Underline;
-            break;
-        case '*':
-            deco = D_Bold;
-            break;
-        case '/':
-            deco = D_Italics;
-            break;
-        default:
-            assert( false );
-            deco = D_None;
-            break;
-        }
-
-        tmp++;
-        if( str > begin )
-        {
-            parts.emplace_back( LinePart { uint64_t( begin - m_text ), uint64_t( str - begin ), flags } );
-        }
-        parts.emplace_back( LinePart { uint64_t( str - m_text ), uint64_t( tmp - str ), flags, uint64_t( deco ) } );
-
-        begin = tmp;
-        if( begin >= end ) return;
-        str = begin;
-    }
 }
 
 ViewSplit MessageView::NextViewSplit()
