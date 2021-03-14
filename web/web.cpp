@@ -21,7 +21,7 @@ static const std::string IntroPage( R"WEB(<!doctype html>
 <html>
 <head>
 <style>
-body { position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); text-align: center; }
+body { position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); text-align: center; background-color: #333333; }
 </style>
 <meta charset="utf-8">
 <title>Usenet Archive Message-ID search</title>
