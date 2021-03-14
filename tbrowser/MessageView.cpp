@@ -5,12 +5,12 @@
 #include "../common/Alloc.hpp"
 #include "../common/String.hpp"
 #include "../common/MessageLogic.hpp"
+#include "../common/UTF8.hpp"
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
 #include "LevelColors.hpp"
 #include "MessageView.hpp"
-#include "UTF8.hpp"
 
 MessageView::MessageView( Archive& archive, PersistentStorage& storage )
     : View( 0, 0, 1, 1 )

@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../common/UTF8.hpp"
 #include "HeaderBar.hpp"
-#include "UTF8.hpp"
 
 HeaderBar::HeaderBar( const std::pair<const char*, uint64_t>& archive, const char* desc, const char* fn, bool galaxy )
     : View( 0, 0, 0, 1 )

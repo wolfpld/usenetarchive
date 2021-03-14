@@ -146,6 +146,7 @@
     <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\common\System.cpp" />
     <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
+    <ClCompile Include="..\..\..\common\UTF8.cpp" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addch.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addchstr.c" />
     <ClCompile Include="..\..\..\contrib\pdcurses\addstr.c" />
@@ -225,7 +226,6 @@
     <ClCompile Include="..\..\TextView.cpp" />
     <ClCompile Include="..\..\ThreadTree.cpp" />
     <ClCompile Include="..\..\ThreadView.cpp" />
-    <ClCompile Include="..\..\UTF8.cpp" />
     <ClCompile Include="..\..\View.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +245,7 @@
     <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\common\System.hpp" />
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
+    <ClInclude Include="..\..\..\common\UTF8.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curses.h" />
     <ClInclude Include="..\..\..\contrib\pdcurses\curspriv.h" />
@@ -294,7 +295,6 @@
     <ClInclude Include="..\..\ThreadData.hpp" />
     <ClInclude Include="..\..\ThreadTree.hpp" />
     <ClInclude Include="..\..\ThreadView.hpp" />
-    <ClInclude Include="..\..\UTF8.hpp" />
     <ClInclude Include="..\..\View.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -5,13 +5,13 @@
 #include <sstream>
 #include <vector>
 
+#include "../common/UTF8.hpp"
 #include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
 #include "GalaxyOpen.hpp"
-#include "UTF8.hpp"
 
 GalaxyOpen::GalaxyOpen( Browser* parent, BottomBar& bar, Galaxy& galaxy )
     : View( 0, 1, 0, -2 )

@@ -3,10 +3,10 @@
 #include <string.h>
 
 #include "../common/Filesystem.hpp"
+#include "../common/UTF8.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
-#include "UTF8.hpp"
 
 BottomBar::BottomBar( Browser* parent )
     : View( 0, LINES-1, 0, 1 )

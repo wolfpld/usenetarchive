@@ -8,9 +8,9 @@
 #include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
 #include "../libuat/ViewReference.hpp"
+#include "../common/UTF8.hpp"
 
 #include "ThreadTree.hpp"
-#include "UTF8.hpp"
 
 ThreadTree::ThreadTree( const Archive& archive, PersistentStorage& storage, const Galaxy* galaxy )
     : m_archive( &archive )

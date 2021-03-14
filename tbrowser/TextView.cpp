@@ -6,9 +6,10 @@
 #include <string.h>
 #include <vector>
 
+#include "../common/UTF8.hpp"
+
 #include "Browser.hpp"
 #include "TextView.hpp"
-#include "UTF8.hpp"
 
 TextView::TextView( Browser* parent )
     : View( 0, 1, 0, -2 )

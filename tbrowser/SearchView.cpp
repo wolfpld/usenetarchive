@@ -11,13 +11,13 @@
 #include "../libuat/SearchEngine.hpp"
 #include "../common/ICU.hpp"
 #include "../common/MessageLogic.hpp"
+#include "../common/UTF8.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"
 #include "Help.hpp"
 #include "LevelColors.hpp"
 #include "SearchView.hpp"
-#include "UTF8.hpp"
 
 SearchView::SearchView( Browser* parent, BottomBar& bar, Archive& archive, PersistentStorage& storage )
     : View( 0, 1, 0, -2 )

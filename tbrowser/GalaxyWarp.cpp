@@ -6,6 +6,7 @@
 #include <string.h>
 #include <vector>
 
+#include "../common/UTF8.hpp"
 #include "../libuat/Galaxy.hpp"
 #include "../libuat/PersistentStorage.hpp"
 
@@ -13,7 +14,6 @@
 #include "Browser.hpp"
 #include "GalaxyWarp.hpp"
 #include "ThreadTree.hpp"
-#include "UTF8.hpp"
 
 GalaxyWarp::GalaxyWarp( Browser* parent, BottomBar& bar, Galaxy& galaxy, PersistentStorage& storage )
     : View( 0, 1, 0, -2 )
