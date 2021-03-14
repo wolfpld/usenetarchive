@@ -1,7 +1,6 @@
 #include <limits>
 #include <memory>
 #include <string>
-#include <sstream>
 #include "../contrib/ini/ini.h"
 #include "../contrib/mongoose/mongoose.h"
 #ifdef GetMessage
@@ -9,7 +8,10 @@
 #endif
 #include "../libuat/Archive.hpp"
 #include "../libuat/Galaxy.hpp"
+#include "../common/KillRe.hpp"
+#include "../common/MessageLines.hpp"
 #include "../common/MessageLogic.hpp"
+#include "../common/UTF8.hpp"
 
 static void TryIni( const char*& value, ini_t* config, const char* section, const char* key )
 {
@@ -21,23 +23,84 @@ static const std::string IntroPage( R"WEB(<!doctype html>
 <html>
 <head>
 <style>
-body { position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); text-align: center; background-color: #333333; }
+body { position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); text-align: center; background-color: #111111; }
+div { background-color: #222222; padding: 2em; }
 </style>
 <meta charset="utf-8">
 <title>Usenet Archive Message-ID search</title>
 </head>
 <body>
+<div>
 <form method="post">
 <input type="text" size=60 name="msgid" placeholder="Message-ID"/><br><br>
 <input type="submit" value="View">
 </form>
+</div>
 </body>
 </html>
 )WEB" );
 
+static const std::string MessageHeader( R"WEB(<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/>
+<style>
+body { background-color: #111111; }
+.message { font-family: 'Roboto Mono', Lucida Console, Courier, monospace; font-size: 15px; white-space: pre-wrap; width: 100%; min-width: 640px; max-width: 1024px; margin-left: auto; margin-right: auto; background-color: #222222; padding: 1em; color: #cccccc }
+.hdrName { color: #13a10e }
+.hdrBody { color: #3a96dd }
+.q1 { color: #c50f1f }
+.q2 { color: #881798 }
+.q3 { color: #3b78ff }
+.q4 { color: #13a10e }
+.q5 { color: #c19c00 }
+.signature { color: #767676 }
+</style>
+<meta charset="utf-8">
+<title>
+)WEB" );
+
 static ExpandingBuffer eb;
+static MessageLines ml;
+static KillRe killre;
 static std::unique_ptr<Galaxy> galaxy;
 static int chomp;
+static std::string tmpStr;
+
+static std::string Encode( const char* txt, const char* end )
+{
+    std::string enc;
+    while( txt < end )
+    {
+        if( *txt == '&' )
+        {
+            enc += "&amp;";
+            txt++;
+        }
+        else if( *txt == '<' )
+        {
+            enc += "&lt;";
+            txt++;
+        }
+        else if( *txt == '>' )
+        {
+            enc += "&gt;";
+            txt++;
+        }
+        else
+        {
+            const auto len = codepointlen( *txt );
+            enc.append( txt, txt+len );
+            txt += len;
+        }
+    }
+    return enc;
+}
+
+static std::string Encode( const char* txt )
+{
+    return Encode( txt, txt + strlen( txt ) );
+}
 
 static void Handler( struct mg_connection* nc, int ev, void* data )
 {
@@ -96,13 +159,59 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                         auto& archive = *galaxy->GetArchive( groups.ptr[i] );
                         uint8_t archivePacked[4096];
                         archive.RepackMsgId( packed, archivePacked, galaxy->GetCompress() );
-                        const auto message = archive.GetMessage( archivePacked, eb );
+                        const auto idx = archive.GetMessageIndex( archivePacked );
+                        const auto message = archive.GetMessage( idx, eb );
+                        ml.PrepareLines( message, false );
+
+                        tmpStr = MessageHeader;
+                        tmpStr += Encode( archive.GetRealName( idx ) ) + ", " + Encode( killre.Kill( archive.GetSubject( idx ) ) ) + "</title></head><body>\n<div class=\"message\">";
+
+                        auto& lines = ml.Lines();
+                        auto& parts = ml.Parts();
+                        for( auto& line : lines )
+                        {
+                            for( int i=0; i<line.parts; i++ )
+                            {
+                                auto& part = parts[line.idx+i];
+
+                                bool noSpan = false;
+                                if( part.flags == MessageLines::L_HeaderName ) tmpStr += "<span class=\"hdrName\">";
+                                else if( part.flags == MessageLines::L_HeaderBody ) tmpStr += "<span class=\"hdrBody\">";
+                                else if( part.flags == MessageLines::L_Quote0 ) noSpan = true;
+                                else if( part.flags == MessageLines::L_Quote1 ) tmpStr += "<span class=\"q1\">";
+                                else if( part.flags == MessageLines::L_Quote2 ) tmpStr += "<span class=\"q2\">";
+                                else if( part.flags == MessageLines::L_Quote3 ) tmpStr += "<span class=\"q3\">";
+                                else if( part.flags == MessageLines::L_Quote4 ) tmpStr += "<span class=\"q4\">";
+                                else if( part.flags == MessageLines::L_Quote5 ) tmpStr += "<span class=\"q5\">";
+                                else if( part.flags == MessageLines::L_Signature ) tmpStr += "<span class=\"signature\">";
+                                else noSpan = true;
+
+                                const bool du = part.deco == MessageLines::D_Underline;
+                                const bool di = part.deco == MessageLines::D_Italics;
+                                const bool db = part.deco == MessageLines::D_Bold;
+                                if( du ) tmpStr += "<u>";
+                                else if( di ) tmpStr += "<i>";
+                                else if( di ) tmpStr += "<em>";
+
+                                tmpStr += Encode( message + part.offset, message + part.offset + part.len );
+
+                                if( du ) tmpStr += "</u>";
+                                else if( di ) tmpStr += "</i>";
+                                else if( di ) tmpStr += "</em>";
+
+                                if( !noSpan ) tmpStr += "</span>";
+                            }
+                            tmpStr += "\n";
+                        }
+
+                        tmpStr += "</div></body></html>";
 
                         code = 200;
-                        size = strlen( message );
-                        mg_send_head( nc, 200, size, "Content-Type: text/plain; charset=utf-8" );
-                        mg_printf( nc, "%.*s", size, message );
+                        size = tmpStr.size();
+                        mg_send_head( nc, 200, size, "Content-Type: text/html" );
+                        mg_printf( nc, "%.*s", size, tmpStr.c_str() );
 
+                        ml.Reset();
                         found = true;
                         break;
                     }

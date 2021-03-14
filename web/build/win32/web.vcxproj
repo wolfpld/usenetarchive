@@ -141,11 +141,13 @@
     <ClCompile Include="..\..\..\common\ICU.cpp" />
     <ClCompile Include="..\..\..\common\KillRe.cpp" />
     <ClCompile Include="..\..\..\common\LexiconTypes.cpp" />
+    <ClCompile Include="..\..\..\common\MessageLines.cpp" />
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\common\StringCompress.cpp" />
     <ClCompile Include="..\..\..\common\System.cpp" />
     <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
+    <ClCompile Include="..\..\..\common\UTF8.cpp" />
     <ClCompile Include="..\..\..\contrib\ini\ini.c" />
     <ClCompile Include="..\..\..\contrib\mongoose\mongoose.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\debug.c" />
@@ -177,6 +179,7 @@
     <ClInclude Include="..\..\..\common\ICU.hpp" />
     <ClInclude Include="..\..\..\common\KillRe.hpp" />
     <ClInclude Include="..\..\..\common\LexiconTypes.hpp" />
+    <ClInclude Include="..\..\..\common\MessageLines.hpp" />
     <ClInclude Include="..\..\..\common\MessageLogic.hpp" />
     <ClInclude Include="..\..\..\common\MetaView.hpp" />
     <ClInclude Include="..\..\..\common\mmap.hpp" />
@@ -185,6 +188,7 @@
     <ClInclude Include="..\..\..\common\StringCompress.hpp" />
     <ClInclude Include="..\..\..\common\System.hpp" />
     <ClInclude Include="..\..\..\common\TaskDispatch.hpp" />
+    <ClInclude Include="..\..\..\common\UTF8.hpp" />
     <ClInclude Include="..\..\..\common\ZMessageView.hpp" />
     <ClInclude Include="..\..\..\contrib\ini\ini.h" />
     <ClInclude Include="..\..\..\contrib\mongoose\mongoose.h" />

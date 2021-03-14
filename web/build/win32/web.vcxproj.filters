@@ -112,6 +112,12 @@
     <ClCompile Include="..\..\..\contrib\mongoose\mongoose.c">
       <Filter>mongoose</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\common\MessageLines.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\common\UTF8.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\libuat\Archive.hpp">
@@ -254,6 +260,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\contrib\mongoose\mongoose.h">
       <Filter>mongoose</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\MessageLines.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\common\UTF8.hpp">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
