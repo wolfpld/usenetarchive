@@ -12,6 +12,7 @@ MessageLines::MessageLines()
 {
     m_lineParts.reserve( 2048 );
     m_lines.reserve( 1024 );
+    m_tmpParts.reserve( 16 );
 }
 
 void MessageLines::PrepareLines( const char* text, bool skipHeaders )
@@ -19,8 +20,6 @@ void MessageLines::PrepareLines( const char* text, bool skipHeaders )
     m_lineParts.clear();
     m_lines.clear();
 
-    std::vector<LinePart> partsTmpBuf;
-    partsTmpBuf.reserve( 16 );
     auto txt = text;
     bool headers = true;
     bool sig = false;
@@ -50,7 +49,7 @@ void MessageLines::PrepareLines( const char* text, bool skipHeaders )
                     strnicmpl( txt, "to: ", 3 ) == 0;
                 if( !skipHeaders || essentialHeader )
                 {
-                    BreakLine( offset, len, LineType::Header, partsTmpBuf, text, essentialHeader );
+                    BreakLine( offset, len, LineType::Header, m_tmpParts, text, essentialHeader );
                 }
             }
         }
@@ -68,11 +67,11 @@ void MessageLines::PrepareLines( const char* text, bool skipHeaders )
                 }
                 if( sig )
                 {
-                    BreakLine( offset, len, LineType::Signature, partsTmpBuf, text, false );
+                    BreakLine( offset, len, LineType::Signature, m_tmpParts, text, false );
                 }
                 else
                 {
-                    BreakLine( offset, len, LineType::Body, partsTmpBuf, text, false );
+                    BreakLine( offset, len, LineType::Body, m_tmpParts, text, false );
                 }
             }
         }
@@ -80,7 +79,7 @@ void MessageLines::PrepareLines( const char* text, bool skipHeaders )
         txt = end + 1;
     }
     while( !m_lines.empty() && m_lines.back().parts == 0 ) m_lines.pop_back();
-
+    m_tmpParts.clear();
 }
 
 void MessageLines::Reset()

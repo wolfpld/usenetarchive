@@ -74,6 +74,7 @@ private:
 
     std::vector<LinePart> m_lineParts;
     std::vector<Line> m_lines;
+    std::vector<LinePart> m_tmpParts;
     int m_width;
 
     static_assert( sizeof( LinePart ) == sizeof( uint64_t ), "Size of LinePart greater than 8 bytes." );
