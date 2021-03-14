@@ -43,6 +43,17 @@ div { background-color: #222222; padding: 2em; }
 static const std::string MessageHeader( R"WEB(<!doctype html>
 <html>
 <head>
+<script language="javascript" type="text/javascript">
+function toggleHide()
+{
+    var e = document.getElementsByClassName( "hide" );
+    for( var i=0; i<e.length; i++ )
+    {
+        if( e[i].style.display == "block" ) e[i].style.display = "none";
+        else e[i].style.display = "block";
+    }
+}
+</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/>
 <style>
 body { background-color: #111111; }
@@ -55,6 +66,7 @@ body { background-color: #111111; }
 .q4 { color: #13a10e }
 .q5 { color: #c19c00 }
 .signature { color: #767676 }
+.hide { display: none }
 </style>
 <meta charset="utf-8">
 <title>
@@ -170,6 +182,13 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                         auto& parts = ml.Parts();
                         for( auto& line : lines )
                         {
+                            const bool isHeader = line.parts > 0 && parts[line.idx].flags == MessageLines::L_HeaderName;
+                            if( isHeader )
+                            {
+                                tmpStr += "<span";
+                                if( !line.essential ) tmpStr += " class=\"hide\"";
+                                tmpStr += " onclick=\"toggleHide()\">";
+                            }
                             for( int i=0; i<line.parts; i++ )
                             {
                                 auto& part = parts[line.idx+i];
@@ -202,6 +221,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                                 if( !noSpan ) tmpStr += "</span>";
                             }
                             tmpStr += "\n";
+                            if( isHeader ) tmpStr += "</span>";
                         }
 
                         tmpStr += "</div></body></html>";
