@@ -207,7 +207,7 @@ static int FindUrl( const char*& start, const char* end )
         if( ptr >= end ) return -1;
 
         auto tmp = ptr;
-        while( ptr > start && isalpha( ((unsigned char*)ptr)[-1] ) ) ptr--;
+        while( ptr > start && utfisalpha( ptr-1 ) ) ptr--;
 
         // slrn: "all registered and reserved scheme names are >= 3 chars long"
         if( tmp - ptr < 3 )
@@ -316,8 +316,8 @@ void MessageLines::Decorate( const char* begin, const char* end, uint64_t flags,
             return;
         }
         auto ch = *str;
-        if( ( str > begin && ( str[-1] == ch || isalnum( ((unsigned char*)str)[-1] ) ) ) ||
-            ( end - str > 1 && !isalnum( ((unsigned char*)str)[1] ) ) )
+        if( ( str > begin && ( str[-1] == ch || utfisalnum( str-1 ) ) ) ||
+            ( end - str > 1 && !utfisalnum( str+1 ) ) )
         {
             str++;
             continue;
@@ -331,8 +331,8 @@ void MessageLines::Decorate( const char* begin, const char* end, uint64_t flags,
             return;
         }
         if( *tmp != ch ||
-            ( tmp > begin && !isalnum( ((unsigned char*)tmp)[-1] ) && !ispunct( ((unsigned char*)tmp)[-1] ) ) ||
-            ( end - tmp > 1 && ( tmp[1] == ch || isalnum( ((unsigned char*)tmp)[1] ) ) ) )
+            ( tmp > begin && !utfisalnum( tmp-1 ) && !utfispunct( tmp-1 ) ) ||
+            ( end - tmp > 1 && ( tmp[1] == ch || utfisalnum( tmp+1 ) ) ) )
         {
             str++;
             continue;
