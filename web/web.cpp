@@ -212,7 +212,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                                 const bool dl = part.deco == MessageLines::D_Url;
                                 if( du ) tmpStr += "<u>";
                                 else if( di ) tmpStr += "<i>";
-                                else if( db ) tmpStr += "<em>";
+                                else if( db ) tmpStr += "<b>";
                                 else if( dl )
                                 {
                                     tmpStr += "<a href=\"";
@@ -224,7 +224,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
 
                                 if( du ) tmpStr += "</u>";
                                 else if( di ) tmpStr += "</i>";
-                                else if( db ) tmpStr += "</em>";
+                                else if( db ) tmpStr += "</b>";
                                 else if( dl ) tmpStr += "</a>";
 
                                 if( !noSpan ) tmpStr += "</span>";
