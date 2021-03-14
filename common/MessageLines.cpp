@@ -42,15 +42,13 @@ void MessageLines::PrepareLines( const char* text )
             }
             else
             {
-                if( /*m_allHeaders ||*/
+                const bool essentialHeader =
                     strnicmpl( txt, "from: ", 6 ) == 0 ||
                     strnicmpl( txt, "newsgroups: ", 12 ) == 0 ||
                     strnicmpl( txt, "subject: ", 9 ) == 0 ||
                     strnicmpl( txt, "date: ", 6 ) == 0 ||
-                    strnicmpl( txt, "to: ", 3 ) == 0 )
-                {
-                    BreakLine( offset, len, LineType::Header, partsTmpBuf, text );
-                }
+                    strnicmpl( txt, "to: ", 3 ) == 0;
+                BreakLine( offset, len, LineType::Header, partsTmpBuf, text, essentialHeader );
             }
         }
         else
@@ -67,11 +65,11 @@ void MessageLines::PrepareLines( const char* text )
                 }
                 if( sig )
                 {
-                    BreakLine( offset, len, LineType::Signature, partsTmpBuf, text );
+                    BreakLine( offset, len, LineType::Signature, partsTmpBuf, text, false );
                 }
                 else
                 {
-                    BreakLine( offset, len, LineType::Body, partsTmpBuf, text );
+                    BreakLine( offset, len, LineType::Body, partsTmpBuf, text, false );
                 }
             }
         }
@@ -93,7 +91,7 @@ void MessageLines::AddEmptyLine()
     m_lines.emplace_back( Line { 0, 0 } );
 }
 
-void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& parts, const char* text )
+void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& parts, const char* text, bool essential )
 {
     assert( len != 0 );
 
@@ -115,7 +113,7 @@ void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std:
     auto ul = utflen( text + offset, text + offset + len );
     if( ul <= m_width )
     {
-        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), (uint32_t)parts.size() } );
+        m_lines.emplace_back( Line { (uint32_t)m_lineParts.size(), (uint32_t)parts.size(), essential } );
         for( auto& part : parts )
         {
             m_lineParts.emplace_back( part );
@@ -162,7 +160,7 @@ void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std:
                 partBr = false;
                 partsNum++;
             }
-            m_lines.emplace_back( Line { firstPart, partsNum } );
+            m_lines.emplace_back( Line { firstPart, partsNum, essential } );
             ptr = e;
             if( !br )
             {

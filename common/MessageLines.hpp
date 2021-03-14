@@ -53,6 +53,7 @@ public:
     {
         uint32_t idx        : 21;
         uint32_t parts      : 10;
+        uint32_t essential  : 1;
     };
 
     MessageLines();
@@ -66,7 +67,7 @@ public:
 
 private:
     void AddEmptyLine();
-    void BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& partsTmpBuf, const char* text );
+    void BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& partsTmpBuf, const char* text, bool essential );
     void SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts, const char* text );
     void SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart>& parts, const char* text );
     void Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts, const char* text );
