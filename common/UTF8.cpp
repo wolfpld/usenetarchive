@@ -1,3 +1,7 @@
+#include <ctype.h>
+#include <locale>
+#include <wchar.h>
+
 #include "UTF8.hpp"
 
 size_t utflen( const char* str )
@@ -83,4 +87,39 @@ const char* utfendcrlfl( const char* str, int& len )
     }
     len = l;
     return str;
+}
+
+static const std::locale utf8( "en_US.UTF-8" );
+
+bool utfisalpha( const char* c )
+{
+    while( iscontinuationbyte( *c ) ) c--;
+    const auto len = codepointlen( *c );
+    if( len == 1 ) return isalpha( *c );
+    mbstate_t state = {};
+    wchar_t w;
+    mbrtowc( &w, c, len, &state );
+    return isalpha( w, utf8 );
+}
+
+bool utfisalnum( const char* c )
+{
+    while( iscontinuationbyte( *c ) ) c--;
+    const auto len = codepointlen( *c );
+    if( len == 1 ) return isalnum( *c );
+    mbstate_t state = {};
+    wchar_t w;
+    mbrtowc( &w, c, len, &state );
+    return isalnum( w, utf8 );
+}
+
+bool utfispunct( const char* c )
+{
+    while( iscontinuationbyte( *c ) ) c--;
+    const auto len = codepointlen( *c );
+    if( len == 1 ) return ispunct( *c );
+    mbstate_t state = {};
+    wchar_t w;
+    mbrtowc( &w, c, len, &state );
+    return ispunct( w, utf8 );
 }

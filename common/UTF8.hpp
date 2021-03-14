@@ -26,4 +26,8 @@ const char* utfendl( const char* str, int& len );
 const char* utfendcrlf( const char* str, int len );
 const char* utfendcrlfl( const char* str, int& len );
 
+bool utfisalpha( const char* c );
+bool utfisalnum( const char* c );
+bool utfispunct( const char* c );
+
 #endif
