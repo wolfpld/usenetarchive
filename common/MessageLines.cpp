@@ -108,7 +108,7 @@ void MessageLines::BreakLine( uint32_t offset, uint32_t len, LineType type, std:
         SplitBody( offset, len, parts, text );
         break;
     case LineType::Signature:
-        parts.emplace_back( LinePart { offset, len, L_Signature, D_None, false } );
+        SplitSignature( offset, len, parts, text );
         break;
     }
 
@@ -279,6 +279,28 @@ void MessageLines::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePar
     }
 
     Decorate( str, end, L_Quote0 + level, parts, text );
+}
+
+void MessageLines::SplitSignature( uint32_t offset, uint32_t len, std::vector<LinePart>& parts, const char* text )
+{
+    auto str = text + offset;
+    const auto end = str + len;
+    auto test = str;
+
+    int urlsize;
+    while( ( urlsize = FindUrl( test, end ) ) != -1 )
+    {
+        if( test != str )
+        {
+            parts.emplace_back( LinePart { uint64_t( str - text ), uint64_t( test - str ), L_Signature, D_None, false } );
+        }
+        parts.emplace_back( LinePart { uint64_t( test - text ), uint64_t( urlsize ), uint64_t( L_Signature ), uint64_t( D_Url ) } );
+
+        str = test + urlsize;
+        test = str;
+    }
+
+    parts.emplace_back( LinePart { uint64_t( str - text ), uint64_t( end - str ), L_Signature, D_None, false } );
 }
 
 void MessageLines::Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts, const char* text )

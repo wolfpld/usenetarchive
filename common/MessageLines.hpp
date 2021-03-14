@@ -71,6 +71,7 @@ private:
     void BreakLine( uint32_t offset, uint32_t len, LineType type, std::vector<LinePart>& partsTmpBuf, const char* text, bool essential );
     void SplitHeader( uint32_t offset, uint32_t len, std::vector<LinePart>& parts, const char* text );
     void SplitBody( uint32_t offset, uint32_t len, std::vector<LinePart>& parts, const char* text );
+    void SplitSignature( uint32_t offset, uint32_t len, std::vector<LinePart>& parts, const char* text );
     void Decorate( const char* begin, const char* end, uint64_t flags, std::vector<LinePart>& parts, const char* text );
 
     std::vector<LinePart> m_lineParts;
