@@ -117,6 +117,46 @@ static std::string Encode( const char* txt )
     return Encode( txt, txt + strlen( txt ) );
 }
 
+static std::string UriEncode( const char* txt, size_t sz )
+{
+    std::string str;
+    str.reserve( sz );
+    const auto end = txt + sz;
+    while( txt < end )
+    {
+        if( *txt == '%' )
+        {
+            str += "%25";
+        }
+        else
+        {
+            str.push_back( *txt );
+        }
+        txt++;
+    }
+    return str;
+}
+
+static std::string UriDecode( const char* txt, size_t sz )
+{
+    std::string str;
+    str.reserve( sz );
+    const auto end = txt + sz;
+    while( txt < end )
+    {
+        str.push_back( *txt );
+        if( *txt == '%' )
+        {
+            txt += 3;
+        }
+        else
+        {
+            txt++;
+        }
+    }
+    return str;
+}
+
 static void Handler( struct mg_connection* nc, int ev, void* data )
 {
     if( ev != MG_EV_HTTP_REQUEST ) return;
@@ -145,9 +185,10 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
             char msgid[4096];
             if( mg_get_http_var( &hm->body, "msgid", msgid, 4096 ) > 0 )
             {
+                const auto encoded = UriEncode( msgid, hm->body.len );
                 code = 301;
-                size = hm->body.len;
-                mg_http_send_redirect( nc, code, mg_mk_str( msgid ), mg_mk_str( "Cache-Control: no-cache, no-store, must-revalidate" ) );
+                size = encoded.size();
+                mg_http_send_redirect( nc, code, mg_mk_str( encoded.c_str() ), mg_mk_str( "Cache-Control: no-cache, no-store, must-revalidate" ) );
             }
             else
             {
@@ -159,10 +200,11 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
     else
     {
         bool found = false;
-        if( IsMsgId( uri.c_str() + chomp + 1, uri.c_str() + uri.size() ) )
+        const auto decoded = UriDecode( uri.c_str() + chomp + 1, uri.size() - chomp - 1 );
+        if( IsMsgId( decoded.c_str(), decoded.c_str() + decoded.size() ) )
         {
             uint8_t packed[4096];
-            galaxy->PackMsgId( uri.c_str() + chomp + 1, packed );
+            galaxy->PackMsgId( decoded.c_str(), packed );
             auto idx = galaxy->GetMessageIndex( packed );
             if( idx >= 0 )
             {
