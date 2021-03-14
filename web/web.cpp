@@ -60,7 +60,7 @@ body { background-color: #111111; }
 a:link { text-decoration-style: dotted; color: inherit }
 a:hover { text-decoration-style: solid }
 a:visited { color: inherit }
-.message { font-family: 'Roboto Mono', Lucida Console, Courier, monospace; font-size: 15px; white-space: pre-wrap; width: 100%; min-width: 640px; max-width: 1024px; margin-left: auto; margin-right: auto; background-color: #222222; padding: 1em; color: #cccccc }
+.message { font-family: 'Roboto Mono', Lucida Console, Courier, monospace; font-size: 15px; white-space: pre-wrap; min-width: 680px; max-width: 1024px; margin-left: auto; margin-right: auto; background-color: #222222; padding: 1em; color: #cccccc }
 .hdrName { color: #13a10e }
 .hdrBody { color: #3a96dd }
 .q1 { color: #c50f1f }
