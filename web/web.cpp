@@ -1,6 +1,8 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <time.h>
+
 #include "../contrib/ini/ini.h"
 #include "../contrib/mongoose/mongoose.h"
 #ifdef GetMessage
@@ -224,8 +226,15 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
                         const auto message = archive.GetMessage( idx, eb );
                         ml.PrepareLines( message, false );
 
+                        const auto groupName = archive.GetArchiveName();
+                        time_t t = { archive.GetDate( idx ) };
+                        char dateStr[64];
+                        strftime( dateStr, 64, "%Y-%m-%d %H:%M:%S %z", localtime( &t ) );
+                        const auto desc = Encode( groupName.first, groupName.first + groupName.second ) + ", " + dateStr;
+                        const auto title = Encode( archive.GetRealName( idx ) ) + ", " + Encode( killre.Kill( archive.GetSubject( idx ) ) );
+
                         tmpStr = MessageHeader;
-                        tmpStr += Encode( archive.GetRealName( idx ) ) + ", " + Encode( killre.Kill( archive.GetSubject( idx ) ) ) + "</title></head><body>\n<div class=\"message\">";
+                        tmpStr += title + "</title><meta property=\"og:title\" content=\"" + title + "\"/><meta property=\"og:type\" content=\"website\"/><meta property=\"og:site_name\" content=\"Usenet Archive\"/><meta property=\"og:description\" content=\"" + desc + "\"/></head><body>\n<div class=\"message\">";
 
                         auto& lines = ml.Lines();
                         auto& parts = ml.Parts();
