@@ -101,6 +101,11 @@ static std::string Encode( const char* txt, const char* end )
             enc += "&gt;";
             txt++;
         }
+        else if( *txt == '"' )
+        {
+            enc += "&quot;";
+            txt++;
+        }
         else
         {
             const auto len = codepointlen( *txt );
