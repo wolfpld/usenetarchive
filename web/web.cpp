@@ -70,8 +70,7 @@ a:visited { color: inherit }
 .signature { color: #767676 }
 .hide { display: none }
 </style>
-<title>
-)WEB" );
+<title>)WEB" );
 
 static ExpandingBuffer eb;
 static MessageLines ml;
