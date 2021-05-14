@@ -16,7 +16,7 @@
 #endif
 
 #include "../contrib/zstd/zstd.h"
-#include "../contrib/zstd/dictBuilder/zdict.h"
+#include "../contrib/zstd/zdict.h"
 
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"

@@ -33,7 +33,6 @@
     <ClCompile Include="..\..\..\contrib\zstd\common\threading.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\xxhash.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\zstd_common.c" />
-    <ClCompile Include="..\..\..\contrib\zstd\common\zstd_trace.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\fse_compress.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\hist.c" />
     <ClCompile Include="..\..\..\contrib\zstd\compress\huf_compress.c" />

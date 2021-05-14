@@ -288,9 +288,6 @@
     <ClCompile Include="..\..\..\contrib\zstd\decompress\zstd_decompress_block.c">
       <Filter>zstd\decompress</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\contrib\zstd\common\zstd_trace.c">
-      <Filter>zstd\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\common\MessageLines.cpp">
       <Filter>common</Filter>
     </ClCompile>
