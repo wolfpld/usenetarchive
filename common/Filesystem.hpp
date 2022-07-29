@@ -19,7 +19,7 @@ void CopyCommonFiles( const std::string& source, const std::string& target );
 #ifdef _MSC_VER
 #  define stat64 _stat64
 #endif
-#ifdef __CYGWIN__
+#if defined __CYGWIN__ || defined __APPLE__
 #  define stat64 stat
 #endif
 
