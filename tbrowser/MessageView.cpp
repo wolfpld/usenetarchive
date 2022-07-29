@@ -202,7 +202,9 @@ void MessageView::Draw()
                 wattron( m_win, A_UNDERLINE );
                 break;
             case MessageLines::D_Italics:
+#  ifdef A_ITALIC
                 wattron( m_win, A_ITALIC );
+#  endif
                 break;
 #endif
             case MessageLines::D_Bold:
@@ -253,7 +255,9 @@ void MessageView::Draw()
                 wattroff( m_win, A_UNDERLINE );
                 break;
             case MessageLines::D_Italics:
+#  ifdef A_ITALIC
                 wattroff( m_win, A_ITALIC );
+#  endif
                 break;
 #endif
             case MessageLines::D_Bold:
