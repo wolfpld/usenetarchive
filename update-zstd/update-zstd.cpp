@@ -195,7 +195,7 @@ int main( int argc, char** argv )
             if( idx == -1 )
             {
                 const auto raw = zview.Raw( i );
-                RawImportMeta packet = { offset, raw.size, raw.compressedSize };
+                RawImportMeta packet = { offset, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
                 fwrite( &packet, 1, sizeof( RawImportMeta ), zmeta );
 
                 fwrite( raw.ptr, 1, raw.compressedSize, zdata );
@@ -231,7 +231,7 @@ int main( int argc, char** argv )
         for( int i=0; i<ssize; i++ )
         {
             const auto raw = zview.Raw( i );
-            RawImportMeta packet = { offset, raw.size, raw.compressedSize };
+            RawImportMeta packet = { offset, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
             fwrite( &packet, 1, sizeof( RawImportMeta ), zmeta );
 
             fwrite( raw.ptr, 1, raw.compressedSize, zdata );

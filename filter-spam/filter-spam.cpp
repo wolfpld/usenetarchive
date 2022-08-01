@@ -325,7 +325,7 @@ int main( int argc, char** argv )
 
             fwrite( raw.ptr, 1, raw.compressedSize, ddata );
 
-            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+            RawImportMeta metaPacket = { offset, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
             offset += raw.compressedSize;
 
@@ -338,7 +338,7 @@ int main( int argc, char** argv )
                     exit( 1 );
                 }
 
-                RawImportMeta zpacket = { zoffset, zraw.size, zraw.compressedSize };
+                RawImportMeta zpacket = { zoffset, uint32_t( zraw.size ), uint32_t( zraw.compressedSize ) };
                 fwrite( &zpacket, 1, sizeof( RawImportMeta ), dzmeta );
 
                 fwrite( zraw.ptr, 1, zraw.compressedSize, dzdata );

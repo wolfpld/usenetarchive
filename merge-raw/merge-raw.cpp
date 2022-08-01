@@ -90,7 +90,7 @@ int main( int argc, char** argv )
                 added++;
                 const auto raw = mview2.Raw( i );
                 fwrite( raw.ptr, 1, raw.compressedSize, data3 );
-                RawImportMeta metaPacket = { offset1, raw.size, raw.compressedSize };
+                RawImportMeta metaPacket = { offset1, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
                 fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta3 );
                 offset1 += raw.compressedSize;
             }

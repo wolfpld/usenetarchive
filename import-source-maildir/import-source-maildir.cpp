@@ -75,7 +75,7 @@ void RecursivePack( const char* dir )
 
             fwrite( compressed, 1, csize, data );
 
-            RawImportMeta metaPacket = { offset, size, csize };
+            RawImportMeta metaPacket = { offset, uint32_t( size ), uint32_t( csize ) };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
             offset += csize;
         }

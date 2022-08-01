@@ -125,7 +125,7 @@ int main( int argc, char** argv )
             auto raw = mview.Raw( order[i] );
             fwrite( raw.ptr, 1, raw.compressedSize, ddata );
 
-            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+            RawImportMeta metaPacket = { offset, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
             offset += raw.compressedSize;
         }
@@ -159,7 +159,7 @@ int main( int argc, char** argv )
             auto raw = mview.Raw( order[i] );
             fwrite( raw.ptr, 1, raw.compressedSize, ddata );
 
-            RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+            RawImportMeta metaPacket = { offset, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
             offset += raw.compressedSize;
         }

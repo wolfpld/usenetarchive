@@ -96,7 +96,7 @@ int main( int argc, char** argv )
 
             fwrite( compressed, 1, csize, data );
 
-            RawImportMeta metaPacket = { offset, post.size(), csize };
+            RawImportMeta metaPacket = { offset, uint32_t( post.size() ), uint32_t( csize ) };
             fwrite( &metaPacket, 1, sizeof( RawImportMeta ), meta );
             offset += csize;
 

@@ -403,7 +403,7 @@ int main( int argc, char** argv )
 
         fwrite( compressed, 1, csize, ddata );
 
-        RawImportMeta packet = { offset, size, csize };
+        RawImportMeta packet = { offset, uint32_t( size ), uint32_t( csize ) };
         fwrite( &packet, 1, sizeof( RawImportMeta ), dmeta );
         offset += csize;
 

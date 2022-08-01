@@ -22,7 +22,7 @@ static void Write( const MessageView& mview, uint32_t i, FILE* ddata, FILE* dmet
     const auto raw = mview.Raw( i );
     fwrite( raw.ptr, 1, raw.compressedSize, ddata );
 
-    RawImportMeta metaPacket = { offset, raw.size, raw.compressedSize };
+    RawImportMeta metaPacket = { offset, uint32_t( raw.size ), uint32_t( raw.compressedSize ) };
     fwrite( &metaPacket, 1, sizeof( RawImportMeta ), dmeta );
     offset += raw.compressedSize;
 }
