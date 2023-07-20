@@ -1,6 +1,7 @@
 #ifndef __FILESYSTEM_HPP__
 #define __FILESYSTEM_HPP__
 
+#include <stdint.h>
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
