@@ -1,13 +1,13 @@
 #include <algorithm>
 #include <assert.h>
+#include <lz4.h>
+#include <lz4hc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 
-#include "../contrib/lz4/lz4.h"
-#include "../contrib/lz4/lz4hc.h"
 #include "../contrib/lzma/7z.h"
 #include "../contrib/lzma/7zCrc.h"
 #include "../contrib/lzma/7zFile.h"

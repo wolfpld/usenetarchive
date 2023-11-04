@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <lz4.h>
+#include <lz4hc.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -9,8 +11,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "../contrib/lz4/lz4.h"
-#include "../contrib/lz4/lz4hc.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/RawImportMeta.hpp"

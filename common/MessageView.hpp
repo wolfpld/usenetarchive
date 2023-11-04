@@ -2,10 +2,9 @@
 #define __MESSAGEVIEW_HPP__
 
 #include <assert.h>
+#include <lz4.h>
 #include <stdlib.h>
 #include <string>
-
-#include "../contrib/lz4/lz4.h"
 
 #include "ExpandingBuffer.hpp"
 #include "FileMap.hpp"

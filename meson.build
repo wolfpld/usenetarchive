@@ -60,11 +60,6 @@ zstd_src = [
     'contrib/zstd/dictBuilder/zdict.c',
 ]
 
-lz4_src = [
-    'contrib/lz4/lz4.c',
-    'contrib/lz4/lz4hc.c',
-]
-
 terminator_src = [
     'contrib/kyotocabinet/kccachedb.cc',
     'contrib/kyotocabinet/kccompare.cc',
@@ -128,7 +123,6 @@ mongoose_src = [
 common_lib = static_library('common', common_src)
 uat_lib = static_library('uat', libuat_src)
 zstd_lib = static_library('zstd', zstd_src)
-lz4_lib = static_library('lz4', lz4_src)
 terminator_lib = static_library('terminator', terminator_src)
 lzma_lib = static_library('lzma', lzma_src)
 ini_lib = static_library('ini', ini_src)
@@ -140,6 +134,7 @@ openssl_dep = dependency('openssl')
 icu_dep = dependency('icu-uc')
 ncurses_dep = dependency('ncursesw')
 gmime_dep = dependency('gmime-2.6')
+lz4_dep = dependency('liblz4')
 
 
 connectivity = executable(
@@ -147,7 +142,8 @@ connectivity = executable(
     'connectivity/connectivity.cpp',
     'contrib/inn/date.cpp',
     include_directories: 'contrib/inn',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -155,7 +151,8 @@ connectivity = executable(
 export_messages = executable(
     'export-messages',
     'export-messages/export-messages.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -163,7 +160,8 @@ export_messages = executable(
 extract_msgid = executable(
     'extract-msgid',
     'extract-msgid/extract-msgid.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -172,7 +170,8 @@ extract_msgmeta = executable(
     'extract-msgmeta',
     'extract-msgmeta/extract-msgmeta.cpp',
     'extract-msgmeta/tin.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -180,7 +179,8 @@ extract_msgmeta = executable(
 filter_newsgroups = executable(
     'filter-newsgroups',
     'filter-newsgroups/filter-newsgroups.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -188,7 +188,8 @@ filter_newsgroups = executable(
 filter_spam = executable(
     'filter-spam',
     'filter-spam/filter-spam.cpp',
-    link_with: [common_lib, lz4_lib, terminator_lib, zstd_lib],
+    link_with: [common_lib, terminator_lib, zstd_lib],
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -213,7 +214,8 @@ google_groups = executable(
 import_source_maildir = executable(
     'import-source-maildir',
     'import-source-maildir/import-source-maildir.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -221,7 +223,8 @@ import_source_maildir = executable(
 import_source_maildir_7z = executable(
     'import-source-maildir-7z',
     'import-source-maildir-7z/import-source-maildir-7z.cpp',
-    link_with: [common_lib, lz4_lib, lzma_lib],
+    link_with: [common_lib, lzma_lib],
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -229,7 +232,8 @@ import_source_maildir_7z = executable(
 import_source_mbox = executable(
     'import-source-mbox',
     'import-source-mbox/import-source-mbox.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -237,7 +241,8 @@ import_source_mbox = executable(
 kill_duplicates = executable(
     'kill-duplicates',
     'kill-duplicates/kill-duplicates.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -253,8 +258,8 @@ lexdist = executable(
 lexicon = executable(
     'lexicon',
     'lexicon/lexicon.cpp',
-    link_with: [common_lib, lz4_lib],
-    dependencies: icu_dep,
+    link_with: common_lib,
+    dependencies: [icu_dep, lz4_dep],
     install: true,
     install_dir: 'lib/uat'
 )
@@ -311,7 +316,8 @@ query = executable(
 query_raw = executable(
     'query-raw',
     'query-raw/query-raw.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -327,7 +333,8 @@ relative_complement = executable(
 repack_lz4 = executable(
     'repack-lz4',
     'repack-lz4/repack-lz4.cpp',
-    link_with: [common_lib, lz4_lib, zstd_lib],
+    link_with: [common_lib, zstd_lib],
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -336,7 +343,8 @@ repack_zstd = executable(
     'repack-zstd',
     'repack-zstd/repack-zstd.cpp',
     cpp_args: ['-DZDICT_STATIC_LINKING_ONLY', '-DZSTD_MULTITHREAD'],
-    link_with: [common_lib, lz4_lib, zstd_lib],
+    link_with: [common_lib, zstd_lib],
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -344,7 +352,8 @@ repack_zstd = executable(
 sort = executable(
     'sort',
     'sort/sort.cpp',
-    link_with: [common_lib, lz4_lib],
+    link_with: common_lib,
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -391,8 +400,9 @@ uat = executable(
 update_zstd = executable(
     'update-zstd',
     'update-zstd/update-zstd.cpp',
-    link_with: [common_lib, lz4_lib, zstd_lib],
+    link_with: [common_lib, zstd_lib],
     cpp_args: '-DZDICT_STATIC_LINKING_ONLY',
+    dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
 )
@@ -400,8 +410,8 @@ update_zstd = executable(
 utf8ize = executable(
     'utf8ize',
     'utf8ize/utf8ize.cpp',
-    link_with: [common_lib, lz4_lib],
-    dependencies: gmime_dep,
+    link_with: common_lib,
+    dependencies: [gmime_dep, lz4_dep],
     install: true,
     install_dir: 'lib/uat'
 )
