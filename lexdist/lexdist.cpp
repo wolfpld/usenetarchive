@@ -158,7 +158,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -184,7 +184,7 @@ int main( int argc, char** argv )
     printf( "\nWord length histogram\n" );
     for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
     {
-        printf( "%2i: %i\n", i, byLen[i].size() );
+        printf( "%2i: %zu\n", i, byLen[i].size() );
     }
 
     const auto cpus = System::CPUCores();
@@ -211,7 +211,7 @@ int main( int argc, char** argv )
                     if( j >= size ) break;
                     if( ( j & 0x1FF ) == 0 )
                     {
-                        printf( "%2i: %i/%i\r", i, j, size );
+                        printf( "%2i: %i/%zu\r", i, j, size );
                         fflush( stdout );
                     }
 
@@ -253,7 +253,7 @@ int main( int argc, char** argv )
                     {
                         if( v.count >= tmc )
                         {
-                            assert( v.offset & 0xC0000000 == 0 );
+                            assert( ( v.offset & 0xC0000000 ) == 0 );
                             data[idx].emplace_back( v.offset | ( v.distance << 30 ) );
                         }
                     }
@@ -261,7 +261,7 @@ int main( int argc, char** argv )
             } );
         }
         tasks.Sync();
-        printf( "%2i: %i/%i\n", i, size, size );
+        printf( "%2i: %zu/%zu\n", i, size, size );
     }
 
     FILE* fdata = fopen( ( base + "lexdist" ).c_str(), "wb" );

@@ -69,7 +69,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -125,7 +125,7 @@ int main( int argc, char** argv )
     fclose( dmeta );
     fclose( ddata );
 
-    printf( "Processed %i MsgIDs. Unique: %i, dupes: %i, broken: %i\n", size, cntu, cntd, cntb );
+    printf( "Processed %zu MsgIDs. Unique: %i, dupes: %i, broken: %i\n", size, cntu, cntd, cntb );
 
     return 0;
 }

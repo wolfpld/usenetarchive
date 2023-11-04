@@ -170,7 +170,7 @@ void SearchView::Draw()
     else
     {
         wattron( m_win, COLOR_PAIR( 2 ) | A_BOLD );
-        wprintw( m_win, " %i", m_result.results.size() );
+        wprintw( m_win, " %zu", m_result.results.size() );
         wattroff( m_win, COLOR_PAIR( 2 ) | A_BOLD );
         wprintw( m_win, " results for query: " );
         wattron( m_win, A_BOLD );
@@ -376,7 +376,7 @@ void SearchView::FillPreview( int idx )
         }
     }
 
-    if( lines.size() == 0 )
+    if( lines.empty() )
     {
         m_preview.emplace_back();
         return;

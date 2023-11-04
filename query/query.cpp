@@ -39,8 +39,8 @@ void PrintHelp()
 
 void Info( const Archive& archive )
 {
-    printf( "Number of messages: %i\n", archive.NumberOfMessages() );
-    printf( "Number of toplevel messages: %i\n", archive.NumberOfTopLevel() );
+    printf( "Number of messages: %zu\n", archive.NumberOfMessages() );
+    printf( "Number of toplevel messages: %zu\n", archive.NumberOfTopLevel() );
 }
 
 void BadArg()
@@ -94,7 +94,7 @@ int main( int argc, char** argv )
         }
         else
         {
-            printf( "Invalid message index (max %i).\n", archive->NumberOfMessages() );
+            printf( "Invalid message index (max %zu).\n", archive->NumberOfMessages() );
         }
     }
     else if( strcmp( argv[0], "toplevel" ) == 0 )
@@ -260,7 +260,7 @@ int main( int argc, char** argv )
         auto& data = results.results;
         auto t1 = std::chrono::high_resolution_clock::now();
         printf( "Query time %fms.\n", std::chrono::duration_cast<std::chrono::microseconds>( t1 - t0 ).count() / 1000.f );
-        printf( "Found %i messages.\n", data.size() );
+        printf( "Found %zu messages.\n", data.size() );
         if( !data.empty() )
         {
             bool first = true;
@@ -288,7 +288,7 @@ int main( int argc, char** argv )
 
         if( d1.first )
         {
-            printf( "%.*s\n", d1.second, d1.first );
+            printf( "%.*s\n", (int)d1.second, d1.first );
         }
         else
         {
@@ -296,7 +296,7 @@ int main( int argc, char** argv )
         }
         if( d2.first )
         {
-            printf( "\n%.*s\n", d2.second, d2.first );
+            printf( "\n%.*s\n", (int)d2.second, d2.first );
         }
         else
         {
@@ -304,7 +304,7 @@ int main( int argc, char** argv )
         }
         if( d3.first )
         {
-            printf( "\n%.*s\n", d3.second, d3.first );
+            printf( "\n%.*s\n", (int)d3.second, d3.first );
         }
         else
         {
@@ -321,7 +321,6 @@ int main( int argc, char** argv )
         }
 
         const char* host = argc == 1 ? nullptr : argv[1];
-        const auto hlen = host ? strlen( host ) : 0;
 
         const auto num = archive->NumberOfMessages();
         const auto cpus = System::CPUCores();
@@ -331,7 +330,7 @@ int main( int argc, char** argv )
 
         for( int t=0; t<cpus; t++ )
         {
-            tasks.Queue( [&cnt, num, &latest, t, &archive, &desc, &base] {
+            tasks.Queue( [&cnt, num, &latest, t, &desc, &base] {
                 ExpandingBuffer eb;
                 ZMessageView zview( base + "/zmeta", base + "/zdata", base + "/zdict" );
                 for(;;)

@@ -56,7 +56,7 @@ int main( int argc, char** argv )
     FILE* meta3 = fopen( metadstfn.c_str(), "wb" );
     FILE* data3 = fopen( datadstfn.c_str(), "wb" );
 
-    printf( "Src1 size: %i. Src2 size: %i.\n", mview1.Size(), mview2.Size() );
+    printf( "Src1 size: %zu. Src2 size: %zu.\n", mview1.Size(), mview2.Size() );
     fflush( stdout );
 
     uint32_t added = 0;
@@ -67,7 +67,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x1FFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -88,7 +88,7 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\n%i posts checked. %i unique, %i excluded.\n", size, added, dupes );
+    printf( "\n%zu posts checked. %i unique, %i excluded.\n", size, added, dupes );
 
     fclose( meta3 );
     fclose( data3 );

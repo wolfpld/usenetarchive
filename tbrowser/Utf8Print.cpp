@@ -10,7 +10,7 @@ void utfprint( WINDOW* win, const char* str )
         {
             if( *end <= 0x1F || *end == 0x7F )
             {
-                wprintw( win, "%.*s", end - str, str );
+                wprintw( win, "%.*s", int( end - str ), str );
                 waddch( win, ' ' );
                 end++;
                 str = end;
@@ -27,7 +27,7 @@ void utfprint( WINDOW* win, const char* str )
     }
     if( end != str )
     {
-        wprintw( win, "%.*s", end - str, str );
+        wprintw( win, "%.*s", int( end - str ), str );
     }
 }
 
@@ -40,7 +40,7 @@ void utfprint( WINDOW* win, const char* str, const char* _end )
         {
             if( *end <= 0x1F || *end == 0x7F )
             {
-                wprintw( win, "%.*s", end - str, str );
+                wprintw( win, "%.*s", int( end - str ), str );
                 waddch( win, ' ' );
                 end++;
                 str = end;
@@ -57,6 +57,6 @@ void utfprint( WINDOW* win, const char* str, const char* _end )
     }
     if( end != str )
     {
-        wprintw( win, "%.*s", end - str, str );
+        wprintw( win, "%.*s", int( end - str ), str );
     }
 }

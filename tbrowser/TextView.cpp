@@ -106,7 +106,7 @@ void TextView::Draw()
             waddch( m_win, '+' );
             wattroff( m_win, COLOR_PAIR( 10 ) );
         }
-        wprintw( m_win, "%.*s", end - start, start );
+        wprintw( m_win, "%.*s", int( end - start ), start );
     }
     wattron( m_win, COLOR_PAIR( 6 ) );
     for( ; i<h; i++ )

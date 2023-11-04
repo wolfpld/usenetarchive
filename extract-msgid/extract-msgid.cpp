@@ -58,7 +58,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x1FFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -109,7 +109,7 @@ int main( int argc, char** argv )
         rawmsgidvec.emplace_back( tmp );
     }
 
-    printf( "Processed %i MsgIDs.\n", size );
+    printf( "Processed %zu MsgIDs.\n", size );
 
     printf( "Building code book...\n" );
     fflush( stdout );
@@ -122,7 +122,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 

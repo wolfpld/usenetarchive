@@ -11,8 +11,8 @@ class Slab
 public:
     Slab()
         : m_ptr( new char[BlockSize] )
-        , m_buffer( { m_ptr } )
         , m_offset( 0 )
+        , m_buffer( { m_ptr } )
     {}
 
     ~Slab()

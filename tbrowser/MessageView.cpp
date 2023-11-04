@@ -288,7 +288,7 @@ void MessageView::Draw()
     tmp[w] = '\0';
     wmove( m_win, h-1, 0 );
     wattron( m_win, COLOR_PAIR( 1 ) );
-    wprintw( m_win, tmp );
+    wprintw( m_win, "%s", tmp );
     wmove( m_win, h-1, 0 );
     if( m_vertical )
     {
@@ -325,7 +325,7 @@ void MessageView::Draw()
     }
     len = strlen( tmp );
     wmove( m_win, h-1, w-len );
-    wprintw( m_win, tmp );
+    wprintw( m_win, "%s", tmp );
     wattroff( m_win, COLOR_PAIR( 11 ) | A_BOLD );
 
     wnoutrefresh( m_win );
@@ -380,7 +380,7 @@ void MessageView::PrintRot13( const char* start, const char* end )
             dst += cpl;
         }
     }
-    wprintw( m_win, "%.*s", end - start, tmp );
+    wprintw( m_win, "%.*s", int( end - start ), tmp );
 }
 
 ViewSplit MessageView::NextViewSplit()

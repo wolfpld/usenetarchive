@@ -307,7 +307,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -408,7 +408,7 @@ int main( int argc, char** argv )
         ss.str( "" );
     }
 
-    printf( "Processed %i files.\n", size );
+    printf( "Processed %zu files.\n", size );
 
     fclose( dmeta );
     fclose( ddata );

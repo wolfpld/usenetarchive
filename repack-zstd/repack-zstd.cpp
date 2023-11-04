@@ -87,14 +87,14 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
         auto raw = mview.Raw( i );
         if( !limitHit && total + raw.size >= ( 1U << dpower ) )
         {
-            printf( "Limiting sample size to %i MB - %i samples in, %i samples out.\n", total >> 20, i, size - i );
+            printf( "Limiting sample size to %zu MB - %i samples in, %zu samples out.\n", total >> 20, i, size - i );
             samples = i;
             limitHit = true;
         }
@@ -132,7 +132,7 @@ int main( int argc, char** argv )
     unlink( buf1fn.c_str() );
     unlink( buf2fn.c_str() );
 
-    printf( "Dict size: %i\n", realDictSize );
+    printf( "Dict size: %zu\n", realDictSize );
 
     auto zdict = ZSTD_createCDict( dict, realDictSize, zlevel );
 
@@ -173,7 +173,7 @@ int main( int argc, char** argv )
                 cntmtx.unlock();
                 if( ( c & 0x3FF ) == 0 )
                 {
-                    printf( "%i/%i\r", c, size );
+                    printf( "%i/%zu\r", c, size );
                     fflush( stdout );
                 }
 
@@ -215,7 +215,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 

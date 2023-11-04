@@ -95,7 +95,7 @@ int main( int argc, char** argv )
     std::vector<std::unique_ptr<Archive>> arch;
     for( auto& v : archives )
     {
-        printf( "%i/%i\r", ++i, archives.size() );
+        printf( "%i/%zu\r", ++i, archives.size() );
         fflush( stdout );
         auto ptr = Archive::Open( v );
         if( !ptr )
@@ -126,7 +126,7 @@ int main( int argc, char** argv )
                 auto pos = archives[i].rfind( '/' );
                 if( pos == std::string::npos )
                 {
-                    auto pos = archives[i].rfind( '\\' );
+                    pos = archives[i].rfind( '\\' );
                 }
                 if( pos == std::string::npos )
                 {
@@ -180,7 +180,7 @@ int main( int argc, char** argv )
             {
                 if( ( cnt++ & 0x3FFF ) == 0 )
                 {
-                    printf( "%i/%i\r", cnt, count );
+                    printf( "%zu/%zu\r", cnt, count );
                     fflush( stdout );
                 }
 
@@ -214,7 +214,7 @@ int main( int argc, char** argv )
         {
             if( ( cnt++ & 0x3FFF ) == 0 )
             {
-                printf( "%i/%i\r", cnt, unique );
+                printf( "%zu/%zu\r", cnt, unique );
                 fflush( stdout );
             }
 
@@ -243,7 +243,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FFFF ) == 0 )
             {
-                printf( "%i/%i\r", i, unique );
+                printf( "%i/%zu\r", i, unique );
                 fflush( stdout );
             }
 
@@ -364,7 +364,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "%i/%i\r", i, unique );
+                printf( "%i/%zu\r", i, unique );
                 fflush( stdout );
             }
 
@@ -436,7 +436,7 @@ int main( int argc, char** argv )
         fclose( meta );
     }
 
-    printf( "\nIndirect links: %i\n", indirect.size() );
+    printf( "\nIndirect links: %zu\n", indirect.size() );
 
     {
         struct DenseData

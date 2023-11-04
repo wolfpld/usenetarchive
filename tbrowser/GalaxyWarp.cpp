@@ -274,7 +274,7 @@ void GalaxyWarp::Draw()
         wattroff( m_win, COLOR_PAIR( 2 ) );
         if( current ) wattron( m_win, COLOR_PAIR( 4 ) );
         if( !available ) wattron( m_win, COLOR_PAIR( 5 ) );
-        wprintw( m_win, "%.*s", end - name, name );
+        wprintw( m_win, "%.*s", int( end - name ), name );
 
         if( available )
         {
@@ -291,7 +291,7 @@ void GalaxyWarp::Draw()
         {
             end = utfendcrlfl( desc, len );
             if( available ) wattron( m_win, COLOR_PAIR( 2 ) );
-            mvwprintw( m_win, 4+i*2, w-len-1, "%.*s", end - desc, desc );
+            mvwprintw( m_win, 4+i*2, w-len-1, "%.*s", int( end - desc ), desc );
         }
         if( !available ) wattroff( m_win, COLOR_PAIR( 5 ) );
         if( m_cursor == line )

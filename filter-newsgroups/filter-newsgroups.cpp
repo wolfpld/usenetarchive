@@ -62,7 +62,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -120,8 +120,8 @@ int main( int argc, char** argv )
     fclose( dmeta );
     fclose( ddata );
 
-    printf( "Processed %i messages. Valid newsgroup: %i, bogus messages: %i\n", size, cntgood, size - cntgood );
-    printf( "Saved %i KB (uncompressed), %i KB (compressed)\n", saveu / 1024, savec / 1024 );
+    printf( "Processed %zu messages. Valid newsgroup: %i, bogus messages: %zu\n", size, cntgood, size - cntgood );
+    printf( "Saved %zu KB (uncompressed), %zu KB (compressed)\n", saveu / 1024, savec / 1024 );
 
     return 0;
 }

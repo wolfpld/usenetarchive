@@ -44,7 +44,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x1FFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 

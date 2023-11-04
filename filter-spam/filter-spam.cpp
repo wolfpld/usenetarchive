@@ -182,7 +182,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0xFF ) == 0 )
             {
-                printf( "%i/%i\r", i, size );
+                printf( "%i/%zu\r", i, size );
                 fflush( stdout );
             }
 
@@ -231,7 +231,6 @@ int main( int argc, char** argv )
                         scores.reserve( toCheck );
                         for( int j=0; j<toCheck; j++ )
                         {
-                            const auto craw = mview.Raw( i+j );
                             auto post = mview[i+j];
                             auto score = classifier->Predict( post );
                             if( score < threadThreshold )
@@ -258,7 +257,7 @@ int main( int argc, char** argv )
 
         if( !quiet )
         {
-            printf( "\n%i messages marked as spam. Killed:\n", data.size() );
+            printf( "\n%zu messages marked as spam. Killed:\n", data.size() );
         }
 
         uint64_t offset = 0;
@@ -353,7 +352,7 @@ int main( int argc, char** argv )
 
         delete zview;
 
-        printf( "\nKilled %i messages.\nSaved %i KB (uncompressed), %i KB (compressed)\n", cntbad, saveu / 1024, savec / 1024 );
+        printf( "\nKilled %i messages.\nSaved %zu KB (uncompressed), %zu KB (compressed)\n", cntbad, saveu / 1024, savec / 1024 );
     }
     else
     {
@@ -422,12 +421,10 @@ int main( int argc, char** argv )
             visited.emplace( unpack );
 
             auto post = mview[idx];
-            auto raw = mview.Raw( idx );
-
             time_t date = *conn[idx];
             auto lt = localtime( &date );
             char buf[64];
-            auto dlen = strftime( buf, 64, "%F %R", lt );
+            strftime( buf, 64, "%F %R", lt );
 
             printf("\033[2J\033[0;0H");
 

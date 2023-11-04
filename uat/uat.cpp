@@ -52,7 +52,7 @@ static const Tool tools[] = {
 
 void PrintHelp()
 {
-    printf( s_help );
+    printf( "%s", s_help );
 
     for( auto& tool : tools )
     {

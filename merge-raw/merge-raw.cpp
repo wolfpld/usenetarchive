@@ -64,7 +64,7 @@ int main( int argc, char** argv )
         const MetaView<uint32_t, uint8_t> mid2( base2 + "midmeta", base2 + "middata" );
         StringCompress compress2( base2 + "msgid.codebook" );
 
-        printf( "Src1 size: %i. Src2 size: %i.\n", mview1.Size(), mview2.Size() );
+        printf( "Src1 size: %zu. Src2 size: %zu.\n", mview1.Size(), mview2.Size() );
         fflush( stdout );
 
         uint32_t added = 0;
@@ -75,7 +75,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x1FFF ) == 0 )
             {
-                printf( "%i/%i\r", i, size2 );
+                printf( "%i/%zu\r", i, size2 );
                 fflush( stdout );
             }
 
@@ -96,7 +96,7 @@ int main( int argc, char** argv )
             }
         }
 
-        printf( "%i posts checked. %i added, %i dupes. %i unique in src1.\n", size2, added, dupes, size1 - dupes );
+        printf( "%zu posts checked. %i added, %i dupes. %zu unique in src1.\n", size2, added, dupes, size1 - dupes );
     }
 
     fclose( meta3 );

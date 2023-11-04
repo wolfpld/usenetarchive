@@ -77,7 +77,7 @@ int main( int argc, char** argv )
                 if( j >= size ) break;
                 if( ( j & 0x3FF ) == 0 )
                 {
-                    printf( "%i/%i\r", j, size );
+                    printf( "%i/%zu\r", j, size );
                     fflush( stdout );
                 }
 
@@ -98,7 +98,7 @@ int main( int argc, char** argv )
         } );
     }
     tasks.Sync();
-    printf( "%i/%i\n", size, size );
+    printf( "%zu/%zu\n", size, size );
 
     FILE* fmeta = fopen( metafn.c_str(), "wb" );
     FILE* fdata = fopen( datafn.c_str(), "wb" );
@@ -108,7 +108,7 @@ int main( int argc, char** argv )
     {
         if( ( idx & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", idx, size );
+            printf( "%zu/%zu\r", idx, size );
             fflush( stdout );
         }
 
@@ -118,7 +118,7 @@ int main( int argc, char** argv )
         fwrite( &metaPacket, 1, sizeof( RawImportMeta ), fmeta );
         offset += data[idx].compressedSize;
     }
-    printf( "%i messages processed.\n", size );
+    printf( "%zu messages processed.\n", size );
 
     fclose( fmeta );
     fclose( fdata );

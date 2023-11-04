@@ -76,7 +76,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -110,7 +110,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -289,7 +289,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -314,7 +314,7 @@ int main( int argc, char** argv )
         }
     }
 
-    printf( "\nTop level messages: %i\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nTime traveling mesages: %i\nReference loops: %i\n", toplevel.size(), broken, baddate, recdate, timetravel, loopcnt );
+    printf( "\nTop level messages: %zu\nMalformed references: %i\nUnparsable date fields: %i (%i recovered)\nTime traveling mesages: %i\nReference loops: %i\n", toplevel.size(), broken, baddate, recdate, timetravel, loopcnt );
 
     printf( "Sorting top level...\n" );
     fflush( stdout );
@@ -324,7 +324,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
         if( !data[i].children.empty() )
@@ -373,7 +373,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x1FFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -392,7 +392,7 @@ int main( int argc, char** argv )
     fclose( cdata );
     fclose( cmeta );
 
-    printf( "%i/%i\n", size, size );
+    printf( "%zu/%zu\n", size, size );
 
     delete[] data;
     return 0;

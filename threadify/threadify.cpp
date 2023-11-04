@@ -146,7 +146,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0xFFF ) == 0 )
             {
-                printf( "%i/%i\r", i, size );
+                printf( "%i/%zu\r", i, size );
                 fflush( stdout );
             }
             toplevel.push_back( data[i] );
@@ -162,7 +162,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "%i/%i\r", i, size );
+                printf( "%i/%zu\r", i, size );
                 fflush( stdout );
             }
             auto ptr = conn[i];
@@ -199,7 +199,7 @@ int main( int argc, char** argv )
         {
             if( ( j & 0x3FF ) == 0 )
             {
-                printf( "%i/%i\r", j, topsize );
+                printf( "%i/%zu\r", j, topsize );
                 fflush( stdout );
             }
 
@@ -302,7 +302,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "%i/%i\r", i, size );
+                printf( "%i/%zu\r", i, size );
                 fflush( stdout );
             }
 
@@ -332,7 +332,7 @@ int main( int argc, char** argv )
                     if( j >= topsize ) break;
                     if( ( j & 0x1F ) == 0 )
                     {
-                        printf( "%i/%i\r", j, topsize );
+                        printf( "%i/%zu\r", j, topsize );
                         fflush( stdout );
                     }
 
@@ -459,7 +459,7 @@ int main( int argc, char** argv )
         tasks.Sync();
         std::sort( found.begin(), found.end(), [] ( const auto& l, const auto& r ) { return l.first < r.first; } );
     }
-    printf( "%i/%i\n", topsize, topsize );
+    printf( "%zu/%zu\n", topsize, topsize );
 
     robin_hood::unordered_flat_set<uint32_t> bad;
 
@@ -514,7 +514,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x1FFF ) == 0 )
             {
-                printf( "%i/%i\r", i, size );
+                printf( "%i/%zu\r", i, size );
                 fflush( stdout );
             }
 

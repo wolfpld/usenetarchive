@@ -135,7 +135,7 @@ int main( int argc, char** argv )
                 cntmtx.unlock();
                 if( ( c & 0x3FF ) == 0 )
                 {
-                    printf( "%i/%i\r", c, usize );
+                    printf( "%i/%zu\r", c, usize );
                     fflush( stdout );
                 }
 

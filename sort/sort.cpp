@@ -118,7 +118,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "LZ4 %i/%i\r", i, size );
+                printf( "LZ4 %i/%zu\r", i, size );
                 fflush( stdout );
             }
 
@@ -152,7 +152,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "zstd %i/%i\r", i, size );
+                printf( "zstd %i/%zu\r", i, size );
                 fflush( stdout );
             }
 
@@ -173,7 +173,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0xFFF ) == 0 )
             {
-                printf( "toplevel %i/%i\r", i, toplevel.DataSize() );
+                printf( "toplevel %i/%zu\r", i, toplevel.DataSize() );
                 fflush( stdout );
             }
             fwrite( &revtop[i], 1, sizeof( uint32_t ), dst );
@@ -190,7 +190,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "conn %i/%i\r", i, size );
+                printf( "conn %i/%zu\r", i, size );
                 fflush( stdout );
             }
             fwrite( &offset, 1, sizeof( offset ), meta );
@@ -221,7 +221,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0xFFF ) == 0 )
             {
-                printf( "midmeta %i/%i\r", i, size );
+                printf( "midmeta %i/%zu\r", i, size );
                 fflush( stdout );
             }
             fwrite( midmeta + order[i], 1, sizeof( uint32_t ), dst );
@@ -238,7 +238,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0xFFF ) == 0 )
             {
-                printf( "midhash %i/%i\r", i, hsize );
+                printf( "midhash %i/%zu\r", i, hsize );
                 fflush( stdout );
             }
             if( midhash[i*2] > 0 )
@@ -266,7 +266,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "lexdata %i/%i\r", i, lexmeta.DataSize() );
+                printf( "lexdata %i/%zu\r", i, lexmeta.DataSize() );
                 fflush( stdout );
             }
             auto meta = lexmeta[i];
@@ -291,7 +291,7 @@ int main( int argc, char** argv )
         {
             if( ( i & 0x3FF ) == 0 )
             {
-                printf( "strmeta %i/%i\r", i, size );
+                printf( "strmeta %i/%zu\r", i, size );
                 fflush( stdout );
             }
             fwrite( strmeta + order[i] * 3, 1, sizeof( uint32_t ) * 3, dst );

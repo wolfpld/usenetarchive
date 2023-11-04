@@ -41,7 +41,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x1FFF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -95,7 +95,7 @@ int main( int argc, char** argv )
     {
         dt += v.second.lexdata * sizeof( uint32_t ) * 2;
         ht += v.second.lexhit;
-        fprintf( stderr, "%i\t%s\t(%i B data, %i B hits)\n", v.second.cnt, v.first, v.second.lexdata * sizeof( uint32_t ) * 2, v.second.lexhit );
+        fprintf( stderr, "%i\t%s\t(%zi B data, %i B hits)\n", v.second.cnt, v.first, v.second.lexdata * sizeof( uint32_t ) * 2, v.second.lexhit );
     }
 
     printf( "Total %iKB data, %iKB hits\n", dt / 1024, ht / 1024 );

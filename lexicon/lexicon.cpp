@@ -127,7 +127,7 @@ int main( int argc, char** argv )
     {
         if( ( i & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", i, size );
+            printf( "%i/%zu\r", i, size );
             fflush( stdout );
         }
 
@@ -255,7 +255,7 @@ int main( int argc, char** argv )
     {
         if( ( cnt & 0xFFF ) == 0 )
         {
-            printf( "%i/%i\r", cnt, wordNum );
+            printf( "%i/%zu\r", cnt, wordNum );
             fflush( stdout );
         }
 
@@ -346,7 +346,7 @@ int main( int argc, char** argv )
     {
         if( ( idx & 0x3FF ) == 0 )
         {
-            printf( "%i/%i\r", idx, dataSize );
+            printf( "%i/%zu\r", idx, dataSize );
             fflush( stdout );
         }
 

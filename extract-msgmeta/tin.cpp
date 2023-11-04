@@ -223,8 +223,8 @@ std::string GetUserName( const char* from )
         }
         std::string ret = str;
         replace( ret, "\\\"", 2, "\"", 1 );
-        replace( ret, "\\\(", 2, "(", 1 );
-        replace( ret, "\\\)", 2, ")", 1 );
+        replace( ret, "\\(", 2, "(", 1 );
+        replace( ret, "\\)", 2, ")", 1 );
         replace( ret, "\\\\", 2, "\\", 1 );
         return ret;
     }

@@ -151,7 +151,7 @@ void GalaxyOpen::Draw()
         wattroff( m_win, COLOR_PAIR( 2 ) );
         if( current ) wattron( m_win, COLOR_PAIR( 4 ) );
         if( !available ) wattron( m_win, COLOR_PAIR( 5 ) );
-        wprintw( m_win, "%.*s", end - name, name );
+        wprintw( m_win, "%.*s", int( end - name ), name );
 
         if( available )
         {
@@ -168,7 +168,7 @@ void GalaxyOpen::Draw()
         {
             end = utfendcrlfl( desc, len );
             if( available ) wattron( m_win, COLOR_PAIR( 2 ) );
-            mvwprintw( m_win, 3+i, w-len-1, "%.*s", end - desc, desc );
+            mvwprintw( m_win, 3+i, w-len-1, "%.*s", int( end - desc ), desc );
         }
         if( !available ) wattroff( m_win, COLOR_PAIR( 5 ) );
         if( m_cursor == line )
@@ -215,7 +215,7 @@ void GalaxyOpen::MoveCursor( int offset )
 
 void GalaxyOpen::FilterItems( const std::string& filter )
 {
-    if( filter == "" )
+    if( filter.empty() )
     {
         for( int i=0; i<m_filter.size(); i++ )
         {

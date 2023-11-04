@@ -232,12 +232,12 @@ void ChartView::Draw()
             for( int y=0; y<f; y++ )
             {
                 wmove( m_win, y0+1+ys-y-1, x0+1+x );
-                wprintw( m_win, Block[m_hires ? 0 : 1][7] );
+                wprintw( m_win, "%s", Block[m_hires ? 0 : 1][7] );
             }
             if( r > 0 )
             {
                 wmove( m_win, y0+1+ys-f-1, x0+1+x );
-                wprintw( m_win, Block[m_hires ? 0 : 1][r-1] );
+                wprintw( m_win, "%s", Block[m_hires ? 0 : 1][r-1] );
             }
         }
         else
@@ -248,14 +248,14 @@ void ChartView::Draw()
             for( int y=0; y<tf; y++ )
             {
                 wmove( m_win, y0+1+ys-y-1, x0+1+x );
-                wprintw( m_win, Block[m_hires ? 0 : 1][7] );
+                wprintw( m_win, "%s", Block[m_hires ? 0 : 1][7] );
             }
             wattroff( m_win, COLOR_PAIR( color ) );
             if( tr > 0 )
             {
                 wattron( m_win, COLOR_PAIR( 17 ) );
                 wmove( m_win, y0+1+ys-tf-1, x0+1+x );
-                wprintw( m_win, Block[m_hires ? 0 : 1][tr-1] );
+                wprintw( m_win, "%s", Block[m_hires ? 0 : 1][tr-1] );
                 wattroff( m_win, COLOR_PAIR( 17 ) );
                 tf++;
             }
@@ -263,12 +263,12 @@ void ChartView::Draw()
             for( int y=tf; y<f; y++ )
             {
                 wmove( m_win, y0+1+ys-y-1, x0+1+x );
-                wprintw( m_win, Block[m_hires ? 0 : 1][7] );
+                wprintw( m_win, "%s", Block[m_hires ? 0 : 1][7] );
             }
             if( r > 0 )
             {
                 wmove( m_win, y0+1+ys-f-1, x0+1+x );
-                wprintw( m_win, Block[m_hires ? 0 : 1][r-1] );
+                wprintw( m_win, "%s", Block[m_hires ? 0 : 1][r-1] );
             }
             wattroff( m_win, COLOR_PAIR( 7 ) );
             wattron( m_win, COLOR_PAIR( color ) );
@@ -407,7 +407,7 @@ void ChartView::Prepare()
         const time_t ts = uint32_t( i * sinv ) + tbegin;
         auto lt = localtime( &ts );
         char buf[16];
-        auto dlen = strftime( buf, 16, "%Y-%m", lt );
+        strftime( buf, 16, "%Y-%m", lt );
         memcpy( m_label[i].data, buf, 7 );
     }
 

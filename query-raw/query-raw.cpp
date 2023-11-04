@@ -87,7 +87,7 @@ int main( int argc, char** argv )
     if( mode == Mode::Info )
     {
         printf( "Raw archive %s\n", argv[1] );
-        printf( "  Number of posts: %i\n", size );
+        printf( "  Number of posts: %zu\n", size );
     }
     else if( mode == Mode::List )
     {
@@ -117,7 +117,7 @@ int main( int argc, char** argv )
         auto idx = atoi( argv[3] );
         if( idx < 0 || idx >= size )
         {
-            fprintf( stderr, "Index out of range: 0 <= %i < %i\n", idx, size );
+            fprintf( stderr, "Index out of range: 0 <= %i < %zu\n", idx, size );
             exit( 1 );
         }
         printf( "%s\n", mview[idx] );
