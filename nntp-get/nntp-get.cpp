@@ -1,15 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <vector>
 
 #include "Socket.hpp"
 
 #include "../common/Filesystem.hpp"
+#include "../common/ParseDate.hpp"
 #include "../common/String.hpp"
 
 enum { BufSize = 1024 * 1024 };
-char buf[BufSize];
+char buf[BufSize], buf2[BufSize];
+
+std::vector<const char*> cache;
+ParseDateStats stats;
+uint32_t droppedMessages = 0;
+
 
 static void Demangle( FILE* f, const char* buf, int size )
 {
@@ -28,7 +35,7 @@ static void Demangle( FILE* f, const char* buf, int size )
     }
 }
 
-static bool ReceiveMessage( Socket& sock, const std::string& dir, int article )
+static bool ReceiveMessage( Socket& sock, const std::string& dir, int article, time_t dateLimit )
 {
     auto ptr = buf;
     auto size = sock.Recv( ptr, BufSize - ( ptr - buf ) );
@@ -52,6 +59,31 @@ static bool ReceiveMessage( Socket& sock, const std::string& dir, int article )
 
     ptr = buf;
     while( *ptr++ != '\n' ) {}
+
+    if( dateLimit != 0 )
+    {
+        auto src = ptr;
+        auto dst = buf2;
+        while( src < ptr + len )
+        {
+            if( *src != '\r' )
+            {
+                *dst++ = *src++;
+            }
+            else
+            {
+                src++;
+            }
+        }
+        *dst = '\0';
+
+        auto date = ParseDate( buf2, stats, cache );
+        if( date < dateLimit )
+        {
+            droppedMessages++;
+            return true;
+        }
+    }
 
     if( !Exists( dir ) )
     {
@@ -77,11 +109,12 @@ static void die( Socket& sock )
 
 int main( int argc, char** argv )
 {
-    if( argc != 3 )
+    if( argc < 3 )
     {
-        fprintf( stderr, "USAGE: %s server input\n\n", argv[0] );
+        fprintf( stderr, "USAGE: %s server input [date-limit]\n\n", argv[0] );
         fprintf( stderr, "  Note: input should be a text file with one {group lastarticle} entry per line.\n" );
         fprintf( stderr, "  Note: The first downloaded article will be lastarticle+1.\n" );
+        fprintf( stderr, "  Note: If date-limit is specified (yyyy-mm-dd), only articles newer than that date will be downloaded.\n" );
         exit( 1 );
     }
 
@@ -101,6 +134,19 @@ int main( int argc, char** argv )
         groups.emplace_back( std::string( s, ptr ), atoi( ptr+1 ) );
     }
     fclose( in );
+
+    time_t dateLimit = 0;
+    if( argc > 3 )
+    {
+        struct tm tm = {};
+        strptime( argv[3], "%Y-%m-%d", &tm );
+        dateLimit = mktime( &tm );
+        if( dateLimit == -1 )
+        {
+            fprintf( stderr, "Invalid date format!\n" );
+            exit( 1 );
+        }
+    }
 
     Socket sock;
     sock.Connect( argv[1] );
@@ -125,13 +171,14 @@ int main( int argc, char** argv )
             die( sock );
         }
 
+        droppedMessages = 0;
         const int start = v.second + 1;
         int article = start;
         printf( "%s %i\r", v.first.c_str(), article );
         fflush( stdout );
         sprintf( tmp, "ARTICLE %i\r\n", article );
         sock.Send( tmp, strlen( tmp ) );
-        if( !ReceiveMessage( sock, v.first.c_str(), article ) )
+        if( !ReceiveMessage( sock, v.first.c_str(), article, dateLimit ) )
         {
             printf( "%s no new messages\n", v.first.c_str() );
         }
@@ -149,12 +196,19 @@ int main( int argc, char** argv )
                     break;
                 }
                 sock.Send( "ARTICLE\r\n", 9 );
-                if( !ReceiveMessage( sock, v.first, article ) )
+                if( !ReceiveMessage( sock, v.first, article, dateLimit ) )
                 {
                     break;
                 }
             }
-            printf( "%s %i..%i (+%i)\n", v.first.c_str(), start, article-1, article-start );
+            if( dateLimit == 0 )
+            {
+                printf( "%s %i..%i (+%i)\n", v.first.c_str(), start, article-1, article-start );
+            }
+            else
+            {
+                printf( "%s %i..%i (+%i, %i dropped)\n", v.first.c_str(), start, article-1, article-start-droppedMessages, droppedMessages );
+            }
         }
     }
 

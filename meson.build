@@ -296,7 +296,7 @@ nntp_get = executable(
     'nntp-get',
     'nntp-get/nntp-get.cpp',
     'nntp-get/Socket.cpp',
-    link_with: common_lib,
+    link_with: [common_lib, inn_lib],
     install: true,
     install_dir: 'lib/uat'
 )
