@@ -12,7 +12,7 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        pacman -S --noconfirm --needed meson ninja
+        pacman -S --noconfirm --needed meson ninja gmime3
     - run: meson setup --buildtype release build
     - run: meson compile -C build
     - run: meson install -C build
