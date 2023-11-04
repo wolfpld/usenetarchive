@@ -1,0 +1,25 @@
+name: Arch Linux
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        pacman -Syu --noconfirm
+        pacman -S --noconfirm --needed meson ninja
+    - run: meson setup --buildtype release build
+    - run: meson compile -C build
+    - run: meson install -C build
+      env:
+        DESTDIR: ${{ github.workspace }}/install
+    - run: tar -zcvf install.tar.gz -C install .
+    - uses: actions/upload-artifact@v3
+      with:
+        name: install
+        path: install.tar.gz
