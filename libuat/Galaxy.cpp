@@ -45,7 +45,7 @@ Galaxy::Galaxy( const std::string& fn )
     std::atomic<int> cnt( 0 );
 
     const auto cpus = System::CPUCores();
-    TaskDispatch td( cpus );
+    TaskDispatch td( cpus-1 );
     for( int i=0; i<cpus; i++ )
     {
         td.Queue( [this, &cnt, &lock, size] {

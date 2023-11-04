@@ -62,7 +62,7 @@ int main( int argc, char** argv )
 
     Buffer* data = new Buffer[size];
 
-    TaskDispatch tasks( cpus );
+    TaskDispatch tasks( cpus-1 );
     std::atomic<uint32_t> cnt( 0 );
     auto slab = new Slab<32*1024*1024>[cpus];
 

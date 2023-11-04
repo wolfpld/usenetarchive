@@ -315,7 +315,7 @@ int main( int argc, char** argv )
         printf( "\nMatching messages...\n" );
 
         const auto cpus = System::CPUCores();
-        TaskDispatch tasks( cpus );
+        TaskDispatch tasks( cpus-1 );
         std::atomic<uint32_t> cnt( 0 );
 
         std::mutex viewLock, resLock, splitLock;

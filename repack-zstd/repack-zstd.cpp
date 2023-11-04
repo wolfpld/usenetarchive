@@ -156,7 +156,7 @@ int main( int argc, char** argv )
     Buffer* data = new Buffer[size];
 
     std::mutex mtx, cntmtx;
-    TaskDispatch tasks( cpus );
+    TaskDispatch tasks( cpus-1 );
     uint32_t start = 0;
     uint32_t inPass = ( size + cpus - 1 ) / cpus;
     uint32_t left = size;

@@ -1,12 +1,11 @@
-#ifndef __DARKRL__TASKDISPATCH_HPP__
-#define __DARKRL__TASKDISPATCH_HPP__
+#ifndef __TASKDISPATCH_HPP__
+#define __TASKDISPATCH_HPP__
 
 #include <atomic>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
 #include <thread>
-#include <queue>
 #include <vector>
 
 class TaskDispatch
@@ -23,7 +22,7 @@ public:
 private:
     void Worker();
 
-    std::queue<std::function<void(void)>> m_queue;
+    std::vector<std::function<void(void)>> m_queue;
     std::mutex m_queueLock;
     std::condition_variable m_cvWork, m_cvJobs;
     std::atomic<bool> m_exit;

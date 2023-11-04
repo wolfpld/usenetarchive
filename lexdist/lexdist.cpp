@@ -190,7 +190,7 @@ int main( int argc, char** argv )
     const auto cpus = System::CPUCores();
     printf( "Working... (%i threads)\n", cpus );
 
-    TaskDispatch tasks( cpus );
+    TaskDispatch tasks( cpus-1 );
 
     for( int i=LexiconMinLen; i<=LexiconMaxLen; i++ )
     {
