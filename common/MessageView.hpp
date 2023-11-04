@@ -24,7 +24,7 @@ public:
         assert( idx < m_meta.Size() );
         const auto meta = m_meta[idx];
         auto buf = m_eb.Request( meta.size + 1 );
-        const auto dec = LZ4_decompress_fast( m_data + meta.offset, buf, meta.size );
+        const auto dec = LZ4_decompress_safe( m_data + meta.offset, buf, meta.compressedSize, meta.size );
         assert( dec == meta.compressedSize );
         buf[meta.size] = '\0';
         return buf;
