@@ -11,11 +11,9 @@
 #include "../contrib/martinus/robin_hood.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
-#include "../common/FileMap.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/RawImportMeta.hpp"
-#include "../common/String.hpp"
 
 static void Write( const MessageView& mview, uint32_t i, FILE* ddata, FILE* dmeta, uint64_t& offset )
 {

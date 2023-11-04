@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "PackageAccess.hpp"
-#include "../common/Filesystem.hpp"
 
 PackageAccess* PackageAccess::Open( const std::string& fn )
 {

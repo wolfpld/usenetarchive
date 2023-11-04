@@ -22,7 +22,6 @@
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
-#include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 #include "../common/ZMessageView.hpp"
 

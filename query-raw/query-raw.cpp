@@ -9,7 +9,6 @@
 #include "../common/HashSearch.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
-#include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 
 #define CSTR(x) strcmp( argv[2], x ) == 0

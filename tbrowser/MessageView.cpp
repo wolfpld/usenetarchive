@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <ctype.h>
 
-#include "../common/Alloc.hpp"
 #include "../common/UTF8.hpp"
 #include "../libuat/Archive.hpp"
 #include "../libuat/PersistentStorage.hpp"

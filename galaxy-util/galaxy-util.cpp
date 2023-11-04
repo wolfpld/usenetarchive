@@ -18,7 +18,6 @@
 #include "../common/FileMap.hpp"
 #include "../common/HashSearchBig.hpp"
 #include "../common/MetaView.hpp"
-#include "../common/MessageLogic.hpp"
 #include "../common/MsgIdHash.hpp"
 #include "../common/ReferencesParent.hpp"
 #include "../common/Slab.hpp"

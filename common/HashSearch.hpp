@@ -7,7 +7,6 @@
 #include "../contrib/xxhash/xxhash.h"
 
 #include "../common/FileMap.hpp"
-#include "../common/MsgIdHash.hpp"
 
 template<class T>
 class HashSearch

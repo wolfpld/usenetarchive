@@ -15,7 +15,6 @@
 #endif
 
 #include "../contrib/zstd/zstd.h"
-#include "../contrib/zstd/zdict.h"
 
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
@@ -24,7 +23,6 @@
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/RawImportMeta.hpp"
-#include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"

@@ -7,7 +7,6 @@
 
 #include "../common/UTF8.hpp"
 #include "../libuat/Galaxy.hpp"
-#include "../libuat/PersistentStorage.hpp"
 
 #include "BottomBar.hpp"
 #include "Browser.hpp"

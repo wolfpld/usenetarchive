@@ -16,10 +16,8 @@
 #include "../contrib/lz4/lz4hc.h"
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
-#include "../common/FileMap.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/RawImportMeta.hpp"
-#include "../common/String.hpp"
 
 static const char* userEncodings[] = {
     "ISO8859-2",

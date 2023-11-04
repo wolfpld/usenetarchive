@@ -8,7 +8,6 @@
 #include "../common/Filesystem.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MetaView.hpp"
-#include "../common/String.hpp"
 #include "../common/StringCompress.hpp"
 
 int main( int argc, char** argv )

@@ -8,8 +8,6 @@
 #include "../contrib/xxhash/xxhash.h"
 
 #include "../common/FileMap.hpp"
-#include "../common/MetaView.hpp"
-#include "../common/MsgIdHash.hpp"
 
 class HashSearchBig
 {

@@ -23,7 +23,6 @@
 #include "../common/FileMap.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/RawImportMeta.hpp"
-#include "../common/String.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
 

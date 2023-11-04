@@ -9,14 +9,12 @@
 #include <vector>
 
 #include "../contrib/xxhash/xxhash.h"
-#include "../common/Alloc.hpp"
 #include "../common/ICU.hpp"
 #include "../common/LexiconTypes.hpp"
 #include "../common/MetaView.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/MessageView.hpp"
 #include "../common/MsgIdHash.hpp"
-#include "../common/String.hpp"
 
 #include "../contrib/martinus/robin_hood.h"
 

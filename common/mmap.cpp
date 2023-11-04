@@ -1,6 +1,6 @@
-#include "mmap.hpp"
-
 #if defined _MSC_VER || defined __MINGW32__ || defined __CYGWIN__
+#  include "mmap.hpp"
+
 #  include <io.h>
 #  include <windows.h>
 

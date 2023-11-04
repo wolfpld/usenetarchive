@@ -3,7 +3,6 @@
 #include <unicode/brkiter.h>
 #include <unicode/unistr.h>
 
-#include "Alloc.hpp"
 #include "ICU.hpp"
 #include "LexiconTypes.hpp"
 #include "Slab.hpp"

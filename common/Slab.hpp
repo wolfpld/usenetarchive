@@ -2,6 +2,7 @@
 #define __SLAB_HPP__
 
 #include <assert.h>
+#include <stddef.h>
 #include <vector>
 
 template<size_t BlockSize>

@@ -18,7 +18,6 @@
 #include "../common/KillRe.hpp"
 #include "../common/MessageLogic.hpp"
 #include "../common/ReferencesParent.hpp"
-#include "../common/String.hpp"
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
 #include "../contrib/martinus/robin_hood.h"

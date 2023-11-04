@@ -1,8 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "../common/Alloc.hpp"
-
 #include "../libuat/Archive.hpp"
 
 #include "MessageView.hpp"
