@@ -24,6 +24,8 @@
     <ClCompile Include="..\..\..\common\MessageLogic.cpp" />
     <ClCompile Include="..\..\..\common\mmap.cpp" />
     <ClCompile Include="..\..\..\common\StringCompress.cpp" />
+    <ClCompile Include="..\..\..\common\TaskDispatch.cpp" />
+    <ClCompile Include="..\..\..\common\System.cpp" />
     <ClCompile Include="..\..\..\contrib\zstd\common\debug.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\entropy_common.c" />
     <ClCompile Include="..\..\..\contrib\zstd\common\error_private.c" />

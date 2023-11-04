@@ -9,6 +9,8 @@
 #include "../common/ExpandingBuffer.hpp"
 #include "../common/Filesystem.hpp"
 #include "../common/MessageLogic.hpp"
+#include "../common/TaskDispatch.hpp"
+#include "../common/System.hpp"
 #include "../libuat/Archive.hpp"
 #include "../libuat/SearchEngine.hpp"
 
@@ -61,6 +63,7 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
+    std::string base = argv[1];
     std::unique_ptr<Archive> archive( Archive::Open( argv[1] ) );
     if( !archive )
     {
@@ -321,51 +324,86 @@ int main( int argc, char** argv )
         const auto hlen = host ? strlen( host ) : 0;
 
         const auto num = archive->NumberOfMessages();
-        robin_hood::unordered_flat_map<std::string, int> latest;
-        for( int i=0; i<num; i++ )
-        {
-            auto post = archive->GetMessage( i, eb );
-            auto ptr = FindOptionalHeader( post, "xref: ", 6 );
-            if( *ptr == '\n' ) continue;
-            ptr += 6;
-            auto end = ptr;
-            while( *end != ' ' ) end++;
-            if( host && ( end - ptr != hlen || strncmp( ptr, host, hlen ) != 0 ) ) continue;
-            std::string server( ptr, end );
+        const auto cpus = System::CPUCores();
+        TaskDispatch tasks( cpus-1 );
+        std::vector<robin_hood::unordered_flat_map<std::string, int>> latest( cpus );
+        std::atomic<uint32_t> cnt( 0 );
 
-            while( *end != '\n' )
-            {
-                ptr = end = end + 1;
-                while( *end != ':' ) end++;
-                if( end - ptr == desc.second && strncmp( ptr, desc.first, desc.second ) == 0 )
+        for( int t=0; t<cpus; t++ )
+        {
+            tasks.Queue( [&cnt, num, &latest, t, &archive, &desc, &base] {
+                ExpandingBuffer eb;
+                ZMessageView zview( base + "/zmeta", base + "/zdata", base + "/zdict" );
+                for(;;)
                 {
-                    end++;
-                    const auto n = atoi( end );
-                    auto it = latest.find( server );
-                    if( it == latest.end() )
+                    auto j = cnt.fetch_add( 1, std::memory_order_relaxed );
+                    if( j >= num ) break;
+
+                    auto post = zview.GetMessage( j, eb );
+                    auto ptr = FindOptionalHeader( post, "xref: ", 6 );
+                    if( *ptr == '\n' ) continue;
+
+                    ptr += 6;
+                    auto end = ptr;
+                    while( *end != ' ' ) end++;
+                    std::string server( ptr, end );
+
+                    while( *end != '\n' )
                     {
-                        latest.emplace( std::move( server ), n );
-                    }
-                    else
-                    {
-                        if( it->second < n )
+                        ptr = end = end + 1;
+                        while( *end != ':' ) end++;
+                        if( end - ptr == desc.second && strncmp( ptr, desc.first, desc.second ) == 0 )
                         {
-                            it->second = n;
+                            end++;
+                            const auto n = atoi( end );
+                            auto it = latest[t].find( server );
+                            if( it == latest[t].end() )
+                            {
+                                latest[t].emplace( std::move( server ), n );
+                            }
+                            else
+                            {
+                                if( it->second < n )
+                                {
+                                    it->second = n;
+                                }
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            while( *end != '\n' && *end != ' ' ) end++;
                         }
                     }
-                    break;
+                }
+            } );
+        }
+
+        tasks.Sync();
+        robin_hood::unordered_flat_map<std::string, int> gather;
+        for( auto& v : latest )
+        {
+            for( auto& w : v )
+            {
+                auto it = gather.find( w.first );
+                if( it == gather.end() )
+                {
+                    gather.emplace( std::move( w.first ), w.second );
                 }
                 else
                 {
-                    while( *end != '\n' && *end != ' ' ) end++;
+                    if( it->second < w.second )
+                    {
+                        it->second = w.second;
+                    }
                 }
             }
         }
 
         if( host )
         {
-            auto it = latest.find( host );
-            if( it == latest.end() )
+            auto it = gather.find( host );
+            if( it == gather.end() )
             {
                 printf( "Not found.\n" );
             }
@@ -376,7 +414,7 @@ int main( int argc, char** argv )
         }
         else
         {
-            for( auto& v : latest )
+            for( auto& v : gather )
             {
                 printf( "%s %i\n", v.first.c_str(), v.second );
             }
