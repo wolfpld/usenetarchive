@@ -47,6 +47,7 @@ static const Tool tools[] = {
     { "update-zstd", "Update zstd archive." },
     { "utf8ize", "Perform conversion to UTF-8." },
     { "verify", "Check archive for known problems." },
+    { "web", "Start web server." },
 };
 
 void PrintHelp()
