@@ -13,6 +13,7 @@ common_src = [
     'common/MessageLines.cpp',
     'common/MessageLogic.cpp',
     'common/mmap.cpp',
+    'common/ParseDate.cpp',
     'common/StringCompress.cpp',
     'common/System.cpp',
     'common/TaskDispatch.cpp',
@@ -119,6 +120,10 @@ mongoose_src = [
     'contrib/mongoose/mongoose.c',
 ]
 
+inn_src = [
+    'contrib/inn/date.cpp',
+]
+
 
 common_lib = static_library('common', common_src)
 uat_lib = static_library('uat', libuat_src)
@@ -127,6 +132,7 @@ terminator_lib = static_library('terminator', terminator_src)
 lzma_lib = static_library('lzma', lzma_src)
 ini_lib = static_library('ini', ini_src)
 mongoose_lib = static_library('mongoose', mongoose_src)
+inn_lib = static_library('inn', inn_src, include_directories: 'contrib/inn')
 
 
 curl_dep = dependency('libcurl')
@@ -140,9 +146,7 @@ lz4_dep = dependency('liblz4')
 connectivity = executable(
     'connectivity',
     'connectivity/connectivity.cpp',
-    'contrib/inn/date.cpp',
-    include_directories: 'contrib/inn',
-    link_with: common_lib,
+    link_with: [common_lib, inn_lib],
     dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'
