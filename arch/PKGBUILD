@@ -6,7 +6,7 @@ pkgdesc="Usenet Archive Toolkit"
 arch=('x86_64' 'aarch64')
 url="https://github.com/wolfpld/usenetarchive/"
 license=('AGPL3')
-makedepends=('git' 'ncurses' 'curl' 'icu' 'gmime')
+makedepends=('git' 'ncurses' 'curl' 'icu' 'gmime' 'meson')
 options=('strip' 'zipman')
 source=('uat::git+https://github.com/wolfpld/usenetarchive.git')
 md5sums=('SKIP')
@@ -17,11 +17,10 @@ pkgver() {
 }
 
 build() {
-	cd "$srcdir/${pkgname%-git}"
-	make -j `nproc`
+	arch-meson uat build
+	meson compile -C build
 }
 
 package() {
-	cd "$srcdir/${pkgname%-git}"
-	make DESTDIR="$pkgdir/" install
+	meson install -C build --destdir "$pkgdir"
 }
