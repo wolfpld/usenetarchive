@@ -18,7 +18,7 @@ ParseDateStats stats;
 uint32_t droppedMessages = 0;
 
 
-static void Demangle( FILE* f, const char* buf, int size )
+static void Demangle( FILE* f, const char* buf )
 {
     auto ptr = buf;
     for(;;)
@@ -93,7 +93,7 @@ static bool ReceiveMessage( Socket& sock, const std::string& dir, int article, t
     char tmp[1024];
     sprintf( tmp, "%s/%i", dir.c_str(), article );
     FILE* f = fopen( tmp, "wb" );
-    Demangle( f, ptr, len - ( ptr - buf ) );
+    Demangle( f, ptr );
     fclose( f );
 
     return true;
