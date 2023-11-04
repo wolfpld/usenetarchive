@@ -52,6 +52,7 @@ zstd_src = [
     'contrib/zstd/compress/zstd_opt.c',
     'contrib/zstd/compress/zstdmt_compress.c',
     'contrib/zstd/decompress/huf_decompress.c',
+    'contrib/zstd/decompress/huf_decompress_amd64.S',
     'contrib/zstd/decompress/zstd_ddict.c',
     'contrib/zstd/decompress/zstd_decompress_block.c',
     'contrib/zstd/decompress/zstd_decompress.c',
