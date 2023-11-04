@@ -8,11 +8,11 @@ jobs:
     container:
       image: archlinux:base-devel
     steps:
-    - uses: actions/checkout@v4
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        pacman -S --noconfirm --needed meson ninja gmime3
+        pacman -S --noconfirm --needed meson ninja gmime3 nodejs
+    - uses: actions/checkout@v4
     - run: meson setup --buildtype release build
     - run: meson compile -C build
     - run: meson install -C build
