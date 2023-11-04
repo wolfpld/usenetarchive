@@ -133,7 +133,7 @@ curl_dep = dependency('libcurl')
 openssl_dep = dependency('openssl')
 icu_dep = dependency('icu-uc')
 ncurses_dep = dependency('ncursesw')
-gmime_dep = dependency('gmime-2.6')
+gmime_dep = dependency('gmime-3.0')
 lz4_dep = dependency('liblz4')
 
 

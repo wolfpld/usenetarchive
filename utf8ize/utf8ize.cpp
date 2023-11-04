@@ -212,7 +212,7 @@ static std::string mime_part_to_text( GMimeObject* obj )
     if( !GMIME_IS_PART( obj ) ) return ret;
 
     GMimeContentType* content_type = g_mime_object_get_content_type( obj );
-    GMimeDataWrapper* c = g_mime_part_get_content_object( GMIME_PART( obj ) );
+    GMimeDataWrapper* c = g_mime_part_get_content( GMIME_PART( obj ) );
     GMimeStream* memstream = g_mime_stream_mem_new();
 
     gint64 len = g_mime_data_wrapper_write_to_stream( c, memstream );
@@ -274,15 +274,6 @@ int main( int argc, char** argv )
         exit( 1 );
     }
 
-    g_mime_init( GMIME_ENABLE_RFC2047_WORKAROUNDS );
-    const char* charsets[] = {
-        "UTF-8",
-        "ISO8859-2",
-        "CP1250",
-        0
-    };
-    g_mime_set_user_charsets( charsets );
-
     CreateDirStruct( argv[2] );
 
     std::string base = argv[1];
@@ -298,6 +289,17 @@ int main( int argc, char** argv )
 
     FILE* dmeta = fopen( dmetafn.c_str(), "wb" );
     FILE* ddata = fopen( ddatafn.c_str(), "wb" );
+
+    static const char* charsets[] = {
+        "UTF-8",
+        "ISO8859-2",
+        "CP1250",
+        nullptr
+    };
+
+    g_mime_init();
+    GMimeParserOptions* opts = g_mime_parser_options_new();
+    g_mime_parser_options_set_fallback_charsets( opts, charsets );
 
     int mime_fails = 0;
     std::ostringstream ss;
@@ -318,31 +320,27 @@ int main( int argc, char** argv )
         GMimeParser* parser = g_mime_parser_new_with_stream( istream );
         g_object_unref( istream );
 
-        GMimeMessage* message = g_mime_parser_construct_message( parser );
+        GMimeMessage* message = g_mime_parser_construct_message( parser, opts );
         g_object_unref( parser );
 
         GMimeHeaderList* ls = GMIME_OBJECT( message )->headers;
-        GMimeHeaderIter* hit = g_mime_header_iter_new();
+        const auto hdrcnt = g_mime_header_list_get_count( ls );
 
-        if( g_mime_header_list_get_iter( ls, hit ) )
+        for( int i=0; i<hdrcnt; i++ )
         {
-            while( g_mime_header_iter_is_valid( hit ) )
+            auto header = g_mime_header_list_get_header_at( ls, i );
+            auto name = g_mime_header_get_name( header );
+            auto value = g_mime_header_get_value( header );
+            auto tmp = g_mime_utils_header_decode_text( opts, value );
+            auto decode = g_mime_utils_header_decode_phrase( opts, tmp );
+            if( strcmp( value, decode ) == 0 && IsValidUTF8( (const unsigned char*)value, strlen( value ) ) )
             {
-                auto name = g_mime_header_iter_get_name( hit );
-                auto value = g_mime_header_iter_get_value( hit );
-                auto tmp = g_mime_utils_header_decode_text( value );
-                auto decode = g_mime_utils_header_decode_phrase( tmp );
-                if( strcmp( value, decode ) == 0 && IsValidUTF8( (const unsigned char*)value, strlen( value ) ) )
-                {
-                    FixBrokenEncoding( decode );
-                }
-                g_free( tmp );
-                ss << name << ": " << decode << "\n";
-                g_free( decode );
-                if( !g_mime_header_iter_next( hit ) ) break;
+                FixBrokenEncoding( decode );
             }
+            g_free( tmp );
+            ss << name << ": " << decode << "\n";
+            g_free( decode );
         }
-        g_mime_header_iter_free( hit );
 
         std::string content;
         GMimeObject* last = nullptr;
@@ -413,6 +411,7 @@ int main( int argc, char** argv )
     fclose( dmeta );
     fclose( ddata );
 
+    g_object_unref( opts );
     g_mime_shutdown();
 
     int idx = 0;
