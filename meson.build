@@ -148,21 +148,24 @@ connectivity = executable(
     'contrib/inn/date.cpp',
     include_directories: 'contrib/inn',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 export_messages = executable(
     'export-messages',
     'export-messages/export-messages.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 extract_msgid = executable(
     'extract-msgid',
     'extract-msgid/extract-msgid.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 extract_msgmeta = executable(
@@ -170,28 +173,32 @@ extract_msgmeta = executable(
     'extract-msgmeta/extract-msgmeta.cpp',
     'extract-msgmeta/tin.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 filter_newsgroups = executable(
     'filter-newsgroups',
     'filter-newsgroups/filter-newsgroups.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 filter_spam = executable(
     'filter-spam',
     'filter-spam/filter-spam.cpp',
     link_with: [common_lib, lz4_lib, terminator_lib, zstd_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 galaxy_util = executable(
     'galaxy-util',
     'galaxy-util/galaxy-util.cpp',
     link_with: [common_lib, uat_lib, zstd_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 google_groups = executable(
@@ -199,42 +206,48 @@ google_groups = executable(
     'google-groups/google-groups.cpp',
     link_with: common_lib,
     dependencies: [curl_dep, openssl_dep],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 import_source_maildir = executable(
     'import-source-maildir',
     'import-source-maildir/import-source-maildir.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 import_source_maildir_7z = executable(
     'import-source-maildir-7z',
     'import-source-maildir-7z/import-source-maildir-7z.cpp',
     link_with: [common_lib, lz4_lib, lzma_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 import_source_mbox = executable(
     'import-source-mbox',
     'import-source-mbox/import-source-mbox.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 kill_duplicates = executable(
     'kill-duplicates',
     'kill-duplicates/kill-duplicates.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 lexdist = executable(
     'lexdist',
     'lexdist/lexdist.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 lexicon = executable(
@@ -242,28 +255,32 @@ lexicon = executable(
     'lexicon/lexicon.cpp',
     link_with: [common_lib, lz4_lib],
     dependencies: icu_dep,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 lexsort = executable(
     'lexsort',
     'lexsort/lexsort.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 lexstats = executable(
     'lexstats',
     'lexstats/lexstats.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 merge_raw = executable(
     'merge-raw',
     'merge-raw/merge-raw.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 nntp_get = executable(
@@ -271,42 +288,48 @@ nntp_get = executable(
     'nntp-get/nntp-get.cpp',
     'nntp-get/Socket.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 package = executable(
     'package',
     'package/package.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 query = executable(
     'query',
     'query/query.cpp',
     link_with: [common_lib, zstd_lib, uat_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 query_raw = executable(
     'query-raw',
     'query-raw/query-raw.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 relative_complement = executable(
     'relative-complement',
     'relative-complement/relative-complement.cpp',
     link_with: common_lib,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 repack_lz4 = executable(
     'repack-lz4',
     'repack-lz4/repack-lz4.cpp',
     link_with: [common_lib, lz4_lib, zstd_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 repack_zstd = executable(
@@ -314,14 +337,16 @@ repack_zstd = executable(
     'repack-zstd/repack-zstd.cpp',
     cpp_args: ['-DZDICT_STATIC_LINKING_ONLY', '-DZSTD_MULTITHREAD'],
     link_with: [common_lib, lz4_lib, zstd_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 sort = executable(
     'sort',
     'sort/sort.cpp',
     link_with: [common_lib, lz4_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 tbrowser = executable(
@@ -344,7 +369,8 @@ tbrowser = executable(
     'tbrowser/View.cpp',
     link_with: [common_lib, zstd_lib, uat_lib],
     dependencies: [icu_dep, ncurses_dep],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 threadify = executable(
@@ -352,7 +378,8 @@ threadify = executable(
     'threadify/threadify.cpp',
     link_with: [common_lib, zstd_lib, uat_lib],
     dependencies: icu_dep,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 uat = executable(
@@ -366,7 +393,8 @@ update_zstd = executable(
     'update-zstd/update-zstd.cpp',
     link_with: [common_lib, lz4_lib, zstd_lib],
     cpp_args: '-DZDICT_STATIC_LINKING_ONLY',
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 utf8ize = executable(
@@ -374,14 +402,16 @@ utf8ize = executable(
     'utf8ize/utf8ize.cpp',
     link_with: [common_lib, lz4_lib],
     dependencies: gmime_dep,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 verify = executable(
     'verify',
     'verify/verify.cpp',
     link_with: [common_lib, zstd_lib, uat_lib],
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
 
 web = executable(
@@ -389,5 +419,6 @@ web = executable(
     'web/web.cpp',
     link_with: [common_lib, zstd_lib, uat_lib, ini_lib, mongoose_lib],
     dependencies: icu_dep,
-    install: true
+    install: true,
+    install_dir: 'lib/uat'
 )
