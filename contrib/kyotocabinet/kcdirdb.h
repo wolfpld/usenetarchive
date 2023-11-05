@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * Directory hash database
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -16,16 +16,16 @@
 #ifndef _KCDIRDB_H                       // duplication check
 #define _KCDIRDB_H
 
-#include "kccommon.h"
-#include "kcutil.h"
-#include "kcthread.h"
-#include "kcfile.h"
-#include "kccompress.h"
-#include "kccompare.h"
-#include "kcmap.h"
-#include "kcregex.h"
-#include "kcdb.h"
-#include "kcplantdb.h"
+#include <kccommon.h>
+#include <kcutil.h>
+#include <kcthread.h>
+#include <kcfile.h>
+#include <kccompress.h>
+#include <kccompare.h>
+#include <kcmap.h>
+#include <kcregex.h>
+#include <kcdb.h>
+#include <kcplantdb.h>
 
 #define KCDDBMAGICFILE  "__KCDIR__"      ///< magic file of the directory
 #define KCDDBMETAFILE  "__meta__"        ///< meta data file of the directory

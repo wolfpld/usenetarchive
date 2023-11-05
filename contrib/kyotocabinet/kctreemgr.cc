@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * The command line utility of the file tree database
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -13,7 +13,7 @@
  *************************************************************************************************/
 
 
-#include "kchashdb.h"
+#include <kchashdb.h>
 #include "cmdcommon.h"
 
 

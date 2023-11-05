@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * The test cases of the cache tree database
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -13,7 +13,7 @@
  *************************************************************************************************/
 
 
-#include "kccachedb.h"
+#include <kccachedb.h>
 #include "cmdcommon.h"
 
 
@@ -2083,7 +2083,7 @@ static int32_t proctran(int64_t rnum, int32_t thnum, int32_t itnum,
               std::string key;
               if (cur->get_key(&key)) {
                 keys.push_back(key);
-                if (!cur->get_value(&key) && kc::BasicDB::Error::NOREC) {
+                if (!cur->get_value(&key) && db_->error() != kc::BasicDB::Error::NOREC) {
                   dberrprint(db_, __LINE__, "Cursor::get_value");
                   err_ = true;
                 }

@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * Database extension
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -16,22 +16,22 @@
 #ifndef _KCDBEXT_H                       // duplication check
 #define _KCDBEXT_H
 
-#include "kccommon.h"
-#include "kcutil.h"
-#include "kcthread.h"
-#include "kcfile.h"
-#include "kccompress.h"
-#include "kccompare.h"
-#include "kcmap.h"
-#include "kcregex.h"
-#include "kcdb.h"
-#include "kcplantdb.h"
-#include "kcprotodb.h"
-#include "kcstashdb.h"
-#include "kccachedb.h"
-#include "kchashdb.h"
-#include "kcdirdb.h"
-#include "kcpolydb.h"
+#include <kccommon.h>
+#include <kcutil.h>
+#include <kcthread.h>
+#include <kcfile.h>
+#include <kccompress.h>
+#include <kccompare.h>
+#include <kcmap.h>
+#include <kcregex.h>
+#include <kcdb.h>
+#include <kcplantdb.h>
+#include <kcprotodb.h>
+#include <kcstashdb.h>
+#include <kccachedb.h>
+#include <kchashdb.h>
+#include <kcdirdb.h>
+#include <kcpolydb.h>
 
 namespace kyotocabinet {                 // common namespace
 
@@ -1278,7 +1278,7 @@ class IndexDB {
     if (omode_ == 0) {
       set_error(_KCCODELINE_, BasicDB::Error::INVALID, "not opened");
       *sp = 0;
-      return 0;
+      return NULL;
     }
     if (!cache_) return db_.get(kbuf, ksiz, sp);
     size_t dvsiz = 0;

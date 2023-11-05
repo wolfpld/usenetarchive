@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * The test cases of the utility functions
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -2007,8 +2007,8 @@ static int32_t proclhmap(int64_t rnum, bool rnd, int64_t bnum) {
     Map::MoveMode mode = Map::MCURRENT;
     if (rnd) {
       switch (myrand(4)) {
-        case 0: mode = Map::MFIRST;
-        case 1: mode = Map::MLAST;
+        case 0: mode = Map::MFIRST; break;
+        case 1: mode = Map::MLAST; break;
       }
     }
     if (!map.get(kbuf, mode) && !rnd) {
@@ -2058,8 +2058,8 @@ static int32_t proclhmap(int64_t rnum, bool rnd, int64_t bnum) {
     Map::MoveMode mode = Map::MCURRENT;
     if (rnd) {
       switch (myrand(4)) {
-        case 0: mode = Map::MFIRST;
-        case 1: mode = Map::MLAST;
+        case 0: mode = Map::MFIRST; break;
+        case 1: mode = Map::MLAST; break;
       }
     }
     if (!map.migrate(kbuf, &paramap, mode) && !rnd) {
@@ -2104,8 +2104,8 @@ static int32_t proclhmap(int64_t rnum, bool rnd, int64_t bnum) {
       Map::MoveMode mode = Map::MCURRENT;
       if (rnd) {
         switch (myrand(4)) {
-          case 0: mode = Map::MFIRST;
-          case 1: mode = Map::MLAST;
+          case 0: mode = Map::MFIRST; break;
+          case 1: mode = Map::MLAST; break;
         }
       }
       Map *ptr = &map;

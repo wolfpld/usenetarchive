@@ -13,7 +13,7 @@
  *************************************************************************************************/
 
 
-#include "kclangc.h"
+#include <kclangc.h>
 
 #define RECBUFSIZ    64                  /* buffer size for a record */
 #define RECBUFSIZL   1024                /* buffer size for a long record */

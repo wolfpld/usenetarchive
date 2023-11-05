@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * Cache hash database
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -16,16 +16,16 @@
 #ifndef _KCCACHEDB_H                     // duplication check
 #define _KCCACHEDB_H
 
-#include "kccommon.h"
-#include "kcutil.h"
-#include "kcthread.h"
-#include "kcfile.h"
-#include "kccompress.h"
-#include "kccompare.h"
-#include "kcmap.h"
-#include "kcregex.h"
-#include "kcdb.h"
-#include "kcplantdb.h"
+#include <kccommon.h>
+#include <kcutil.h>
+#include <kcthread.h>
+#include <kcfile.h>
+#include <kccompress.h>
+#include <kccompare.h>
+#include <kcmap.h>
+#include <kcregex.h>
+#include <kcdb.h>
+#include <kcplantdb.h>
 
 namespace kyotocabinet {                 // common namespace
 
@@ -133,7 +133,7 @@ class CacheDB : public BasicDB {
           rvsiz = zsiz;
         }
       }
-      size_t vsiz;
+      size_t vsiz = 0;
       const char* vbuf = visitor->visit_full(dbuf, rksiz, rvbuf, rvsiz, &vsiz);
       delete[] zbuf;
       if (vbuf == Visitor::REMOVE) {

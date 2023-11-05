@@ -129,7 +129,7 @@ inn_src = [
 common_lib = static_library('common', common_src)
 uat_lib = static_library('uat', libuat_src)
 zstd_lib = static_library('zstd', zstd_src)
-terminator_lib = static_library('terminator', terminator_src)
+terminator_lib = static_library('terminator', terminator_src, include_directories: 'contrib/kyotocabinet')
 lzma_lib = static_library('lzma', lzma_src)
 ini_lib = static_library('ini', ini_src)
 mongoose_lib = static_library('mongoose', mongoose_src)
@@ -194,6 +194,7 @@ filter_spam = executable(
     'filter-spam',
     'filter-spam/filter-spam.cpp',
     link_with: [common_lib, terminator_lib, zstd_lib],
+    include_directories: 'contrib/kyotocabinet',
     dependencies: lz4_dep,
     install: true,
     install_dir: 'lib/uat'

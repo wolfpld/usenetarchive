@@ -1,6 +1,6 @@
 /*************************************************************************************************
  * Database interface
- *                                                               Copyright (C) 2009-2012 FAL Labs
+ *                                                      Copyright (C) 2009-2012 Mikio Hirabayashi
  * This file is part of Kyoto Cabinet.
  * This program is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version
@@ -16,13 +16,13 @@
 #ifndef _KCDB_H                          // duplication check
 #define _KCDB_H
 
-#include "kccommon.h"
-#include "kcutil.h"
-#include "kcthread.h"
-#include "kcfile.h"
-#include "kccompress.h"
-#include "kccompare.h"
-#include "kcmap.h"
+#include <kccommon.h>
+#include <kcutil.h>
+#include <kcthread.h>
+#include <kcfile.h>
+#include <kccompress.h>
+#include <kccompare.h>
+#include <kcmap.h>
 
 #define KCDBSSMAGICDATA  "KCSS\n"        ///< The magic data of the snapshot file
 
