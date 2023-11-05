@@ -327,7 +327,7 @@ int main( int argc, char** argv )
             stroffset += fwrite( str, 1, strlen( str ) + 1, fstr );
         }
     }
-    assert( cnt == hashsize );
+    assert( cnt == data.size() );
     fclose( fhash );
     fclose( fstr );
 
