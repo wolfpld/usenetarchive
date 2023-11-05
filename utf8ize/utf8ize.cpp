@@ -411,7 +411,6 @@ int main( int argc, char** argv )
     fclose( dmeta );
     fclose( ddata );
 
-    g_object_unref( opts );
     g_mime_shutdown();
 
     int idx = 0;
