@@ -187,7 +187,7 @@ int main( int argc, char** argv )
                 const char* line = end;
                 int quotLevel = 0;
                 while( *end != '\n' && *end != '\0' ) end++;
-                if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 )
+                if( end - line == 3 && strncmp( line, "-- ", 3 ) == 0 )
                 {
                     signature = true;
                 }

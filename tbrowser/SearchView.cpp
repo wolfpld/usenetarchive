@@ -353,7 +353,7 @@ void SearchView::FillPreview( int idx )
         {
             auto end = line;
             while( *end != '\n' && *end != '\0' ) end++;
-            if( end - line == 4 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
+            if( end - line == 3 && strncmp( line, "-- ", 3 ) == 0 ) break;  // start of signature
             auto tmp = line;
             const auto quotLevel = QuotationLevel( tmp, end );
             assert( wrote <= 0 || quotLevel == 0 );
