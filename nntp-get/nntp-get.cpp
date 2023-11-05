@@ -50,7 +50,7 @@ static bool ReceiveMessage( Socket& sock, const std::string& dir, int article, t
         if( memcmp( test + size - 5, "\r\n.\r\n", 5 ) == 0 ) break;
         size = sock.Recv( ptr, BufSize - ( ptr - buf ) );
     }
-    int len = ptr - buf;
+    const int len = ptr - buf;
     if( len == BufSize )
     {
         fprintf( stderr, "Message size greater than %i! Aborting.\n", BufSize );
@@ -178,7 +178,7 @@ int main( int argc, char** argv )
         fflush( stdout );
         sprintf( tmp, "ARTICLE %i\r\n", article );
         sock.Send( tmp, strlen( tmp ) );
-        if( !ReceiveMessage( sock, v.first.c_str(), article, dateLimit ) )
+        if( !ReceiveMessage( sock, v.first, article, dateLimit ) )
         {
             printf( "%s no new messages\n", v.first.c_str() );
         }

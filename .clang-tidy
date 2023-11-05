@@ -21,6 +21,8 @@ Checks:
 	-misc-confusable-identifiers,
 	-misc-no-recursion,
 	-misc-non-private-member-variables-in-classes,
+	-misc-use-anonymous-namespace,
+	-readability-convert-member-functions-to-static,
 	-modernize-avoid-c-arrays,
 	-modernize-deprecated-headers,
 	-modernize-use-default-member-init,

@@ -55,7 +55,7 @@ static void SplitICU( const char* ptr, const char* end, std::vector<std::string>
         wordIt->setText( us );
     }
 
-    icu::UnicodeString& data = toLower ? lower : us;
+    const icu::UnicodeString& data = toLower ? lower : us;
 
     int32_t p0 = 0;
     int32_t p1 = wordIt->first();
@@ -91,7 +91,7 @@ static void SplitICU( const char* ptr, const char* end, std::vector<std::string>
                 }
                 else
                 {
-                    out.emplace_back( std::string( start, end-start ) );
+                    out.emplace_back( start, end-start );
                 }
             }
         }
@@ -143,7 +143,7 @@ static void SplitASCII( const char* ptr, const char* end, std::vector<std::strin
         auto len = e - bptr;
         if( len >= LexiconMinLen && len <= LexiconMaxLen )
         {
-            out.emplace_back( std::string( bptr, e ) );
+            out.emplace_back( bptr, e );
         }
         if( e >= bend ) break;
         bptr = e+1;
@@ -193,7 +193,7 @@ std::string ToLower( const char* ptr, const char* end )
     if( IsUtf( ptr, end ) )
     {
         auto us = icu::UnicodeString::fromUTF8( icu::StringPiece( ptr, size ) );
-        icu::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
+        const icu::UnicodeString lower = us.toLower( icu::Locale::getEnglish() );
         std::string ret;
         lower.toUTF8String( ret );
         return ret;
@@ -213,6 +213,6 @@ std::string ToLower( const char* ptr, const char* end )
                 *lc++ = *ptr++;
             }
         }
-        return std::string( buf, buf+size );
+        return { buf, buf+size };
     }
 }

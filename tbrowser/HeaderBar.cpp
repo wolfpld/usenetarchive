@@ -48,7 +48,7 @@ void HeaderBar::Redraw() const
         wprintw( m_win, " :: " );
         wattron( m_win, COLOR_PAIR(11) );
 
-        int w = getmaxx( m_win ) - 23 - m_archiveLen;
+        const int w = getmaxx( m_win ) - 23 - m_archiveLen;
         auto end = utfendcrlf( m_desc, w );
         wprintw( m_win, "%.*s", int( end - m_desc ), m_desc );
     }

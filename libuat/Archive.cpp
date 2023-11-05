@@ -110,7 +110,7 @@ static bool MatchStrings( const std::string& s1, const char* s2, bool exact, boo
     }
     else
     {
-        std::regex r( s1.c_str(), s1.size(), std::regex::flag_type( std::regex_constants::ECMAScript | ( ignoreCase ? std::regex_constants::icase : 0 ) ) );
+        const std::regex r( s1.c_str(), s1.size(), std::regex::flag_type( std::regex_constants::ECMAScript | ( ignoreCase ? std::regex_constants::icase : 0 ) ) );
         return std::regex_search( s2, r );
     }
 }

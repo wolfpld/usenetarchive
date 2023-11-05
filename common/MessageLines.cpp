@@ -183,8 +183,8 @@ void MessageLines::SplitHeader( uint32_t offset, uint32_t len, std::vector<LineP
         if( *str++ == ':' ) break;
     }
 
-    uint32_t nameLen = str - origin;
-    uint32_t bodyLen = len - nameLen;
+    const uint32_t nameLen = str - origin;
+    const uint32_t bodyLen = len - nameLen;
 
     if( bodyLen < 2 )
     {
@@ -255,7 +255,7 @@ void MessageLines::SplitBody( uint32_t offset, uint32_t len, std::vector<LinePar
     auto str = text + offset;
     const auto end = str + len;
     auto test = str;
-    int level = std::min( QuotationLevel( test, end ), 5 );
+    const int level = std::min( QuotationLevel( test, end ), 5 );
 
     for( int i=0; i<level; i++ )
     {

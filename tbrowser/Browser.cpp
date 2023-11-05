@@ -55,8 +55,8 @@ Browser::~Browser()
 bool Browser::MoveOrEnterAction( int move )
 {
     auto resizeNeeded = !m_mview.IsActive();
-    bool newMessage = m_mview.DisplayedMessage() != m_tview.GetCursor();
-    bool ret = m_mview.Display( m_tview.GetCursor(), move );
+    const bool newMessage = m_mview.DisplayedMessage() != m_tview.GetCursor();
+    const bool ret = m_mview.Display( m_tview.GetCursor(), move );
     if( resizeNeeded )
     {
         m_tview.Resize();
@@ -549,14 +549,14 @@ void Browser::RestoreDefaultView()
 
 void Browser::OpenArchive( std::string&& fn )
 {
-    std::shared_ptr<Archive> archive( Archive::Open( fn ) );
+    const std::shared_ptr<Archive> archive( Archive::Open( fn ) );
     if( !archive )
     {
         m_bottom.Status( "Cannot open archive!" );
         return;
     }
 
-    SwitchArchive( std::move( archive ), std::move( fn ) );
+    SwitchArchive( archive, std::move( fn ) );
 }
 
 void Browser::SwitchArchive( const std::shared_ptr<Archive>& archive, std::string&& fn )

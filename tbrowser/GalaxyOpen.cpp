@@ -143,8 +143,8 @@ void GalaxyOpen::Draw()
 
         auto name = m_galaxy.GetArchiveName( line );
         auto desc = m_galaxy.GetArchiveDescription( line );
-        bool available = m_galaxy.IsArchiveAvailable( line );
-        bool current = active == line;
+        const bool available = m_galaxy.IsArchiveAvailable( line );
+        const bool current = active == line;
 
         int len = lenBase;
         auto end = utfendl( name, len );

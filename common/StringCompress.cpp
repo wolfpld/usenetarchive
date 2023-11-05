@@ -614,7 +614,7 @@ StringCompress::StringCompress( const std::string& fn )
 
 StringCompress::StringCompress( const FileMapPtrs& ptrs )
 {
-    FileMap<char> f( ptrs );
+    const FileMap<char> f( ptrs );
     memcpy( &m_dataLen, f, sizeof( m_dataLen ) );
     auto data = new char[m_dataLen];
     uint32_t offset = sizeof( m_dataLen );

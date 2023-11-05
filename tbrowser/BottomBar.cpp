@@ -43,7 +43,7 @@ std::string BottomBar::Query( const char* prompt, const char* entry, bool filesy
     std::string ret;
     int insert = 0;
     m_reset = 2;
-    int plen = strlen( prompt );
+    const int plen = strlen( prompt );
 
     if( entry && *entry )
     {
@@ -54,7 +54,7 @@ std::string BottomBar::Query( const char* prompt, const char* entry, bool filesy
     for(;;)
     {
         PrintQuery( prompt, ret.c_str() );
-        int slen = utflen_relaxed( ret.c_str(), ret.c_str() + insert );
+        const int slen = utflen_relaxed( ret.c_str(), ret.c_str() + insert );
         wmove( m_win, 0, plen + slen );
         wrefresh( m_win );
 
@@ -139,7 +139,7 @@ std::string BottomBar::InteractiveQuery( const char* prompt, const std::function
     std::string ret;
     int insert = 0;
     m_reset = 2;
-    int plen = strlen( prompt );
+    const int plen = strlen( prompt );
 
     if( entry && *entry )
     {
@@ -150,7 +150,7 @@ std::string BottomBar::InteractiveQuery( const char* prompt, const std::function
     for(;;)
     {
         PrintQuery( prompt, ret.c_str() );
-        int slen = utflen_relaxed( ret.c_str(), ret.c_str() + insert );
+        const int slen = utflen_relaxed( ret.c_str(), ret.c_str() + insert );
         wmove( m_win, 0, plen + slen );
         wrefresh( m_win );
 

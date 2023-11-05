@@ -78,7 +78,7 @@ void TextView::Resize()
 {
     ResizeView( 0, 1, 0, -2 );
     if( !m_active ) return;
-    int sw = getmaxx( stdscr );
+    const int sw = getmaxx( stdscr );
     if( sw != m_linesWidth )
     {
         PrepareLines();
@@ -94,7 +94,7 @@ void TextView::Draw()
     int i;
     for( i=0; i<h; i++ )
     {
-        int line = m_top + i;
+        const int line = m_top + i;
         if( line >= m_lines.size() ) break;
 
         wmove( m_win, i, 0 );

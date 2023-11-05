@@ -233,7 +233,7 @@ void GalaxyWarp::Draw()
     int w, h;
     getmaxyx( m_win, h, w );
     h = h - 4;  // header
-    int psize = (h+1) / 2;
+    const int psize = (h+1) / 2;
     h = h - psize;
 
     werase( m_win );
@@ -266,8 +266,8 @@ void GalaxyWarp::Draw()
 
         auto name = m_galaxy.GetArchiveName( m_list[line].id );
         auto desc = m_galaxy.GetArchiveDescription( m_list[line].id );
-        bool available = m_list[line].available;
-        bool current = m_list[line].current;
+        const bool available = m_list[line].available;
+        const bool current = m_list[line].current;
 
         int len = lenBase;
         auto end = utfendl( name, len );
@@ -310,7 +310,7 @@ void GalaxyWarp::Draw()
         }
         else
         {
-            bool indirect = m_list[line].indirect;
+            const bool indirect = m_list[line].indirect;
             wattron( m_win, COLOR_PAIR( 3 ) );
             if( m_list[line].parent > 0 )
             {
