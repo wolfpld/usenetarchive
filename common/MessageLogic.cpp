@@ -114,6 +114,7 @@ int DetectWrote( const char* ptr )
     auto end = ptr;
     while( *end != '\n' && *end != '\0' ) end++;
     if( *end == '\0' ) return 0;
+    if( end - ptr == 3 && strncmp( ptr, "-- ", 3 ) == 0 ) return 0;
     if( QuotationLevel( ptr, end ) != 0 ) return 0;
 
     // If second line is T_Quote -> wrote context
