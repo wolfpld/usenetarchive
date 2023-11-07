@@ -2,6 +2,7 @@
 #define __SEARCHENGINE_HPP__
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "../common/LexiconTypes.hpp"
