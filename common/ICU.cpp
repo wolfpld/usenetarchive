@@ -152,8 +152,8 @@ static void SplitASCII( const char* ptr, const char* end, std::vector<std::strin
 
 void SplitLine( const char* ptr, const char* end, std::vector<std::string>& out, bool toLower )
 {
-    assert( ptr != end );
     out.clear();
+    if( ptr == end ) return;
 
     if( IsUtf( ptr, end ) )
     {
