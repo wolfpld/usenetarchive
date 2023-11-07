@@ -556,5 +556,5 @@ int main( int argc, char** argv )
 
     printf( "\nFound %i new threads.\nSurely matched %i messages (same subject line). Wrong guesses: %i due to different subject + %i non-chronological\n", cntnew, cntsure, cntbad, cnttime );
 
-    return 0;
+    return cntsure != 0 ? 1 : 0;
 }
