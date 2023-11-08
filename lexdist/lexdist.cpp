@@ -142,7 +142,6 @@ int main( int argc, char** argv )
 
     const auto size = meta.DataSize();
     auto data = new std::vector<uint32_t>[size];
-    auto lengths = new unsigned int[size];
     auto stru32 = new std::u32string[size];
     auto counts = new unsigned int[size];
     auto offsets = new uint32_t[size];
@@ -168,7 +167,6 @@ int main( int argc, char** argv )
         auto len = utflen( s );
         assert( len <= LexiconMaxLen );
 
-        lengths[i] = len;
 #ifdef _MSC_VER
         stru32[i] = std::u32string( (const char32_t*)conv.from_bytes( s ).data() );
 #else
