@@ -145,8 +145,8 @@ int main( int argc, char** argv )
     auto stru32 = new std::u32string[size];
     auto counts = new unsigned int[size];
     auto offsets = new uint32_t[size];
-    auto heurdata = new uint64_t[size];
     std::vector<uint32_t> byLen[LexiconMaxLen+1];
+    std::vector<uint64_t> heurdata[LexiconMaxLen+1];
 
 #ifdef _MSC_VER
     std::wstring_convert<std::codecvt_utf8<unsigned int>, unsigned int> conv;
@@ -173,10 +173,9 @@ int main( int argc, char** argv )
         stru32[i] = conv.from_bytes( s );
 #endif
         byLen[len].emplace_back( i );
+        heurdata[len].emplace_back( BuildHeuristicData( s ) );
 
         counts[i] = mp->dataSize;
-
-        heurdata[i] = BuildHeuristicData( s );
     }
 
     printf( "\nWord length histogram\n" );
@@ -196,12 +195,13 @@ int main( int argc, char** argv )
         const auto ldstart = std::max<int>( i-maxld, LexiconMinLen );
         const auto ldend = std::min<int>( i+maxld, LexiconMaxLen );
         const auto& byLen1 = byLen[i];
+        const auto& heurdata1 = heurdata[i];
 
         const auto size = byLen1.size();
         std::atomic<uint32_t> cnt( 0 );
         for( int t=0; t<cpus; t++ )
         {
-            tasks.Queue( [&stru32, &byLen1, &byLen, size, &cnt, i, counts, ldstart, ldend, maxld, offsets, &data, heurdata]() {
+            tasks.Queue( [&stru32, &byLen1, &byLen, size, &cnt, i, counts, ldstart, ldend, maxld, offsets, &data, &heurdata, heurdata1]() {
                 std::vector<CandidateData> candidates;
                 for(;;)
                 {
@@ -214,10 +214,10 @@ int main( int argc, char** argv )
                     }
 
                     const auto idx = byLen1[j];
+                    const auto heur1 = heurdata1[j];
                     const auto cnt = counts[idx];
                     const auto tcnt = cnt / 10;    // 10%
                     const auto& str1 = stru32[idx];
-                    const auto heur1 = heurdata[idx];
 
                     unsigned int maxCount = 0;
                     candidates.clear();
@@ -225,13 +225,14 @@ int main( int argc, char** argv )
                     {
                         const auto hld = maxld * 2 - abs( k - i );
                         const auto& byLen2 = byLen[k];
+                        const auto& heurdata2 = heurdata[k];
                         const auto size2 = byLen2.size();
                         for( int l=0; l<size2; l++ )
                         {
-                            const auto idx2 = byLen2[l];
-                            const auto heur2 = heurdata[idx2];
+                            const auto heur2 = heurdata2[l];
                             if( CountBits( heur1 ^ heur2 ) <= hld )
                             {
+                                const auto idx2 = byLen2[l];
                                 const auto cnt2 = counts[idx2];
                                 if( cnt2 >= tcnt )
                                 {
