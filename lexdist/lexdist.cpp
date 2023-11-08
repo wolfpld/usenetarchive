@@ -17,6 +17,10 @@
 #include "../common/System.hpp"
 #include "../common/TaskDispatch.hpp"
 
+#ifdef __AVX512F__
+#  include <immintrin.h>
+#endif
+
 #ifdef _MSC_VER
 #include <intrin.h>
 #define CountBits __popcnt64
@@ -227,7 +231,44 @@ int main( int argc, char** argv )
                         const auto& byLen2 = byLen[k];
                         const auto& heurdata2 = heurdata[k];
                         const auto size2 = byLen2.size();
-                        for( int l=0; l<size2; l++ )
+                        int l=0;
+#ifdef __AVX512F__
+                        auto vheur1 = _mm512_set1_epi64( heur1 );
+                        auto vhld = _mm512_set1_epi64( hld );
+                        for( int v=0; v<size2/8; v++, l+=8 )
+                        {
+                            auto vheur2 = _mm512_loadu_si512( heurdata2.data() + l );
+                            auto vxor = _mm512_xor_si512( vheur1, vheur2 );
+                            auto vcnt = _mm512_popcnt_epi64( vxor );
+                            auto vcmp = _mm512_cmple_epu64_mask( vcnt, vhld );
+                            if( vcmp != 0 )
+                            {
+                                int m = 0;
+                                do
+                                {
+                                    if( ( vcmp & 1 ) != 0 )
+                                    {
+                                        const auto idx2 = byLen2[l+m];
+                                        const auto cnt2 = counts[idx2];
+                                        if( cnt2 >= tcnt )
+                                        {
+                                            const auto& str2 = stru32[idx2];
+                                            const auto ld = levenshtein_distance( str1.c_str(), i, str2.c_str(), k, maxld+1 );
+                                            if( ld > 0 && ld <= maxld )
+                                            {
+                                                candidates.emplace_back( CandidateData { uint32_t( ld ), cnt2, offsets[idx2] } );
+                                                if( cnt2 > maxCount ) maxCount = cnt2;
+                                            }
+                                        }
+                                    }
+                                    vcmp >>= 1;
+                                    m++;
+                                }
+                                while( vcmp != 0 );
+                            }
+                        }
+#endif
+                        for( ; l<size2; l++ )
                         {
                             const auto heur2 = heurdata2[l];
                             if( CountBits( heur1 ^ heur2 ) <= hld )
