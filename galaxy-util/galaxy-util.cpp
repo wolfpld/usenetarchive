@@ -52,7 +52,7 @@ int main( int argc, char** argv )
 
     std::vector<std::string> archives;
 
-    // load archive list
+    TracyMessageL( "Loading archive list" );
     {
         const FileMap<char> listfile( listfn );
         const char* begin = listfile;
@@ -112,7 +112,7 @@ int main( int argc, char** argv )
     }
     printf( "\nTotal message count: %" PRIu64 "\n", count );
 
-    // name, description
+    TracyMessageL( "Writing archive data – name, description" );
     {
         FILE* data = fopen( ( base + "str" ).c_str(), "wb" );
         FILE* meta = fopen( ( base + "str.meta" ).c_str(), "wb" );
@@ -166,7 +166,7 @@ int main( int argc, char** argv )
         fclose( meta );
     }
 
-    // list of unique msg id
+    TracyMessageL( "Building list of unique message ids" );
     const StringCompress* compress;
 
     Slab<128*1024*1024> vecslab;
@@ -207,11 +207,13 @@ int main( int argc, char** argv )
         unique = msgidset.size();
         printf( "\nUnique message count: %zu\n", unique );
 
+        TracyMessageL( "Building code book" );
         printf( "Building code book...\n" );
         fflush( stdout );
         compress = new StringCompress( msgidset );
         compress->WriteData( base + "msgid.codebook" );
 
+        TracyMessageL( "Packing msg ids" );
         printf( "Packing msg ids\n" );
         msgidvec.reserve( unique );
         cnt = 0;
@@ -231,7 +233,7 @@ int main( int argc, char** argv )
         printf( "\n" );
     }
 
-    // create hash table
+    TracyMessageL( "Building hash table" );
     {
         auto hashbits = MsgIdHashBits( unique, 90 );
         auto hashsize = MsgIdHashSize( hashbits );
@@ -333,7 +335,7 @@ int main( int argc, char** argv )
 
     printf( "\n" );
 
-    // calculate message groups and indirect references
+    TracyMessageL( "Calculating message groups and indirect references" );
     struct IndirectData
     {
         std::vector<uint32_t> parent;
@@ -443,6 +445,7 @@ int main( int argc, char** argv )
 
     printf( "\nIndirect links: %zu\n", indirect.size() );
 
+    TracyMessageL( "Writing indirect data" );
     {
         struct DenseData
         {
