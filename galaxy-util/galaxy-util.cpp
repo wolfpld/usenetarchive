@@ -351,12 +351,7 @@ int main( int argc, char** argv )
         {
             size_t operator()( const std::vector<int>& vec ) const
             {
-                size_t ret = 0;
-                for( auto& i : vec )
-                {
-                    ret ^= std::hash<uint32_t>()( i );
-                }
-                return ret;
+                return XXH64( vec.data(), vec.size() * sizeof( int ), 0 );
             }
         };
 
