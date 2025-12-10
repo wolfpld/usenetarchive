@@ -335,6 +335,26 @@ int main( int argc, char** argv )
 
     printf( "\n" );
 
+    TracyMessageL( "Caching unpacked message id to message index mapping" );
+    std::vector<robin_hood::unordered_flat_map<std::string, uint32_t>> msgdata;
+    msgdata.resize( arch.size() );
+    for( size_t i=0; i<arch.size(); i++ )
+    {
+        printf( "%zu/%zu\r", i+1, arch.size() );
+        fflush( stdout );
+        auto& map = msgdata[i];
+        auto num = arch[i]->NumberOfMessages();
+        map.reserve( num );
+        for( size_t j=0; j<num; j++ )
+        {
+            char unpacked[2048];
+            auto packed = arch[i]->GetMessageId( j );
+            auto size = arch[i]->UnpackMsgId( packed, unpacked );
+            map[std::string( unpacked, size )] = j;
+        }
+    }
+    printf( "\n" );
+
     TracyMessageL( "Calculating message groups and indirect references" );
     struct IndirectData
     {
@@ -364,19 +384,21 @@ int main( int argc, char** argv )
         ExpandingBuffer eb;
         for( int i=0; i<unique; i++ )
         {
-            if( ( i & 0x3FF ) == 0 )
+            if( ( i & 0x3FFF ) == 0 )
             {
                 printf( "%i/%zu\r", i, unique );
                 fflush( stdout );
             }
 
+            char unpk[2048];
+            auto unsz = compress->Unpack( msgidvec[i], unpk );
+            auto unstr = std::string( unpk, unsz );
+
             groups.clear();
             for( int j=0; j<arch.size(); j++ )
             {
-                uint8_t repack[2048];
-                arch[j]->RepackMsgId( msgidvec[i], repack, *compress );
-                const auto idx = arch[j]->GetMessageIndex( repack );
-                if( idx != -1 )
+                auto it = msgdata[j].find( unstr );
+                if( it != msgdata[j].end() )
                 {
                     groups.emplace_back( j );
                 }
