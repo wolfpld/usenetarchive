@@ -221,7 +221,7 @@ add_executable(filter-spam filter-spam/filter-spam.cpp)
 target_link_libraries(filter-spam PRIVATE terminator common zstd lz4)
 
 add_executable(galaxy-util galaxy-util/galaxy-util.cpp)
-target_link_libraries(galaxy-util PRIVATE common zstd libuat)
+target_link_libraries(galaxy-util PRIVATE common zstd libuat Tracy::TracyClient)
 
 add_executable(google-groups google-groups/google-groups.cpp)
 target_link_libraries(google-groups PRIVATE curl common ssl)

@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <tracy/Tracy.hpp>
+
 #include "../contrib/martinus/robin_hood.h"
 #include "../common/CharUtil.hpp"
 #include "../common/ExpandingBuffer.hpp"
@@ -27,6 +29,8 @@
 
 int main( int argc, char** argv )
 {
+    TracyNoop;
+
     if( argc != 2 )
     {
         fprintf( stderr, "USAGE: %s directory\n", argv[0] );
