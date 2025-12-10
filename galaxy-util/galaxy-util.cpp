@@ -174,7 +174,8 @@ int main( int argc, char** argv )
     uint64_t unique;
     {
         uint64_t cnt = 0;
-        std::set<const char*, CharUtil::LessComparator> msgidset;
+        robin_hood::unordered_flat_set<const char*, CharUtil::Hasher, CharUtil::Comparator> msgidset;
+        msgidset.reserve( count );
         Slab<128*1024*1024> setslab;
         for( int i=0; i<arch.size(); i++ )
         {
