@@ -48,6 +48,7 @@ private:
     float m_queryTime;
     SearchData m_result;
     std::vector<std::vector<PreviewData>> m_preview;
+    std::vector<int> m_itemStartLines;
     bool m_active;
 
     int m_top, m_bottom;

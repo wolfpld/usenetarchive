@@ -183,8 +183,10 @@ void SearchView::Draw()
         const int w = getmaxx( m_win );
         int cnt = m_top;
         int line = 0;
+        m_itemStartLines.clear();
         while( line < h && cnt < m_result.results.size() )
         {
+            m_itemStartLines.push_back( line );
             const auto& res = m_result.results[cnt];
             wmove( m_win, line + 1, 0 );
             wattron( m_win, COLOR_PAIR(1) );
@@ -581,29 +583,49 @@ void SearchView::FillPreview( int idx )
 
 void SearchView::MoveCursor( int offset )
 {
+    const auto size = m_result.results.size();
+    if( size == 0 ) return;
+
     while( offset < 0 )
     {
         if( m_cursor == 0 ) break;
         m_cursor--;
         if( m_cursor < m_top )
         {
-            m_top--;
-            m_bottom--;
+            m_top = m_cursor;
         }
         offset++;
     }
     while( offset > 0 )
     {
-        if( m_cursor == m_result.results.size() - 1 ) break;
+        if( m_cursor == size - 1 ) break;
         m_cursor++;
-        if( m_cursor >= m_bottom - 1 )
-        {
-            m_top++;
-            m_bottom++;
-        }
         offset--;
     }
-    Draw();
+
+    const int h = getmaxy( m_win );
+    for(;;)
+    {
+        Draw();
+        if( m_cursor >= m_bottom )
+        {
+            m_top++;
+            continue;
+        }
+        const int cursorLine = m_itemStartLines[m_cursor - m_top];
+        if( m_cursor >= m_preview.size() )
+        {
+            FillPreview( m_cursor );
+        }
+        int previewLines = 0;
+        for( const auto& p : m_preview[m_cursor] )
+        {
+            if( p.newline ) previewLines++;
+        }
+        const int totalLines = 1 + previewLines + 1;
+        if( cursorLine + totalLines <= h ) break;
+        m_top++;
+    }
 }
 
 void SearchView::FixupRank()
