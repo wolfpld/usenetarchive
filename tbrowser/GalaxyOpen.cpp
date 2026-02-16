@@ -230,9 +230,9 @@ void GalaxyOpen::FilterItems( const std::string& filter )
             const char* name = m_galaxy.GetArchiveName( i );
             const int mlen = strlen( name );
             bool match = false;
-            for( int i=0; i<=mlen-flen; i++ )
+            for( int j=0; j<=mlen-flen; j++ )
             {
-                if( strncmp( name+i, filter.c_str(), flen ) == 0 )
+                if( strncmp( name+j, filter.c_str(), flen ) == 0 )
                 {
                     match = true;
                     break;
@@ -241,10 +241,60 @@ void GalaxyOpen::FilterItems( const std::string& filter )
             m_filter[i] = match;
         }
     }
-    if( !m_filter[m_cursor] )
+    if( !filter.empty() )
     {
-        MoveCursor( CalcOffset( 1 ) );
-        m_top = std::max( 0, m_cursor - CalcOffset( 10 ) );
+        if( !m_filter[m_cursor] )
+        {
+            int newCursor = -1;
+            for( int i = m_cursor; i < (int)m_filter.size(); i++ )
+            {
+                if( m_filter[i] ) { newCursor = i; break; }
+            }
+            if( newCursor < 0 )
+            {
+                for( int i = m_cursor - 1; i >= 0; i-- )
+                {
+                    if( m_filter[i] ) { newCursor = i; break; }
+                }
+            }
+            if( newCursor >= 0 ) m_cursor = newCursor;
+        }
+        int firstMatch = -1;
+        for( int i = 0; i < (int)m_filter.size(); i++ )
+        {
+            if( m_filter[i] ) { firstMatch = i; break; }
+        }
+        if( firstMatch >= 0 )
+        {
+            int h, w;
+            getmaxyx( m_win, h, w );
+            int visibleLines = h - 3;
+
+            int filteredBeforeCursor = 0;
+            for( int i = 0; i < m_cursor; i++ )
+            {
+                if( m_filter[i] ) filteredBeforeCursor++;
+            }
+
+            if( filteredBeforeCursor < visibleLines )
+            {
+                m_top = firstMatch;
+            }
+            else
+            {
+                int targetFilteredPos = filteredBeforeCursor - visibleLines + 2;
+                int count = 0;
+                m_top = firstMatch;
+                for( int i = firstMatch; i < m_cursor; i++ )
+                {
+                    if( m_filter[i] )
+                    {
+                        count++;
+                        if( count >= targetFilteredPos ) { m_top = i; break; }
+                    }
+                }
+            }
+        }
     }
     Draw();
     doupdate();
