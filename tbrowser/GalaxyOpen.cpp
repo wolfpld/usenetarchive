@@ -217,10 +217,18 @@ void GalaxyOpen::FilterItems( const std::string& filter )
 {
     if( filter.empty() )
     {
+        int visualLine = 0;
+        for( int i = m_top; i < m_cursor; i++ )
+        {
+            if( m_filter[i] ) visualLine++;
+        }
+
         for( int i=0; i<m_filter.size(); i++ )
         {
             m_filter[i] = true;
         }
+
+        m_top = std::max( 0, m_cursor - visualLine );
     }
     else
     {
