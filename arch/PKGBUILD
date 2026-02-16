@@ -1,12 +1,12 @@
 # Maintainer: Bartosz Taudul <wolf@nereid.pl>
 pkgname=uat-git
-pkgver=1
+pkgver=r1756.4a397b8
 pkgrel=1
 pkgdesc="Usenet Archive Toolkit"
 arch=('x86_64' 'aarch64')
 url="https://github.com/wolfpld/usenetarchive/"
 license=('AGPL3')
-makedepends=('git' 'ncurses' 'curl' 'icu' 'gmime' 'meson')
+makedepends=('git' 'cmake' 'ninja' 'ncurses' 'curl' 'icu' 'gmime3' 'lz4')
 options=('strip' 'zipman')
 source=('uat::git+https://github.com/wolfpld/usenetarchive.git')
 md5sums=('SKIP')
@@ -17,10 +17,10 @@ pkgver() {
 }
 
 build() {
-	arch-meson uat build
-	meson compile -C build
+	cmake -B build -S uat -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+	cmake --build build
 }
 
 package() {
-	meson install -C build --destdir "$pkgdir"
+	DESTDIR="$pkgdir" cmake --install build
 }

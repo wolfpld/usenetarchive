@@ -13,7 +13,7 @@ jobs:
         pacman -Syu --noconfirm
         pacman -S --noconfirm --needed cmake ninja gmime3 nodejs git
     - uses: actions/checkout@v4
-    - run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+    - run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
     - run: cmake --build build
     - run: cmake --install build
       env:
