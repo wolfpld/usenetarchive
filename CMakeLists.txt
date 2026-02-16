@@ -192,6 +192,7 @@ set(INN_SRC
 
 add_library(common ${COMMON_SRC})
 add_library(libuat ${LIBUAT_SRC})
+target_link_libraries(libuat PUBLIC common)
 add_library(terminator STATIC ${TERMINATOR_SRC})
 target_include_directories(terminator PUBLIC ${CMAKE_SOURCE_DIR}/contrib/kyotocabinet)
 add_library(lzma STATIC ${LZMA_SRC})
