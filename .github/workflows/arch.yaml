@@ -19,7 +19,7 @@ jobs:
       env:
         DESTDIR: ${{ github.workspace }}/install
     - run: tar -zcvf install.tar.gz -C install .
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: install
         path: install.tar.gz
