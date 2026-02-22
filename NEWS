@@ -1,3 +1,40 @@
+v1.0 (2026-02-22)
+-----------------
+
+- Switched from Makefiles to CMake build system.
+- Added web server for browsing archives by Message-ID in a web browser.
+  Displays messages with syntax highlighting for headers, quotations, and
+  signatures. Non-essential headers can be toggled by clicking on header
+  lines. "news:" URLs in messages link directly to other messages in the
+  archive.
+- Added support for not downloading articles from NNTP server before a given
+  date in nntp-get utility.
+- The threadify tool exit code now indicates if new matches have been found
+  and lexsort need to be run.
+- There's now a helper script at utility/threadify.py that runs threadify
+  and lexsort in a loop until no new matches are found.
+
+Performance improvements:
+  - galaxy-util is significantly faster (cache unpacked message ids, replaced
+    std::set with unordered_flat_set, better hashing).
+  - Parallelized xref query in query utility.
+  - lexdist utility is faster with AVX512 popcnt code path for word similarity
+    comparison.
+
+Text mode browser improvements:
+  - Fix empty screen when filtering groups in galaxy open dialog.
+  - Keep cursor on same visual line when clearing group filter in galaxy open
+    dialog.
+  - Fix search result visibility when navigating through results with
+    variable-height message previews.
+  - URLs are now underlined.
+
+Platform support:
+  - macOS compatibility fixes.
+  - Port utf8ize to gmime-3.0.
+  - Support curses implementations without A_ITALIC attribute.
+
+
 v0.5.2 (2021-02-24)
 -------------------
 
