@@ -1,0 +1,38 @@
+.TH UAT 1 2026-02-22 UAT "Usenet Archive Toolkit"
+.SH NAME
+uat-web \- web server for browsing archives
+.SH SYNOPSIS
+.I uat-web
+<config.ini>
+.SH DESCRIPTION
+This utility starts a web server for browsing UAT archives by Message-ID.
+Messages are displayed with syntax highlighting for headers, quotations,
+and signatures.
+.SH OPTIONS
+.TP
+.BR config.ini
+Path to configuration file.
+.SH CONFIGURATION
+Configuration file is in INI format with the following options:
+.TP
+.BR [server]\ bind
+IP address to bind to (default: 127.0.0.1).
+.TP
+.BR [server]\ port
+Port to listen on (default: 8119).
+.TP
+.BR [server]\ chomp
+Specify how much of the leading part of the URL to ignore, to support cases
+when the server is exposed by a reverse proxy, and not in the root of the
+domain (default: 0).
+.TP
+.BR [server]\ tracker
+Custom HTML to inject at the bottom of served pages.
+.TP
+.BR [galaxy]\ path
+Path to galaxy directory (default: news/galaxy).
+.SH "SEE ALSO"
+.ad l
+.nh
+.BR \%uat (1),
+.BR \%uat-galaxy-util (1)
