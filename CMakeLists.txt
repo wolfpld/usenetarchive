@@ -224,6 +224,9 @@ target_link_libraries(filter-spam PRIVATE terminator common zstd lz4)
 add_executable(galaxy-util galaxy-util/galaxy-util.cpp)
 target_link_libraries(galaxy-util PRIVATE common zstd libuat Tracy::TracyClient)
 
+add_executable(galaxy-web galaxy-web/galaxy-web.cpp)
+target_link_libraries(galaxy-web PRIVATE mongoose ini common libuat zstd)
+
 add_executable(google-groups google-groups/google-groups.cpp)
 target_link_libraries(google-groups PRIVATE curl common ssl)
 
@@ -361,6 +364,7 @@ install(FILES
     man/uat-filter-newsgroups.1
     man/uat-filter-spam.1
     man/uat-galaxy-util.1
+    man/uat-galaxy-web.1
     man/uat-google-groups.1
     man/uat-import-source-maildir.1
     man/uat-import-source-maildir-7z.1

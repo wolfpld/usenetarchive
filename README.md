@@ -116,6 +116,8 @@ These tools provide access to archive data:
 ### End-user Utilities
 
 - tbrowser --- Curses-based text mode browser of archives.
+- web --- Web server for looking up a single message by Message-ID.
+- galaxy-web --- Local web server for browsing and searching a whole galaxy: newsgroup list, paginated thread lists, threaded message view, and full-text search within a group or across all groups.
 
 ## Future work ideas
 
@@ -123,7 +125,6 @@ Here are some viable ideas that I'm not really planning to do any time soon, but
 
 - Implement messages extractor, for example in mbox format. Would need to properly encode headers and add content encoding information (UTF-8 everywhere).
 - Implement a read-only NNTP server. Would need to properly encode headers and add content encoding information. 7-bit cleanness probably would be nice, so also encode as quoted-printable. Some headers may need to be rewritten (eg. "Lines", which most probably won't be true, due to MIME processing). Message sorting by date may be necessary to put some sense into internal message numbers, which currently have no meaning at all.
-- Implement pan-group search mechanism.
 
 ## Workflow
 
