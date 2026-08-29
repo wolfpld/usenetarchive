@@ -116,6 +116,8 @@ These tools provide access to archive data:
 ### End-user Utilities
 
 - tbrowser --- Curses-based text mode browser of archives.
+- web --- Web server for looking up a single message by Message-ID.
+- galaxy-web --- Local web server for browsing and searching a whole galaxy: newsgroup list, paginated thread lists, threaded message view, and full-text search within a group or across all groups.
 
 ## Future work ideas
 
