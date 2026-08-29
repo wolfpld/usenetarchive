@@ -328,6 +328,7 @@ install(TARGETS
     filter-newsgroups
     filter-spam
     galaxy-util
+    galaxy-web
     google-groups
     import-source-maildir
     import-source-maildir-7z

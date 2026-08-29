@@ -35,7 +35,6 @@ static std::unique_ptr<Galaxy> galaxy;
 static std::map<std::string, int> groupIndex;
 
 static const size_t ThreadListPageSize = 50;
-static const size_t SearchPerGroupCap = 20;
 static const size_t SearchGlobalCap = 200;
 
 struct ResultRow
@@ -151,8 +150,7 @@ static std::string UriDecode( const char* txt, size_t sz )
                 continue;
             }
         }
-        if( c == '+' ) str.push_back( ' ' );
-        else str.push_back( c );
+        str.push_back( c );
         i++;
     }
     return str;
@@ -195,7 +193,11 @@ static std::vector<std::string> SplitPath( const std::string& uri )
 
 static std::string GetQueryVar( struct mg_str qs, const char* name )
 {
-    char buf[4096];
+    // MG_MAX_HTTP_REQUEST_SIZE bounds the entire request line, so the decoded
+    // value of any query variable can never exceed it. A smaller buffer here
+    // would let mg_get_http_var silently drop long-but-valid values (returns
+    // -3) instead of reading them.
+    char buf[MG_MAX_HTTP_REQUEST_SIZE];
     int n = mg_get_http_var( &qs, name, buf, sizeof( buf ) );
     if( n > 0 ) return std::string( buf, n );
     return std::string();
@@ -237,6 +239,17 @@ static std::string PageFooter()
     return "\n</main>\n</body>\n</html>\n";
 }
 
+static bool IsSafeScheme( const char* txt, size_t len )
+{
+    static const char* allowed[] = { "http://", "https://", "ftp://", "mailto:", "news:" };
+    for( auto scheme : allowed )
+    {
+        size_t sl = strlen( scheme );
+        if( len >= sl && memcmp( txt, scheme, sl ) == 0 ) return true;
+    }
+    return false;
+}
+
 static std::string RenderMessage( const char* message )
 {
     ml.PrepareLines( message, false );
@@ -271,6 +284,7 @@ static std::string RenderMessage( const char* message )
             const bool du = part.deco == MessageLines::D_Underline;
             const bool di = part.deco == MessageLines::D_Italics;
             const bool db = part.deco == MessageLines::D_Bold;
+            bool dlSafe = false;
             const bool dl = part.deco == MessageLines::D_Url;
             if( du ) out += "<u>";
             else if( di ) out += "<i>";
@@ -281,10 +295,12 @@ static std::string RenderMessage( const char* message )
                 {
                     std::string mid( message + part.offset + 5, message + part.offset + part.len );
                     out += "<a href=\"/msgid/" + UriPathEncode( mid ) + "\">";
+                    dlSafe = true;
                 }
-                else
+                else if( IsSafeScheme( message + part.offset, part.len ) )
                 {
                     out += "<a href=\"" + Encode( message + part.offset, message + part.offset + part.len ) + "\">";
+                    dlSafe = true;
                 }
             }
 
@@ -293,7 +309,7 @@ static std::string RenderMessage( const char* message )
             if( du ) out += "</u>";
             else if( di ) out += "</i>";
             else if( db ) out += "</b>";
-            else if( dl ) out += "</a>";
+            else if( dlSafe ) out += "</a>";
 
             if( !noSpan ) out += "</span>";
         }
@@ -388,10 +404,12 @@ static void RenderThreadRec( Archive& archive, const std::string& name, uint32_t
 
 static uint32_t FindRoot( Archive& archive, uint32_t idx )
 {
+    uint32_t steps = 0;
+    const uint32_t maxSteps = archive.NumberOfMessages() + 1;
     for(;;)
     {
         int32_t p = archive.GetParent( idx );
-        if( p < 0 ) return idx;
+        if( p < 0 || ++steps > maxSteps ) return idx;
         idx = (uint32_t)p;
     }
 }
@@ -433,10 +451,17 @@ static std::vector<ResultRow> SearchArchive( Archive& archive, const std::string
     SearchEngine se( archive );
     auto data = se.Search( query.c_str(), SearchEngine::SF_AdjacentWords );
     auto& results = data.results;
+    if( results.empty() ) return out;
     std::sort( results.begin(), results.end(), []( const SearchResult& a, const SearchResult& b ) { return a.rank > b.rank; } );
     size_t n = std::min( results.size(), cap );
     out.reserve( n );
-    for( size_t i=0; i<n; i++ ) out.push_back( { groupName, results[i].postid, results[i].rank } );
+    // Normalize ranks to [0,1] relative to this archive's own top match. Raw
+    // TF/IDF-style scores aren't comparable across corpora of different sizes;
+    // this at least puts every group's contribution to a merged result set on
+    // a common scale instead of comparing raw magnitudes directly.
+    const float maxRank = results[0].rank;
+    const float norm = maxRank > 0.f ? 1.f / maxRank : 1.f;
+    for( size_t i=0; i<n; i++ ) out.push_back( { groupName, results[i].postid, results[i].rank * norm } );
     return out;
 }
 
@@ -485,7 +510,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
     {
         const std::string& midStr = parts[1];
         bool found = false;
-        if( IsMsgId( midStr.c_str(), midStr.c_str() + midStr.size() ) )
+        if( midStr.size() <= 2048 && IsMsgId( midStr.c_str(), midStr.c_str() + midStr.size() ) )
         {
             uint8_t packed[4096];
             galaxy->PackMsgId( midStr.c_str(), packed );
@@ -537,7 +562,7 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
             for( int idx : galaxy->GetAvailableArchives() )
             {
                 auto& archive = *galaxy->GetArchive( idx, false );
-                auto part = SearchArchive( archive, galaxy->GetArchiveName( idx ), q, SearchPerGroupCap );
+                auto part = SearchArchive( archive, galaxy->GetArchiveName( idx ), q, SearchGlobalCap );
                 rows.insert( rows.end(), part.begin(), part.end() );
             }
             std::sort( rows.begin(), rows.end(), []( const ResultRow& a, const ResultRow& b ) { return a.rank > b.rank; } );
@@ -570,13 +595,16 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
             {
                 std::string q = GetQueryVar( hm->query_string, "q" );
                 title = name + " search";
-                auto rows = SearchArchive( archive, name, q, SearchGlobalCap );
-                body = RenderResults( rows, q, "/group/" + Encode( name ) + "/search", false );
+                auto rows = SearchArchive( archive, name, q, SearchGlobalCap + 1 );
+                bool truncated = rows.size() > SearchGlobalCap;
+                if( truncated ) rows.resize( SearchGlobalCap );
+                body = RenderResults( rows, q, "/group/" + Encode( name ) + "/search", truncated );
             }
             else if( parts.size() == 4 && parts[2] == "thread" )
             {
-                uint32_t idx = (uint32_t)strtoul( parts[3].c_str(), nullptr, 10 );
-                if( idx >= archive.NumberOfMessages() ) code = 404;
+                char* end;
+                uint32_t idx = (uint32_t)strtoul( parts[3].c_str(), &end, 10 );
+                if( *end != '\0' || end == parts[3].c_str() || idx >= archive.NumberOfMessages() ) code = 404;
                 else
                 {
                     title = name;
@@ -585,8 +613,9 @@ static void Handler( struct mg_connection* nc, int ev, void* data )
             }
             else if( parts.size() == 4 && parts[2] == "msg" )
             {
-                uint32_t idx = (uint32_t)strtoul( parts[3].c_str(), nullptr, 10 );
-                if( idx >= archive.NumberOfMessages() ) code = 404;
+                char* end;
+                uint32_t idx = (uint32_t)strtoul( parts[3].c_str(), &end, 10 );
+                if( *end != '\0' || end == parts[3].c_str() || idx >= archive.NumberOfMessages() ) code = 404;
                 else
                 {
                     title = name;
